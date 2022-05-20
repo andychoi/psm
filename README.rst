@@ -1,7 +1,7 @@
 Django Task Management
 ======================
 
-Django Coleman: A very simple Task Management web app written
+PSM: A very simple Task Management web app written
 with **Django Admin**.
 
 
@@ -19,8 +19,8 @@ Features
 * Spanish translations.
 * Basic Rest API configuration (disabled by default, check the
   ``INSTALLED_APPS`` setting).
-* Optionally, you can use Django Coleman along with
-  `Django Coleman Viewer <https://github.com/mrsarm/tornado-dcoleman-mtasks-viewer>`_
+* Optionally, you can use PSM along with
+  `PSM Viewer <https://github.com/mrsarm/tornado-dcoleman-mtasks-viewer>`_
   to allows users to follow the orders.
 * Pytest with some tests as example and code coverage reports configured.
 * Docker and Docker Compose configurations (images published in
@@ -28,7 +28,7 @@ Features
 * Ready to use "production" configurations as reference.
 
 .. image:: docs/source/_static/img/django-coleman.png
-   :alt: Django Coleman
+   :alt: PSM
 
 
 Requirements
@@ -115,7 +115,7 @@ A reference `<Dockerfile>`_ is provided, and the image published
 in `Docker Hub <https://hub.docker.com/r/mrsarm/django-coleman>`_.
 
 Also `<docker-compose.yml>`_ and `<.env.example>`_ files are provided, you can run
-all from here, Django Coleman, the viewer app and Postgres.
+all from here, PSM, the viewer app and Postgres.
 
 First, copy the ``.env.example`` file as ``.env`` file, and edit whatever
 value you want to::
@@ -200,7 +200,7 @@ Some available settings:
 * ``DEBUG``: set the Django ``DEBUG`` option. Default ``True``.
 * ``TIME_ZONE``: default ``UTC``. Other example: ``America/Buenos_Aires``.
 * ``LANGUAGE_CODE``: default ``en-us``. Other example: ``es-ar``.
-* ``SITE_HEADER``: Header title of the app. Default to *"Django Coleman - A Simple Task Manager"*.
+* ``SITE_HEADER``: Header title of the app. Default to *"PSM - A Simple Task Manager"*.
 * ``DATABASE_URL``: Database string connection. Default uses SQLite database. Other
   example: ``postgresql://dcoleman:postgres@localhost/dcoleman_dev``.
 * More settings like email notifications, check the ``settings.py`` file

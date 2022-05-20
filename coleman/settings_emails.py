@@ -22,7 +22,7 @@ TASKS_SEND_EMAILS_TO_ASSIGNED = env.bool('TASKS_SEND_EMAILS_TO_ASSIGNED', False)
 TASKS_SEND_EMAILS_TO_PARTNERS = env.bool('TASKS_SEND_EMAILS_TO_PARTNERS', False)
 
 
-# Enables the Tornado Django Coleman Viewer (it will send emails with the order URL)
+# Enables the Tornado PSM Viewer (it will send emails with the order URL)
 # Check: https://github.com/mrsarm/tornado-dcoleman-mtasks-viewer
 TASKS_VIEWER_ENABLED = env.bool('TASKS_VIEWER_ENABLED', False)
 TASKS_VIEWER_HASH_SALT = env('TASKS_VIEWER_HASH_SALT', '1two3')   # REPLACE in production !!!

@@ -86,6 +86,8 @@ class Task(models.Model):
     created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False)
     last_modified = models.DateTimeField(_("last modified"), auto_now=True, editable=False)
 
+    attachment=models.FileField(upload_to='attachments', null=True)
+
     objects = TaskManager()
 
     class Meta:

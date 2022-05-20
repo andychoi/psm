@@ -37,6 +37,7 @@ ALLOWED_HOSTS = [ '*' ]
 # Application definition
 
 INSTALLED_APPS = [
+#    'jazzmin',
     'mtasks.apps.MtasksConfig',
     'partner.apps.PartnerConfig',
     'django_admin_listfilter_dropdown',
@@ -177,14 +178,17 @@ REST_FRAMEWORK = {
     ]
 }
 
+# Fileupload
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 #
 # Custom configurations
 #
 
-APP_NAME = env('APP_NAME', 'Django Coleman')
+APP_NAME = env('APP_NAME', 'PSM')
 APP_EMAIL = env('APP_EMAIL', 'no-reply@localhost')
-SITE_HEADER = env('SITE_HEADER', 'Django Coleman')
+SITE_HEADER = env('SITE_HEADER', 'PSM')
 INDEX_TITLE = env('INDEX_TITLE', 'Task Management')
 
 ADMINS = (

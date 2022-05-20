@@ -27,7 +27,7 @@ Nginx configuration
 -------------------
 
 This is an example of how should looks like a *Nginx* configuration
-file for Django Coleman::
+file for PSM::
 
     server {
         listen      80;
@@ -59,7 +59,7 @@ at http://django-coleman/admin
 
 If you can't see the Admin page correctly, and the browser console shows
 you *403 Forbidden* errors, ensure the system user that runs the Nginx server
-has permissions to access to the Django Coleman resources.
+has permissions to access to the PSM resources.
 
 Also be sure to have mapped `django-coleman` in your DNS server, or in the
 `/etc/hosts` where you want to access the app::
@@ -72,7 +72,7 @@ PostgreSQL database
 
 If you want to use a PostgreSQL database (recommended), before run
 the `migration scripts <https://github.com/mrsarm/django-coleman/#install-and-run>`_
-be sure to create the user and the database used by Django Coleman.
+be sure to create the user and the database used by PSM.
 In the ``run.sh`` script is used this string connection
 as example: ``postgresql://dcoleman:postgres@localhost/dcoleman_dev``,
 so to create a database ``dcoleman_dev`` with a user ``dcoleman`` and a

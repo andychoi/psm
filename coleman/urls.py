@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.http import HttpResponseRedirect
+from django.conf.urls.static import static
 
 # Rest API
 from rest_framework import routers
@@ -30,6 +31,9 @@ router.register(r'tasks', TaskViewSet)
 urlpatterns = [
     re_path(r'^api/v1/', include(router.urls)),
 ]
+
+#file upload
+urlpatterns = urlpatterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.ADMIN:
     urlpatterns = [

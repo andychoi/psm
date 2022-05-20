@@ -1,8 +1,5 @@
-.. image:: https://media.giphy.com/media/vQ2YjH4KCDRSM/giphy-downsized.gif
-
-
-Django Coleman
-==============
+Django Task Management
+======================
 
 Django Coleman: A very simple Task Management web app written
 with **Django Admin**.

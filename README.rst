@@ -37,7 +37,7 @@ Requirements
 Docker, or:
 
 * Python 3.6+ (tested with Python 3.6 and 3.10).
-* Django 3.2 LTS and other dependencies declared in
+* Django 4.x LTS and other dependencies declared in
   the ``requirements.txt`` file (use virtual environments or containers!).
 * A Django compatible database like PostgreSQL (by default uses
   the Python's built-in SQLite database for development purpose).
@@ -228,19 +228,6 @@ Or use the Honcho task that also generates a report with
 the tests coverage: ``honcho start --no-prefix test``.
 
 
-Django Coleman Viewer
----------------------
-
-`Django Coleman Viewer <https://github.com/mrsarm/tornado-dcoleman-mtasks-viewer>`_ is a
-small webapp that can be used along with Django Coleman to allow "partners" (customers, employees,
-providers...) to see their orders anonymously, without access to the Django Admin.
-
-You need to enable the email notifications and set ``TASKS_VIEWER_ENABLED`` and ``REST_ENABLED``
-settings to ``True`` to send the emails with the viewer order URL. See more configurations in the
-``coleman/settings_emails.py`` file, and checkout the viewer project.
-
-.. image:: https://raw.githubusercontent.com/mrsarm/tornado-dcoleman-mtasks-viewer/master/docs/source/_static/img/dcoleman-viewer.png
-
 
 Development
 -----------
@@ -264,29 +251,6 @@ execute the following to compile the locales::
 
     $ django-admin compilemessages
 
-
-Oldest Django versions
-^^^^^^^^^^^^^^^^^^^^^^
-
-The ``master`` branch works with Django 3.2 LTS. The are a few more branches (though unmaintained):
-
-* ``django/2.2``
-* ``django/2.0``
-* ``django/1.11``
-
-With the source code that works for each version of Django,
-and maybe tweaking some configurations can works with older versions too.
-
-
-Some screenshots
-----------------
-
-.. image:: docs/source/_static/img/django-coleman-task-change.png
-   :alt: Django Coleman - Task Chance View
-
-
-.. image:: docs/source/_static/img/django-coleman-task-change-mobile.png
-   :alt: Django Coleman - Task Chance View, mobile version
 
 
 About

@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.db import models
 from django.forms import Textarea
 from django.utils.translation import gettext_lazy as _
+from import_export.admin import ImportExportMixin
 from .models import Task, Item, TASK_PRIORITY_FIELDS
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter
 
@@ -13,7 +14,7 @@ class ItemInline(admin.TabularInline):
 
 
 @admin.register(Task)
-class TaskAdmin(admin.ModelAdmin):
+class TaskAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display = ('number', 'title', 'user', 'partner', 'created_at', 'deadline', 'priority', 'state', 'attachment')
     list_display_links = ('number', 'title')
     search_fields = ('id', 'title', 'item__item_description',

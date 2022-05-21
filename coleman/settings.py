@@ -49,6 +49,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
+    'import_export',
+#    'django.contrib.sites',
+#    'microsoft_auth',
 ]
 
 REST_ENABLED = env.bool('REST_ENABLED', False)
@@ -81,6 +84,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+#                'microsoft_auth.context_processors.microsoft',
             ],
         },
     },
@@ -181,6 +185,28 @@ REST_FRAMEWORK = {
 # Fileupload
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+# export/import
+#IMPORT_EXPORT_EXPORT_PERMISSION_CODE = 'import '
+
+# AzureAD SSO
+#AUTHENTICATION_BACKENDS = [
+#    'microsoft_auth.backends.MicrosoftAuthenticationBackend',
+#    'django.contrib.auth.backends.ModelBackend' # if you also want to use Django's authentication
+    # I recommend keeping this with at least one database superuser in case of unable to use others
+#]
+
+from decouple import config
+# values you got from step 2 from your Mirosoft app
+MICROSOFT_AUTH_CLIENT_ID = config("MICROSOFT_AUTH_CLIENT_ID")
+MICROSOFT_AUTH_CLIENT_SECRET = config("MICROSOFT_AUTH_CLIENT_SECRET")
+# Tenant ID is also needed for single tenant applications
+MICROSOFT_AUTH_TENANT_ID = config("MICROSOFT_AUTH_TENANT_ID")
+
+# pick one MICROSOFT_AUTH_LOGIN_TYPE value
+# Microsoft authentication
+# include Microsoft Accounts, Office 365 Enterpirse and Azure AD accounts
+MICROSOFT_AUTH_LOGIN_TYPE = 'ma'
 
 #
 # Custom configurations

@@ -9,6 +9,8 @@ from partner.models import Partner
 from coleman.utils.mail import send_mail_async as send_mail
 from hashlib import sha1
 
+from datetime import date
+
 
 logger = logging.getLogger(__name__)
 
@@ -72,6 +74,7 @@ class Task(models.Model):
         (Priority.CRITICAL.value, _('Critical')),
     )
 
+ #   id = models.TextField(blank=True)
     title = models.CharField(_("title"), max_length=200)
     partner = models.ForeignKey(Partner, blank=True, null=True, on_delete=models.PROTECT)
     description = models.TextField(_("description"), max_length=2000, null=True, blank=True)
@@ -86,7 +89,7 @@ class Task(models.Model):
     created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False)
     last_modified = models.DateTimeField(_("last modified"), auto_now=True, editable=False)
 
-    attachment=models.FileField(upload_to='attachments', null=True)
+    attachment=models.FileField(upload_to='attachments', null=True, blank=True)
 
     objects = TaskManager()
 
@@ -98,9 +101,12 @@ class Task(models.Model):
     def __str__(self):
         return "[%s] %s" % (self.number, self.title)
 
+
     @property
     def number(self) -> str:
-        return "{:08d}".format(self.pk)
+#        return "{:08d}".format(self.pk)
+#       yy-serial
+        return f'{self.created_at.strftime("%y")}-{"{:05d}".format(self.pk)}'
 
     def save(self, *args, **kwargs):
         send_email = self.pk is None

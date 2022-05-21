@@ -30,6 +30,7 @@ router.register(r'tasks', TaskViewSet)
 
 urlpatterns = [
     re_path(r'^api/v1/', include(router.urls)),
+#    path('microsoft/', include('microsoft_auth.urls', namespace='microsoft')),
 ]
 
 #file upload

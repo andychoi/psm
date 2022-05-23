@@ -23,10 +23,10 @@ from django.views.generic.base import TemplateView # new
 
 # Rest API
 from rest_framework import routers
-from mtasks.serializers import TaskViewSet
+# from mtasks.serializers import TaskViewSet
 
 router = routers.DefaultRouter()
-router.register(r'tasks', TaskViewSet)
+# router.register(r'tasks', TaskViewSet)
 
 
 urlpatterns = [
@@ -37,7 +37,7 @@ urlpatterns = [
     path('', TemplateView.as_view(template_name='home.html'), name='home'), # new
     # urls handling report app  routes
     path('', include('reports.urls')),
-    path('djrichtextfield/', include('djrichtextfield.urls')),
+    # path('djrichtextfield/', include('djrichtextfield.urls')),
     # path('^markdown/', include( 'django_markdown.urls')),
 ]
 

@@ -36,8 +36,9 @@ ALLOWED_HOSTS = [ '*' ]
 
 INSTALLED_APPS = [
 #    'jazzmin',
-    'mtasks.apps.MtasksConfig',
-    'CBU.apps.CBUConfig',
+    # 'mtasks.apps.MtasksConfig',
+    # 'partner',
+    'CBU',
     'reports',
     'common',
     'psm',
@@ -200,13 +201,13 @@ AUTHENTICATION_BACKENDS = [
     # I recommend keeping this with at least one database superuser in case of unable to use others
 ]
 
-from decouple import config
-# values you got from step 2 from your Mirosoft app
-MICROSOFT_AUTH_CLIENT_ID = config("MICROSOFT_AUTH_CLIENT_ID")
-MICROSOFT_AUTH_CLIENT_SECRET = config("MICROSOFT_AUTH_CLIENT_SECRET")
-# Tenant ID is also needed for single tenant applications
-MICROSOFT_AUTH_TENANT_ID = config("MICROSOFT_AUTH_TENANT_ID")
-MICROSOFT_AUTH_LOGIN_TYPE = 'ma'
+# from decouple import config
+# # values you got from step 2 from your Mirosoft app
+# MICROSOFT_AUTH_CLIENT_ID = config("MICROSOFT_AUTH_CLIENT_ID")
+# MICROSOFT_AUTH_CLIENT_SECRET = config("MICROSOFT_AUTH_CLIENT_SECRET")
+# # Tenant ID is also needed for single tenant applications
+# MICROSOFT_AUTH_TENANT_ID = config("MICROSOFT_AUTH_TENANT_ID")
+# MICROSOFT_AUTH_LOGIN_TYPE = 'ma'
 
 # client_id = config("MICROSOFT_AUTH_CLIENT_ID")
 # client_secret = config("MICROSOFT_AUTH_CLIENT_SECRET")

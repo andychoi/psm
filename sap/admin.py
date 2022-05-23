@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from .models import WBS
-from babel.numbers import format_currency
+# from babel.numbers import format_currency
 from import_export.admin import ImportExportMixin
 
 @admin.register(WBS)

@@ -1,7 +1,8 @@
 Django Project Service Management
 =================================
 
-PSM: A very simple Project Service Management web app written with **Django Admin**.
+PSM: A very simple Project Service Management web app 
+*reference to Task Management web app written with **Django Admin**.
 
 Features
 --------

@@ -38,3 +38,6 @@ venv*/
 /.env
 
 /htmlcov
+
+# file upload folder
+media/

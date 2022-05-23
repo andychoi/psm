@@ -11,9 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 import os
-
 from . import env
-
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -23,7 +21,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('SECRET_KEY', 'f*)$)fay97180m+ti%xi8si##u__h(8%(ipr1z-*lsjbucooz&')
+SECRET_KEY = env('SECRET_KEY', 'here is secret key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('DEBUG', True)
@@ -39,7 +37,11 @@ ALLOWED_HOSTS = [ '*' ]
 INSTALLED_APPS = [
 #    'jazzmin',
     'mtasks.apps.MtasksConfig',
-    'partner.apps.PartnerConfig',
+    'CBU.apps.CBUConfig',
+    'reports',
+    'common',
+    'psm',
+    'sap',
     'django_admin_listfilter_dropdown',
     'adminfilters',
     'django.contrib.admin',
@@ -50,8 +52,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_extensions',
     'import_export',
+    # 'ckeditor',
+    # 'django_markdown',
 #    'django.contrib.sites',
 #    'microsoft_auth',
+#    'django_auth_adfs',
 ]
 
 REST_ENABLED = env.bool('REST_ENABLED', False)
@@ -76,7 +81,7 @@ ROOT_URLCONF = 'coleman.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR + '/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -137,12 +142,10 @@ if AUTH_PASSWORD_VALIDATORS_ENABLED:
 
 LANGUAGE_CODE = env('LANGUAGE_CODE', 'en-us')
 
-TIME_ZONE = env('TIME_ZONE', 'UTC')
+TIME_ZONE = env('TIME_ZONE', 'America/Los_Angeles')
 
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 
@@ -190,11 +193,12 @@ MEDIA_URL = '/media/'
 #IMPORT_EXPORT_EXPORT_PERMISSION_CODE = 'import '
 
 # AzureAD SSO
-#AUTHENTICATION_BACKENDS = [
+AUTHENTICATION_BACKENDS = [
+#    'django_auth_adfs.backend.AdfsAuthCodeBackend',
 #    'microsoft_auth.backends.MicrosoftAuthenticationBackend',
-#    'django.contrib.auth.backends.ModelBackend' # if you also want to use Django's authentication
+    'django.contrib.auth.backends.ModelBackend' # if you also want to use Django's authentication
     # I recommend keeping this with at least one database superuser in case of unable to use others
-#]
+]
 
 from decouple import config
 # values you got from step 2 from your Mirosoft app
@@ -202,11 +206,24 @@ MICROSOFT_AUTH_CLIENT_ID = config("MICROSOFT_AUTH_CLIENT_ID")
 MICROSOFT_AUTH_CLIENT_SECRET = config("MICROSOFT_AUTH_CLIENT_SECRET")
 # Tenant ID is also needed for single tenant applications
 MICROSOFT_AUTH_TENANT_ID = config("MICROSOFT_AUTH_TENANT_ID")
-
-# pick one MICROSOFT_AUTH_LOGIN_TYPE value
-# Microsoft authentication
-# include Microsoft Accounts, Office 365 Enterpirse and Azure AD accounts
 MICROSOFT_AUTH_LOGIN_TYPE = 'ma'
+
+# client_id = config("MICROSOFT_AUTH_CLIENT_ID")
+# client_secret = config("MICROSOFT_AUTH_CLIENT_SECRET")
+# tenant_id = config("MICROSOFT_AUTH_TENANT_ID")
+# AUTH_ADFS = {
+#     'AUDIENCE': client_id,
+#     'CLIENT_ID': client_id,
+#     'CLIENT_SECRET': client_secret,
+#     'CLAIM_MAPPING': {'first_name': 'given_name',
+#                       'last_name': 'family_name',
+#                       'email': 'upn'},
+#     'GROUPS_CLAIM': 'roles',
+#     'MIRROR_GROUPS': True,
+#     'USERNAME_CLAIM': 'upn',
+#     'TENANT_ID': tenant_id,
+#     'RELYING_PARTY_ID': client_id,
+# }
 
 #
 # Custom configurations
@@ -222,3 +239,47 @@ ADMINS = (
 )
 
 from .settings_emails import *
+
+# django_project/settings.py
+LOGIN_REDIRECT_URL = "home"
+LOGOUT_REDIRECT_URL = "home"
+
+# django_project/settings.py
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+EMAIL_FILE_PATH = BASE_DIR + '/sent_emails'
+
+#ckeditor 
+# CKEDITOR_BASEPATH = "/static/ckeditor/ckeditor/"
+# CKEDITOR_CONFIGS = {
+#     'default': {
+#         'toolbar': 'Custom',
+#         'toolbar_Custom': [
+#             ['Bold', 'Italic', 'Underline', 'NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'RemoveFormat', 'Source']
+#         ],
+#         'removePlugins': 'toolbar',
+#         'toolbarCanCollapse' : True,     
+#         'width': 700,
+#     },
+# }
+# django-richtextfield
+#         'toolbar': 'undo redo | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | bullist numlist | link'
+# DJRICHTEXTFIELD_CONFIG = {
+#     'js': ['//cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js'],
+#     'init_template': 'djrichtextfield/init/tinymce.js',
+#     # 'settings': {  #TinyMCE
+#     #     'menubar': False,
+#     #     'plugins': 'link image',
+#     #     'toolbar': 'bold italic | link image | removeformat',
+#     #     'width': 700
+#     # },
+#     'settings': {  # CKEditor
+#         'toolbar': [
+#             {'items': ['Format', '-', 'Bold', 'Italic', '-',
+#                     'RemoveFormat']},
+#             {'items': ['Link', 'Unlink', 'Image', 'Table']},
+#             {'items': ['Source']}
+#         ],
+#         'format_tags': 'p;h1;h2;h3',
+#         'width': 700
+#     }    
+# }

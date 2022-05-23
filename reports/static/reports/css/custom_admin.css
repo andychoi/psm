@@ -1,0 +1,7 @@
+.stack_labels label {
+    float:initial;
+}
+
+.ui-datepicker .ui-datepicker-buttonpane button.ui-datepicker-current {
+    display: none
+}

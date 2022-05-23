@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Report List</h1>
+  {% if report_list %}
+  <ul>
+    {% for report in report_list %}
+      <li>
+        <a href="{{ report.slug }}">{{ report.title }}</a> ({{report.author}})
+      </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+    <p>There are no reports</p>
+  {% endif %}
+{% endblock %}

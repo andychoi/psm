@@ -1,4 +1,4 @@
-Django~=3.2.13
+Django~=4.0.4
 environs~=9.5.0
 dj-database-url~=0.5.0
 django-admin-list-filter-dropdown~=1.0.3
@@ -8,3 +8,4 @@ django-extensions~=3.1.5
 django_microsoft_auth~=2.4.1
 python-decouple~=3.6
 django-import-export~=2.8.0
+

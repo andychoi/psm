@@ -15,7 +15,7 @@ class ItemInline(admin.TabularInline):
 
 @admin.register(Task)
 class TaskAdmin(ImportExportMixin, admin.ModelAdmin):
-    list_display = ('number', 'title', 'user', 'partner', 'created_at', 'deadline', 'priority', 'state', 'attachment')
+    list_display = ('number', 'title', 'user', 'partner', 'created_at', 'deadline', 'priority', 'state')
     list_display_links = ('number', 'title')
     search_fields = ('id', 'title', 'item__item_description',
                      'user__username', 'user__first_name', 'user__last_name',
@@ -56,3 +56,10 @@ class TaskAdmin(ImportExportMixin, admin.ModelAdmin):
         if change is False:
             obj.created_by = request.user
         super().save_model(request, obj, form, change)
+
+    def get_queryset(self, request):
+        return super(TaskAdmin, self).get_queryset(request)
+        # original qs
+        # qs = super(TaskAdmin, self).get_queryset(request)
+        # filter by a variable captured from url, for example -> to enhance
+        # return qs.filter(title__startswith='task2')

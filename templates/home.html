@@ -1,0 +1,40 @@
+<!-- templates/home.html -->
+{% extends "base.html" %}
+{% block metatags %}
+<title>Home | PSM</title>
+{% endblock %}
+
+<header>
+	<div class="container">
+		<h1> Welcome to PSM</h1>
+	</div>
+</header>
+<div class="container">
+	<div class="row">
+		<div class="col-md-8 mt-3 left">
+			{% for report in report_list %}
+			<div class="shadow-none card mb-4" id="newsfeed">
+				<div class="card-body">
+					<h3 class="card-title">{{ report.title }}</h3>
+					<p class="card-text text-muted h6"><span>{{ report.author.first_name }} {{ report.author.last_name }}</span> | {{ report.created_on}} </p>
+					<p class="card-text">{{report.metades }}</p>
+					<span><a href="{% url 'report_detail' report.slug %}" class="btn btn-outline-primary">Read More →</a></span><span><a href="{% url 'report_detail_amp' report.slug %}" class="btn btn-outline-success">AMP page</a></span>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+</div>
+</div>
+{% if is_paginated %}
+<nav aria-label="Page navigation container"></nav>
+<ul class="pagination justify-content-center">
+	{% if page_obj.has_previous %}
+	<li><a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline-info" style="font-family: sans-serif;">« PREV </a></li>
+	{% endif %}
+	{% if page_obj.has_next %}
+	<li><a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-info" style="font-family: sans-serif;"> NEXT »</a></li>
+
+	{% endif %}
+</ul>
+{% endif %}
+

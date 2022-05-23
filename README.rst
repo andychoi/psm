@@ -1,9 +1,7 @@
-Django Task Management
-======================
+Django Project Service Management
+=================================
 
-PSM: A very simple Task Management web app written
-with **Django Admin**.
-
+PSM: A very simple Project Service Management web app written with **Django Admin**.
 
 Features
 --------
@@ -16,28 +14,17 @@ Features
 * Module `django-adminfilters <https://github.com/mrsarm/django-adminfilters>`_
   that allows multiselection searches.
 * Send emails when a task is created.
-* Spanish translations.
-* Basic Rest API configuration (disabled by default, check the
-  ``INSTALLED_APPS`` setting).
-* Optionally, you can use PSM along with
-  `PSM Viewer <https://github.com/mrsarm/tornado-dcoleman-mtasks-viewer>`_
-  to allows users to follow the orders.
+* Basic Rest API configuration (disabled by default, check the ``INSTALLED_APPS`` setting).
 * Pytest with some tests as example and code coverage reports configured.
-* Docker and Docker Compose configurations (images published in
-  `Docker Hub <https://hub.docker.com/r/mrsarm/django-coleman>`_).
+* Docker and Docker Compose configurations 
 * Ready to use "production" configurations as reference.
-
-.. image:: docs/source/_static/img/django-coleman.png
-   :alt: PSM
-
 
 Requirements
 ------------
 
 Docker, or:
-
 * Python 3.6+ (tested with Python 3.6 and 3.10).
-* Django 4.x LTS and other dependencies declared in
+* Django 5.x and other dependencies declared in
   the ``requirements.txt`` file (use virtual environments or containers!).
 * A Django compatible database like PostgreSQL (by default uses
   the Python's built-in SQLite database for development purpose).
@@ -60,7 +47,7 @@ Install dependencies with::
 Create the database with::
 
     $ python3 manage.py makemigrations
-    $ python3 manage.py makemigrations partner mtasks
+    $ python3 manage.py makemigrations CBU common psm sap reports
     $ python3 manage.py migrate
 
 To create an admin user::
@@ -252,12 +239,3 @@ execute the following to compile the locales::
     $ django-admin compilemessages
 
 
-
-About
------
-
-**Project**: https://github.com/mrsarm/django-coleman
-
-**Authors**: (2017-2022) Mariano Ruiz <mrsarm@gmail.com>
-
-**License**: AGPL-v3

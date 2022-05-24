@@ -28,13 +28,12 @@
 	<div class="container mt-3">
 		<div class="row">
 			<div class="col-8">
-				<h3>Infra Upgrade to SAP BW on HANA</h3>
-				<p>Weekly Status Report – As of 01/11/22</p>
+				<h3>{{ object.project.title }}</h3>
+				<p>{{ object.title }}</p>
 		  	</div>
-		  	<div class="col-4 text-nowrap text-right" >
-			
-			CBU Program Manager: Stakeholder name<br>
-			HAEA Project Manager: Unknown Name
+		  	<div class="col-4 text-nowrap float-end" >
+			<p class="text-end m-0">CBU Program Manager: {{ object.CBUpm }} </p>
+			<p class="text-end m-0">HAEA Project Manager: {{ object.project.user }} </p>
 			</div>
 		</div>
 
@@ -42,22 +41,22 @@
 			<div class="col-5">
 				<div class="panel panel-default">
 					<div class="panel-heading">Objective</div>
-					<div class="panel-body fixed-panel" >Panel Content</div>
+					<div class="panel-body fixed-panel" >{{ object.project.description }}</div>
 				  </div>
 				  <div class="panel panel-default">
 					<div class="panel-heading">Achievement</div>
 					<div class="panel-body fixed-panel">
 						<pre>
-{{ object.content_p }} 
+{{ object.content_a }} 
 						</pre></div>							
 				  </div>
 				  <div class="panel panel-default">
 					<div class="panel-heading">Plan for next period</div>
-					<div class="panel-body fixed-panel">Panel Content</div>
+					<div class="panel-body fixed-panel">{{ object.content_p }}</div>
 				  </div>
 				  <div class="panel panel-default">
 					<div class="panel-heading">Issues</div>
-					<div class="panel-body fixed-panel">Panel Content</div>
+					<div class="panel-body fixed-panel">{{ object.issue }}</div>
 				  </div>				  				  				
 			</div>
 			<div class="col-7">

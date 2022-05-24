@@ -56,10 +56,8 @@ class AdminCheckItem(admin.ModelAdmin):
 class ItemInline(admin.TabularInline):
     model = Item
     extra = 0
-    # readonly_fields = ('title', 'url', 'display_score')
-    # fields = ('title', 'url', 'display_score')
     class Media:
-        css = {"all": ("psm/css/style-hide.css",)}
+        css = {"all": ("psm/css/custom_admin.css",)}
 
 @admin.register(Project)
 class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
@@ -81,14 +79,14 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
 #        'deadline'
     )
     ordering = ['-id']  #Project_PRIORITY_FIELDS
-    readonly_fields = ('created_at', 'last_modified', 'created_by')
+    readonly_fields = ('created_at', 'last_modified', 'created_by', 'lstrpt',)
     autocomplete_fields = ['user', 'CBU']
 
     fieldsets = (               # Edition form
         (None,                   {'fields': (('title', 'type', 'year', 'strategy'), ('CBU', 'CBUpm','user', 'team', 'org'), 
                                              ( 'est_cost', 'app_budg', 'wbs', ),
                                              ('state', 'complete', 'priority'), 
-                                             ('status_o', 'status_t', 'status_b', 'status_s', 'resolution'), 
+                                             ('status_o', 'status_t', 'status_b', 'status_s', 'lstrpt', 'resolution'), 
                                              ('p_pre_planning','p_kickoff','p_design_b','p_design_e','p_develop_b','p_develop_e','p_uat_b','p_uat_e','p_launch','p_close'),
                                              ('a_pre_planning','a_kickoff','a_design_b','a_design_e','a_develoa_b','a_develoa_e','a_uat_b','a_uat_e','a_launch','a_close'), 
                                              ('attachment')), "classes": ("stack_labels",)}),

@@ -137,6 +137,7 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
             obj.project.status_b = obj.status_b
             obj.project.status_s = obj.status_s
             obj.project.resolution = obj.issue
+            obj.project.lstrpt = obj.updated_on   #update to project last report date
             obj.project.save()
 
 

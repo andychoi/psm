@@ -1,3 +1,18 @@
 .stack_labels label {
+/*
     float:initial;
+*/
+}
+
+.related-widget-wrapper-link {
+    display: none;
+}
+
+.aligned label + p, .aligned label + div.help, .aligned label + div.readonly  {
+    float: left;
+    margin-left:0;
+}
+
+.ui-datepicker .ui-datepicker-buttonpane button.ui-datepicker-current {
+    display: none
 }

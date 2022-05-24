@@ -39,7 +39,7 @@ class Strategy(models.Model):
 
 
 # Fields used to create an index in the DB and sort the Projects in the Admin
-Project_PRIORITY_FIELDS = ('state', 'CBU', '-priority', '-deadline')
+Project_PRIORITY_FIELDS = ('state', 'CBU', '-priority', '-lstrpt')
 
 class State(enum.Enum):
     """
@@ -171,7 +171,7 @@ class Project(models.Model):
     est_cost = models.DecimalField(_("Est. cost"), decimal_places=0, max_digits=12, blank=True, null=True)
     app_budg = models.DecimalField(_("Approved budget"), decimal_places=0, max_digits=12, blank=True, null=True)
     wbs = models.ForeignKey(WBS, blank=True, null=True, on_delete=models.PROTECT, verbose_name=_('WBS (SAP)'))
-    deadline = models.DateField(_("deadline"), null=True, blank=True)
+    lstrpt = models.DateField(_("last report"), null=True, blank=True)
 
     p_pre_planning = models.DateField(_("planned pre-planning start"), null=True, blank=True)
     p_kickoff = models.DateField(_("planned kick-off date"), null=True, blank=True)

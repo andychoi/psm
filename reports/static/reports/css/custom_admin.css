@@ -18,6 +18,10 @@
     width: 20px;
 }
 
+.column-description {
+    width: 30px;
+}
+
 .ui-datepicker .ui-datepicker-buttonpane button.ui-datepicker-current {
     display: none
 }

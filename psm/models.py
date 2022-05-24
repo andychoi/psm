@@ -6,8 +6,8 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
-from CBU.models import CBU
-from common.models import Org, Team, ExtendUser
+
+from common.models import CBU, Div, Dept, Team, ExtendUser
 from sap.models import WBS
 
 from coleman.utils.mail import send_mail_async as send_mail
@@ -20,7 +20,12 @@ logger = logging.getLogger(__name__)
 
 number_tr = _("number")
 
-
+#for year input
+import datetime
+def year_choices():
+    return [(r,r) for r in range(2020, datetime.date.today().year+1)]
+def current_year():
+    return datetime.date.today().year
 
 class Strategy(models.Model):
     class Meta:
@@ -36,6 +41,18 @@ class Strategy(models.Model):
     created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="strategy_created", null=True, on_delete=models.SET_NULL)
     last_modified = models.DateTimeField(_("last modified"), auto_now=True, editable=False)
+
+class Program(models.Model):
+    class Meta:
+        verbose_name = _("Program")
+        verbose_name_plural = _("Programs")    
+        
+    name = models.CharField(max_length=200, blank=True, null=True)
+    startyr = models.IntegerField(_('Starting year'), choices=year_choices, default=current_year)
+    lead = models.ForeignKey(ExtendUser, related_name='Program lead', verbose_name=_('Program lead'), on_delete=models.SET_NULL, null=True, blank=True)
+    is_active = models.BooleanField(_("Is active?"), default=True)
+    def __str__(self):
+        return self.name
 
 
 # Fields used to create an index in the DB and sort the Projects in the Admin
@@ -148,11 +165,13 @@ class Project(models.Model):
     type = models.CharField(_("type"), max_length=20, choices=PRJTYPE, default=PrjType.UNC.value)
     year = models.PositiveIntegerField(_("Year"), default=current_year(), validators=[MinValueValidator(2020), max_value_current_year])
     strategy = models.ForeignKey(Strategy, blank=True, null=True, on_delete=models.PROTECT)
+    program = models.ForeignKey(Program, blank=True, null=True, on_delete=models.PROTECT)
 
     CBU = models.ForeignKey(CBU, blank=True, null=True, on_delete=models.PROTECT)
     CBUpm = models.ForeignKey(ExtendUser, related_name='cbu_pm', verbose_name=_('CBU PM'), on_delete=models.SET_NULL, null=True, blank=True)
     team = models.ForeignKey(Team, blank=True, null=True, on_delete=models.PROTECT)
-    org = models.ForeignKey(Org, blank=True, null=True, on_delete=models.PROTECT)
+    dept = models.ForeignKey(Dept, blank=True, null=True, on_delete=models.PROTECT)
+    div = models.ForeignKey(Div, blank=True, null=True, on_delete=models.PROTECT)
 
     description = models.TextField(_("description"), max_length=2000, null=True, blank=True)
 

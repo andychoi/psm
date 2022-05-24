@@ -5,16 +5,25 @@ from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
 
-class Org(models.Model):
-    name   = models.CharField(max_length=100, blank=True, null=True)
-    leader = models.CharField(max_length=100, blank=True, null=True)
+class Div(models.Model):
+    name = models.CharField(max_length=100, blank=False, null=False)
+    head = models.ForeignKey(ExtendUser, related_name='Div head', verbose_name=_('Div head'), on_delete=models.SET_NULL, null=True, blank=True)
+    def __str__(self):
+        return self.name
+
+class Dept(models.Model):
+    name = models.CharField(max_length=100, blank=False, null=False)
+    head = models.ForeignKey(ExtendUser, related_name='Dept head', verbose_name=_('Dept head'), on_delete=models.SET_NULL, null=True, blank=True)
     def __str__(self):
         return self.name
 
 class Team(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, blank=False, null=False)
+    head = models.ForeignKey(ExtendUser, related_name='Team head', verbose_name=_('Team head'), on_delete=models.SET_NULL, null=True, blank=True)
+
     description = models.TextField(null=True, blank=True)
-    org = models.ForeignKey(Org, on_delete=models.SET_NULL, null=True, blank=True)
+    dept = models.ForeignKey(Dept, on_delete=models.SET_NULL, null=True, blank=True)
+    div = models.ForeignKey(Div, on_delete=models.SET_NULL, null=True, blank=True)
 #    users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="user_teams")
 #    users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="user_teams")
     created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False)
@@ -42,7 +51,8 @@ class ExtendUser(models.Model):
     name = models.CharField(max_length=100, blank=True, null=True)
     email = models.EmailField(max_length=200, blank=True, null=True)
     team = models.ForeignKey(Team, on_delete=models.SET_NULL, blank=True, null=True)
-    org = models.ForeignKey(Org, on_delete=models.SET_NULL, blank=True, null=True)
+    dept = models.ForeignKey(Dept, on_delete=models.SET_NULL, blank=True, null=True)
+    div = models.ForeignKey(Div, on_delete=models.SET_NULL, blank=True, null=True)
     role = models.CharField(max_length=50, choices=ROLES, default="USER")
     is_external = models.BooleanField(_("External user?"), default=False)
     is_active = models.BooleanField(default=True)
@@ -60,3 +70,39 @@ class ExtendUser(models.Model):
     @property
     def is_admin(self):
         return self.is_organization_admin
+
+
+
+class CBU(models.Model):
+    """
+    CBU: Client business unit, A CBU can be a customer, a provider, a contact, you should
+    extend this model to add business logic related with your
+    CBU's relationship
+    """
+    class Meta:
+        ordering = ["name"]
+        verbose_name = _("CBU")
+        verbose_name_plural = _("CBUs")
+
+    name = models.CharField(_("name"), max_length=10, db_index=True)
+    fullname = models.CharField(_("full name"), max_length=200)
+    email = models.EmailField(_("email"), blank=True, null=True)
+    website = models.URLField(_("website"), blank=True, null=True)
+    is_tier1 = models.BooleanField(_("is Tier-1"), default=False)
+    is_company = models.BooleanField(_("is company"), default=True)
+#    phone = models.CharField(_("phone"), max_length=40, null=True, blank=True)
+#    mobile = models.CharField(_("mobile"), max_length=40, null=True, blank=True)
+#    address = models.CharField(_("address"), max_length=128, null=True, blank=True)
+    comment = models.TextField(_("notes"), max_length=2000, null=True, blank=True)
+
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='CBU_created', verbose_name=_('created by'),
+                                   on_delete=models.SET_NULL, null=True)
+    created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False)
+    last_modified = models.DateTimeField(_("last modified"), auto_now=True, editable=False)
+
+    def __str__(self):
+        return self.name
+
+    # @property
+    # def phones(self):
+    #     return ", ".join(filter(None, (self.phone, self.mobile)))

@@ -38,7 +38,6 @@ INSTALLED_APPS = [
 #    'jazzmin',
     # 'mtasks.apps.MtasksConfig',
     # 'partner',
-    'CBU',
     'common',
     'psm',
     'sap',

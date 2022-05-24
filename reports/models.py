@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.utils.html import mark_safe
 # from ckeditor.fields import RichTextField
 
-from CBU.models import CBU
+from common.models import CBU
 from psm.models import Status
 
 PUBLISH = (

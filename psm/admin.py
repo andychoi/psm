@@ -40,6 +40,12 @@ class StrategyAdmin(admin.ModelAdmin):
     #     # filter by a variable captured from url, for example -> to enhance
     #     return qs.filter(is_active=True)
 
+@admin.register(Program)
+class ProgramAdmin(admin.ModelAdmin):
+    list_display = ('name', 'lead', 'startyr', 'is_active')
+    list_display_links = ('name', 'lead')
+    search_fields = ('name')
+    ordering = ('-startyr', 'name',)
 
 # checklist form
 class CheckItemModelForm( forms.ModelForm ):

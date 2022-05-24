@@ -15,6 +15,9 @@
 .original {
     display: none;
 }
+.inline-group .tabular tr.has_original td {
+    padding-top: 0.5em;
+}
 
 .aligned label + p, .aligned label + div.help, .aligned label + div.readonly  {
     float: left;

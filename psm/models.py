@@ -118,7 +118,7 @@ class Program(models.Model):
 
 # checklist
 class CheckItem(models.Model):
-    name = models.CharField(_("name"), default="check item...", max_length=200, db_index=True)
+    name = models.CharField(_("name"), max_length=200, db_index=True)
     desc = models.CharField(_("description"), max_length=2000, blank=True, null=True)
 
     def __str__(self):

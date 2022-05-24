@@ -13,6 +13,14 @@
     margin-left:0;
 }
 
+/* hide in tabluar inline */
+.original {
+    display: none;
+}
+.inline-group .tabular tr.has_original td {
+    padding-top: 0.5em;
+}
+
 .ui-datepicker .ui-datepicker-buttonpane button.ui-datepicker-current {
     display: none
 }

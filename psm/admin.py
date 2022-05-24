@@ -90,7 +90,7 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
     autocomplete_fields = ['user', 'CBU']
 
     fieldsets = (               # Edition form
-        (None,                   {'fields': (('title', 'type', 'year', 'strategy'), ('CBU', 'CBUpm'),('user', 'team', 'dept', 'div'), 
+        (None,                   {'fields': (('title', 'type', 'year'), ('strategy', 'program'), ('CBU', 'CBUpm'),('user', 'team', 'dept', 'div'), 
                                              ( 'est_cost', 'app_budg', 'wbs', ),
                                              ('state', 'complete', 'priority'), 
                                              ('status_o', 'status_t', 'status_b', 'status_s', 'lstrpt', 'resolution'), 
@@ -99,6 +99,19 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
                                              ('attachment')), "classes": ("stack_labels",)}),
         (_('More...'), {'fields': ('description', ('created_at', 'last_modified'), 'created_by'), 'classes': ('collapse',)}),
     )
+
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = super().get_fieldsets(request, obj)
+        if obj is None:
+            fieldsets = (      # Creation form
+                (None, {'fields': (('title', 'type', 'year'), ('strategy', 'program'), ('CBU', 'CBUpm'), ('user', 'team', 'dept', 'div'), 
+                    ( 'est_cost', 'app_budg', 'wbs', ),
+                    ('state', 'complete', 'priority'), 'description', 
+                    ('p_pre_planning','p_kickoff','p_design_b','p_design_e','p_develop_b','p_develop_e','p_uat_b','p_uat_e','p_launch','p_close'),
+                    'attachment')}),
+            )
+        return fieldsets
+
     inlines = [ItemInline]
 
     #not working...https://stackoverflow.com/questions/46892851/django-simple-history-displaying-changed-fields-in-admin
@@ -128,24 +141,14 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
     def get_form(self, request, obj=None, change=False, **kwargs):
         form = super().get_form(request, obj, change, **kwargs)
         form.base_fields['description'].widget.attrs.update({'rows':5,'cols':80})
-        #form.base_fields['resolution'].widget.attrs.update({'rows':5,'cols':80})
+        if  obj:
+            form.base_fields['resolution'].widget.attrs.update({'rows':5,'cols':40})
         return form
 
     def formatted_created_at(self, obj):
         return obj.created_at.strftime("%m/%d/%y")
     formatted_created_at.short_description = 'Created'
 
-    def get_fieldsets(self, request, obj=None):
-        fieldsets = super().get_fieldsets(request, obj)
-        if obj is None:
-            fieldsets = (      # Creation form
-                (None, {'fields': (('title', 'type', 'year', 'strategy'), ('CBU', 'CBUpm'), ('user', 'team', 'dept', 'div'), 
-                    ( 'est_cost', 'app_budg', 'wbs', ),
-                    ('state', 'complete', 'priority'), 'description', 
-                    ('p_pre_planning','p_kickoff','p_design_b','p_design_e','p_develop_b','p_develop_e','p_uat_b','p_uat_e','p_launch','p_close'),
-                    'attachment')}),
-            )
-        return fieldsets
 
     #https://stackoverflow.com/questions/10179129/filter-foreignkey-field-in-django-admin
     #https://stackoverflow.com/questions/25972112/filter-modelchoicefield-by-user-in-django-admin-form

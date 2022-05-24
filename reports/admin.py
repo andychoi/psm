@@ -115,7 +115,7 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
         form = super().get_form(request, obj, change, **kwargs)
         form.base_fields['content_a'].widget.attrs.update({'rows':5,'cols':80})
         form.base_fields['content_p'].widget.attrs.update({'rows':5,'cols':80})
-        form.base_fields['issue'].widget.attrs.update({'rows':5,'cols':80})
+        form.base_fields['issue'].widget.attrs.update({'rows':5,'cols':40})
         return form
 
     # def formatted_created_at(self, obj):

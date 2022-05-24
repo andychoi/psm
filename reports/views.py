@@ -29,7 +29,7 @@ class reportDetail(generic.DetailView):
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)    
-		context['milestone'] = Milestone.objects.all()
+		context['milestone'] = Milestone.objects.filter(report=self.object).order_by('no')
 		return context
 
 # how to pass multiple object

@@ -10,6 +10,14 @@ from django.utils.html import mark_safe
 from common.models import CBU, Dept, Div
 from psm.models import Status
 
+
+class ReportDist(models.Model):
+    project = models.ForeignKey('psm.Project', on_delete=models.CASCADE, blank=True, null=True)
+    # title field using charfield constraint with unique constraint
+    recipients_to = models.TextField(_("Recipients (to)"), max_length=1000)
+    recipients_cc = models.TextField(_("Recipients (cc)"), max_length=1000)
+
+
 PUBLISH = (
 	(0,"Draft"),
 	(1,"Publish"),

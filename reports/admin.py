@@ -15,7 +15,14 @@ from django.forms import formsets
 from django.forms.models import BaseInlineFormSet
 
 # Register your models here.
-from .models import Report, Milestone
+from .models import Report, Milestone, ReportDist
+
+# Register your models here.
+@admin.register(ReportDist)
+class ReportDistAdmin(admin.ModelAdmin):
+    list_display = ('id', 'project')
+    list_display_links = ('id', 'project')
+    pass
 
 class MilestoneFormSet(forms.models.BaseInlineFormSet):
     model = Milestone

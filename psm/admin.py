@@ -74,7 +74,7 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display = ('PJcode', 'title', 'user', 'CBU', 'formatted_created_at', 'team', 'dept', 'div', 'priority', 'state')
     list_display_links = ('PJcode', 'title')
     search_fields = ('id', 'title', 'item__item_description',
-                     'user__username', 'user__first_name', 'user__last_name',
+                     'user__name', 
                      'CBU__name', 'CBU__email')
     list_filter = (
         ('status_o', UnionFieldListFilter),

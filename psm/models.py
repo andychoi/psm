@@ -28,6 +28,8 @@ def current_year():
     return datetime.date.today().year
 def max_value_current_year(value):
     return MaxValueValidator(current_year()+1)(value)
+def max_value_program_year(value):
+    return MaxValueValidator(current_year()+5)(value)
 
 class Strategy(models.Model):
     class Meta:
@@ -52,6 +54,7 @@ class Program(models.Model):
 
     name = models.CharField(max_length=200, blank=True, null=True)
     startyr = models.PositiveIntegerField(_("Starting year"), default=current_year(), validators=[MinValueValidator(2020), max_value_current_year])
+    endyr = models.PositiveIntegerField(_("Ending year"), default=current_year(), validators=[MinValueValidator(2020), max_value_program_year])
     lead = models.ForeignKey(ExtendUser, verbose_name=_('Program lead'), on_delete=models.SET_NULL, null=True, blank=True)
     is_active = models.BooleanField(_("Is active?"), default=True)
     description = models.TextField(null=True, blank=True)

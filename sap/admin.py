@@ -1,3 +1,4 @@
+from logging import NullHandler
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from .models import WBS
@@ -38,6 +39,7 @@ class WBSAdmin(ImportExportMixin, admin.ModelAdmin):
 
         # If your locale is properly set, try also:
         # locale.currency(obj.amount, grouping=True)
-        return "$ {:,}".format(obj.budget)        
+        if obj.budget is not None:
+            return "$ {:,}".format(obj.budget)        
         #return format_currency(obj.budget , 'USD', locale='en_US', format="#,##0;-#")
     formatted_budget.short_description = 'Budget'    

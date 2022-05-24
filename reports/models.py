@@ -43,6 +43,7 @@ class Report(models.Model):
 
 	# status of post
     status = models.IntegerField(choices=PUBLISH, default=0)
+    is_monthly = models.BooleanField(_("Is Monthly?"), default=False)
 
     created_on = models.DateTimeField(_("created at"), auto_now_add=True, editable=False)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="report_created_by", null=True, on_delete=models.SET_NULL)

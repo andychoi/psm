@@ -157,8 +157,9 @@ es_formats.DATE_FORMAT = 'd M, Y'
 
 
 from django.conf.locale.en import formats as en_formats
-en_formats.DATETIME_FORMAT = 'M d Y, H:i'
+#en_formats.DATETIME_FORMAT = 'M d Y, H:i'
 # en_formats.DATE_FORMAT = 'M d, Y'
+en_formats.DATETIME_FORMAT = 'm/d/y g:i a'
 en_formats.DATE_FORMAT = 'Y-m-d'
 
 # Static files (CSS, JavaScript, Images)

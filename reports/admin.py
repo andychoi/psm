@@ -72,7 +72,7 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display_links = ('title', 'updated_on')
     ordering = ('-id',)
 
-    readonly_fields = ('project_link', 'created_on', 'updated_on', 'created_by', 'updated_by')
+    readonly_fields = ('project_link', 'CBU', 'created_on', 'updated_on', 'created_by', 'updated_by')
 
     def project_link(self, obj):
         return mark_safe('<a href="{}">{}</a>'.format(
@@ -84,7 +84,7 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
     preview_link.short_description = _('Preview')
 
     fieldsets = (               # Edition form
-        (None, {'fields': (('project', 'title', 'CBU', 'status'), 
+        (None, {'fields': (('project', 'title', 'CBU', 'status', 'is_monthly'), 
                             ('status_o', 'status_t', 'status_b', 'status_s', ), 
                             ('content_a', 'content_p', 'issue'), ),  "classes": ("stack_labels",)}),
             (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by')), 'classes': ('collapse',)}),
@@ -116,7 +116,7 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
         fieldsets = super().get_fieldsets(request, obj)
         if obj is None:
             fieldsets = (      # Creation form
-                (None, {'fields': (('project', 'title', 'CBU', 'status'), 
+                (None, {'fields': (('project', 'title', 'CBU', 'status', 'is_monthly'), 
                                     ('status_o', 'status_t', 'status_b', 'status_s', ), 
                                     ('content_a', 'content_p', 'issue'),)}),
             )
@@ -129,6 +129,10 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
             obj.updated_by = request.user
         else:
             obj.updated_by = request.user
+        if not obj.CBU:  #copy from project
+            obj.CBU = obj.project.CBU
+
+
         super().save_model(request, obj, form, change)
 
         if obj.status == 1:
@@ -139,7 +143,6 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
             obj.project.resolution = obj.issue
             obj.project.lstrpt = obj.updated_on   #update to project last report date
             obj.project.save()
-
 
     actions = ['make_published', 'duplicate_event']
 

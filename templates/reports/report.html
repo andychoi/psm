@@ -15,7 +15,7 @@
 
 	<style type="text/css">
 		.fixed-panel {
-			min-height: 160px;
+			min-height: 140px;
 			max-height: 300px;
 		}
 /*		.panel-body {background:#f8f9fa;;} */
@@ -35,7 +35,7 @@
 
 <body>
 	
-	<div class="container mt-3">
+	<div class="container mt-3">  <!-- margin top 3 -->
 		<div class="row">
 			<div class="col-8">
 				<h3 class="font-weight-bold"><u>{{ object.project.title }}</u></h3>
@@ -121,7 +121,8 @@
 					<div class="panel panel-default">
 						<div class="panel-heading"><div class="ms-2">Major Milestones</div></div>
 						<div class="panel-body">
-					<table id="milestonetbl" class="table table-bordered">
+					<!-- table-sm : smaller padding -->
+					<table id="milestonetbl" class="table table-bordered table-sm">
 						<thead class="table-light">
 						<tr>
 							<th scope="col"><small>Stage</small></th>

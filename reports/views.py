@@ -1,6 +1,6 @@
 # importing models and libraries
 from django.shortcuts import render
-from .models import Report
+from .models import Report, Milestone
 from django.views import generic
 
 # https://medium.com/@ksarthak4ever/django-class-based-views-vs-function-based-view-e74b47b2e41b
@@ -27,4 +27,11 @@ class reportDetail(generic.DetailView):
 	template_name = "reports/report.html"
 	context_object_name = 'report'
 
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)    
+		context['milestone'] = Milestone.objects.all()
+		return context
+
+# how to pass multiple object
+# -> https://stackoverflow.com/questions/42250375/django-passing-multiple-objects-to-templates-but-nothing-in-there
 

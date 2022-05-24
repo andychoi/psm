@@ -126,54 +126,22 @@
 						</tr>
 						</thead>
 						<tbody>
+						{% for m in milestone %}
 						<tr>
-							<td scope="row">Overall</th>
-							<td class="bg-success"></td>
-							<td>Overall project status</td>
-							<td>11/01/21</td>
-							<td>05/31/22</td>
-							<td>23%</td>
-						</tr>
-						<tr>
-							<td>1.Plan & Define</td>
-							<td class="bg-success"></td>
-							<td>SOW planning/ Contract</td>
-							<td>11/01/21</td>
-							<td>05/31/22</td>
-							<td>100%</td>
-						</tr>
-						<tr>
-							<td>1.Plan & Define</td>
-							<td class=""></td>
-							<td>Project Kickoff</td>
-							<td>11/01/21</td>
-							<td>05/31/22</td>
-							<td>50%</td>
-						</tr>
-						<tr>
-							<td>2.Implementation</td>
-							<td class="bg-danger"></td>
-							<td>Basic Component Conversion/ Integration Design</td>
-							<td>11/01/21</td>
-							<td>05/31/22</td>
-							<td>15%</td>
-						</tr>
-						<tr>
-							<td>2.Implementation</td>
-							<td class="bg-warning"></td>
-							<td>HANA Modeling/Upgrade/I/F Development</td>
-							<td>11/01/21</td>
-							<td>05/31/22</td>
-							<td>5%</td>
-						</tr>				
-						<tr>
-							<td>3.Post Support</td>
-							<td></td>
-							<td>Project Closure</td>
-							<td>11/01/21</td>
-							<td>05/31/22</td>
-							<td>0%</td>
-						</tr>															
+							<td scope="row">{{ m.stage }}</th>
+								<td class="
+								{%   if m.status == 1 %}bg-success
+								{% elif m.status == 2 %}bg-warning
+								{% elif m.status == 3 %}bg-danger
+								{% elif m.status == 9 %}bg-primary
+								{% else %}bg-secondary 
+								{% endif %}"></td>
+							<td>{{ m.description }}</td>
+							<td>{{ m.start }}</td>
+							<td>{{ m.finish }}</td>
+							<td>{{ m.complete }}</td>
+						</tr>						
+						{% endfor %}	
 						</tbody>
 					</table></div>				
 

@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- Bootstrap Font Icon CSS -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
 
 	{% block metatags %}
 	<title>{{ object.title }}</title>
@@ -38,7 +40,7 @@
 		</div>
 
 		<div class="row">
-			<div class="col-5">
+			<div class="col-6">
 				<div class="panel panel-default">
 					<div class="panel-heading">Objective</div>
 					<div class="panel-body fixed-panel" >{{ object.project.description }}</div>
@@ -52,14 +54,16 @@
 				  </div>
 				  <div class="panel panel-default">
 					<div class="panel-heading">Plan for next period</div>
-					<div class="panel-body fixed-panel">{{ object.content_p }}</div>
+					<div class="panel-body fixed-panel">
+						<blockquote class="blockquote">	{{ object.content_p }}</blockquote>
+					</div>
 				  </div>
 				  <div class="panel panel-default">
 					<div class="panel-heading">Issues</div>
 					<div class="panel-body fixed-panel">{{ object.issue }}</div>
 				  </div>				  				  				
 			</div>
-			<div class="col-7">
+			<div class="col-6">
 				
 				<div class="row">
 					<div class="panel panel-default">
@@ -115,31 +119,31 @@
 						<div class="panel-heading">Major Milestones</div>
 						<div class="panel-body">
 					<table id="milestonetbl" class="table">
-						<thead>
+						<thead class="table-light">
 						<tr>
-							<th scope="col">Stage</th>
-							<th scope="col">Status</th>
-							<th scope="col">Task Description</th>
-							<th scope="col">Start</th>
-							<th scope="col">End</th>
-							<th scope="col" style="text-align:right">%Comp</th>
+							<th scope="col"><small>Stage</small></th>
+							<th scope="col"><small>Status</small></th>
+							<th scope="col"><small>Task Description</small></th>
+							<th scope="col"><small>Start</small></th>
+							<th scope="col"><small>End</small></th>
+							<th scope="col" class="text-end"><small>%Comp</small></th>
 						</tr>
 						</thead>
 						<tbody>
 						{% for m in milestone %}
-						<tr>
-							<td scope="row">{{ m.stage }}</th>
-								<td class="
-								{%   if m.status == 1 %}bg-success
-								{% elif m.status == 2 %}bg-warning
-								{% elif m.status == 3 %}bg-danger
-								{% elif m.status == 9 %}bg-primary
-								{% else %}bg-secondary 
-								{% endif %}">{{ m.report.id }}</td>
-							<td>{{ m.description }}</td>
-							<td>{{ m.start }}</td>
-							<td>{{ m.finish }}</td>
-							<td>{{ m.complete }}</td>
+						<tr> <!-- https://getbootstrap.com/docs/4.1/components/badge/ <i class="bi-class-name"></i> -->
+							<td scope="row"><small>{{ m.stage }}</small></th>
+							<td class="text-center">
+								{%   if m.status == 1 %}<i class="text-success bi-check-circle-fill"></i>
+								{% elif m.status == 2 %}<i class="text-warning bi-exclamation-circle"></i>
+								{% elif m.status == 3 %}<i class="text-danger  bi-exclamation-circle-fill"></i>
+								{% elif m.status == 9 %}<i class="text-primary bi-award-fill"></i>
+								{% else %}<i class="text-secondary  bi-dash-circle-dotted"></i>
+								{% endif %}</td>
+							<td><small>{{ m.description }}</small></td>
+							<td><small>{{ m.start }}</small></td>
+							<td><small>{{ m.finish }}</small></td>
+							<td class="text-end"><small>{{ m.complete }}%</small></td>
 						</tr>						
 						{% endfor %}	
 						</tbody>

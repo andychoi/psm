@@ -7,6 +7,9 @@ from adminfilters.multiselect import UnionFieldListFilter
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter
 from import_export.admin import ImportExportMixin
 
+from django.urls import reverse
+from django.utils.html import mark_safe
+
 from django.forms import formsets
 from django.forms.models import BaseInlineFormSet
 
@@ -53,11 +56,20 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
         'all': ('reports/css/custom_admin.css',),
     }
 
-    list_display = ('id', 'title', 'CBU', 'updated_by','updated_on', 'status','preview_link')
-    list_display_links = ('id', 'title')
+    list_display = ('project_link', 'title', 'CBU', 'updated_by','updated_on', 'status','preview_link')
+    list_display_links = ('title', 'updated_on')
     ordering = ('-id',)
 
-    readonly_fields = ('created_on', 'updated_on', 'created_by', 'updated_by')
+    readonly_fields = ('project_link', 'created_on', 'updated_on', 'created_by', 'updated_by')
+
+    def project_link(self, obj):
+        return mark_safe('<a href="{}">{}</a>'.format(
+            reverse("admin:psm_project_change", args=(obj.project.pk,)), obj.project.title ))
+    project_link.short_description = 'Project'
+
+    def preview_link(self, obj):
+        return mark_safe('<a class="grp-button" href="%s" target="blank">Preview</a>' % reverse('report_detail', args=[obj.pk]))
+    preview_link.short_description = _('Preview')
 
     fieldsets = (               # Edition form
         (None, {'fields': (('project', 'title', 'CBU', 'status'), 

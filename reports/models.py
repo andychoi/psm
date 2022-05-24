@@ -25,8 +25,6 @@ STATUS = (
 # creating an django model class
 class Report(models.Model):
 
-
-
     project = models.ForeignKey('psm.Project', on_delete=models.CASCADE, blank=True, null=True)
     # title field using charfield constraint with unique constraint
     title = models.CharField(max_length=200)
@@ -59,10 +57,7 @@ class Report(models.Model):
     def __str__(self):
         return self.title
 
-    # reverse... how to use? https://github.com/escaped/django-inline-actions
-    def preview_link(self):
-        return mark_safe('<a class="grp-button" href="%s" target="blank">Preview</a>' % reverse('report_detail', args=[self.pk]))
-    preview_link.short_description = _('Preview')
+
 
 
 class Milestone(models.Model):

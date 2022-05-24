@@ -4,7 +4,7 @@ from django.db import models
 from django.forms import Textarea
 from django.utils.translation import gettext_lazy as _
 from import_export.admin import ImportExportMixin
-from .models import Project, Item, CheckItem, Project_PRIORITY_FIELDS, Strategy
+from .models import Project, Item, CheckItem, Project_PRIORITY_FIELDS, Strategy, Program
 
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter
 from django import forms
@@ -44,7 +44,7 @@ class StrategyAdmin(admin.ModelAdmin):
 class ProgramAdmin(admin.ModelAdmin):
     list_display = ('name', 'lead', 'startyr', 'is_active')
     list_display_links = ('name', 'lead')
-    search_fields = ('name')
+    search_fields = ('name',)
     ordering = ('-startyr', 'name',)
 
 # checklist form
@@ -71,14 +71,15 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
         css = {
         'all': ('psm/css/custom_admin.css',),
     }    
-    list_display = ('PJcode', 'title', 'user', 'CBU', 'formatted_created_at', 'team', 'priority', 'state')
+    list_display = ('PJcode', 'title', 'user', 'CBU', 'formatted_created_at', 'team', 'dept', 'div', 'priority', 'state')
     list_display_links = ('PJcode', 'title')
     search_fields = ('id', 'title', 'item__item_description',
                      'user__username', 'user__first_name', 'user__last_name',
                      'CBU__name', 'CBU__email')
     list_filter = (
         ('status_o', UnionFieldListFilter),
-        ('user', RelatedDropdownFilter),
+        ('div', RelatedDropdownFilter),
+        ('dept', RelatedDropdownFilter),
         ('CBU', RelatedDropdownFilter),
         ('state', UnionFieldListFilter),
         ('priority', UnionFieldListFilter),
@@ -89,7 +90,7 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
     autocomplete_fields = ['user', 'CBU']
 
     fieldsets = (               # Edition form
-        (None,                   {'fields': (('title', 'type', 'year', 'strategy'), ('CBU', 'CBUpm','user', 'team', 'org'), 
+        (None,                   {'fields': (('title', 'type', 'year', 'strategy'), ('CBU', 'CBUpm'),('user', 'team', 'dept', 'div'), 
                                              ( 'est_cost', 'app_budg', 'wbs', ),
                                              ('state', 'complete', 'priority'), 
                                              ('status_o', 'status_t', 'status_b', 'status_s', 'lstrpt', 'resolution'), 
@@ -138,7 +139,7 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
         fieldsets = super().get_fieldsets(request, obj)
         if obj is None:
             fieldsets = (      # Creation form
-                (None, {'fields': (('title', 'type', 'year', 'strategy'), ('CBU', 'CBUpm', 'user', 'team', 'org'), 
+                (None, {'fields': (('title', 'type', 'year', 'strategy'), ('CBU', 'CBUpm'), ('user', 'team', 'dept', 'div'), 
                     ( 'est_cost', 'app_budg', 'wbs', ),
                     ('state', 'complete', 'priority'), 'description', 
                     ('p_pre_planning','p_kickoff','p_design_b','p_design_e','p_develop_b','p_develop_e','p_uat_b','p_uat_e','p_launch','p_close'),

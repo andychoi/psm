@@ -20,12 +20,14 @@ logger = logging.getLogger(__name__)
 
 number_tr = _("number")
 
-#for year input
+#for year input, validation
 import datetime
 def year_choices():
     return [(r,r) for r in range(2020, datetime.date.today().year+1)]
 def current_year():
     return datetime.date.today().year
+def max_value_current_year(value):
+    return MaxValueValidator(current_year()+1)(value)
 
 class Strategy(models.Model):
     class Meta:
@@ -46,11 +48,13 @@ class Program(models.Model):
     class Meta:
         verbose_name = _("Program")
         verbose_name_plural = _("Programs")    
-        
+
+
     name = models.CharField(max_length=200, blank=True, null=True)
-    startyr = models.IntegerField(_('Starting year'), choices=year_choices, default=current_year)
-    lead = models.ForeignKey(ExtendUser, related_name='Program lead', verbose_name=_('Program lead'), on_delete=models.SET_NULL, null=True, blank=True)
+    startyr = models.PositiveIntegerField(_("Starting year"), default=current_year(), validators=[MinValueValidator(2020), max_value_current_year])
+    lead = models.ForeignKey(ExtendUser, verbose_name=_('Program lead'), on_delete=models.SET_NULL, null=True, blank=True)
     is_active = models.BooleanField(_("Is active?"), default=True)
+    description = models.TextField(null=True, blank=True)
     def __str__(self):
         return self.name
 
@@ -117,12 +121,6 @@ class ProjectManager(models.Manager):
         """
         return self.exclude(pk=pk).filter(**kwargs)
 
-#for year validation
-def current_year():
-    return datetime.date.today().year
-
-def max_value_current_year(value):
-    return MaxValueValidator(current_year())(value)
 
 class Project(models.Model):
     class Meta:

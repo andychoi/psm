@@ -16,14 +16,6 @@
     display: none;
 }
 
-.column-stage {
-    width: 20px;
-}
-
-.column-description {
-    width: 30px;
-}
-
 .aligned label + p, .aligned label + div.help, .aligned label + div.readonly  {
     float: left;
     margin-left:0;

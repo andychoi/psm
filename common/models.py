@@ -6,25 +6,34 @@ from django.utils.translation import gettext_lazy as _
 # Create your models here.
 
 class Div(models.Model):
+    class Meta:
+        verbose_name = _("Division")
+        verbose_name_plural = _("Divisions")
     name = models.CharField(max_length=100, blank=False, null=False)
-    head = models.ForeignKey(ExtendUser, related_name='Div head', verbose_name=_('Div head'), on_delete=models.SET_NULL, null=True, blank=True)
+    head = models.ForeignKey('ExtendUser', verbose_name=_('Div head'), on_delete=models.SET_NULL, null=True, blank=True)
+    is_active = models.BooleanField(default=True)
     def __str__(self):
         return self.name
 
 class Dept(models.Model):
+    class Meta:
+        verbose_name = _("Department")
+        verbose_name_plural = _("Departments")
     name = models.CharField(max_length=100, blank=False, null=False)
-    head = models.ForeignKey(ExtendUser, related_name='Dept head', verbose_name=_('Dept head'), on_delete=models.SET_NULL, null=True, blank=True)
+    head = models.ForeignKey('ExtendUser', verbose_name=_('Dept head'), on_delete=models.SET_NULL, null=True, blank=True)
+    div = models.ForeignKey(Div, on_delete=models.SET_NULL, null=True, blank=True)
+    is_active = models.BooleanField(default=True)
     def __str__(self):
         return self.name
 
 class Team(models.Model):
     name = models.CharField(max_length=100, blank=False, null=False)
-    head = models.ForeignKey(ExtendUser, related_name='Team head', verbose_name=_('Team head'), on_delete=models.SET_NULL, null=True, blank=True)
+    head = models.ForeignKey('ExtendUser', verbose_name=_('Team head'), on_delete=models.SET_NULL, null=True, blank=True)
 
     description = models.TextField(null=True, blank=True)
     dept = models.ForeignKey(Dept, on_delete=models.SET_NULL, null=True, blank=True)
     div = models.ForeignKey(Div, on_delete=models.SET_NULL, null=True, blank=True)
-#    users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="user_teams")
+    is_active = models.BooleanField(default=True)
 #    users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="user_teams")
     created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="team_created", null=True, on_delete=models.SET_NULL)
@@ -50,9 +59,9 @@ class ExtendUser(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE, verbose_name=_('external user'), null=True, blank=True)
     name = models.CharField(max_length=100, blank=True, null=True)
     email = models.EmailField(max_length=200, blank=True, null=True)
-    team = models.ForeignKey(Team, on_delete=models.SET_NULL, blank=True, null=True)
-    dept = models.ForeignKey(Dept, on_delete=models.SET_NULL, blank=True, null=True)
-    div = models.ForeignKey(Div, on_delete=models.SET_NULL, blank=True, null=True)
+    u_team = models.ForeignKey('Team', verbose_name=_('Team'), on_delete=models.SET_NULL, blank=True, null=True)
+    u_dept = models.ForeignKey('Dept', verbose_name=_('Dept'), on_delete=models.SET_NULL, blank=True, null=True)
+    u_div = models.ForeignKey('Div', verbose_name=_('Div'), on_delete=models.SET_NULL, blank=True, null=True)
     role = models.CharField(max_length=50, choices=ROLES, default="USER")
     is_external = models.BooleanField(_("External user?"), default=False)
     is_active = models.BooleanField(default=True)

@@ -1,31 +1,31 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
-from .models import CBU, Org, Team, ExtendUser
+from .models import CBU, Div, Dept, Team, ExtendUser
 
 # Register your models here.
 @admin.register(Div)
 class DivAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name')
-    list_display_links = ('id', 'name', 'head')
+    list_display = ('id', 'name', 'head', 'is_active')
+    list_display_links = ('id', 'name')
     pass
 
 # Register your models here.
 @admin.register(Dept)
 class DeptAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'div')
-    list_display_links = ('id', 'name', 'head')
+    list_display = ('id', 'name', 'head', 'div', 'is_active')
+    list_display_links = ('id', 'name')
     pass
 
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', '')
-    list_display_links = ('id', 'name', 'head', 'dept', 'div')
+    list_display = ('id', 'name', 'head', 'dept', 'div', 'is_active')
+    list_display_links = ('id', 'name')
     readonly_fields = ('created_at', 'created_by')
     pass
 
 @admin.register(ExtendUser)
 class ExtendUserAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'name', 'email', 'team', 'dept', 'div', 'is_active')
+    list_display = ('id', 'user', 'name', 'email', 'u_team', 'u_dept', 'u_div', 'is_active')
     list_display_links = ('user', 'name')
     search_fields = ('id', 'name', 'email')
 
@@ -33,7 +33,7 @@ class ExtendUserAdmin(admin.ModelAdmin):
 
     readonly_fields = ('created_at', 'last_modified')
     fieldsets = (  # Edition form
-         (None, {'fields': (('user', 'name', 'email') , ('is_external', 'is_active'), ('team',''))}),
+         (None, {'fields': (('user', 'name', 'email') , ('is_external', 'is_active'), ('u_team','u_dept', 'u_div'))}),
         (_('More...'), {'fields': (('created_at', 'last_modified'), 'created_by'), 'classes': ('collapse',)}),
     )
 
@@ -41,7 +41,7 @@ class ExtendUserAdmin(admin.ModelAdmin):
         fieldsets = super().get_fieldsets(request, obj)
         if obj is None:
             fieldsets = (      # Creation form
-                 (None, {'fields': ('user', ('name', 'email') , ('is_external', 'is_active'), ('team',''))}),
+                 (None, {'fields': ('user', ('name', 'email') , ('is_external', 'is_active'), ('u_team','u_dept', 'u_div'))}),
             )
         return fieldsets
 

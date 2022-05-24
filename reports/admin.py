@@ -83,16 +83,27 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
     preview_link.short_description = _('Preview')
 
     fieldsets = (               # Edition form
-        (None, {'fields': (('project', 'title', 'CBU', 'status', 'is_monthly'), 
+        (None, {'fields': (('project', 'title', 'status', 'is_monthly'), 
                             ('status_o', 'status_t', 'status_b', 'status_s', ), 
                             ('content_a', 'content_p', 'issue'), ),  "classes": ("stack_labels",)}),
-            (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by')), 'classes': ('collapse',)}),
+            (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by'),('CBU','dept','div')), 'classes': ('collapse',)}),
     )
+
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = super().get_fieldsets(request, obj)
+        if obj is None:
+            fieldsets = (      # Creation form
+                (None, {'fields': (('project', 'title', 'status', 'is_monthly'), 
+                                    ('status_o', 'status_t', 'status_b', 'status_s', ), 
+                                    ('content_a', 'content_p', 'issue'),)}),
+            )
+        return fieldsets
 
     list_filter = (
         ('project', UnionFieldListFilter),
-        ('updated_by', RelatedDropdownFilter),
         ('CBU', RelatedDropdownFilter),
+        ('div', RelatedDropdownFilter),
+        ('dept', RelatedDropdownFilter),
         ('status', UnionFieldListFilter),
         'updated_on'
     )
@@ -111,16 +122,6 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
     #     return obj.created_at.strftime("%m/%d/%y")
     # formatted_created_at.short_description = 'Created'
 
-    def get_fieldsets(self, request, obj=None):
-        fieldsets = super().get_fieldsets(request, obj)
-        if obj is None:
-            fieldsets = (      # Creation form
-                (None, {'fields': (('project', 'title', 'CBU', 'status', 'is_monthly'), 
-                                    ('status_o', 'status_t', 'status_b', 'status_s', ), 
-                                    ('content_a', 'content_p', 'issue'),)}),
-            )
-        return fieldsets
-
 
     def save_model(self, request, obj, form, change):
         if change is False:
@@ -130,6 +131,11 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
             obj.updated_by = request.user
         if not obj.CBU:  #copy from project
             obj.CBU = obj.project.CBU
+        if not obj.dept:  #copy from project
+            obj.dept = obj.project.dept
+        if not obj.div:  #copy from project
+            obj.div = obj.project.div
+
         super().save_model(request, obj, form, change)
 
         if obj.status == 1:

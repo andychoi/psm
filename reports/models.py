@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.utils.html import mark_safe
 # from ckeditor.fields import RichTextField
 
-from common.models import CBU
+from common.models import CBU, Dept, Div
 from psm.models import Status
 
 PUBLISH = (
@@ -29,6 +29,8 @@ class Report(models.Model):
     # title field using charfield constraint with unique constraint
     title = models.CharField(max_length=200)
     CBU = models.ForeignKey(CBU, blank=True, null=True, on_delete=models.PROTECT)
+    dept = models.ForeignKey(Dept, blank=True, null=True, on_delete=models.PROTECT)
+    div = models.ForeignKey(Div, blank=True, null=True, on_delete=models.PROTECT)
 
     status_o = models.CharField(_("status overall"), max_length=20, choices=STATUS, default=Status.GREEN.value)
     status_t = models.CharField(_("-schedule"), max_length=20, choices=STATUS, default=Status.GREEN.value)

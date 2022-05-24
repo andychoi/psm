@@ -43,6 +43,6 @@ venv*/
 media/
 
 #https://stackoverflow.com/questions/47307305/how-to-add-all-of-the-migrations-to-git-gitignore-file-in-django
-# **/migrations/**
-# !**/migrations
-# !**/migrations/__init__.py
+**/migrations/**
+!**/migrations
+!**/migrations/__init__.py

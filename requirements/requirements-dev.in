@@ -5,7 +5,6 @@ django-admin-list-filter-dropdown~=1.0.3
 django-adminfilters~=1.9.0
 djangorestframework~=3.13.1
 django-extensions~=3.1.5
-django_microsoft_auth~=2.4.1
 python-decouple~=3.6
 django-import-export~=2.8.0
 

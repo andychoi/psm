@@ -73,9 +73,8 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
     }    
     list_display = ('PJcode', 'title', 'user', 'CBU', 'formatted_created_at', 'team', 'dept', 'div', 'priority', 'state')
     list_display_links = ('PJcode', 'title')
-    search_fields = ('id', 'title', 'item__item_description',
-                     'user__name', 
-                     'CBU__name', 'CBU__email')
+    search_fields = ('id', 'title', 'description', 'resolution', 'item__item_description',
+                     'wbs__wbs', 'es')
     list_filter = (
         ('status_o', UnionFieldListFilter),
         ('div', RelatedDropdownFilter),

@@ -80,6 +80,9 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
 
     readonly_fields = ('project_link', 'CBU', 'created_on', 'updated_on', 'created_by', 'updated_by')
 
+    search_fields = ('title', 'project__title', 'content_a', 'content_p', 'issue',
+                    )
+
     def project_link(self, obj):
         return mark_safe('<a href="{}">{}</a>'.format(
             reverse("admin:psm_project_change", args=(obj.project.pk,)), obj.project.title ))

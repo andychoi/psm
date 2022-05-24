@@ -67,8 +67,8 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
         'all': ('reports/css/custom_admin.css',),
     }
 
-    list_display = ('project_link', 'title', 'CBU', 'is_monthly','updated_on', 'status','preview_link')
-    list_display_links = ('title', 'updated_on')
+    list_display = ('project_link', 'title', 'CBU', 'is_monthly','formatted_updated', 'status','preview_link')
+    list_display_links = ('title', 'formatted_updated')
     ordering = ('-id',)
 
     readonly_fields = ('project_link', 'CBU', 'created_on', 'updated_on', 'created_by', 'updated_by')
@@ -113,8 +113,8 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
     #https://stackoverflow.com/questions/910169/resize-fields-in-django-admin
     def get_form(self, request, obj=None, change=False, **kwargs):
         form = super().get_form(request, obj, change, **kwargs)
-        form.base_fields['content_a'].widget.attrs.update({'rows':5,'cols':80})
-        form.base_fields['content_p'].widget.attrs.update({'rows':5,'cols':80})
+        form.base_fields['content_a'].widget.attrs.update({'rows':5,'cols':40})
+        form.base_fields['content_p'].widget.attrs.update({'rows':5,'cols':40})
         form.base_fields['issue'].widget.attrs.update({'rows':5,'cols':40})
         return form
 
@@ -124,9 +124,9 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
         start = today - datetime.timedelta(days=today.weekday())
         return {'title': 'Status Report - ' + start.strftime("%m/%d/%Y") }
 
-    # def formatted_created_at(self, obj):
-    #     return obj.created_at.strftime("%m/%d/%y")
-    # formatted_created_at.short_description = 'Created'
+    def formatted_updated(self, obj):
+        return obj.updated_on.strftime("%m/%d/%y")
+    formatted_updated.short_description = 'Updated'
 
 
     def save_model(self, request, obj, form, change):

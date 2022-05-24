@@ -164,6 +164,7 @@ class Project(models.Model):
     year = models.PositiveIntegerField(_("Year"), default=current_year(), validators=[MinValueValidator(2020), max_value_current_year])
     strategy = models.ForeignKey(Strategy, blank=True, null=True, on_delete=models.PROTECT)
     program = models.ForeignKey(Program, blank=True, null=True, on_delete=models.PROTECT)
+    is_internal = models.BooleanField(_("Internal project"), default=False)
 
     CBU = models.ForeignKey(CBU, blank=True, null=True, on_delete=models.PROTECT)
     CBUpm = models.ForeignKey(ExtendUser, related_name='cbu_pm', verbose_name=_('CBU PM'), on_delete=models.SET_NULL, null=True, blank=True)

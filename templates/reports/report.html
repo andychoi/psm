@@ -15,13 +15,17 @@
 
 	<style type="text/css">
 		.fixed-panel {
-		min-height: 10;
-		max-height: 10;
-		height: 150px;		
+			min-height: 160px;
+			max-height: 10;
 		}
 		.panel-body {background:#f8f9fa;;}
 		.panel-heading {background-color: #dee2e6; font-weight: 600;}
-
+		label {
+			white-space: pre-wrap;
+		}
+		#myleft > .panel.mypadding-top {
+			padding-top: 10px;
+		}
 	</style>
 </head>
 
@@ -30,38 +34,33 @@
 	<div class="container mt-3">
 		<div class="row">
 			<div class="col-8">
-				<h3 class="font-weight-bold">{{ object.project.title }}</h3>
+				<h3 class="font-weight-bold"><u>{{ object.project.title }}</u></h3>
 				<p>{{ object.title }}</p>
 		  	</div>
 		  	<div class="col-4 text-nowrap float-end" >
-			<p class="text-end m-0">CBU Program Manager: {{ object.project.CBUpm }} </p>
-			<p class="text-end m-0">HAEA Project Manager: {{ object.project.user }} </p>
+			<p class="text-end m-0 small">CBU Program Manager: {{ object.project.CBUpm }} </p>
+			<p class="text-end m-0 small">HAEA Project Manager: {{ object.project.user }} </p>
 			</div>
 		</div>
 
 		<div class="row">
-			<div class="col-6">
+			<div class="col-6" id="myleft">
 				<div class="panel panel-default">
 					<div class="panel-heading">Objective</div>
-					<div class="panel-body fixed-panel" >{{ object.project.description }}</div>
-				  </div>
-				  <div class="panel panel-default">
+					<div class="panel-body fixed-panel" ><small>{{ object.project.description }}</small></div>
+				</div>
+				  <div class="panel panel-default mypadding-top">
 					<div class="panel-heading">Achievement</div>
-					<div class="panel-body fixed-panel">
-						<pre>
-{{ object.content_a }} 
-						</pre></div>							
-				  </div>
-				  <div class="panel panel-default">
+					<div class="panel-body fixed-panel"><label><small>{{ object.content_a|striptags }}</small></label></div> 							
+				</div>
+				  <div class="panel panel-default mypadding-top">
 					<div class="panel-heading">Plan for next period</div>
-					<div class="panel-body fixed-panel">
-						<blockquote class="blockquote">	{{ object.content_p }}</blockquote>
-					</div>
-				  </div>
-				  <div class="panel panel-default">
+					<div class="panel-body fixed-panel"><label><small>{{ object.content_p|striptags }}</small></label></div>
+				</div>
+				  <div class="panel panel-default mypadding-top">
 					<div class="panel-heading">Issues</div>
-					<div class="panel-body fixed-panel">{{ object.issue }}</div>
-				  </div>				  				  				
+					<div class="panel-body fixed-panel"><label><small>{{ object.issue|striptags }}</small></label></div>
+				</div>				  				  				
 			</div>
 			<div class="col-6">
 				
@@ -131,13 +130,13 @@
 						</thead>
 						<tbody>
 						{% for m in milestone %}
-						<tr> <!-- https://getbootstrap.com/docs/4.1/components/badge/ <i class="bi-class-name"></i> -->
+						<tr> <!-- https://getbootstrap.com/docs/4.1/components/badge/ https://icons.getbootstrap.com/ <i class="bi-class-name"></i> -->
 							<td scope="row"><small>{{ m.stage }}</small></th>
 							<td class="text-center">
 								{%   if m.status == 1 %}<i class="text-success bi-check-circle-fill"></i>
 								{% elif m.status == 2 %}<i class="text-warning bi-exclamation-circle"></i>
 								{% elif m.status == 3 %}<i class="text-danger  bi-exclamation-circle-fill"></i>
-								{% elif m.status == 9 %}<i class="text-primary bi-award-fill"></i>
+								{% elif m.status == 9 %}<i class="text-primary bi-circle-fill"></i>
 								{% else %}<i class="text-secondary  bi-dash-circle-dotted"></i>
 								{% endif %}</td>
 							<td><small>{{ m.description }}</small></td>

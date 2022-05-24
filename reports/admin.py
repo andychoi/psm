@@ -7,6 +7,7 @@ from adminfilters.multiselect import UnionFieldListFilter
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter
 from import_export.admin import ImportExportMixin
 
+import datetime
 from django.urls import reverse
 from django.utils.html import mark_safe
 
@@ -15,7 +16,6 @@ from django.forms.models import BaseInlineFormSet
 
 # Register your models here.
 from .models import Report, Milestone
-
 
 class MilestoneFormSet(forms.models.BaseInlineFormSet):
     model = Milestone
@@ -117,6 +117,12 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
         form.base_fields['content_p'].widget.attrs.update({'rows':5,'cols':80})
         form.base_fields['issue'].widget.attrs.update({'rows':5,'cols':40})
         return form
+
+    # default initial in form: starting work week
+    def get_changeform_initial_data(self, request):
+        today = datetime.date.today()
+        start = today - datetime.timedelta(days=today.weekday())
+        return {'title': 'Status Report - ' + start.strftime("%m/%d/%Y") }
 
     # def formatted_created_at(self, obj):
     #     return obj.created_at.strftime("%m/%d/%y")

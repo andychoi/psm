@@ -65,14 +65,15 @@ class Milestone(models.Model):
         verbose_name = _("Milestone")
         verbose_name_plural = _("Milestones")
 
-    Report = models.ForeignKey(Report, on_delete=models.CASCADE)
-    no = models.SmallIntegerField(_("No"), blank=True, default=0)
-    stage = models.CharField(_("stage"), max_length=200, blank=True)
-    description = models.CharField(_("description"), max_length=200, blank=True)
+    report = models.ForeignKey(Report, on_delete=models.CASCADE)
+    no = models.SmallIntegerField(_("No"), blank=True, default=0)  #for sorting purpose
+    stage = models.CharField(_("stage"), max_length=50, blank=True)
+    description = models.CharField(_("description"), max_length=100, blank=True)
     start = models.DateField(blank=True, null=True)
     finish = models.DateField(blank=True, null=True)
     complete = models.IntegerField(_("complete%"), default=0)
     status = models.CharField(_("status overall"), max_length=20, choices=STATUS, default=Status.NA.value)
 
     def __str__(self):
-        return self.stage + self.description
+        # return self.stage + ' - ' + self.description
+        return self.description

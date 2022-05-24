@@ -15,38 +15,50 @@ from django.forms.models import BaseInlineFormSet
 
 # Register your models here.
 from .models import Report, Milestone
-# from djrichtextfield.widgets import RichTextWidget
 
-# class MilestoneFormSet(BaseInlineFormSet):
-#     def __init__(self, *args, **kwargs):
-#         kwargs['initial'] = [
-#             {'stage': 'Overall', 'description': 'Overall project status', },
-#             {'stage': '1.Plan & Define', 'description': 'Requirements gathering', },
-#             {'stage': '1.Plan & Define', 'description': 'Validate requirement expectations', },
-#             {'stage': '1.Plan & Define', 'description': 'Architectural,Technical and Security Design', },
-#             {'stage': '1.Plan & Define', 'description': 'Project Planning', },
-#             {'stage': '1.Plan & Define', 'description': 'SOW / Contract', },
-#             {'stage': '1.Plan & Define', 'description': 'Project Kickoff', },
-#             {'stage': '2.Implement', 'description': 'Detail design', },
-#             {'stage': '2.Implement', 'description': 'Development', },
-#             {'stage': '2.Implement', 'description': 'Integration', },
-#             {'stage': '2.Implement', 'description': 'User acceptance testing', },
-#             {'stage': '3.Deployment', 'description': 'Go-live preparation', },
-#             {'stage': '3.Deployment', 'description': 'Deployment', },
-#             {'stage': '4.Post Support', 'description': 'Hyper care', },
-#             {'stage': '4.Post Support', 'description': 'Signoff,closure', },
-#         ]
-#         super(MilestoneFormSet, self).__init__(*args, **kwargs)
+
+class MilestoneFormSet(forms.models.BaseInlineFormSet):
+    model = Milestone
+
+    def __init__(self, *args, **kwargs):
+        super(MilestoneFormSet, self).__init__(*args, **kwargs)
+        # breakpoint()
+        if not self.instance.pk: 
+            self.initial = [
+            {'stage': 'Overall', 'description': 'Overall project status', },
+            {'stage': '1.Plan & Define', 'description': 'Requirements gathering', },
+            {'stage': '1.Plan & Define', 'description': 'Validate requirement expectations', },
+            {'stage': '1.Plan & Define', 'description': 'Architectural,Technical and Security Design', },
+            {'stage': '1.Plan & Define', 'description': 'Project Planning', },
+            {'stage': '1.Plan & Define', 'description': 'SOW / Contract', },
+            {'stage': '1.Plan & Define', 'description': 'Project Kickoff', },
+            {'stage': '2.Implement', 'description': 'Detail design', },
+            {'stage': '2.Implement', 'description': 'Development', },
+            {'stage': '2.Implement', 'description': 'Integration', },
+            {'stage': '2.Implement', 'description': 'User acceptance testing', },
+            {'stage': '3.Deployment', 'description': 'Go-live preparation', },
+            {'stage': '3.Deployment', 'description': 'Deployment', },
+            {'stage': '4.Post Support', 'description': 'Hyper care', },
+            {'stage': '4.Post Support', 'description': 'Signoff,closure', },
+            ]
+        # super(MilestoneFormSet, self).__init__(*args, **kwargs)
 
 class MilestoneInline(admin.TabularInline):
     model = Milestone
-    # formset = MilestoneFormSet  #not working... init form... in change mode stil...
-    extra = 0   # You said you need 3 rows
+    formset = MilestoneFormSet  
+    #extra = 0   # default 3?
     ordering = ('no',)
-    # readonly_fields = ('title', 'url', 'display_score')
-    # fields = ('title', 'url', 'display_score')
+
+    # hide title, https://stackoverflow.com/questions/41376406/remove-title-from-tabularinline-in-admin
+    # width, https://stackoverflow.com/questions/12309788/how-to-fix-set-column-width-in-a-django-modeladmin-change-list-table-when-a-list
     class Media:
-        css = {"all": ("psm/css/style-hide.css",)}
+        css = {"all": ("reports/css/custom_admin.css",)}   
+
+    def get_extra(self, request, obj=None, **kwargs):
+        extra = 0  #super(MilestoneInline, self).get_extra(request, obj, **kwargs)
+        if not obj: #new create only
+            extra = 15 #defined in __init__
+        return extra
 
 
 @admin.register(Report)

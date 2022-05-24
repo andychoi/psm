@@ -2,6 +2,22 @@
     float:initial;
 }
 
+.related-widget-wrapper-link {
+    display: none;
+}
+
+.inline-group .tabular tr.has_original td {
+    padding-top: 8px; 
+}
+
+.original {
+    display: none;
+}
+
+.column-stage {
+    width: 20px;
+}
+
 .ui-datepicker .ui-datepicker-buttonpane button.ui-datepicker-current {
     display: none
 }

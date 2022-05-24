@@ -25,23 +25,22 @@ class MilestoneFormSet(forms.models.BaseInlineFormSet):
         # breakpoint()
         if not self.instance.pk: 
             self.initial = [
-            {'stage': 'Overall', 'description': 'Overall project status', },
-            {'stage': '1.Plan & Define', 'description': 'Requirements gathering', },
-            {'stage': '1.Plan & Define', 'description': 'Validate requirement expectations', },
-            {'stage': '1.Plan & Define', 'description': 'Architectural,Technical and Security Design', },
-            {'stage': '1.Plan & Define', 'description': 'Project Planning', },
-            {'stage': '1.Plan & Define', 'description': 'SOW / Contract', },
-            {'stage': '1.Plan & Define', 'description': 'Project Kickoff', },
-            {'stage': '2.Implement', 'description': 'Detail design', },
-            {'stage': '2.Implement', 'description': 'Development', },
-            {'stage': '2.Implement', 'description': 'Integration', },
-            {'stage': '2.Implement', 'description': 'User acceptance testing', },
-            {'stage': '3.Deployment', 'description': 'Go-live preparation', },
-            {'stage': '3.Deployment', 'description': 'Deployment', },
-            {'stage': '4.Post Support', 'description': 'Hyper care', },
-            {'stage': '4.Post Support', 'description': 'Signoff,closure', },
+            {'no': 1,  'stage': 'Overall', 'description': 'Overall project status', },
+            {'no': 2,  'stage': '1.Plan & Define', 'description': 'Requirements gathering', },
+            {'no': 3,  'stage': '1.Plan & Define', 'description': 'Validate requirement expectations', },
+            {'no': 4,  'stage': '1.Plan & Define', 'description': 'Architectural,Technical and Security Design', },
+            {'no': 5,  'stage': '1.Plan & Define', 'description': 'Project Planning', },
+            {'no': 6,  'stage': '1.Plan & Define', 'description': 'SOW / Contract', },
+            {'no': 7,  'stage': '1.Plan & Define', 'description': 'Project Kickoff', },
+            {'no': 8,  'stage': '2.Implement', 'description': 'Detail design', },
+            {'no': 9,  'stage': '2.Implement', 'description': 'Development', },
+            {'no': 10, 'stage': '2.Implement', 'description': 'Integration', },
+            {'no': 11, 'stage': '2.Implement', 'description': 'User acceptance testing', },
+            {'no': 12, 'stage': '3.Deployment', 'description': 'Go-live preparation', },
+            {'no': 13, 'stage': '3.Deployment', 'description': 'Deployment', },
+            {'no': 14, 'stage': '4.Post Support', 'description': 'Hyper care', },
+            {'no': 15, 'stage': '4.Post Support', 'description': 'Signoff,closure', },
             ]
-        # super(MilestoneFormSet, self).__init__(*args, **kwargs)
 
 class MilestoneInline(admin.TabularInline):
     model = Milestone
@@ -68,7 +67,7 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
         'all': ('reports/css/custom_admin.css',),
     }
 
-    list_display = ('project_link', 'title', 'CBU', 'updated_by','updated_on', 'status','preview_link')
+    list_display = ('project_link', 'title', 'CBU', 'is_monthly','updated_on', 'status','preview_link')
     list_display_links = ('title', 'updated_on')
     ordering = ('-id',)
 
@@ -131,8 +130,6 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
             obj.updated_by = request.user
         if not obj.CBU:  #copy from project
             obj.CBU = obj.project.CBU
-
-
         super().save_model(request, obj, form, change)
 
         if obj.status == 1:

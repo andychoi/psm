@@ -29,6 +29,16 @@
     margin-left:0;
 }
 
-.ui-datepicker .ui-datepicker-buttonpane button.ui-datepicker-current {
+.dynamic-milestone_set {
+    padding: 1px;
+}
+
+/*
+.datetimeshortcuts {
     display: none
+}
+*/
+
+td {
+    padding: 1px;
 }

@@ -16,10 +16,14 @@
 	<style type="text/css">
 		.fixed-panel {
 			min-height: 160px;
-			max-height: 10;
+			max-height: 300px;
 		}
-		.panel-body {background:#f8f9fa;;}
+/*		.panel-body {background:#f8f9fa;;} */
 		.panel-heading {background-color: #dee2e6; font-weight: 600;}
+		.panel-body-border { 
+    		border: 1px solid #dee2e6 !important;
+		}
+		/*text area to keep new line */
 		label {
 			white-space: pre-wrap;
 		}
@@ -45,28 +49,28 @@
 
 		<div class="row">
 			<div class="col-6" id="myleft">
-				<div class="panel panel-default">
-					<div class="panel-heading">Objective</div>
-					<div class="panel-body fixed-panel" ><small>{{ object.project.description }}</small></div>
+				<div class="panel panel-default ">
+					<div class="panel-heading"><div class="ms-2">Objective</div></div>
+					<div class="panel-body fixed-panel panel-body-border" ><div class="ms-2"><small>{{ object.project.description }}</small></div></div>
 				</div>
 				  <div class="panel panel-default mypadding-top">
-					<div class="panel-heading">Achievement</div>
-					<div class="panel-body fixed-panel"><label><small>{{ object.content_a|striptags }}</small></label></div> 							
+					<div class="panel-heading"><div class="ms-2">Achievement</div></div>
+					<div class="panel-body fixed-panel panel-body-border"><div class="ms-2"><label><small>{{ object.content_a|striptags }}</small></label></div></div> 							
 				</div>
 				  <div class="panel panel-default mypadding-top">
-					<div class="panel-heading">Plan for next period</div>
-					<div class="panel-body fixed-panel"><label><small>{{ object.content_p|striptags }}</small></label></div>
+					<div class="panel-heading"><div class="ms-2">Plan for next period</div></div>
+					<div class="panel-body fixed-panel panel-body-border"><div class="ms-2"><label><small>{{ object.content_p|striptags }}</small></label></div></div>
 				</div>
 				  <div class="panel panel-default mypadding-top">
-					<div class="panel-heading">Issues</div>
-					<div class="panel-body fixed-panel"><label><small>{{ object.issue|striptags }}</small></label></div>
+					<div class="panel-heading"><div class="ms-2">Issues/Plan</div></div>
+					<div class="panel-body fixed-panel panel-body-border"><div class="ms-2"><label><small>{{ object.issue|striptags }}</small></label></div></div>
 				</div>				  				  				
 			</div>
 			<div class="col-6">
 				
 				<div class="row">
 					<div class="panel panel-default">
-					<div class="panel-heading">Overall Project Health</div>
+					<div class="panel-heading"><div class="ms-2">Overall Project Health</div></div>
 					<div class="panel-body">
 					<table id="health" class="table table-bordered">
 						<thead>
@@ -115,9 +119,9 @@
 
 				<div class="row">
 					<div class="panel panel-default">
-						<div class="panel-heading">Major Milestones</div>
+						<div class="panel-heading"><div class="ms-2">Major Milestones</div></div>
 						<div class="panel-body">
-					<table id="milestonetbl" class="table">
+					<table id="milestonetbl" class="table table-bordered">
 						<thead class="table-light">
 						<tr>
 							<th scope="col"><small>Stage</small></th>
@@ -125,7 +129,7 @@
 							<th scope="col"><small>Task Description</small></th>
 							<th scope="col"><small>Start</small></th>
 							<th scope="col"><small>End</small></th>
-							<th scope="col" class="text-end"><small>%Comp</small></th>
+							<th scope="col" class="text-end"><small>%C</small></th>
 						</tr>
 						</thead>
 						<tbody>
@@ -146,8 +150,9 @@
 						</tr>						
 						{% endfor %}	
 						</tbody>
-					</table></div>				
-
+					</table>
+					<p class="text-end text-muted small m-0 "><i class="text-success bi-check-circle-fill"></i>Good | <i class="text-warning bi-exclamation-circle"></i>Issue | <i class="text-danger  bi-exclamation-circle-fill"></i>Roadblocks | <i class="text-primary bi-circle-fill"></i>Complete | <i class="text-secondary  bi-dash-circle-dotted"></i>Not started</p>
+				</div>				
 				</div>
 			</div>
 		</div>		

@@ -31,37 +31,6 @@ def max_value_current_year(value):
 def max_value_program_year(value):
     return MaxValueValidator(current_year()+5)(value)
 
-class Strategy(models.Model):
-    class Meta:
-        verbose_name = _("Strategy")
-        verbose_name_plural = _("Strategies")    
-        
-    name   = models.CharField(max_length=200, blank=True, null=True)
-    description = models.TextField(null=True, blank=True)
-    is_active = models.BooleanField(_("Is active?"), default=True)
-    def __str__(self):
-        return self.name
-
-    created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="strategy_created", null=True, on_delete=models.SET_NULL)
-    last_modified = models.DateTimeField(_("last modified"), auto_now=True, editable=False)
-
-class Program(models.Model):
-    class Meta:
-        verbose_name = _("Program")
-        verbose_name_plural = _("Programs")    
-
-
-    name = models.CharField(max_length=200, blank=True, null=True)
-    startyr = models.PositiveIntegerField(_("Starting year"), default=current_year(), validators=[MinValueValidator(2020), max_value_current_year])
-    endyr = models.PositiveIntegerField(_("Ending year"), default=current_year(), validators=[MinValueValidator(2020), max_value_program_year])
-    lead = models.ForeignKey(ExtendUser, verbose_name=_('Program lead'), on_delete=models.SET_NULL, null=True, blank=True)
-    is_active = models.BooleanField(_("Is active?"), default=True)
-    description = models.TextField(null=True, blank=True)
-    def __str__(self):
-        return self.name
-
-
 # Fields used to create an index in the DB and sort the Projects in the Admin
 Project_PRIORITY_FIELDS = ('state', 'CBU', '-priority', '-lstrpt')
 
@@ -105,6 +74,48 @@ class PrjType(enum.Enum):
     ENH = '20-Enhancement'
     UNC = '30-Unclassifed'
 
+
+class Strategy(models.Model):
+    class Meta:
+        verbose_name = _("Strategy")
+        verbose_name_plural = _("Strategies")    
+        
+    name   = models.CharField(max_length=200, blank=True, null=True)
+    description = models.TextField(null=True, blank=True)
+    is_active = models.BooleanField(_("Is active?"), default=True)
+    def __str__(self):
+        return self.name
+
+    created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="strategy_created", null=True, on_delete=models.SET_NULL)
+    last_modified = models.DateTimeField(_("last modified"), auto_now=True, editable=False)
+
+class Program(models.Model):
+    class Meta:
+        verbose_name = _("Program")
+        verbose_name_plural = _("Programs")    
+
+    STATUS = (
+        (Status.GREEN.value, _('No Risk')),
+        (Status.YELLOW.value, _('Low Risk')),
+        (Status.RED.value, _('High Risk')),
+        (Status.NA.value, _('Not evaluated')),
+    )
+
+    name = models.CharField(max_length=200, blank=True, null=True)
+    startyr = models.PositiveIntegerField(_("Starting year"), default=current_year(), validators=[MinValueValidator(2020), max_value_current_year])
+    endyr = models.PositiveIntegerField(_("Ending year"), default=current_year(), validators=[MinValueValidator(2020), max_value_program_year])
+    lead = models.ForeignKey(ExtendUser, verbose_name=_('Program lead'), on_delete=models.SET_NULL, null=True, blank=True)
+    is_active = models.BooleanField(_("Is active?"), default=True)
+    description = models.TextField(null=True, blank=True)
+
+    status_r = models.CharField(_("Risk"), max_length=20, choices=STATUS, default=Status.GREEN.value)
+    risk_desc = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+
 # checklist
 class CheckItem(models.Model):
     name = models.CharField(_("name"), default="check item...", max_length=200, db_index=True)
@@ -124,6 +135,10 @@ class ProjectManager(models.Manager):
         """
         return self.exclude(pk=pk).filter(**kwargs)
 
+# -	간혹 프로젝트 주관하는 부서와 달리 협조하는 부서가 Budget 을 받아서 독립된 Schedule 로 진행하는
+#  “Collaboration project”있습니다. 이런 경우도 관리가 되면 좋은데..
+#  Sub-project? 정도로 해서 서로 연동이 되게 해서 부서별로 PM 및 일정 등을 관리 할수 있으면 좋을 것 같습니다. 
+# # 나중에 팀 실적이나 담당자 실적에도 중요한 사항들이구요.
 
 class Project(models.Model):
     class Meta:
@@ -192,6 +207,7 @@ class Project(models.Model):
     est_cost = models.DecimalField(_("Est. cost"), decimal_places=0, max_digits=12, blank=True, null=True)
     app_budg = models.DecimalField(_("Approved budget"), decimal_places=0, max_digits=12, blank=True, null=True)
     wbs = models.ForeignKey(WBS, blank=True, null=True, on_delete=models.PROTECT, verbose_name=_('WBS (SAP)'))
+    es = models.CharField(_("ES#"), blank=True, null=True, max_length=30)
     lstrpt = models.DateField(_("last report"), null=True, blank=True)
 
     p_pre_planning = models.DateField(_("planned pre-planning start"), null=True, blank=True)
@@ -215,6 +231,10 @@ class Project(models.Model):
     a_uat_e = models.DateField(_("actual UAT end"), null=True, blank=True)
     a_launch = models.DateField(_("actual launch"), null=True, blank=True)
     a_close = models.DateField(_("actual closing"), null=True, blank=True)
+
+    ssg_sec = models.BooleanField(_("Security Reviewed?"), default=False)
+    ssg_inf = models.BooleanField(_("Infra Architecture Reviewed?"), default=False)
+
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='prj_created_by', verbose_name=_('created by'),
                                    on_delete=models.SET_NULL, null=True)

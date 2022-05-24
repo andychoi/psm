@@ -20,7 +20,7 @@ from .models import Report, Milestone, ReportDist
 # Register your models here.
 @admin.register(ReportDist)
 class ReportDistAdmin(admin.ModelAdmin):
-    list_display = ('id', 'project')
+    list_display = ('id', 'project', 'is_active')
     list_display_links = ('id', 'project')
     pass
 

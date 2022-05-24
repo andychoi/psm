@@ -14,9 +14,13 @@ from psm.models import Status
 class ReportDist(models.Model):
     project = models.ForeignKey('psm.Project', on_delete=models.CASCADE, blank=True, null=True)
     # title field using charfield constraint with unique constraint
-    recipients_to = models.TextField(_("Recipients (to)"), max_length=1000)
-    recipients_cc = models.TextField(_("Recipients (cc)"), max_length=1000)
+    is_active = models.BooleanField(_("Is Active?"), default=True)
+    recipients_to = models.TextField(_("Recipients (to)"), max_length=1000, blank=True, null=True)
+    recipients_cc = models.TextField(_("Recipients (cc)"), max_length=1000, blank=True, null=True)
 
+    class Meta:
+        verbose_name = _("Report Distribution List")
+        verbose_name_plural = _("Report Distribution List")    
 
 PUBLISH = (
 	(0,"Draft"),

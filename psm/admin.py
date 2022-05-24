@@ -91,11 +91,12 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
 
     fieldsets = (               # Edition form
         (None,                   {'fields': (('title', 'type', 'year'), ('strategy', 'program'), ('CBU', 'CBUpm'),('user', 'team', 'dept', 'div'), 
-                                             ( 'est_cost', 'app_budg', 'wbs', 'is_internal' ),
+                                             ( 'est_cost', 'app_budg', 'wbs', 'es', 'is_internal' ),
                                              ('state', 'complete', 'priority'), 
                                              ('status_o', 'status_t', 'status_b', 'status_s', 'lstrpt', 'resolution'), 
                                              ('p_pre_planning','p_kickoff','p_design_b','p_design_e','p_develop_b','p_develop_e','p_uat_b','p_uat_e','p_launch','p_close'),
                                              ('a_pre_planning','a_kickoff','a_design_b','a_design_e','a_develoa_b','a_develoa_e','a_uat_b','a_uat_e','a_launch','a_close'), 
+                                             ('ssg_sec','ssg_inf',), 
                                              ('attachment')), "classes": ("stack_labels",)}),
         (_('More...'), {'fields': ('description', ('created_at', 'last_modified'), 'created_by'), 'classes': ('collapse',)}),
     )
@@ -105,9 +106,10 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
         if obj is None:
             fieldsets = (      # Creation form
                 (None, {'fields': (('title', 'type', 'year'), ('strategy', 'program'), ('CBU', 'CBUpm'), ('user', 'team', 'dept', 'div'), 
-                    ( 'est_cost', 'app_budg', 'wbs', 'is_internal' ),
+                    ( 'est_cost', 'app_budg', 'wbs', 'es', 'is_internal' ),
                     ('state', 'complete', 'priority'), 'description', 
                     ('p_pre_planning','p_kickoff','p_design_b','p_design_e','p_develop_b','p_develop_e','p_uat_b','p_uat_e','p_launch','p_close'),
+                    ('ssg_sec','ssg_inf',), 
                     'attachment')}),
             )
         return fieldsets

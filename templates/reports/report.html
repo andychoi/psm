@@ -32,7 +32,7 @@
 				<p>{{ object.title }}</p>
 		  	</div>
 		  	<div class="col-4 text-nowrap float-end" >
-			<p class="text-end m-0">CBU Program Manager: {{ object.CBUpm }} </p>
+			<p class="text-end m-0">CBU Program Manager: {{ object.project.CBUpm }} </p>
 			<p class="text-end m-0">HAEA Project Manager: {{ object.project.user }} </p>
 			</div>
 		</div>
@@ -76,10 +76,34 @@
 						</thead>
 						<tbody>
 						<tr>
-							<td class="bg-success"></td>
-							<td class="bg-success"></td>
-							<td class="bg-warning"></td>
-							<td class="bg-alert"></td>
+							<td class="
+								{%   if object.status_o == 1 %}bg-success
+								{% elif object.status_o == 2 %}bg-warning
+								{% elif object.status_o == 3 %}bg-danger
+								{% elif object.status_o == 9 %}bg-primary
+								{% else %}bg-secondary 
+								{% endif %}"></td>
+							<td class="
+								{%   if object.status_t == 1 %}bg-success
+								{% elif object.status_t == 2 %}bg-warning
+								{% elif object.status_t == 3 %}bg-danger
+								{% elif object.status_t == 9 %}bg-primary
+								{% else %}bg-secondary 
+								{% endif %}"></td>
+							<td class="
+								{%   if object.status_b == 1 %}bg-success
+								{% elif object.status_b == 2 %}bg-warning
+								{% elif object.status_b == 3 %}bg-danger
+								{% elif object.status_b == 9 %}bg-primary
+								{% else %}bg-secondary 
+								{% endif %}"></td>
+							<td class="
+								{%   if object.status_s == 1 %}bg-success
+								{% elif object.status_s == 2 %}bg-warning
+								{% elif object.status_s == 3 %}bg-danger
+								{% elif object.status_s == 9 %}bg-primary
+								{% else %}bg-secondary 
+								{% endif %}"></td>
 						</tr>
 					</tbody></table>
 					</div>

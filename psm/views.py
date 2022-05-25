@@ -50,7 +50,7 @@ class projectListView(generic.ListView):
         context = super().get_context_data(**kwargs)
 
         context['filter_CBU'] = {}
-        context['filter_CBU']['selected'] = self.request.GET.get('cbu', None)
+        context['filter_CBU']['selected'] = self.request.GET.get('cbu', '')
         context['filter_CBU']['items'] = CBU.objects.all()
         
         return context

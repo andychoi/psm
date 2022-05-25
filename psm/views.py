@@ -1,4 +1,6 @@
+from django.shortcuts import get_object_or_404
 from django.shortcuts import render
+from django.db.models import Q
 
 # Create your views here.
 
@@ -6,6 +8,7 @@ from django.shortcuts import render
 # importing models and libraries
 from django.shortcuts import render
 from .models import Project
+from common.models import CBU, Dept, Div
 from django.views import generic
 
 
@@ -23,27 +26,42 @@ class IndexView(generic.ListView):
 # https://django-filter.readthedocs.io/ -> error, don't use
 # https://django-tables2.readthedocs.io/ -> this is better, but...
 # https://mattsch.com/2021/05/28/django-django_tables2-and-bootstrap-table/
-
-#https://stackoverflow.com/questions/24305854/simple-example-of-how-to-use-a-class-based-view-and-django-filter
+# https://bootstrap-table.com/
 #https://stackoverflow.com/questions/57085070/using-django-filter-with-class-detailview
+#https://stackoverflow.com/questions/24305854/simple-example-of-how-to-use-a-class-based-view-and-django-filter
+#https://docs.djangoproject.com/en/2.2/topics/class-based-views/generic-display/#dynamic-filtering
+#https://stackoverflow.com/questions/51121661/django-filter-multiple-values
 # class based views for project -> for selected project
 class projectListView(generic.ListView):
-    queryset = Project.objects.all()
     template_name = 'project/project_list.html'
-    paginate_by = 4
+    model = Project
+    paginate_by = 1000
     context_object_name = 'project_list'    
 
-class projectListViewH(generic.ListView):
-    queryset = Project.objects.all()
-    template_name = 'project/project_list.html'
-    paginate_by = 4
-    context_object_name = 'project_listh'    
+    # def get_queryset(self):
+    #     self.CBU = get_object_or_404(CBU, name=self.kwargs['CBU'])
+    #     return Project.objects.filter(CBU=self.CBU).order_by('dept')
 
-class projectListViewK(generic.ListView):
-    queryset = Project.objects.all()
+class projectListYearView(generic.ListView):
     template_name = 'project/project_list.html'
-    paginate_by = 4
-    context_object_name = 'project_listk'    
+    model = Project
+    paginate_by = 1000
+    context_object_name = 'project_list'    
+
+    def get_queryset(self):
+        # self.year = get_object_or_404(self.year, name=self.kwargs['year'])
+        # return Project.objects.filter(year=self.year).order_by('dept')
+        queryset = Project.objects.filter(year=self.kwargs['year'])
+        return queryset
+
+class projectListCBUView(generic.ListView):
+    # queryset = Project.objects.filter(CBU__group='HMNA')
+    template_name = 'project/project_list.html'
+    paginate_by = 1000
+    context_object_name = 'project_list'    
+    def get_queryset(self) :
+        queryset = Project.objects.filter(CBU__name=self.kwargs['CBU'])
+        return queryset
 
 # class based view for each Project
 class projectDetail(generic.DetailView):

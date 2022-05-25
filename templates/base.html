@@ -33,8 +33,11 @@
         </ul>
         <ul class="sidebar-nav">
           <li><a href="{% url 'project_index' %}">Home</a></li>
-          <li><a href="{% url 'project_list_h' %}">Project list-Hyundai</a></li>
-          <li><a href="{% url 'project_list_k' %}">Project list-Kia</a></li>
+          <li><a href="{% url 'project_list' %}cbu/HMA">Project list-Hyundai</a></li>
+          <li><a href="{% url 'project_list' %}cbu/KUS">Project list-Kia</a></li>
+          <li><a href="{% url 'project_list' %}year/2021">Project list-2021</a></li>
+          <li><a href="{% url 'project_list' %}year/2022">Project list-2022</a></li>
+          <li><a href="{% url 'project_list' %}year/2023">Project list-2023</a></li>
           <li><a href="{% url 'project_list' %}">Project list-All</a></li>
         </ul>
 	    {% endblock %}

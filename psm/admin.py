@@ -1,4 +1,5 @@
 from adminfilters.multiselect import UnionFieldListFilter
+from django.contrib import messages
 from django.contrib import admin
 from django.db import models
 from django.forms import Textarea
@@ -180,6 +181,15 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
         # filter by a variable captured from url, for example -> to enhance
         # return qs.filter(title__startswith='Project2')
 
+
+    actions = ['duplicate_project']
+    @admin.action(description="Duplicate selected record", permissions=['change'])
+    def duplicate_project(self, request, queryset):
+        for object in queryset:
+            object.id = None
+            object.title = object.title + " copied"
+            object.save()
+            messages.add_message(request, messages.INFO, ' is copied/saved')
 
 
         

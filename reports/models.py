@@ -28,16 +28,16 @@ PUBLISH = (
 	(2, "Delete")
 )
 STATUS = (
-	(0, "N/A"),
-	(1, "Green"),
-	(2, "Yellow"),
-	(3, "Red"),
-	(9, "Completed")
-    # (Status.GREEN.value, _('Green')),
-    # (Status.YELLOW.value, _('Yellow')),
-    # (Status.RED.value, _('Red')),
-    # (Status.COMPLETED.value, _('Completed')),
-    # (Status.NA.value, _('N/A')),
+	# (0, "N/A"),
+	# (1, "Green"),
+	# (2, "Yellow"),
+	# (3, "Red"),
+	# (9, "Completed")
+    (Status.GREEN.value, _('Green')),
+    (Status.YELLOW.value, _('Yellow')),
+    (Status.RED.value, _('Red')),
+    (Status.COMPLETED.value, _('Completed')),
+    (Status.NA.value, _('N/A')),
 )
 # creating an django model class
 class Report(models.Model):
@@ -49,14 +49,14 @@ class Report(models.Model):
     dept = models.ForeignKey(Dept, blank=True, null=True, on_delete=models.PROTECT)
     div = models.ForeignKey(Div, blank=True, null=True, on_delete=models.PROTECT)
 
-    # status_o = models.CharField(_("status overall"), max_length=20, choices=STATUS, default=Status.GREEN.value)
-    # status_t = models.CharField(_("-schedule"), max_length=20, choices=STATUS, default=Status.GREEN.value)
-    # status_b = models.CharField(_("-budget"), max_length=20, choices=STATUS, default=Status.GREEN.value)
-    # status_s = models.CharField(_("-scope"), max_length=20, choices=STATUS, default=Status.GREEN.value)
-    status_o = models.IntegerField(_("Overall"), choices=STATUS, default=0)
-    status_t = models.IntegerField(_("Schedule"), choices=STATUS, default=0)
-    status_b = models.IntegerField(_("Budget"), choices=STATUS, default=0)
-    status_s = models.IntegerField(_("Scope"), choices=STATUS, default=0)
+    status_o = models.CharField(_("status overall"), max_length=20, choices=STATUS, default=Status.GREEN.value)
+    status_t = models.CharField(_("-schedule"), max_length=20, choices=STATUS, default=Status.GREEN.value)
+    status_b = models.CharField(_("-budget"), max_length=20, choices=STATUS, default=Status.GREEN.value)
+    status_s = models.CharField(_("-scope"), max_length=20, choices=STATUS, default=Status.GREEN.value)
+    # status_o = models.IntegerField(_("Overall"), choices=STATUS, default=0)
+    # status_t = models.IntegerField(_("Schedule"), choices=STATUS, default=0)
+    # status_b = models.IntegerField(_("Budget"), choices=STATUS, default=0)
+    # status_s = models.IntegerField(_("Scope"), choices=STATUS, default=0)
 
 	# content field to store our post
     content_a = models.TextField(_("Acomplishment"))
@@ -97,8 +97,8 @@ class Milestone(models.Model):
     start = models.DateField(blank=True, null=True)
     finish = models.DateField(blank=True, null=True)
     progress = models.IntegerField(_("complete%"), default=0)
-    # status = models.CharField(_("status overall"), max_length=20, choices=STATUS, default=Status.NA.value)
-    status = models.IntegerField(_("Task Status"), choices=STATUS, default=0)
+    status = models.CharField(_("status overall"), max_length=20, choices=STATUS, default=Status.NA.value)
+    # status = models.IntegerField(_("Task Status"), choices=STATUS, default=0)
 
     def __str__(self):
         # return self.stage + ' - ' + self.description

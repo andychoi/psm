@@ -58,16 +58,16 @@ class Priority(enum.Enum):
     CRITICAL = '30-critical'
 
 class Status(enum.Enum):
-    NA = 0
-    GREEN = 1
-    YELLOW = 2
-    RED = 3
-    COMPLETED = 9
-    # NA = '00-notApplicable'
-    # GREEN = '10-green'
-    # YELLOW = '20-yellow'
-    # RED = '20-red'
-    # COMPLETED = '90-completed'
+    # NA = 0
+    # GREEN = 1
+    # YELLOW = 2
+    # RED = 3
+    # COMPLETED = 9
+    NA = '00-notApplicable'
+    GREEN = '10-green'
+    YELLOW = '20-yellow'
+    RED = '20-red'
+    COMPLETED = '90-completed'
 
 class PrjType(enum.Enum):
     """
@@ -167,16 +167,16 @@ class Project(models.Model):
     )
 
     STATUS = (
-        (0,"N/A"),
-        (1,"Green"),
-        (2,"Yellow"),
-        (3, "Red"),
-        (9, "Completed")        
-        # (Status.GREEN.value, _('Good')),
-        # (Status.YELLOW.value, _('Issue')),
-        # (Status.RED.value, _('Roadblock')),
-        # (Status.COMPLETED.value, _('Completed')),
-        # (Status.NA.value, _('Not started')),
+        # (0,"N/A"),
+        # (1,"Green"),
+        # (2,"Yellow"),
+        # (3, "Red"),
+        # (9, "Completed")        
+        (Status.GREEN.value, _('Green')),
+        (Status.YELLOW.value, _('Yellow')),
+        (Status.RED.value, _('Red')),
+        (Status.COMPLETED.value, _('Completed')),
+        (Status.NA.value, _('N/A')),
     )
 
     PHASE = (
@@ -197,7 +197,8 @@ class Project(models.Model):
         (PrjType.UNC.value, _('Unclassified')),
     )
 
-    # code = models.CharField(_("Code"), max_length=10, unique=True) 
+    code = models.CharField(_("Code"), max_length=10, null=True, blank=True) 
+
     title = models.CharField(_("title"), max_length=200)
     type = models.CharField(_("type"), max_length=20, choices=PRJTYPE, default=PrjType.UNC.value)
     year = models.PositiveIntegerField(_("Year"), default=current_year(), validators=[MinValueValidator(2020), max_value_current_year])
@@ -213,14 +214,14 @@ class Project(models.Model):
 
     description = models.TextField(_("description"), max_length=2000, null=True, blank=True)
 
-    status_o = models.IntegerField(_("Overall"), choices=STATUS, default=0)
-    status_t = models.IntegerField(_("Schedule"), choices=STATUS, default=0)
-    status_b = models.IntegerField(_("Budget"), choices=STATUS, default=0)
-    status_s = models.IntegerField(_("Scope"), choices=STATUS, default=0)
-    # status_o = models.CharField(_("status overall"), max_length=20, choices=STATUS, default=Status.GREEN.value)
-    # status_t = models.CharField(_("status schedule"), max_length=20, choices=STATUS, default=Status.GREEN.value)
-    # status_b = models.CharField(_("status budget"), max_length=20, choices=STATUS, default=Status.GREEN.value)
-    # status_s = models.CharField(_("status scope"), max_length=20, choices=STATUS, default=Status.GREEN.value)
+    # status_o = models.IntegerField(_("Overall"), choices=STATUS, default=0)
+    # status_t = models.IntegerField(_("Schedule"), choices=STATUS, default=0)
+    # status_b = models.IntegerField(_("Budget"), choices=STATUS, default=0)
+    # status_s = models.IntegerField(_("Scope"), choices=STATUS, default=0)
+    status_o = models.CharField(_("status overall"), max_length=20, choices=STATUS, default=Status.GREEN.value)
+    status_t = models.CharField(_("status schedule"), max_length=20, choices=STATUS, default=Status.GREEN.value)
+    status_b = models.CharField(_("status budget"), max_length=20, choices=STATUS, default=Status.GREEN.value)
+    status_s = models.CharField(_("status scope"), max_length=20, choices=STATUS, default=Status.GREEN.value)
     resolution = models.TextField(_("PM Memo"), max_length=2000, null=True, blank=True)
     #settings.AUTH_USER_MODEL
     user = models.ForeignKey(ExtendUser, related_name='project_manager', verbose_name=_('HAEA PM'),
@@ -280,8 +281,9 @@ class Project(models.Model):
 
     def __str__(self):
 #        return "[%s] %s" % (self.number, self.title)
-#        return "[%s] %s" % (f'{self.created_at.strftime("%y")}-{"{:04d}".format(self.pk)}', self.title)
-        return "[%s] %s" % (f'{self.year % 100}-{"{:04d}".format(self.pk)}', self.title)
+#        return "[%s] %s" % (f'{self.created_at.strftime("%y")}-{"{:04d}".format(self.pk)}', self.title)    
+        return "[%s] %s" % (self.PJcode, self.title)
+        # return f'{self.year % 100}-{"{:04d}".format(self.pk)}'
 
 
     @property
@@ -289,7 +291,10 @@ class Project(models.Model):
 #        return "{:08d}".format(self.pk)
 #       yy-serial
 #        return f'{self.created_at.strftime("%y")}-{"{:04d}".format(self.pk)}'
-       return f'{self.year % 100}-{"{:04d}".format(self.pk)}'
+        if self.code is None:
+            return f'{self.year % 100}-{"{:04d}".format(self.pk)}'
+        else:
+            return self.code    #migrated records
 
 
     def save(self, *args, **kwargs):
@@ -298,7 +303,6 @@ class Project(models.Model):
             old_Project_data = Project.objects.get(pk=self.pk)
             if old_Project_data.CBU != self.CBU:
                 send_email = True
-        
         super().save(*args, **kwargs)
         if send_email:
             # Emails are sent if the order is new

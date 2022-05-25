@@ -1,30 +1,38 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
+from import_export.admin import ImportExportMixin
+
 from .models import CBU, Div, Dept, Team, ExtendUser
 
 # Register your models here.
 @admin.register(Div)
-class DivAdmin(admin.ModelAdmin):
+class DivAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display = ('id', 'name', 'head', 'is_active')
     list_display_links = ('id', 'name')
-    pass
+    class Meta:
+        model = Div
+        import_id_fields = ('id',)
 
 # Register your models here.
 @admin.register(Dept)
-class DeptAdmin(admin.ModelAdmin):
+class DeptAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display = ('id', 'name', 'head', 'div', 'is_active')
     list_display_links = ('id', 'name')
-    pass
-
+    class Meta:
+        model = Dept
+        import_id_fields = ('id',)
+        
 @admin.register(Team)
-class TeamAdmin(admin.ModelAdmin):
+class TeamAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display = ('id', 'name', 'head', 'dept', 'div', 'is_active')
     list_display_links = ('id', 'name')
     readonly_fields = ('created_at', 'created_by')
-    pass
+    class Meta:
+        model = Team
+        import_id_fields = ('id',)
 
 @admin.register(ExtendUser)
-class ExtendUserAdmin(admin.ModelAdmin):
+class ExtendUserAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display = ('id', 'user', 'name', 'email', 'u_team', 'u_dept', 'u_div', 'is_active')
     list_display_links = ('user', 'name')
     search_fields = ('id', 'name', 'email')
@@ -52,8 +60,12 @@ class ExtendUserAdmin(admin.ModelAdmin):
             obj.name = obj.user.username
         super().save_model(request, obj, form, change)
 
+    class Meta:
+        model = ExtendUser
+        import_id_fields = ('id',)
+
 @admin.register(CBU)
-class CBUAdmin(admin.ModelAdmin):
+class CBUAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display = ('id', 'name', 'fullname', 'group', 'is_tier1')
     list_display_links = ('id', 'name')
     search_fields = ('id', 'name', 'full_name')
@@ -80,3 +92,7 @@ class CBUAdmin(admin.ModelAdmin):
         if change is False:
             obj.created_by = request.user
         super().save_model(request, obj, form, change)
+
+    class Meta:
+        model = CBU
+        import_id_fields = ('id',)

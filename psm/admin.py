@@ -7,46 +7,34 @@ from django.utils.translation import gettext_lazy as _
 from import_export.admin import ImportExportMixin
 from .models import Project, Item, CheckItem, Project_PRIORITY_FIELDS, Strategy, Program
 
-from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter
+from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter, DropdownFilter, ChoiceDropdownFilter
 from django import forms
 
 from django.utils.html import format_html
 
-class StrategyAdmin(admin.ModelAdmin):
-    list_display = ('name', 'last_modified','is_active')
-    list_display_links = ('name',)
-    search_fields = ('name', 'description')
-
-    ordering = ('name',)
-
-    readonly_fields = ('created_at', 'last_modified', 'created_by')
-
-    # def get_queryset(self, request):
-
-
 
 @admin.register(Strategy)
-class StrategyAdmin(admin.ModelAdmin):
+class StrategyAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display = ('name', 'last_modified','is_active')
     list_display_links = ('name',)
     search_fields = ('name', 'description')
-
     ordering = ('name',)
-
     readonly_fields = ('created_at', 'last_modified', 'created_by')
 
-    # def get_queryset(self, request):
-    #     # original qs
-    #     qs = super(StrategyAdmin, self).get_queryset(request)
-    #     # filter by a variable captured from url, for example -> to enhance
-    #     return qs.filter(is_active=True)
+    class Meta:
+        model = Strategy
+        import_id_fields = ('id',)
 
 @admin.register(Program)
-class ProgramAdmin(admin.ModelAdmin):
+class ProgramAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display = ('name', 'lead', 'startyr', 'is_active')
     list_display_links = ('name', 'lead')
     search_fields = ('name',)
     ordering = ('-startyr', 'name',)
+
+    class Meta:
+        model = Program
+        import_id_fields = ('id',)
 
 # checklist form
 class CheckItemModelForm( forms.ModelForm ):
@@ -56,9 +44,11 @@ class CheckItemModelForm( forms.ModelForm ):
         fields = '__all__'
 
 @admin.register(CheckItem)
-class AdminCheckItem(admin.ModelAdmin):
+class CheckItemAdmin(ImportExportMixin, admin.ModelAdmin):
     form = CheckItemModelForm
-    pass
+    class Meta:
+        # model = CheckItem
+        import_id_fields = ('id',)
 
 class ItemInline(admin.TabularInline):
     model = Item
@@ -72,12 +62,13 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
         css = {
         'all': ('psm/css/custom_admin.css',),
     }    
-    list_display = ('PJcode', 'title', 'user', 'CBU', 'formatted_created_at', 'team', 'dept', 'div', 'phase', 'state')
+    list_display = ('PJcode', 'title', 'user', 'CBU', 'formatted_created_at', 'team', 'dept', 'phase', 'state')
     list_display_links = ('PJcode', 'title')
     search_fields = ('id', 'title', 'description', 'resolution', 'item__item_description',
                      'wbs__wbs', 'es')
     list_filter = (
         ('status_o', UnionFieldListFilter),
+        ('year', DropdownFilter),
         ('div', RelatedDropdownFilter),
         ('dept', RelatedDropdownFilter),
         ('CBU', RelatedDropdownFilter),
@@ -115,6 +106,9 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
         return fieldsets
 
     inlines = [ItemInline]
+
+    class Meta:
+        import_id_fields = ('id',)
 
     #not working...https://stackoverflow.com/questions/46892851/django-simple-history-displaying-changed-fields-in-admin
     # history_list_display = ["changed_fields","list_changes"]
@@ -169,9 +163,13 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
     #     context['adminform'].form.fields['strategy'].queryset = Strategy.objects.filter(is_active=True)
     #     return super(ProjectAdmin, self).render_change_form(request, context, *args, **kwargs)
 
+    # (not called from admin-import-export)
     def save_model(self, request, obj, form, change):
-        if change is False:
+        if change is False:  #when create
             obj.created_by = request.user
+            # if not obj.code: #not migration 
+            #     obj.code = f'{obj.year % 100}-{"{:04d}".format(obj.pk+1000)}'
+
         super().save_model(request, obj, form, change)
 
     # def get_queryset(self, request):

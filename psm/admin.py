@@ -65,7 +65,7 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display = ('PJcode', 'title', 'user', 'CBU', 'formatted_created_at', 'team', 'dept', 'phase', 'state')
     list_display_links = ('PJcode', 'title')
     search_fields = ('id', 'title', 'description', 'resolution', 'item__item_description',
-                     'wbs__wbs', 'es')
+                     'wbs__wbs', 'es', 'ref')
     list_filter = (
         ('status_o', UnionFieldListFilter),
         ('year', DropdownFilter),
@@ -81,7 +81,7 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
     autocomplete_fields = ['user', 'CBU']
 
     fieldsets = (               # Edition form
-        (None,                   {'fields': (('title', 'type', 'year'), ('strategy', 'program'), ('CBU', 'CBUpm'),('user', 'team', 'dept', 'div'), 
+        (None,                   {'fields': (('title', 'type', 'year'), ('strategy', 'program'), ('CBU', 'CBUpm', 'ref'),('user', 'team', 'dept', 'div'), 
                                              ( 'est_cost', 'app_budg', 'wbs', 'es', 'is_internal' ),
                                              ('state', 'phase', 'progress', 'priority'), 
                                              ('status_o', 'status_t', 'status_b', 'status_s', 'lstrpt', 'resolution'), 
@@ -96,7 +96,7 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
         fieldsets = super().get_fieldsets(request, obj)
         if obj is None:
             fieldsets = (      # Creation form
-                (None, {'fields': (('title', 'type', 'year'), ('strategy', 'program'), ('CBU', 'CBUpm'), ('user', 'team', 'dept', 'div'), 
+                (None, {'fields': (('title', 'type', 'year'), ('strategy', 'program'), ('CBU', 'CBUpm', 'ref'), ('user', 'team', 'dept', 'div'), 
                     ( 'est_cost', 'app_budg', 'wbs', 'es', 'is_internal' ),
                     ('state', 'phase', 'progress', 'priority'), 'description', 
                     ('p_pre_plan_b','p_pre_plan_e','p_kickoff','p_design_b','p_design_e','p_dev_b','p_dev_e','p_uat_b','p_uat_e','p_launch','p_close'),

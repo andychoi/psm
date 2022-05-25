@@ -235,6 +235,7 @@ class Project(models.Model):
     app_budg = models.DecimalField(_("Approved budget"), decimal_places=0, max_digits=12, blank=True, null=True)
     wbs = models.ForeignKey(WBS, blank=True, null=True, on_delete=models.PROTECT, verbose_name=_('WBS (SAP)'))
     es = models.CharField(_("ES#"), blank=True, null=True, max_length=30)
+    ref = models.CharField(_("Reference"), blank=True, null=True, max_length=30)
     lstrpt = models.DateField(_("last report"), null=True, blank=True)
 
     p_pre_plan_b = models.DateField(_("planned pre-planning start"), null=True, blank=True)

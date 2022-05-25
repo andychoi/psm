@@ -114,6 +114,16 @@ DATABASES = {
     'default': env.dj_db_url('DATABASE_URL',
                              'sqlite:///%s/db.sqlite3' % BASE_DIR,
                              conn_max_age=env.int('CONN_MAX_AGE', 600)),
+
+# postgresql
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     'NAME': 'dbtest', 
+    #     'USER': 'postgres', 
+    #     'PASSWORD': '1234',
+    #     'HOST': '127.0.0.1', 
+    #     'PORT': '5432',
+    # }
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

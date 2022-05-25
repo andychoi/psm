@@ -71,7 +71,7 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
         css = {
         'all': ('psm/css/custom_admin.css',),
     }    
-    list_display = ('PJcode', 'title', 'user', 'CBU', 'formatted_created_at', 'team', 'dept', 'div', 'priority', 'state')
+    list_display = ('PJcode', 'title', 'user', 'CBU', 'formatted_created_at', 'team', 'dept', 'div', 'phase', 'state')
     list_display_links = ('PJcode', 'title')
     search_fields = ('id', 'title', 'description', 'resolution', 'item__item_description',
                      'wbs__wbs', 'es')
@@ -91,10 +91,10 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
     fieldsets = (               # Edition form
         (None,                   {'fields': (('title', 'type', 'year'), ('strategy', 'program'), ('CBU', 'CBUpm'),('user', 'team', 'dept', 'div'), 
                                              ( 'est_cost', 'app_budg', 'wbs', 'es', 'is_internal' ),
-                                             ('state', 'complete', 'priority'), 
+                                             ('state', 'phase', 'progress', 'priority'), 
                                              ('status_o', 'status_t', 'status_b', 'status_s', 'lstrpt', 'resolution'), 
-                                             ('p_pre_planning','p_kickoff','p_design_b','p_design_e','p_develop_b','p_develop_e','p_uat_b','p_uat_e','p_launch','p_close'),
-                                             ('a_pre_planning','a_kickoff','a_design_b','a_design_e','a_develoa_b','a_develoa_e','a_uat_b','a_uat_e','a_launch','a_close'), 
+                                             ('p_pre_plan_b','p_pre_plan_e','p_kickoff','p_design_b','p_design_e','p_dev_b','p_dev_e','p_uat_b','p_uat_e','p_launch','p_close'),
+                                             ('a_pre_plan_b','a_pre_plan_e','a_kickoff','a_design_b','a_design_e','a_dev_b','a_dev_e','a_uat_b','a_uat_e','a_launch','a_close'), 
                                              ('ssg_sec','ssg_inf',), 
                                              ('attachment')), "classes": ("stack_labels",)}),
         (_('More...'), {'fields': ('description', ('created_at', 'last_modified'), 'created_by'), 'classes': ('collapse',)}),
@@ -106,8 +106,8 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
             fieldsets = (      # Creation form
                 (None, {'fields': (('title', 'type', 'year'), ('strategy', 'program'), ('CBU', 'CBUpm'), ('user', 'team', 'dept', 'div'), 
                     ( 'est_cost', 'app_budg', 'wbs', 'es', 'is_internal' ),
-                    ('state', 'complete', 'priority'), 'description', 
-                    ('p_pre_planning','p_kickoff','p_design_b','p_design_e','p_develop_b','p_develop_e','p_uat_b','p_uat_e','p_launch','p_close'),
+                    ('state', 'phase', 'progress', 'priority'), 'description', 
+                    ('p_pre_plan_b','p_pre_plan_e','p_kickoff','p_design_b','p_design_e','p_dev_b','p_dev_e','p_uat_b','p_uat_e','p_launch','p_close'),
                     ('ssg_sec','ssg_inf',), 
                     'attachment')}),
             )

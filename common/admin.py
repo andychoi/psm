@@ -54,7 +54,7 @@ class ExtendUserAdmin(admin.ModelAdmin):
 
 @admin.register(CBU)
 class CBUAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'fullname', 'is_tier1')
+    list_display = ('id', 'name', 'fullname', 'group', 'is_tier1')
     list_display_links = ('id', 'name')
     search_fields = ('id', 'name', 'full_name')
 
@@ -63,7 +63,7 @@ class CBUAdmin(admin.ModelAdmin):
     readonly_fields = ('created_at', 'last_modified', 'created_by')
     fieldsets = (  # Edition form
 #        (None, {'fields': (('name', 'is_company'), ('email', 'website'), ('phone', 'mobile'), ('address',), ('comment',))}),
-         (None, {'fields': (('name', 'is_tier1', 'is_company', 'fullname', ), ('email', 'website'), ('comment',))}),
+         (None, {'fields': (('name', 'is_tier1', 'is_company'), ('fullname', 'group') , ('email', 'website'), ('comment',))}),
         (_('More...'), {'fields': (('created_at', 'last_modified'), 'created_by'), 'classes': ('collapse',)}),
     )
 
@@ -71,7 +71,7 @@ class CBUAdmin(admin.ModelAdmin):
         fieldsets = super().get_fieldsets(request, obj)
         if obj is None:
             fieldsets = (      # Creation form
-                (None, {'fields': (('name', 'is_tier1', 'is_company', 'fullname'), ('email', 'website'), ('comment',))}),
+                (None, {'fields': (('name', 'is_tier1', 'is_company'), ('fullname', 'group'), ('email', 'website'), ('comment',))}),
 #                (None, {'fields': (('name', 'is_company'), ('email', 'website'), ('phone', 'mobile'), ('address',), ('comment',))}),
             )
         return fieldsets

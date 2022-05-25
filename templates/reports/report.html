@@ -72,6 +72,7 @@
 					<div class="panel panel-default">
 					<div class="panel-heading"><div class="ms-2">Overall Project Health</div></div>
 					<div class="panel-body">
+					<div class="table-responsive">
 					<table id="health" class="table table-bordered">
 						<thead>
 						<tr>
@@ -79,40 +80,47 @@
 							<th scope="col" class="text-center">Schedule</th>
 							<th scope="col" class="text-center">Budget</th>
 							<th scope="col" class="text-center">Scope</th>
+							<th scope="col" class="text-center">Overall Progress</th>
 						</tr>
 						</thead>
 						<tbody>
 						<tr>
-							<td class="
+							<td class="col-2 
 								{%   if object.status_o == 1 %}bg-success
 								{% elif object.status_o == 2 %}bg-warning
 								{% elif object.status_o == 3 %}bg-danger
 								{% elif object.status_o == 9 %}bg-primary
 								{% else %}bg-secondary 
 								{% endif %}"></td>
-							<td class="
+							<td class="col-2 
 								{%   if object.status_t == 1 %}bg-success
 								{% elif object.status_t == 2 %}bg-warning
 								{% elif object.status_t == 3 %}bg-danger
 								{% elif object.status_t == 9 %}bg-primary
 								{% else %}bg-secondary 
 								{% endif %}"></td>
-							<td class="
+							<td class="col-2 
 								{%   if object.status_b == 1 %}bg-success
 								{% elif object.status_b == 2 %}bg-warning
 								{% elif object.status_b == 3 %}bg-danger
 								{% elif object.status_b == 9 %}bg-primary
 								{% else %}bg-secondary 
 								{% endif %}"></td>
-							<td class="
+							<td class="col-2 
 								{%   if object.status_s == 1 %}bg-success
 								{% elif object.status_s == 2 %}bg-warning
 								{% elif object.status_s == 3 %}bg-danger
 								{% elif object.status_s == 9 %}bg-primary
 								{% else %}bg-secondary 
 								{% endif %}"></td>
+							<td>
+								<div class="progress">
+									<div class="progress-bar" role="progressbar" style="width: {{ m.progress }}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{{ m.progress }}%</div>
+								</div>
+							</td>
 						</tr>
 					</tbody></table>
+					</div>
 					</div>
 					</div>
 				</div>
@@ -127,7 +135,7 @@
 						<tr>
 							<th scope="col"><small>Stage</small></th>
 							<th scope="col"><small>Status</small></th>
-							<th scope="col"><small>Task Description</small></th>
+							<th scope="col"><small>Key milestones / deliverables</small></th>
 							<th scope="col"><small>Start</small></th>
 							<th scope="col"><small>End</small></th>
 							<th scope="col" class="text-end"><small>%C</small></th>
@@ -147,7 +155,12 @@
 							<td><small>{{ m.description }}</small></td>
 							<td><small>{{ m.start }}</small></td>
 							<td><small>{{ m.finish }}</small></td>
-							<td class="text-end"><small>{{ m.complete }}%</small></td>
+							<td class="text-end">
+								<!-- small>{{ m.complete }}%</small -->
+								<div class="progress">
+									<div class="progress-bar" role="progressbar" style="width: {{ m.progress }}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{{ m.progress }}%</div>
+								</div>		
+							</td>
 						</tr>						
 						{% endfor %}	
 						</tbody>

@@ -66,6 +66,7 @@ class Report(models.Model):
 
 	# status of post
     status = models.IntegerField(choices=PUBLISH, default=0)
+    progress = models.SmallIntegerField(_("complete%"), default=0)
     is_monthly = models.BooleanField(_("Is Monthly?"), default=False)
 
     created_on = models.DateField(_("created at"), auto_now_add=True, editable=False)
@@ -95,7 +96,7 @@ class Milestone(models.Model):
     description = models.CharField(_("description"), max_length=100, blank=True)
     start = models.DateField(blank=True, null=True)
     finish = models.DateField(blank=True, null=True)
-    complete = models.IntegerField(_("complete%"), default=0)
+    progress = models.IntegerField(_("complete%"), default=0)
     # status = models.CharField(_("status overall"), max_length=20, choices=STATUS, default=Status.NA.value)
     status = models.IntegerField(_("Task Status"), choices=STATUS, default=0)
 

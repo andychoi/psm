@@ -94,7 +94,8 @@ class CBU(models.Model):
         verbose_name_plural = _("CBUs")
 
     name = models.CharField(_("name"), max_length=10, db_index=True)
-    fullname = models.CharField(_("full name"), max_length=200)
+    fullname = models.CharField(_("full name"), max_length=100)
+    group = models.CharField(_("group name"), max_length=100, blank=True, null=True)
     email = models.EmailField(_("email"), blank=True, null=True)
     website = models.URLField(_("website"), blank=True, null=True)
     is_tier1 = models.BooleanField(_("is Tier-1"), default=False)

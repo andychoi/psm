@@ -144,7 +144,7 @@ class ProjectManager(models.Manager):
 #  “Collaboration project”있습니다. 이런 경우도 관리가 되면 좋은데..
 #  Sub-project? 정도로 해서 서로 연동이 되게 해서 부서별로 PM 및 일정 등을 관리 할수 있으면 좋을 것 같습니다. 
 # # 나중에 팀 실적이나 담당자 실적에도 중요한 사항들이구요.
-
+# TODO : GMDM, SSG
 class Project(models.Model):
     class Meta:
         verbose_name = _("Project")
@@ -179,6 +179,17 @@ class Project(models.Model):
         # (Status.NA.value, _('Not started')),
     )
 
+    PHASE = (
+        ('0-Pre-Planning',"Pre-Planning"),
+        ('1-Planning',"Planning"),
+        ('2-Planning',"Design"),
+        ('3-Planning',"Development"),
+        ('4-Testing',"Testing"),        
+        ('5-Launch',"Launch"),        
+        ('6-Completed',"Completed"),        
+        ('9-Closed',"Closed")        
+    )
+
     PRJTYPE = (
         (PrjType.MAJOR.value, _('Major')),
         (PrjType.SMALL.value, _('Small')),
@@ -186,7 +197,7 @@ class Project(models.Model):
         (PrjType.UNC.value, _('Unclassified')),
     )
 
- #   id = models.TextField(blank=True)
+    # code = models.CharField(_("Code"), max_length=10, unique=True) 
     title = models.CharField(_("title"), max_length=200)
     type = models.CharField(_("type"), max_length=20, choices=PRJTYPE, default=PrjType.UNC.value)
     year = models.PositiveIntegerField(_("Year"), default=current_year(), validators=[MinValueValidator(2020), max_value_current_year])
@@ -215,7 +226,8 @@ class Project(models.Model):
     user = models.ForeignKey(ExtendUser, related_name='project_manager', verbose_name=_('HAEA PM'),
                              on_delete=models.SET_NULL, null=True, blank=True)
     state = models.CharField(_("state"), max_length=20, choices=STATES, default=State.TO_DO.value)
-    complete = models.IntegerField(_("complete%"), default=0)
+    phase = models.CharField(_("Phase"), max_length=20, choices=PHASE, default='0-Pre-Planning')
+    progress = models.SmallIntegerField(_("complete%"), default=0)
     priority = models.CharField(_("priority"), max_length=20, choices=PRIORITIES, default=Priority.NORMAL.value)
 
     est_cost = models.DecimalField(_("Est. cost"), decimal_places=0, max_digits=12, blank=True, null=True)
@@ -224,23 +236,25 @@ class Project(models.Model):
     es = models.CharField(_("ES#"), blank=True, null=True, max_length=30)
     lstrpt = models.DateField(_("last report"), null=True, blank=True)
 
-    p_pre_planning = models.DateField(_("planned pre-planning start"), null=True, blank=True)
+    p_pre_plan_b = models.DateField(_("planned pre-planning start"), null=True, blank=True)
+    p_pre_plan_e = models.DateField(_("planned pre-planning end"), null=True, blank=True)
     p_kickoff = models.DateField(_("planned kick-off date"), null=True, blank=True)
     p_design_b = models.DateField(_("planned design start"), null=True, blank=True)
     p_design_e = models.DateField(_("planned design end"), null=True, blank=True)
-    p_develop_b = models.DateField(_("planned develop start"), null=True, blank=True)
-    p_develop_e = models.DateField(_("planned develop end"), null=True, blank=True)
+    p_dev_b = models.DateField(_("planned develop start"), null=True, blank=True)
+    p_dev_e = models.DateField(_("planned develop end"), null=True, blank=True)
     p_uat_b = models.DateField(_("planned UAT start"), null=True, blank=True)
     p_uat_e = models.DateField(_("planned UAT end"), null=True, blank=True)
     p_launch = models.DateField(_("planned launch"), null=True, blank=True)
     p_close = models.DateField(_("planned closing"), null=True, blank=True)
 
-    a_pre_planning = models.DateField(_("actual pre-planning start"), null=True, blank=True)
+    a_pre_plan_b = models.DateField(_("actual pre-planning start"), null=True, blank=True)
+    a_pre_plan_e = models.DateField(_("actual pre-planning end"), null=True, blank=True)
     a_kickoff = models.DateField(_("actual kick-off date"), null=True, blank=True)
     a_design_b = models.DateField(_("actual design start"), null=True, blank=True)
     a_design_e = models.DateField(_("actual design end"), null=True, blank=True)
-    a_develoa_b = models.DateField(_("actual develop start"), null=True, blank=True)
-    a_develoa_e = models.DateField(_("actual develop end"), null=True, blank=True)
+    a_dev_b = models.DateField(_("actual develop start"), null=True, blank=True)
+    a_dev_e = models.DateField(_("actual develop end"), null=True, blank=True)
     a_uat_b = models.DateField(_("actual UAT start"), null=True, blank=True)
     a_uat_e = models.DateField(_("actual UAT end"), null=True, blank=True)
     a_launch = models.DateField(_("actual launch"), null=True, blank=True)
@@ -249,7 +263,6 @@ class Project(models.Model):
     ssg_sec = models.BooleanField(_("Security Reviewed?"), default=False)
     ssg_inf = models.BooleanField(_("Infra Architecture Reviewed?"), default=False)
 
-
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='prj_created_by', verbose_name=_('created by'),
                                    on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False)
@@ -257,6 +270,7 @@ class Project(models.Model):
 
     attachment=models.FileField(_("attachment"), upload_to='attachments', null=True, blank=True)
 
+    # what is this for??
     objects = ProjectManager()
 
     class Meta:
@@ -284,6 +298,7 @@ class Project(models.Model):
             old_Project_data = Project.objects.get(pk=self.pk)
             if old_Project_data.CBU != self.CBU:
                 send_email = True
+        
         super().save(*args, **kwargs)
         if send_email:
             # Emails are sent if the order is new

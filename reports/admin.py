@@ -94,7 +94,7 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
 
     fieldsets = (               # Edition form
         (None, {'fields': (('project', 'title', 'status', 'is_monthly'), 
-                            ('status_o', 'status_t', 'status_b', 'status_s', ), 
+                            ('status_o', 'status_t', 'status_b', 'status_s', 'progress' ), 
                             ('content_a', 'content_p', 'issue'), ),  "classes": ("stack_labels",)}),
             (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by'),('CBU','dept','div')), 'classes': ('collapse',)}),
     )
@@ -104,7 +104,7 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
         if obj is None:
             fieldsets = (      # Creation form
                 (None, {'fields': (('project', 'title', 'status', 'is_monthly'), 
-                                    ('status_o', 'status_t', 'status_b', 'status_s', ), 
+                                    ('status_o', 'status_t', 'status_b', 'status_s', 'progress'), 
                                     ('content_a', 'content_p', 'issue'),)}),
             )
         return fieldsets
@@ -154,12 +154,13 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
 
         super().save_model(request, obj, form, change)
 
-        if obj.status == 1:
+        if obj.status == 1:  #if published, update project master info
             obj.project.status_o = obj.status_o
             obj.project.status_t = obj.status_t
             obj.project.status_b = obj.status_b
             obj.project.status_s = obj.status_s
             obj.project.resolution = obj.issue
+            obj.project.progress = obj.progress
             obj.project.lstrpt = obj.updated_on   #update to project last report date
             obj.project.save()
 

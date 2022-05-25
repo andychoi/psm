@@ -37,6 +37,7 @@ urlpatterns = [
     path('', TemplateView.as_view(template_name='home.html'), name='home'), # new
     # urls handling report app  routes
     path('', include('reports.urls')),
+    path('', include('psm.urls')),
     # path('djrichtextfield/', include('djrichtextfield.urls')),
     # path('^markdown/', include( 'django_markdown.urls')),
 ]

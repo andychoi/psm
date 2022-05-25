@@ -1,3 +1,5 @@
+from urllib.request import Request
+from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.db.models import Q
@@ -38,15 +40,32 @@ class projectListView(generic.ListView):
     model = Project
     paginate_by = 1000
     context_object_name = 'project_list'    
+    # selectedCBU = self.request.GET.get('cbu', -1)    
+    
+    # def get(self, request, *args, **kwargs):
+    #     form = self.form_class(initial=self.initial)
+    #     return render(request, self.template_name, {'form': form})    
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         context['filter_CBU'] = {}
-        context['filter_CBU']['selected'] = ''
+        context['filter_CBU']['selected'] = self.request.GET.get('cbu', None)
         context['filter_CBU']['items'] = CBU.objects.all()
         
         return context
+
+    def get_queryset(self):
+        # # self.year = get_object_or_404(self.year, name=self.kwargs['year'])
+        # # return Project.objects.filter(year=self.year).order_by('dept')
+        # queryset = Project.objects.filter(year=self.kwargs['year'])
+
+        lCBU = self.request.GET.get('cbu', None)        
+        queryset = Project.objects.all()
+        if lCBU:
+            queryset = queryset.filter(CBU__id=lCBU)
+        return queryset
+
 
     # def get_queryset(self):
     #     self.CBU = get_object_or_404(CBU, name=self.kwargs['CBU'])

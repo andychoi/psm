@@ -57,8 +57,9 @@
                     <select></select>
                 </label> -->
                 <label>
-                    CBU
+                    CBU {{ filter_CBU.selected }}
                     <select id='sel_cbu'>
+                        <option value=''>ALL</option>
                         {% for pItem in filter_CBU.items %}
                         <option value={{ pItem.id }}>{{ pItem.name }}</option>
                         {% endfor %}

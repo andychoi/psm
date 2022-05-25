@@ -58,7 +58,7 @@
                 </label> -->
                 <label>
                     CBU
-                    <select id='sel_cbu'>
+                    <select id='sel_cbu' onchange="updateData()">
                         <option value=''>ALL</option>
                         {% for pItem in filter_CBU.items %}
                         <option value={{ pItem.id }}>{{ pItem.name }}</option>
@@ -192,6 +192,9 @@
 
     <script>
        $('#sel_cbu').val(`{{ filter_CBU.selected }}`);
+       function updateData() {
+           window.location.href = '/project/?cbu=' + $('#sel_cbu').val();
+       }
     </script>    
 </body>
 </html>

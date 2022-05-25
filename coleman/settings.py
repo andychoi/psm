@@ -246,8 +246,8 @@ AUTHENTICATION_BACKENDS = [
 
 APP_NAME = env('APP_NAME', 'PSM')
 APP_EMAIL = env('APP_EMAIL', 'no-reply@localhost')
-SITE_HEADER = env('SITE_HEADER', 'PSM')
-INDEX_TITLE = env('INDEX_TITLE', 'Task Management')
+SITE_HEADER = env('SITE_HEADER', 'PSM - Project Service Management')
+INDEX_TITLE = env('INDEX_TITLE', 'Project Service Management')
 
 ADMINS = (
     (APP_NAME, APP_EMAIL)

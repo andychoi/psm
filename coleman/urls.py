@@ -38,6 +38,7 @@ urlpatterns = [
     # urls handling report app  routes
     path('', include('reports.urls')),
     path('', include('psm.urls')),
+    path('', include("ticketSecurity.urls")),
     # path('djrichtextfield/', include('djrichtextfield.urls')),
     # path('^markdown/', include( 'django_markdown.urls')),
 ]

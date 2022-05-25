@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'psm',
     'sap',
     'reports',
+    'ticketSecurity',
     
     'django.contrib.admin',
     'django.contrib.auth',
@@ -118,9 +119,9 @@ DATABASES = {
 # postgresql
     # 'default': {
     #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    #     'NAME': 'dbtest', 
+    #     'NAME': 'dj', 
     #     'USER': 'postgres', 
-    #     'PASSWORD': '1234',
+    #     'PASSWORD': 'postgres',
     #     'HOST': '127.0.0.1', 
     #     'PORT': '5432',
     # }

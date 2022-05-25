@@ -57,7 +57,7 @@ from django.db.models.deletion import CASCADE
 
 class ExtendUser(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE, verbose_name=_('external user'), null=True, blank=True)
-    name = models.CharField(max_length=100, blank=True, null=True)
+    name = models.CharField(max_length=100, blank=True, null=True, unique=True)
     email = models.EmailField(max_length=200, blank=True, null=True)
     u_team = models.ForeignKey('Team', verbose_name=_('Team'), on_delete=models.SET_NULL, blank=True, null=True)
     u_dept = models.ForeignKey('Dept', verbose_name=_('Dept'), on_delete=models.SET_NULL, blank=True, null=True)
@@ -93,7 +93,7 @@ class CBU(models.Model):
         verbose_name = _("CBU")
         verbose_name_plural = _("CBUs")
 
-    name = models.CharField(_("name"), max_length=10, db_index=True)
+    name = models.CharField(_("name"), max_length=10, db_index=True, unique=True)
     fullname = models.CharField(_("full name"), max_length=100)
     group = models.CharField(_("group name"), max_length=100, blank=True, null=True)
     email = models.EmailField(_("email"), blank=True, null=True)

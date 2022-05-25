@@ -35,7 +35,6 @@
 
 
 <body>
-
 	<div class="container mt-3">  <!-- container-float margin top 3 -->
 		<div class="row">
 			<div class="col-8">
@@ -46,8 +45,27 @@
 			<p class="text-end m-0 small"></p>
 			</div>
 		</div>
-
 		<div class="row">
+            <div class="input-group">
+                <!-- <label>
+                    Status
+                    <select>
+                    </select>
+                </label>
+                <label>
+                    Status
+                    <select></select>
+                </label> -->
+                <label>
+                    CBU
+                    <select id='sel_cbu'>
+                        {% for pItem in filter_CBU.test %}
+                        <option value={{ pItem.id }}>{{ pItem.name }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+    
             <!-- Filter  div class="input-group"> <span class="input-group-addon">Filter</span>
                 <input id="filter" type="text" class="form-control" placeholder="Type here...">
             </div -->            

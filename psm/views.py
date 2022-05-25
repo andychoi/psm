@@ -7,6 +7,7 @@ from django.db.models import Q
 
 # importing models and libraries
 from django.shortcuts import render
+from pyparsing import common
 from .models import Project
 from common.models import CBU, Dept, Div
 from django.views import generic
@@ -37,6 +38,15 @@ class projectListView(generic.ListView):
     model = Project
     paginate_by = 1000
     context_object_name = 'project_list'    
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['filter_CBU'] = {}
+        context['filter_CBU']['selected'] = ''
+        context['filter_CBU']['items'] = CBU.objects.all()
+        
+        return context
 
     # def get_queryset(self):
     #     self.CBU = get_object_or_404(CBU, name=self.kwargs['CBU'])

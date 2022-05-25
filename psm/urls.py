@@ -2,7 +2,6 @@
 from . import views
 from django.urls import path, include
 from .views import *
-#from .feeds import blogFeed
 
 urlpatterns = [
 	# home page

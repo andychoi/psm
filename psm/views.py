@@ -60,7 +60,7 @@ class projectListView(generic.ListView):
         # # return Project.objects.filter(year=self.year).order_by('dept')
         # queryset = Project.objects.filter(year=self.kwargs['year'])
 
-        lCBU = self.request.GET.get('cbu', None)        
+        lCBU = self.request.GET.get('cbu', '')
         queryset = Project.objects.all()
         if lCBU:
             queryset = queryset.filter(CBU__id=lCBU)

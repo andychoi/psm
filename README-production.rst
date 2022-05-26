@@ -6,7 +6,7 @@ like *uWSGI* or *Gunicorn*. Also run a production-ready database like
 PostgreSQL or MySQL.
 
 To run the project with uWSGI server at port 8000, and connect
-with a Postgres database named ``dcoleman_dev``
+with a Postgres database named ``dpsmprj_dev``
 (or other specified in the environment variable ``DATABASE_URL``),
 execute::
 
@@ -31,11 +31,11 @@ file for PSM::
 
     server {
         listen      80;
-        server_name django-coleman;
+        server_name django-psmprj;
         access_log  /var/log/nginx/django.access.log;
         error_log   /var/log/nginx/django.error.log;
 
-        root /path/to/project/django-coleman;
+        root /path/to/project/django-psmprj;
 
         location /static {
         }
@@ -55,39 +55,39 @@ file for PSM::
     }
 
 With the above configuration, the Admin interface should be accessible
-at http://django-coleman/admin
+at http://django-psmprj/admin
 
 If you can't see the Admin page correctly, and the browser console shows
 you *403 Forbidden* errors, ensure the system user that runs the Nginx server
 has permissions to access to the PSM resources.
 
-Also be sure to have mapped `django-coleman` in your DNS server, or in the
+Also be sure to have mapped `django-psmprj` in your DNS server, or in the
 `/etc/hosts` where you want to access the app::
 
-   echo '127.0.0.1 django-coleman' | sudo tee -a /etc/hosts
+   echo '127.0.0.1 django-psmprj' | sudo tee -a /etc/hosts
 
 
 PostgreSQL database
 -------------------
 
 If you want to use a PostgreSQL database (recommended), before run
-the `migration scripts <https://github.com/mrsarm/django-coleman/#install-and-run>`_
+the `migration scripts <https://github.com/mrsarm/django-psmprj/#install-and-run>`_
 be sure to create the user and the database used by PSM.
 In the ``run.sh`` script is used this string connection
-as example: ``postgresql://dcoleman:postgres@localhost/dcoleman_dev``,
-so to create a database ``dcoleman_dev`` with a user ``dcoleman`` and a
+as example: ``postgresql://dpsmprj:postgres@localhost/dpsmprj_dev``,
+so to create a database ``dpsmprj_dev`` with a user ``dpsmprj`` and a
 password ``postgres``, first create the user with::
 
-    $ sudo -u postgres createuser --createdb --no-superuser --no-createrole --pwprompt dcoleman
+    $ sudo -u postgres createuser --createdb --no-superuser --no-createrole --pwprompt dpsmprj
 
 If you are already logged-in as a superuser, you can execute instead the following, within the SQL session:
-``CREATE USER dcoleman;``, and then to be prompted for a password within a ``psql`` session
-execute ``\password dcoleman``.
+``CREATE USER dpsmprj;``, and then to be prompted for a password within a ``psql`` session
+execute ``\password dpsmprj``.
 
 Then create the database with::
 
     $ sudo -u postgres psql
-    postgres=# CREATE DATABASE dcoleman_dev OWNER dcoleman;
+    postgres=# CREATE DATABASE dpsmprj_dev OWNER dpsmprj;
 
 Another way to create user and database in Postgres is to use
 the Procfile task ``createdb``, checkout the section below.

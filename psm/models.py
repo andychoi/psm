@@ -10,7 +10,7 @@ from django.conf import settings
 from common.models import CBU, Div, Dept, Team, ExtendUser
 from sap.models import WBS
 
-from coleman.utils.mail import send_mail_async as send_mail
+from psmprj.utils.mail import send_mail_async as send_mail
 from hashlib import sha1
 
 from datetime import date
@@ -373,8 +373,8 @@ class Project(models.Model):
 
         It uses as input a salt code configured and the ID number.
 
-        See: coleman/settings_emails.py
-             https://github.com/mrsarm/tornado-dcoleman-mProjects-viewer
+        See: psmprj/settings_emails.py
+             https://github.com/mrsarm/tornado-dpsmprj-mProjects-viewer
         """
         salt = settings.ProjectS_VIEWER_HASH_SALT
         if not settings.DEBUG and salt == '1two3':

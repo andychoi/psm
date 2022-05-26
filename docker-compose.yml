@@ -1,12 +1,12 @@
 version: '3.7'
 
 volumes:
-  data:       # Volume name listed: django-coleman_data
+  data:       # Volume name listed: django-psmprj_data
     driver: local
 
 services:
-  django-coleman:
-    image: "mrsarm/django-coleman:${TAG:-latest}"
+  django-psmprj:
+    image: "mrsarm/django-psmprj:${TAG:-latest}"
     build:
       context: .
       args:
@@ -52,17 +52,17 @@ services:
       - data:/var/lib/postgresql/data
     command: ["postgres", "-c", "log_statement=all"]  # Comment to disable SQL logs. all: all queries, ddl: DDL only, mod: DDL and modifying statements
 
-  django-coleman-mtasks-viewer:
-    image: "mrsarm/django-coleman-mtasks-viewer"
+  django-psmprj-mtasks-viewer:
+    image: "mrsarm/django-psmprj-mtasks-viewer"
     ports:
       - "8888:8888"
     environment:
       - PORT=8888
-      - DCOLEMAN_ENDPOINT
-      - DCOLEMAN_TASKS_VIEWER_HASH_SALT
-      - DCOLEMAN_MASTER_TOKEN
+      - Dpsmprj_ENDPOINT
+      - Dpsmprj_TASKS_VIEWER_HASH_SALT
+      - Dpsmprj_MASTER_TOKEN
     depends_on:
-      - django-coleman
+      - django-psmprj
 
   #
   # **tools** profile, none of these services runs on startup by default,
@@ -80,8 +80,8 @@ services:
 
 
   # Provide all the DB resources: DB and DB user creation, DB migrations and admin user creation
-  django-coleman-provision:
-    image: "mrsarm/django-coleman:${TAG:-latest}"
+  django-psmprj-provision:
+    image: "mrsarm/django-psmprj:${TAG:-latest}"
     environment:
       - PROCESS_TYPE=provision
       - POSTGRES_PASSWORD
@@ -100,10 +100,10 @@ services:
   # create a new administrator user "john", you would
   # normally run `docker-compose up' first to launch
   # all the apps, and then in another terminal:
-  # `ADMIN_USERNAME=john ADMIN_PASSWORD=secretpass docker-compose up django-coleman-createadmin'
+  # `ADMIN_USERNAME=john ADMIN_PASSWORD=secretpass docker-compose up django-psmprj-createadmin'
 
-  django-coleman-createdb:
-    image: "mrsarm/django-coleman:${TAG:-latest}"
+  django-psmprj-createdb:
+    image: "mrsarm/django-psmprj:${TAG:-latest}"
     environment:
       - PROCESS_TYPE=createdb
       - POSTGRES_PASSWORD
@@ -113,8 +113,8 @@ services:
     profiles:
       - tools
 
-  django-coleman-migrate:
-    image: "mrsarm/django-coleman:${TAG:-latest}"
+  django-psmprj-migrate:
+    image: "mrsarm/django-psmprj:${TAG:-latest}"
     environment:
       - PROCESS_TYPE=migrate
       - DATABASE_URL
@@ -124,8 +124,8 @@ services:
     profiles:
       - tools
 
-  django-coleman-createadmin:
-    image: "mrsarm/django-coleman:${TAG:-latest}"
+  django-psmprj-createadmin:
+    image: "mrsarm/django-psmprj:${TAG:-latest}"
     environment:
       - PROCESS_TYPE=createadmin
       - DATABASE_URL
@@ -140,8 +140,8 @@ services:
 
   # Run automated tests
 
-  django-coleman-test:
-    image: "mrsarm/django-coleman:${TAG:-latest}"
+  django-psmprj-test:
+    image: "mrsarm/django-psmprj:${TAG:-latest}"
     environment:
       - PROCESS_TYPE=test
     profiles:

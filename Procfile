@@ -1,5 +1,5 @@
 web: ./manage.py collectstatic --no-input && uwsgi uwsgi.ini
-kill: kill -9 $(cat /tmp/dcoleman-master.pid) && rm /tmp/dcoleman-master.pid
+kill: kill -9 $(cat /tmp/dpsmprj-master.pid) && rm /tmp/dpsmprj-master.pid
 createdb: ./manage.py sqlcreate | DATABASE_URL=postgresql://postgres:$POSTGRES_PASSWORD@postgres:5432/postgres ./manage.py dbshell || true
 collectstatic: ./manage.py collectstatic --no-input
 compilemessages: ./manage.py compilemessages --ignore 'venv*' --ignore '.venv*'

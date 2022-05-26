@@ -1,5 +1,5 @@
 """
-WSGI config for coleman project.
+WSGI config for psmprj project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -12,9 +12,9 @@ import os
 from django.contrib.staticfiles.handlers import StaticFilesHandler
 from django.core.wsgi import get_wsgi_application
 
-from coleman import settings
+from psmprj import settings
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "coleman.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "psmprj.settings")
 
 if settings.STATIC_ENABLE_WSGI_HANDLER:
     application = StaticFilesHandler(get_wsgi_application())

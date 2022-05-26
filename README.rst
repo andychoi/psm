@@ -100,7 +100,7 @@ Docker
 ------
 
 A reference `<Dockerfile>`_ is provided, and the image published
-in `Docker Hub <https://hub.docker.com/r/mrsarm/django-coleman>`_.
+in `Docker Hub <https://hub.docker.com/r/mrsarm/django-psmprj>`_.
 
 Also `<docker-compose.yml>`_ and `<.env.example>`_ files are provided, you can run
 all from here, PSM, the viewer app and Postgres.
@@ -129,7 +129,7 @@ The first time it runs some errors about the DB are shown, that's because
 you need to create the DB and the structure (tables, indexes), all can
 be created in another terminal executing::
 
-    $ docker-compose run django-coleman-provision
+    $ docker-compose run django-psmprj-provision
 
 Even a user ``admin`` with password ``admin1234`` is created.
 
@@ -148,12 +148,12 @@ containers: ``docker-compose run psql``.
 Local persistence
 ^^^^^^^^^^^^^^^^^
 
-By default a local volume ``django-coleman_data`` is attached
+By default a local volume ``django-psmprj_data`` is attached
 to the Postgres container so even executing ``docker-compose down``
 won't delete the data, but if you want to start from scratch::
 
     $ docker-compose down
-    $ docker volume rm pg-coleman_data
+    $ docker volume rm pg-psmprj_data
 
 Add changes in the code
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -190,7 +190,7 @@ Some available settings:
 * ``LANGUAGE_CODE``: default ``en-us``. Other example: ``es-ar``.
 * ``SITE_HEADER``: Header title of the app. Default to *"PSM - A Simple Task Manager"*.
 * ``DATABASE_URL``: Database string connection. Default uses SQLite database. Other
-  example: ``postgresql://dcoleman:postgres@localhost/dcoleman_dev``.
+  example: ``postgresql://dpsmprj:postgres@localhost/dpsmprj_dev``.
 * More settings like email notifications, check the ``settings.py`` file
   for more details, any variable that is set with ``env('...`` is able
   to be configured using environment variables.

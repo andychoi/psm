@@ -3,13 +3,13 @@ import logging
 
 from django.core.exceptions import ValidationError
 from django.db import models
+# from river.models.fields.state import StateField
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from common.models import CBU, ExtendUser
 from psm.models import Project
 from psmprj.utils.mail import send_mail_async as send_mail
 from hashlib import sha1
-
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +52,17 @@ class TaskManager(models.Manager):
         """
         return self.exclude(pk=pk).filter(**kwargs)
 
+class TaskType(models.Model):
+    class Meta:
+        verbose_name = _("Task Type")
+        verbose_name_plural = _("Task Types")    
+        
+    name   = models.CharField(max_length=100, blank=True, null=True, unique=True)
+    description = models.TextField(null=True, blank=True)
+    is_active = models.BooleanField(_("Is active?"), default=True)
+    def __str__(self):
+        return self.name
+
 # custom permission: https://docs.djangoproject.com/en/4.0/topics/auth/customizing/
 class Task(models.Model):
     class Meta:
@@ -74,6 +85,7 @@ class Task(models.Model):
         (Priority.CRITICAL.value, _('Critical')),
     )
 
+    ttype = models.ForeignKey(TaskType, verbose_name=_("Task Type"), blank=True, null=True, on_delete=models.PROTECT)
     project = models.ForeignKey(Project, blank=True, null=True, verbose_name=_('related project'), on_delete=models.PROTECT)
     title = models.CharField(_("title"), max_length=200)
     CBU = models.ForeignKey(CBU, blank=True, null=True, on_delete=models.PROTECT)
@@ -88,6 +100,9 @@ class Task(models.Model):
                                    on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False)
     last_modified = models.DateTimeField(_("last modified"), auto_now=True, editable=False)
+
+    # not compatible with django 4.x
+    # wf_state = StateField() #https://django-river.readthedocs.io/en/latest/getting_started.html
 
     objects = TaskManager()
 
@@ -135,18 +150,19 @@ class Task(models.Model):
     def clean(self):
         validation_errors = {}
         title = self.title.strip() if self.title else self.title
+        ttype = self.ttype
         if self.CBU:
             if Task.objects \
-                    .others(self.pk, title=title, CBU=self.CBU) \
+                    .others(self.pk, ttype=ttype, title=title, CBU=self.CBU) \
                     .exclude(state__in=(State.DONE.value, State.DISMISSED.value)) \
                     .exists():
-                validation_errors['title'] = _('Open task with this title and CBU already exists.')
+                validation_errors['title'] = _('Open task with this title, task type and CBU already exists.')
         else:
             if Task.objects \
-                    .others(self.pk, title=title, CBU=None) \
+                    .others(self.pk, ttype=ttype, title=title, CBU=None) \
                     .exclude(state__in=(State.DONE.value, State.DISMISSED.value)) \
                     .exists():
-                validation_errors['title'] = _('Open task with this title and no CBU already exists.')
+                validation_errors['title'] = _('Open task with this title, task type and no CBU already exists.')
 
         # Add more validations HERE
 

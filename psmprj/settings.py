@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'sap',
     'reports',
     'guardian',     # custom permission
+#    'river',        # simple workflow; not yet compatible with django 4.x
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

@@ -4,11 +4,21 @@ from django.contrib import messages
 from django.db import models
 from django.forms import Textarea
 from django.utils.translation import gettext_lazy as _
-from .models import Task, Item, TASK_PRIORITY_FIELDS
+from .models import Task, Item, TASK_PRIORITY_FIELDS, TaskType
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter
 
 # permission
 # https://stackoverflow.com/questions/23410306/add-permission-to-django-admin
+
+@admin.register(TaskType)
+class TaskTypeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description','is_active')
+    list_display_links = ('name',)
+    ordering = ('name',)
+
+    class Meta:
+        model = TaskType
+        import_id_fields = ('id',)
 
 class ItemInline(admin.TabularInline):
     model = Item
@@ -17,11 +27,12 @@ class ItemInline(admin.TabularInline):
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ('project', 'title', 'user', 'CBU', 'created_at', 'deadline', 'priority', 'state')
+    list_display = ('project', 'ttype', 'title', 'user', 'CBU', 'created_at', 'deadline', 'priority', 'state')
     list_display_links = ('project', 'title')
     search_fields = ('id', 'title', 'project', 'project__title', 'item__item_description',
                      'user__name')
     list_filter = (
+        ('ttype', RelatedDropdownFilter),
         ('user', RelatedDropdownFilter),
         ('CBU', RelatedDropdownFilter),
         ('state', UnionFieldListFilter),
@@ -49,11 +60,11 @@ class TaskAdmin(admin.ModelAdmin):
         fieldsets = super().get_fieldsets(request, obj)
         if obj is None:
             fieldsets = (       # Creation form
-                (None, {'fields': (('title', 'project'), ('user', 'CBU'), 'deadline', ('state', 'priority'), 'description')}),
+                (None, {'fields': (('title', 'ttype', 'project'), ('user', 'CBU'), 'deadline', ('state', 'priority'), 'description')}),
             )
         else:
             fieldsets = (       # Edition form
-                (None,                   {'fields': (('title','project' ), ('user', 'CBU'), 'deadline',
+                (None,                   {'fields': (('title', 'ttype', 'project' ), ('user', 'CBU'), 'deadline',
                                                     ('state', 'priority'), ('description', 'resolution'))}),
                 (_('More...'), {'fields': (('created_at', 'last_modified'), 'created_by'), 'classes': ('collapse',)}),
             )            

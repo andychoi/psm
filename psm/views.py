@@ -64,9 +64,27 @@ class projectListView(generic.ListView):
         } )
 
         context['filterItems'].append( {
+            "key": "DEP", "text": "Dept.", "qId": "dep"
+            , "selected": self.request.GET.get('dep', '')
+            , "items": Dept.objects.all()
+        } )
+    
+        context['filterItems'].append( {
+            "key": "PHASE", "text": "Phase", "qId": "phase"
+            , "selected": self.request.GET.get('phase', '')
+            , "items": [{"id": i, "name": x[1]} for i, x in enumerate(Project.PHASE)]
+        } )
+
+        context['filterItems'].append( {
             "key": "CBU", "text": "CBU", "qId": "cbu"
             , "selected": self.request.GET.get('cbu', '')
             , "items": CBU.objects.all()
+        } )
+
+        context['filterItems'].append( {
+            "key": "PRI", "text": "Priority", "qId": "pri"
+            , "selected": self.request.GET.get('pri', '')
+            , "items": [{"id": i, "name": x[1]} for i, x in enumerate(Project.PRIORITIES)]
         } )
 
         return context
@@ -77,19 +95,31 @@ class projectListView(generic.ListView):
         # queryset = Project.objects.filter(year=self.kwargs['year'])
 
         queryset = Project.objects.all()
-        lYear = self.request.GET.get('year', '')
-        if lYear:
-            queryset = queryset.filter(year=lYear)
+        ltmp = self.request.GET.get('year', '')
+        if ltmp:
+            queryset = queryset.filter(year=ltmp)
 
-        lDiv = self.request.GET.get('div', '')
-        if lDiv:
-            queryset = queryset.filter(div=lDiv)
+        ltmp = self.request.GET.get('div', '')
+        if ltmp:
+            queryset = queryset.filter(div__id=ltmp)
 
-        lCBU = self.request.GET.get('cbu', '')
-        if lCBU:
-            queryset = queryset.filter(CBU__id=lCBU)
+        ltmp = self.request.GET.get('dep', '')
+        if ltmp:
+            queryset = queryset.filter(dept__id=ltmp)
+
+        ltmp = self.request.GET.get('phase', '')
+        if ltmp:
+            queryset = queryset.filter(phase=Project.PHASE[int(ltmp)][0])
+
+        ltmp = self.request.GET.get('cbu', '')
+        if ltmp:
+            queryset = queryset.filter(CBU__id=ltmp)
+
+        ltmp = self.request.GET.get('pri', '')
+        if ltmp:
+            queryset = queryset.filter(priority=Project.PRIORITIES[int(ltmp)][0])
+
         return queryset
-
 
     # def get_queryset(self):
     #     self.CBU = get_object_or_404(CBU, name=self.kwargs['CBU'])

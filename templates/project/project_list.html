@@ -97,7 +97,7 @@
                     <td class="text-left">{{ p.title }}</td>
                     <td class="text-center">
                         <div class="progress">
-                            <div class="progress-bar" role="progressbar" style=`width: {{ p.progress }}%;` aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{{ p.progress }}%</div>
+                            <div class="progress-bar" role="progressbar" style="width: {{ p.progress }}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{{ p.progress }}%</div>
                         </div>
                     </td>
                     <td>{{ p.phase }}</td>
@@ -186,7 +186,7 @@
     <script>
         // set preselected values
         {% for filterItem in filterItems %}
-            $('#sel_{{filterItem.qId}}').val(`{{ filterItem.selected }}`);
+            $('#sel_{{filterItem.qId}}').val("{{ filterItem.selected }}");
         {% endfor %}
 
         function updateData() {

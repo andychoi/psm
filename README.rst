@@ -24,7 +24,7 @@ Requirements
 ------------
 
 Docker, or:
-* Python 3.6+ (tested with Python 3.6 and 3.10).
+* Python 3.8+ (tested with Python 3.8 and 3.9).
 * Django 5.x and other dependencies declared in
   the ``requirements.txt`` file (use virtual environments or containers!).
 * A Django compatible database like PostgreSQL (by default uses
@@ -38,7 +38,7 @@ Using Docker, check the section below. Otherwise:
 
 Create a virtual environment and activate it with *(Optional)*::
 
-    $ python3 -m venv .venv && source .venv/bin/activate
+    $ python3.8 -m venv .venv && source .venv/bin/activate
 
 Install dependencies with::
 
@@ -47,17 +47,17 @@ Install dependencies with::
 
 Create the database with::
 
-    $ python3 manage.py makemigrations
-    $ python3 manage.py makemigrations CBU common psm sap reports
-    $ python3 manage.py migrate
+    $ python manage.py makemigrations
+    $ python manage.py makemigrations common psm sap reports mtasks
+    $ python manage.py migrate
 
 To create an admin user::
 
-    $ python3 manage.py createsuperuser
+    $ python manage.py createsuperuser
 
 Then run in development mode with::
 
-    $ python3 manage.py runserver
+    $ python manage.py runserver
 
 Add at the end ``0:5000`` if you want to open the port 5000
 instead of the default 8000, and the ``0:`` prefix is to

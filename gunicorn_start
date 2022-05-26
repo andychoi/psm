@@ -12,6 +12,7 @@ DJANGO_WSGI_MODULE=psmprj.wsgi          #Which WSGI file should use
 LOG_LEVEL=debug
 cd $DIR
 source /home/andy/py/django/github/psm/.venv/bin/activate  #Activate the virtual environment
+pip install gunicorn
 export DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
 export PYTHONPATH=$DIR:$PYTHONPATH
 
@@ -22,6 +23,7 @@ exec /home/andy/py/django/github/psm/.venv/bin/gunicorn ${DJANGO_WSGI_MODULE}:ap
 --user=$USER \
 --group=$GROUP \
 --bind=$SOCKFILE \
+--worker-tmp-dir /home/andy/tmp
 --log-level=$LOG_LEVEL \
 --log-file=-
 

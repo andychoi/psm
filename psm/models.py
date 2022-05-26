@@ -66,7 +66,7 @@ class Status(enum.Enum):
     NA = '00-notApplicable'
     GREEN = '10-green'
     YELLOW = '20-yellow'
-    RED = '20-red'
+    RED = '30-red'
     COMPLETED = '90-completed'
 
 class PrjType(enum.Enum):

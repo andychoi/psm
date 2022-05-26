@@ -6,6 +6,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from common.models import CBU, ExtendUser
+from psm.models import Project
 from psmprj.utils.mail import send_mail_async as send_mail
 from hashlib import sha1
 
@@ -72,6 +73,7 @@ class Task(models.Model):
         (Priority.CRITICAL.value, _('Critical')),
     )
 
+    project = models.ForeignKey(Project, blank=True, null=True, verbose_name=_('related project'), on_delete=models.PROTECT)
     title = models.CharField(_("title"), max_length=200)
     CBU = models.ForeignKey(CBU, blank=True, null=True, on_delete=models.PROTECT)
     description = models.TextField(_("description"), max_length=2000, null=True, blank=True)

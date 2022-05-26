@@ -6,6 +6,8 @@ from django.utils.translation import gettext_lazy as _
 from .models import Task, Item, TASK_PRIORITY_FIELDS
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter
 
+# permission
+# https://stackoverflow.com/questions/23410306/add-permission-to-django-admin
 
 class ItemInline(admin.TabularInline):
     model = Item
@@ -14,14 +16,13 @@ class ItemInline(admin.TabularInline):
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ('number', 'title', 'user', 'CBU', 'created_at', 'deadline', 'priority', 'state')
-    list_display_links = ('number', 'title')
-    search_fields = ('id', 'title', 'item__item_description',
-                     'user__username', 'user__first_name', 'user__last_name',
-                     'partner__name', 'partner__email')
+    list_display = ('project', 'title', 'user', 'CBU', 'created_at', 'deadline', 'priority', 'state')
+    list_display_links = ('project', 'title')
+    search_fields = ('id', 'title', 'project', 'project__title', 'item__item_description',
+                     'user__name')
     list_filter = (
         ('user', RelatedDropdownFilter),
-        # ('CBU', RelatedDropdownFilter),
+        ('CBU', RelatedDropdownFilter),
         ('state', UnionFieldListFilter),
         ('priority', UnionFieldListFilter),
         'deadline'
@@ -31,7 +32,7 @@ class TaskAdmin(admin.ModelAdmin):
     autocomplete_fields = ['user', 'CBU']
 
     fieldsets = (               # Edition form
-        (None,                   {'fields': ('title', ('user', 'CBU'), 'deadline',
+        (None,                   {'fields': (('title','project' ), ('user', 'CBU'), 'deadline',
                                              ('state', 'priority'), ('description', 'resolution'))}),
         (_('More...'), {'fields': (('created_at', 'last_modified'), 'created_by'), 'classes': ('collapse',)}),
     )
@@ -47,7 +48,7 @@ class TaskAdmin(admin.ModelAdmin):
         fieldsets = super().get_fieldsets(request, obj)
         if obj is None:
             fieldsets = (      # Creation form
-                (None, {'fields': ('title', ('user', 'CBU'), 'deadline', ('state', 'priority'), 'description')}),
+                (None, {'fields': (('title', 'project'), ('user', 'CBU'), 'deadline', ('state', 'priority'), 'description')}),
             )
         return fieldsets
 

@@ -1,5 +1,5 @@
 FROM python:3.10-slim
-LABEL maintainer="Mariano Ruiz <mrsarm@gmail.com>"
+LABEL maintainer="Mariano Ruiz <FIXME@gmail.com>"
 
 ENV CXXFLAGS="-mtune=intel -Os -pipe" \
     PROCESS_TYPE="web" \

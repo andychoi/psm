@@ -195,8 +195,8 @@ class Task(models.Model):
 
         It uses as input a salt code configured and the ID number.
 
-        See: coleman/settings_emails.py
-             https://github.com/mrsarm/tornado-dcoleman-mtasks-viewer
+        See: FIXME/settings_emails.py
+             https://github.com/FIXME/tornado-dFIXME-mtasks-viewer
         """
         salt = settings.TASKS_VIEWER_HASH_SALT
         if not settings.DEBUG and salt == '1two3':

@@ -12,7 +12,7 @@ Features
 * Each task may have items: sub-tasks to be done.
 * The built-in Django *Authentication and Authorization* system
   to manage users and groups, login, etc.
-* Module `django-adminfilters <https://github.com/mrsarm/django-adminfilters>`_
+* Module `django-adminfilters <https://github.com/FIXME/django-adminfilters>`_
   that allows multiselection searches.
 * Send emails when a task is created.
 * Basic Rest API configuration (disabled by default, check the ``INSTALLED_APPS`` setting).
@@ -100,7 +100,7 @@ Docker
 ------
 
 A reference `<Dockerfile>`_ is provided, and the image published
-in `Docker Hub <https://hub.docker.com/r/mrsarm/django-psmprj>`_.
+in `Docker Hub <https://hub.docker.com/r/FIXME/django-psmprj>`_.
 
 Also `<docker-compose.yml>`_ and `<.env.example>`_ files are provided, you can run
 all from here, PSM, the viewer app and Postgres.

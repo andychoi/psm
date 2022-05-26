@@ -71,7 +71,7 @@ PostgreSQL database
 -------------------
 
 If you want to use a PostgreSQL database (recommended), before run
-the `migration scripts <https://github.com/mrsarm/django-psmprj/#install-and-run>`_
+the `migration scripts <https://github.com/FIXME/django-psmprj/#install-and-run>`_
 be sure to create the user and the database used by PSM.
 In the ``run.sh`` script is used this string connection
 as example: ``postgresql://dpsmprj:postgres@localhost/dpsmprj_dev``,

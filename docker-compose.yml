@@ -6,7 +6,7 @@ volumes:
 
 services:
   django-psmprj:
-    image: "mrsarm/django-psmprj:${TAG:-latest}"
+    image: "FIXME/django-psmprj:${TAG:-latest}"
     build:
       context: .
       args:
@@ -53,7 +53,7 @@ services:
     command: ["postgres", "-c", "log_statement=all"]  # Comment to disable SQL logs. all: all queries, ddl: DDL only, mod: DDL and modifying statements
 
   django-psmprj-mtasks-viewer:
-    image: "mrsarm/django-psmprj-mtasks-viewer"
+    image: "FIXME/django-psmprj-mtasks-viewer"
     ports:
       - "8888:8888"
     environment:
@@ -81,7 +81,7 @@ services:
 
   # Provide all the DB resources: DB and DB user creation, DB migrations and admin user creation
   django-psmprj-provision:
-    image: "mrsarm/django-psmprj:${TAG:-latest}"
+    image: "FIXME/django-psmprj:${TAG:-latest}"
     environment:
       - PROCESS_TYPE=provision
       - POSTGRES_PASSWORD
@@ -103,7 +103,7 @@ services:
   # `ADMIN_USERNAME=john ADMIN_PASSWORD=secretpass docker-compose up django-psmprj-createadmin'
 
   django-psmprj-createdb:
-    image: "mrsarm/django-psmprj:${TAG:-latest}"
+    image: "FIXME/django-psmprj:${TAG:-latest}"
     environment:
       - PROCESS_TYPE=createdb
       - POSTGRES_PASSWORD
@@ -114,7 +114,7 @@ services:
       - tools
 
   django-psmprj-migrate:
-    image: "mrsarm/django-psmprj:${TAG:-latest}"
+    image: "FIXME/django-psmprj:${TAG:-latest}"
     environment:
       - PROCESS_TYPE=migrate
       - DATABASE_URL
@@ -125,7 +125,7 @@ services:
       - tools
 
   django-psmprj-createadmin:
-    image: "mrsarm/django-psmprj:${TAG:-latest}"
+    image: "FIXME/django-psmprj:${TAG:-latest}"
     environment:
       - PROCESS_TYPE=createadmin
       - DATABASE_URL
@@ -141,7 +141,7 @@ services:
   # Run automated tests
 
   django-psmprj-test:
-    image: "mrsarm/django-psmprj:${TAG:-latest}"
+    image: "FIXME/django-psmprj:${TAG:-latest}"
     environment:
       - PROCESS_TYPE=test
     profiles:

@@ -374,7 +374,7 @@ class Project(models.Model):
         It uses as input a salt code configured and the ID number.
 
         See: psmprj/settings_emails.py
-             https://github.com/mrsarm/tornado-dpsmprj-mProjects-viewer
+             https://github.com/FIXME/tornado-dpsmprj-mProjects-viewer
         """
         salt = settings.ProjectS_VIEWER_HASH_SALT
         if not settings.DEBUG and salt == '1two3':

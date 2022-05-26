@@ -64,6 +64,12 @@ class projectListView(generic.ListView):
         } )
 
         context['filterItems'].append( {
+            "key": "DEP", "text": "Dept", "qId": "dep"
+            , "selected": self.request.GET.get('dep', '')
+            , "items": Dept.objects.all()
+        } )
+
+        context['filterItems'].append( {
             "key": "CBU", "text": "CBU", "qId": "cbu"
             , "selected": self.request.GET.get('cbu', '')
             , "items": CBU.objects.all()
@@ -77,17 +83,21 @@ class projectListView(generic.ListView):
         # queryset = Project.objects.filter(year=self.kwargs['year'])
 
         queryset = Project.objects.all()
-        lYear = self.request.GET.get('year', '')
-        if lYear:
-            queryset = queryset.filter(year=lYear)
+        ltmp = self.request.GET.get('year', '')
+        if ltmp:
+            queryset = queryset.filter(year=ltmp)
 
-        lDiv = self.request.GET.get('div', '')
-        if lDiv:
-            queryset = queryset.filter(div=lDiv)
+        ltmp = self.request.GET.get('div', '')
+        if ltmp:
+            queryset = queryset.filter(div__id=ltmp)
 
-        lCBU = self.request.GET.get('cbu', '')
-        if lCBU:
-            queryset = queryset.filter(CBU__id=lCBU)
+        ltmp = self.request.GET.get('dep', '')
+        if ltmp:
+            queryset = queryset.filter(dept__id=ltmp)
+
+        ltmp = self.request.GET.get('cbu', '')
+        if ltmp:
+            queryset = queryset.filter(CBU__id=ltmp)
         return queryset
 
 

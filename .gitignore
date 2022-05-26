@@ -39,6 +39,9 @@ venv*/
 
 /htmlcov
 
+# runtime
+run/
+
 # file upload folder
 media/
 

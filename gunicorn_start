@@ -1,0 +1,27 @@
+#!/bin/bash
+
+NAME="psmprj"  #Django application name
+DIR=/home/andy/py/django/github/psm   #Directory where project is located
+USER=andy   #User to run this script as
+GROUP=andy  #Group to run this script as
+WORKERS=3     #Number of workers that Gunicorn should spawn
+#SOCKFILE=unix:/opt/app/psm/gunicorn.sock   #This socket file will communicate with Nginx 
+SOCKFILE=0.0.0.0:8000                   #This socket file will communicate with Nginx 
+DJANGO_SETTINGS_MODULE=psmprj.settings  #Which Django setting file should use
+DJANGO_WSGI_MODULE=psmprj.wsgi          #Which WSGI file should use
+LOG_LEVEL=debug
+cd $DIR
+source /home/andy/py/django/github/psm/.venv/bin/activate  #Activate the virtual environment
+export DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
+export PYTHONPATH=$DIR:$PYTHONPATH
+
+#Command to run the progam under supervisor
+exec /home/andy/py/django/github/psm/.venv/bin/gunicorn ${DJANGO_WSGI_MODULE}:application \
+--name $NAME \
+--workers $WORKERS \
+--user=$USER \
+--group=$GROUP \
+--bind=$SOCKFILE \
+--log-level=$LOG_LEVEL \
+--log-file=-
+

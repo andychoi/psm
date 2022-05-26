@@ -47,24 +47,17 @@
 		</div>
 		<div class="row">
             <div class="input-group">
-                <!-- <label>
-                    Status
-                    <select>
-                    </select>
-                </label>
-                <label>
-                    Status
-                    <select></select>
-                </label> -->
-                <label>
-                    CBU
-                    <select id='sel_cbu' onchange="updateData()">
-                        <option value=''>ALL</option>
-                        {% for pItem in filter_CBU.items %}
-                        <option value={{ pItem.id }}>{{ pItem.name }}</option>
-                        {% endfor %}
-                    </select>
-                </label>
+                {% for filterItem in filterItems %}
+                    <label>
+                        {{ filterItem.text }}
+                        <select id='sel_{{ filterItem.qId }}' onchange="updateData()">
+                            <option value=''>ALL</option>
+                            {% for pItem in filterItem.items %}
+                            <option value={{ pItem.id }}>{{ pItem.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>                    
+                {% endfor %}
             </div>
     
             <!-- Filter  div class="input-group"> <span class="input-group-addon">Filter</span>
@@ -191,10 +184,26 @@
     <script src="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.js"></script>
 
     <script>
-       $('#sel_cbu').val("{{ filter_CBU.selected }}");
-       function updateData() {
-           window.location.href = '/project/?cbu=' + $('#sel_cbu').val();
-       }
+        // set preselected values
+        {% for filterItem in filterItems %}
+            $('#sel_{{filterItem.qId}}').val("{{ filterItem.selected }}");
+        {% endfor %}
+
+        function updateData() {
+            var q = "";
+            var qs = [];
+            var tmp = '';
+
+            {% for filterItem in filterItems %}
+                tmp = $('#sel_{{filterItem.qId}}').val();
+                if (tmp != '') qs.push('{{filterItem.qId}}=' + tmp);
+            {% endfor %}
+
+            if (qs.length > 0) {
+                q = "?" + qs.join("&");
+            }            
+            window.location.href = '/project/' + q;
+        }
     </script>    
 </body>
 </html>

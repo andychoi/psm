@@ -49,10 +49,26 @@ class projectListView(generic.ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context['filter_CBU'] = {}
-        context['filter_CBU']['selected'] = self.request.GET.get('cbu', '')
-        context['filter_CBU']['items'] = CBU.objects.all()
-        
+        context['filterItems'] = []
+
+        context['filterItems'].append( {
+            "key": "YEAR", "text": "Year", "qId": "year"
+            , "selected": self.request.GET.get('year', '')
+            , "items": map( lambda x: {"id": x['year'], "name": x['year']}, Project.objects.values('year').distinct() )
+        } )
+
+        context['filterItems'].append( {
+            "key": "DIV", "text": "Div", "qId": "div"
+            , "selected": self.request.GET.get('div', '')
+            , "items": Div.objects.all()
+        } )
+
+        context['filterItems'].append( {
+            "key": "CBU", "text": "CBU", "qId": "cbu"
+            , "selected": self.request.GET.get('cbu', '')
+            , "items": CBU.objects.all()
+        } )
+
         return context
 
     def get_queryset(self):
@@ -60,8 +76,16 @@ class projectListView(generic.ListView):
         # # return Project.objects.filter(year=self.year).order_by('dept')
         # queryset = Project.objects.filter(year=self.kwargs['year'])
 
-        lCBU = self.request.GET.get('cbu', '')
         queryset = Project.objects.all()
+        lYear = self.request.GET.get('year', '')
+        if lYear:
+            queryset = queryset.filter(year=lYear)
+
+        lDiv = self.request.GET.get('div', '')
+        if lDiv:
+            queryset = queryset.filter(div=lDiv)
+
+        lCBU = self.request.GET.get('cbu', '')
         if lCBU:
             queryset = queryset.filter(CBU__id=lCBU)
         return queryset

@@ -57,6 +57,15 @@
                     <select></select>
                 </label> -->
                 <label>
+                    Year
+                    <select id='sel_year' onchange="updateData()">
+                        <option value=''>ALL</option>
+                        {% for pItem in filter_YEAR.items %}
+                        <option value={{ pItem.id }}>{{ pItem.name }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label>
                     CBU
                     <select id='sel_cbu' onchange="updateData()">
                         <option value=''>ALL</option>
@@ -191,10 +200,25 @@
     <script src="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.js"></script>
 
     <script>
-       $('#sel_cbu').val(`{{ filter_CBU.selected }}`);
-       function updateData() {
-           window.location.href = '/project/?cbu=' + $('#sel_cbu').val();
-       }
+        $('#sel_year').val(`{{ filter_YEAR.selected }}`);
+        $('#sel_cbu').val(`{{ filter_CBU.selected }}`);
+        function updateData() {
+            var q = "";
+            var qs = [];
+            var tmp = '';
+            
+            tmp = $('#sel_year').val();
+            if (tmp != '') qs.push("year=" + tmp);
+
+            tmp = $('#sel_cbu').val();
+            if (tmp != '') qs.push("cbu=" + tmp);
+
+
+            if (qs.length > 0) {
+                q = "?" + qs.join("&");
+            }            
+            window.location.href = '/project/' + q;
+        }
     </script>    
 </body>
 </html>

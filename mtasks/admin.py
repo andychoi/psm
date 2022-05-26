@@ -66,7 +66,8 @@ class TaskAdmin(admin.ModelAdmin):
             # check if field_1 is being updated
             #breakpoint()
             if obj._loaded_values['state'] != obj.state and not request.user.has_perm('mtasks.change_status', obj):
-                messages.add_message(request, messages.ERROR, "You don't have permission to change state")
+                messages.set_level(request, messages.ERROR)
+                messages.error(request, "You don't have permission to change state")
                 return
             
         super().save_model(request, obj, form, change)

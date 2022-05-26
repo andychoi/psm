@@ -16,6 +16,7 @@ django==4.0.4
     # via
     #   -r requirements-dev.in
     #   django-extensions
+    #   django-guardian
     #   django-import-export
     #   djangorestframework
 django-admin-list-filter-dropdown==1.0.3
@@ -23,6 +24,8 @@ django-admin-list-filter-dropdown==1.0.3
 django-adminfilters==1.9.0
     # via -r requirements-dev.in
 django-extensions==3.1.5
+    # via -r requirements-dev.in
+django-guardian==2.4.0
     # via -r requirements-dev.in
 django-import-export==2.8.0
     # via -r requirements-dev.in

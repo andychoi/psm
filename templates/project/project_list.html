@@ -47,20 +47,20 @@
 		</div>
 		<div class="row">
             <div class="input-group">
-                <!-- <label>
-                    Status
-                    <select>
-                    </select>
-                </label>
-                <label>
-                    Status
-                    <select></select>
-                </label> -->
                 <label>
                     Year
                     <select id='sel_year' onchange="updateData()">
                         <option value=''>ALL</option>
                         {% for pItem in filter_YEAR.items %}
+                        <option value={{ pItem.id }}>{{ pItem.name }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label>
+                    Div
+                    <select id='sel_div' onchange="updateData()">
+                        <option value=''>ALL</option>
+                        {% for pItem in filter_DIV.items %}
                         <option value={{ pItem.id }}>{{ pItem.name }}</option>
                         {% endfor %}
                     </select>
@@ -201,6 +201,7 @@
 
     <script>
         $('#sel_year').val(`{{ filter_YEAR.selected }}`);
+        $('#sel_div').val(`{{ filter_DIV.selected }}`);
         $('#sel_cbu').val(`{{ filter_CBU.selected }}`);
         function updateData() {
             var q = "";
@@ -209,6 +210,9 @@
             
             tmp = $('#sel_year').val();
             if (tmp != '') qs.push("year=" + tmp);
+
+            tmp = $('#sel_div').val();
+            if (tmp != '') qs.push("div=" + tmp);
 
             tmp = $('#sel_cbu').val();
             if (tmp != '') qs.push("cbu=" + tmp);

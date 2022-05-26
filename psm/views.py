@@ -53,6 +53,10 @@ class projectListView(generic.ListView):
         context['filter_YEAR']['selected'] = self.request.GET.get('year', '')
         context['filter_YEAR']['items'] = map( lambda x: {"id": x['year'], "name": x['year']}, Project.objects.values('year').distinct() )
 
+        context['filter_DIV'] = {}
+        context['filter_DIV']['selected'] = self.request.GET.get('div', '')
+        context['filter_DIV']['items'] = Div.objects.all()
+
         context['filter_CBU'] = {}
         context['filter_CBU']['selected'] = self.request.GET.get('cbu', '')
         context['filter_CBU']['items'] = CBU.objects.all()
@@ -68,6 +72,10 @@ class projectListView(generic.ListView):
         lYear = self.request.GET.get('year', '')
         if lYear:
             queryset = queryset.filter(year=lYear)
+
+        lDiv = self.request.GET.get('div', '')
+        if lDiv:
+            queryset = queryset.filter(div=lDiv)
 
         lCBU = self.request.GET.get('cbu', '')
         if lCBU:

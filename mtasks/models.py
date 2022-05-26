@@ -52,12 +52,17 @@ class TaskManager(models.Manager):
         """
         return self.exclude(pk=pk).filter(**kwargs)
 
-
+# custom permission: https://docs.djangoproject.com/en/4.0/topics/auth/customizing/
 class Task(models.Model):
     class Meta:
         verbose_name = _("Task")
         verbose_name_plural = _("Tasks")
 
+        permissions = [
+            ("change_task_status", "Can change the status of tasks"),
+            ("close_task", "Can remove a task by setting its status as closed"),
+        ]
+        
     STATES = (
         (State.TO_DO.value, _('To Do')),
         (State.IN_PROGRESS.value, _('In Progress')),

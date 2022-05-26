@@ -31,7 +31,6 @@ ADMIN = env.bool('DJANGO_ADMIN', True)
 
 ALLOWED_HOSTS = [ '*' ]
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -99,7 +98,14 @@ TEMPLATES = [
     },
 ]
 
+#https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-18-04
 WSGI_APPLICATION = 'coleman.wsgi.application'
+
+#NGNIX -> Django : origin checking failed... 
+CSRF_TRUSTED_ORIGINS = ["https://server-name-ip/", "http://server-name-ip/"]
+
+#https://stackoverflow.com/questions/44034879/django-nginx-getting-csrf-verification-error-in-production-over-http
+CSRF_COOKIE_HTTPONLY = env.bool('CSRF_COOKIE_HTTPONLY', False)
 
 
 # Database

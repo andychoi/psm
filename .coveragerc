@@ -1,2 +1,2 @@
 [run]
-omit = mtasks/tests/*,mtasks/migrations/*,partner/migrations/*,psmprj/*,venv*/*,.venv*/*
+omit = mtasks/tests/*,mtasks/migrations/*,psmprj/*,venv*/*,.venv*/*

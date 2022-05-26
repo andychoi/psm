@@ -36,12 +36,12 @@ ALLOWED_HOSTS = [ '*' ]
 INSTALLED_APPS = [
 #    'jazzmin',
     # 'mtasks.apps.MtasksConfig',
-    # 'partner',
+    # 'CBU',
     'common',
     'psm',
+    'mtasks',
     'sap',
     'reports',
-    'ticketSecurity',
     
     'django.contrib.admin',
     'django.contrib.auth',

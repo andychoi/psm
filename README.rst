@@ -8,7 +8,7 @@ Features
 --------
 
 * Simple task manager that allows to define a tasks with title,
-  partner (customer, provider...), description, responsible of the task, priority...
+  CBU (customer, provider...), description, responsible of the task, priority...
 * Each task may have items: sub-tasks to be done.
 * The built-in Django *Authentication and Authorization* system
   to manage users and groups, login, etc.

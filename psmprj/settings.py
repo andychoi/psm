@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'mtasks',
     'sap',
     'reports',
-    
+    'guardian',     # custom permission
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -218,8 +218,9 @@ MEDIA_URL = '/media/'
 AUTHENTICATION_BACKENDS = [
 #    'django_auth_adfs.backend.AdfsAuthCodeBackend',
 #    'microsoft_auth.backends.MicrosoftAuthenticationBackend',
-    'django.contrib.auth.backends.ModelBackend' # if you also want to use Django's authentication
+    'django.contrib.auth.backends.ModelBackend', # if you also want to use Django's authentication
     # I recommend keeping this with at least one database superuser in case of unable to use others
+    'guardian.backends.ObjectPermissionBackend',
 ]
 
 # from decouple import config

@@ -58,11 +58,7 @@ class Task(models.Model):
         verbose_name = _("Task")
         verbose_name_plural = _("Tasks")
 
-        permissions = [
-            ("change_task_status", "Can change the status of tasks"),
-            ("close_task", "Can remove a task by setting its status as closed"),
-        ]
-        
+
     STATES = (
         (State.TO_DO.value, _('To Do')),
         (State.IN_PROGRESS.value, _('In Progress')),
@@ -100,12 +96,29 @@ class Task(models.Model):
             models.Index(fields=TASK_PRIORITY_FIELDS, name='mtasks_task_priority_idx'),
         ]
 
+        permissions = [
+            # ("change_task_status", "Can change the status of tasks"),
+            # ("close_task", "Can remove a task by setting its status as closed"),
+            ('assign_task', 'Assign task'),
+            ('change_status', 'Change status'),
+            ('close_task', 'Close task'),
+        ]        
+
     def __str__(self):
         return "[%s] %s" % (self.number, self.title)
-
+        
     @property
     def number(self) -> str:
         return "{:08d}".format(self.pk)
+
+#   not working: https://stackoverflow.com/questions/23361057/django-comparing-old-and-new-field-value-before-saving
+#   try this
+    @classmethod
+    def from_db(cls, db, field_names, values):
+        instance = super().from_db(db, field_names, values)
+        # save original values, when model is loaded from database,
+        instance._loaded_values = dict(zip(field_names, values))    
+        return instance
 
     def save(self, *args, **kwargs):
         send_email = self.pk is None

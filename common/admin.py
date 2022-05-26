@@ -35,13 +35,13 @@ class TeamAdmin(ImportExportMixin, admin.ModelAdmin):
 class ExtendUserAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display = ('id', 'user', 'name', 'email', 'u_team', 'u_dept', 'u_div', 'is_active')
     list_display_links = ('user', 'name')
-    search_fields = ('id', 'name', 'email')
+    search_fields = ('id', 'name', 'email', 'manager__name')
 
     ordering = ('name',)
 
     readonly_fields = ('created_at', 'last_modified')
     fieldsets = (  # Edition form
-         (None, {'fields': (('user', 'name', 'email') , ('is_external', 'is_active'), ('u_team','u_dept', 'u_div'))}),
+         (None, {'fields': (('user', 'name', 'email') , ('manager', 'is_external', 'is_active'), ('u_team','u_dept', 'u_div'))}),
         (_('More...'), {'fields': (('created_at', 'last_modified'), 'created_by'), 'classes': ('collapse',)}),
     )
 
@@ -49,7 +49,7 @@ class ExtendUserAdmin(ImportExportMixin, admin.ModelAdmin):
         fieldsets = super().get_fieldsets(request, obj)
         if obj is None:
             fieldsets = (      # Creation form
-                 (None, {'fields': ('user', ('name', 'email') , ('is_external', 'is_active'), ('u_team','u_dept', 'u_div'))}),
+                 (None, {'fields': ('user', ('name', 'email') , ('manager', 'is_external', 'is_active'), ('u_team','u_dept', 'u_div'))}),
             )
         return fieldsets
 

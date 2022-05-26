@@ -3,6 +3,7 @@ from django.conf import settings
 from common.utils import ROLES
 from django.utils.translation import gettext_lazy as _
 
+# from django.contrib.auth.models import (BaseUserManager, AbstractBaseUser)
 # Create your models here.
 
 class Div(models.Model):
@@ -59,6 +60,7 @@ class ExtendUser(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE, verbose_name=_('external user'), null=True, blank=True)
     name = models.CharField(max_length=100, blank=True, null=True, unique=True)
     email = models.EmailField(max_length=200, blank=True, null=True)
+    manager = models.OneToOneField(User,on_delete=models.CASCADE, related_name='manager', verbose_name=_('manager'), null=True, blank=True)
     u_team = models.ForeignKey('Team', verbose_name=_('Team'), on_delete=models.SET_NULL, blank=True, null=True)
     u_dept = models.ForeignKey('Dept', verbose_name=_('Dept'), on_delete=models.SET_NULL, blank=True, null=True)
     u_div = models.ForeignKey('Div', verbose_name=_('Div'), on_delete=models.SET_NULL, blank=True, null=True)

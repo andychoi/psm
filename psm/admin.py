@@ -1,17 +1,21 @@
 from adminfilters.multiselect import UnionFieldListFilter
+from django.db.models.query import QuerySet
 from django.contrib import messages
 from django.contrib import admin
 from django.db import models
+from django.db.models import Q
 from django.forms import Textarea
 from django.utils.translation import gettext_lazy as _
 from import_export.admin import ImportExportMixin
-from .models import Project, Item, CheckItem, Project_PRIORITY_FIELDS, Strategy, Program
 
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter, DropdownFilter, ChoiceDropdownFilter
 from django import forms
 
 from django.utils.html import format_html
 
+from common.models import State3, ReviewTypes
+from .models import Project, ProjectItem, ProjectItemCategory, Project_PRIORITY_FIELDS, Strategy, Program
+from reviews.models import  Review
 
 @admin.register(Strategy)
 class StrategyAdmin(ImportExportMixin, admin.ModelAdmin):
@@ -36,22 +40,21 @@ class ProgramAdmin(ImportExportMixin, admin.ModelAdmin):
         model = Program
         import_id_fields = ('id',)
 
-# checklist form
-class CheckItemModelForm( forms.ModelForm ):
+# to make textarea format
+class ProjectItemModelForm( forms.ModelForm ):
     desc = forms.CharField( widget=forms.Textarea )
     class Meta:
-        model = CheckItem
+        model = ProjectItemCategory
         fields = '__all__'
 
-@admin.register(CheckItem)
-class CheckItemAdmin(ImportExportMixin, admin.ModelAdmin):
-    form = CheckItemModelForm
+@admin.register(ProjectItemCategory)
+class ProjectItemCategoryAdmin(ImportExportMixin, admin.ModelAdmin):
+    form = ProjectItemModelForm
     class Meta:
-        # model = CheckItem
         import_id_fields = ('id',)
 
 class ItemInline(admin.TabularInline):
-    model = Item
+    model = ProjectItem
     extra = 0
     class Media:
         css = {"all": ("psm/css/custom_admin.css",)}
@@ -177,8 +180,31 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
             obj.created_by = request.user
             # if not obj.code: #not migration 
             #     obj.code = f'{obj.year % 100}-{"{:04d}".format(obj.pk+1000)}'
-
         super().save_model(request, obj, form, change)
+
+        review_create = False
+        if change is False:  #when create
+            if obj.req_pro == State3.YES.value:
+                review_create = True
+
+        else:   #when update      
+            if obj._loaded_values['req_pro'] != obj.req_pro:  #when changed state only
+
+                # read review record
+                theproc = Review.objects.filter(Q(project = obj.id) | Q(reviewtype = ReviewTypes.PRO.value))      #[:1].get()
+
+                if theproc: #already exist
+                    update_dic = { 'project' : obj, 'CBU' : obj.CBU, 'dept' : obj.dept, 'div' : obj.div, 'onboaddt' : obj.p_kickoff, 'state' : obj.req_pro }
+                    theproc.update(**update_dic)
+                    messages.add_message(request, messages.INFO, ' reviews request is updated')
+
+                elif obj.req_pro == State3.YES.value: #not exist and when target is YES only
+                    review_create = True
+
+        if review_create == True:
+            Review.objects.create(project = obj, CBU = obj.CBU, dept = obj.dept, div = obj.div, onboaddt = obj.p_kickoff, 
+                reviewtype = ReviewTypes.PRO.value, state = obj.req_pro, priority = obj.priority, title = obj.title)
+            messages.add_message(request, messages.INFO, ' reviews review request is created')
 
     # def get_queryset(self, request):
     #     return super(ProjectAdmin, self).get_queryset(request)

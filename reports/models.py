@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.utils.html import mark_safe
 # from ckeditor.fields import RichTextField
 
-from common.models import CBU, Dept, Div
+from common.models import CBU, Dept, Div, PUBLISH, STATUS
 from psm.models import Status
 
 
@@ -22,23 +22,7 @@ class ReportDist(models.Model):
         verbose_name = _("Report Distribution List")
         verbose_name_plural = _("Report Distribution List")    
 
-PUBLISH = (
-	(0,"Draft"),
-	(1,"Publish"),
-	(2, "Delete")
-)
-STATUS = (
-	# (0, "N/A"),
-	# (1, "Green"),
-	# (2, "Yellow"),
-	# (3, "Red"),
-	# (9, "Completed")
-    (Status.GREEN.value, _('Green')),
-    (Status.YELLOW.value, _('Yellow')),
-    (Status.RED.value, _('Red')),
-    (Status.COMPLETED.value, _('Completed')),
-    (Status.NA.value, _('N/A')),
-)
+
 # creating an django model class
 class Report(models.Model):
 

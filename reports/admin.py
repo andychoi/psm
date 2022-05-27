@@ -145,11 +145,11 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
             obj.updated_by = request.user
         else:
             obj.updated_by = request.user
-        if not obj.CBU:  #copy from project
+        if not obj.CBU and obj.project.CBU:  #copy from project
             obj.CBU = obj.project.CBU
-        if not obj.dept:  #copy from project
+        if not obj.dept and obj.project.dept:  #copy from project
             obj.dept = obj.project.dept
-        if not obj.div:  #copy from project
+        if not obj.div and not obj.project.div:  #copy from project
             obj.div = obj.project.div
 
         super().save_model(request, obj, form, change)

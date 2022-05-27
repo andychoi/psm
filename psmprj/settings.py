@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'mtasks',
     'sap',
     'reports',
+    'reviews',
     'guardian',     # custom permission
 #    'river',        # simple workflow; not yet compatible with django 4.x
     'django.contrib.admin',
@@ -103,10 +104,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'psmprj.wsgi.application'
 
 #NGNIX -> Django : origin checking failed... 
-CSRF_TRUSTED_ORIGINS = ["https://server-name-ip/", "http://server-name-ip/"]
-
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS")     #["https://server-name-ip/", "http://server-name-ip/"]
 #https://stackoverflow.com/questions/44034879/django-nginx-getting-csrf-verification-error-in-production-over-http
-CSRF_COOKIE_HTTPONLY = env.bool('CSRF_COOKIE_HTTPONLY', False)
+#CSRF_COOKIE_HTTPONLY = env.bool('CSRF_COOKIE_HTTPONLY', False)
 
 
 # Database
@@ -119,19 +119,19 @@ CSRF_COOKIE_HTTPONLY = env.bool('CSRF_COOKIE_HTTPONLY', False)
 # See more options at https://github.com/kennethreitz/dj-database-url
 #
 DATABASES = {
-    'default': env.dj_db_url('DATABASE_URL',
-                             'sqlite:///%s/db.sqlite3' % BASE_DIR,
-                             conn_max_age=env.int('CONN_MAX_AGE', 600)),
+    # 'default': env.dj_db_url('DATABASE_URL',
+    #                          'sqlite:///%s/db.sqlite3' % BASE_DIR,
+    #                          conn_max_age=env.int('CONN_MAX_AGE', 600)),
 
-# postgresql
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    #     'NAME': 'dj', 
-    #     'USER': 'postgres', 
-    #     'PASSWORD': 'postgres',
-    #     'HOST': '127.0.0.1', 
-    #     'PORT': '5432',
-    # }
+# postgresql,  python -m pip install psycopg2
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'psmdb', 
+        'USER': 'postgres', 
+        'PASSWORD': env("POSTGRES_PASSWORD"),
+        'HOST': '127.0.0.1', 
+        'PORT': '5432',
+    }
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

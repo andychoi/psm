@@ -1,4 +1,3 @@
-import enum
 import logging
 import datetime
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -7,7 +6,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 
-from common.models import CBU, Div, Dept, Team, ExtendUser
+from common.models import CBU, Div, Dept, Team, ExtendUser, Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, State3, STATE3
 from sap.models import WBS
 
 from psmprj.utils.mail import send_mail_async as send_mail
@@ -34,61 +33,12 @@ def max_value_program_year(value):
 # Fields used to create an index in the DB and sort the Projects in the Admin
 Project_PRIORITY_FIELDS = ('state', 'CBU', '-priority', '-lstrpt')
 
-class State(enum.Enum):
-    """
-    Status of completion of the Project
-    (codes are prefixed with numbers to be easily sorted in the DB).
-    """
-    BACKLOG = '00-backlog'
-    TO_DO = '10-to-do'
-    DOING = '20-doing'
-    HOLD = '30-on-hold'
-    DONE = '50-done'
-    CANCEL = '90-cancel'
-
-
-class Priority(enum.Enum):
-    """
-    The priority of the Project
-    (codes are prefixed with numbers to be easily sorted in the DB).
-    """
-    LOW = '00-low'
-    NORMAL = '10-normal'
-    HIGH = '20-high'
-    CRITICAL = '30-critical'
-
-class Status(enum.Enum):
-    # NA = 0
-    # GREEN = 1
-    # YELLOW = 2
-    # RED = 3
-    # COMPLETED = 9
-    NA = '00-notApplicable'
-    GREEN = '10-green'
-    YELLOW = '20-yellow'
-    RED = '30-red'
-    COMPLETED = '90-completed'
-
-class PrjType(enum.Enum):
-    """
-    The priority of the Project
-    (codes are prefixed with numbers to be easily sorted in the DB).
-    """
-    MAJOR = '00-Major'
-    SMALL = '10-Small'
-    ENH = '20-Enhancement'
-    UNC = '30-Unclassifed'
-
-class SimpleSelect(enum.Enum):
-    TBD = '00-TBD'
-    YES = '10-Yes'
-    NO  = '20-No'
 
 
 class Strategy(models.Model):
     class Meta:
         verbose_name = _("Strategy")
-        verbose_name_plural = _("Strategies")    
+        verbose_name_plural = _("1.Strategies")    
         
     name   = models.CharField(max_length=200, blank=True, null=True)
     description = models.TextField(null=True, blank=True)
@@ -103,14 +53,7 @@ class Strategy(models.Model):
 class Program(models.Model):
     class Meta:
         verbose_name = _("Program")
-        verbose_name_plural = _("Programs")    
-
-    STATUS = (
-        (Status.GREEN.value, _('No Risk')),
-        (Status.YELLOW.value, _('Low Risk')),
-        (Status.RED.value, _('High Risk')),
-        (Status.NA.value, _('Not evaluated')),
-    )
+        verbose_name_plural = _("2.Programs")    
 
     name = models.CharField(max_length=200, blank=True, null=True)
     startyr = models.PositiveIntegerField(_("Starting year"), default=current_year(), validators=[MinValueValidator(2020), max_value_current_year])
@@ -126,15 +69,6 @@ class Program(models.Model):
         return self.name
 
 
-# checklist
-class CheckItem(models.Model):
-    name = models.CharField(_("name"), max_length=200, db_index=True)
-    desc = models.CharField(_("description"), max_length=2000, blank=True, null=True)
-
-    def __str__(self):
-        return self.name
-
-
 class ProjectManager(models.Manager):
 
     def others(self, pk, **kwargs):
@@ -145,6 +79,7 @@ class ProjectManager(models.Manager):
         """
         return self.exclude(pk=pk).filter(**kwargs)
 
+
 # -	간혹 프로젝트 주관하는 부서와 달리 협조하는 부서가 Budget 을 받아서 독립된 Schedule 로 진행하는
 #  “Collaboration project”있습니다. 이런 경우도 관리가 되면 좋은데..
 #  Sub-project? 정도로 해서 서로 연동이 되게 해서 부서별로 PM 및 일정 등을 관리 할수 있으면 좋을 것 같습니다. 
@@ -153,60 +88,7 @@ class ProjectManager(models.Manager):
 class Project(models.Model):
     class Meta:
         verbose_name = _("Project")
-        verbose_name_plural = _("Projects")
-
-    STATES = (
-        (State.BACKLOG.value, _('Backlog')),
-        (State.TO_DO.value, _('To Do')),
-        (State.DOING.value, _('Doing')),
-        (State.HOLD.value, _('Blocked')),
-        (State.DONE.value, _('Done')),
-        (State.CANCEL.value, _('Canceled'))
-    )
-
-    PRIORITIES = (
-        (Priority.LOW.value, _('Low')),
-        (Priority.NORMAL.value, _('Normal')),
-        (Priority.HIGH.value, _('High')),
-        (Priority.CRITICAL.value, _('Critical')),
-    )
-
-    STATUS = (
-        # (0,"N/A"),
-        # (1,"Green"),
-        # (2,"Yellow"),
-        # (3, "Red"),
-        # (9, "Completed")        
-        (Status.GREEN.value, _('Green')),
-        (Status.YELLOW.value, _('Yellow')),
-        (Status.RED.value, _('Red')),
-        (Status.COMPLETED.value, _('Completed')),
-        (Status.NA.value, _('N/A')),
-    )
-
-    PHASE = (
-        ('0-Pre-Planning',"Pre-Planning"),
-        ('1-Planning',"Planning"),
-        ('2-Planning',"Design"),
-        ('3-Planning',"Development"),
-        ('4-Testing',"Testing"),        
-        ('5-Launch',"Launch"),        
-        ('6-Completed',"Completed"),        
-        ('9-Closed',"Closed")        
-    )
-
-    PRJTYPE = (
-        (PrjType.MAJOR.value, _('Major')),
-        (PrjType.SMALL.value, _('Small')),
-        (PrjType.ENH.value, _('Enhancement')),
-        (PrjType.UNC.value, _('Unclassified')),
-    )
-
-    SSELECT = (
-        (SimpleSelect.TBD.value, _('TBD')),
-        (SimpleSelect.YES.value, _('Yes')),
-        (SimpleSelect.NO.value, _('No')),
-    )
+        verbose_name_plural = _("3.Projects")
 
 
     code = models.CharField(_("Code"), max_length=10, null=True, blank=True) 
@@ -239,7 +121,7 @@ class Project(models.Model):
     user = models.ForeignKey(ExtendUser, related_name='project_manager', verbose_name=_('HAEA PM'),
                              on_delete=models.SET_NULL, null=True, blank=True)
     state = models.CharField(_("state"), max_length=20, choices=STATES, default=State.TO_DO.value)
-    phase = models.CharField(_("Phase"), max_length=20, choices=PHASE, default='0-Pre-Planning')
+    phase = models.CharField(_("Phase"), max_length=20, choices=PHASE, default=Phase.PRE_PLAN.value)
     progress = models.SmallIntegerField(_("complete%"), default=0)
     priority = models.CharField(_("priority"), max_length=20, choices=PRIORITIES, default=Priority.NORMAL.value)
 
@@ -274,9 +156,9 @@ class Project(models.Model):
     a_launch = models.DateField(_("actual launch"), null=True, blank=True)
     a_close = models.DateField(_("actual closing"), null=True, blank=True)
 
-    req_pro = models.CharField(_("Procurement Review Needed?"), max_length=20, choices=SSELECT, default='00-TBD')
-    req_sec = models.CharField(_("Info Security Review Needed?"), max_length=20, choices=SSELECT, default='00-TBD')
-    req_inf = models.CharField(_("Infra Architecure Review Needed?"), max_length=20, choices=SSELECT, default='00-TBD')
+    req_pro = models.CharField(_("Review Review Needed?"), max_length=20, choices=STATE3, default='00-TBD')
+    req_sec = models.CharField(_("Info Security Review Needed?"), max_length=20, choices=STATE3, default='00-TBD')
+    req_inf = models.CharField(_("Infra Architecure Review Needed?"), max_length=20, choices=STATE3, default='00-TBD')
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='prj_created_by', verbose_name=_('created by'),
                                    on_delete=models.SET_NULL, null=True)
@@ -309,6 +191,13 @@ class Project(models.Model):
             return f'{self.year % 100}-{"{:04d}".format(self.pk)}'
         else:
             return self.code    #migrated records
+
+    @classmethod
+    def from_db(cls, db, field_names, values):
+        instance = super().from_db(db, field_names, values)
+        # save original values, when model is loaded from database,
+        instance._loaded_values = dict(zip(field_names, values))    
+        return instance
 
 
     def save(self, *args, **kwargs):
@@ -398,14 +287,21 @@ class Project(models.Model):
         token = sha1(token.encode('utf-8')).hexdigest()                         # this purpose (SHA-2 is too long)
         return settings.ProjectS_VIEWER_ENDPOINT.format(number=self.number, token=token)
 
+# checklist
+class ProjectItemCategory(models.Model):
+    name = models.CharField(_("name"), max_length=200, db_index=True)
+    desc = models.CharField(_("description"), max_length=2000, blank=True, null=True)
 
-class Item(models.Model):
+    def __str__(self):
+        return self.name
+
+class ProjectItem(models.Model):
     class Meta:
-        verbose_name = _("Item")
-        verbose_name_plural = _("Check List")
+        verbose_name = _("Project action item")
+        verbose_name_plural = _("Project action items")
 
-    Project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    checkitem = models.ForeignKey(CheckItem, blank=True, null=True, on_delete=models.PROTECT)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    project_item_category = models.ForeignKey(ProjectItemCategory, blank=True, null=True, on_delete=models.PROTECT)
     item_description = models.CharField(_("description"), max_length=200, blank=True)
     is_done = models.BooleanField(_("done?"), default=False)
 

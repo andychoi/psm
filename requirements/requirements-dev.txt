@@ -63,3 +63,5 @@ xlrd==2.0.1
     # via tablib
 xlwt==1.3.0
     # via tablib
+psycopg2 
+    # postgresql database

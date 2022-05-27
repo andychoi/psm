@@ -53,7 +53,7 @@ class ProjectItemCategoryAdmin(ImportExportMixin, admin.ModelAdmin):
     class Meta:
         import_id_fields = ('id',)
 
-class ItemInline(admin.TabularInline):
+class ProjectItemInline(admin.TabularInline):
     model = ProjectItem
     extra = 0
     class Media:
@@ -68,7 +68,7 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
     # list_display = ('PJcode', 'title', 'user', 'CBU', 'formatted_created_at', 'dept', 'phase', 'state')
     list_display = ('PJcode', 'title', 'user', 'CBU',  'dept', 'phase', 'state')
     list_display_links = ('PJcode', 'title')
-    search_fields = ('id', 'title', 'description', 'resolution', 'item__item_description',
+    search_fields = ('id', 'title', 'description', 'resolution', 'projectitem__item_description',
                      'wbs__wbs', 'es', 'ref')
     list_filter = (
         ('status_o', UnionFieldListFilter),
@@ -116,7 +116,7 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
             )
         return fieldsets
 
-    inlines = [ItemInline]
+    inlines = [ProjectItemInline]
 
     class Meta:
         import_id_fields = ('id',)

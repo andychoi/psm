@@ -110,7 +110,7 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
         return fieldsets
 
     list_filter = (
-        ('project', UnionFieldListFilter),
+        ('project', RelatedDropdownFilter),
         ('CBU', RelatedDropdownFilter),
         ('div', RelatedDropdownFilter),
         ('dept', RelatedDropdownFilter),

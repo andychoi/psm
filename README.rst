@@ -29,6 +29,10 @@ Docker, or:
   the ``requirements.txt`` file (use virtual environments or containers!).
 * A Django compatible database like PostgreSQL (by default uses
   the Python's built-in SQLite database for development purpose).
+* Default database is postgresql now.
+  database: psmdb
+  user: postgres
+  create .env file for password: POSTGRES_PASSWORD
 
 
 Install and Run
@@ -60,7 +64,7 @@ Then run in development mode with::
     $ python manage.py runserver 0.0.0.0:8000
 
 Or you can run with gunicorn::
-    
+
     $ python -m gunicorn psmprj.wsgi:application --bind 0.0.0.0:8000 --workers 3
 
 Add at the end ``0:5000`` if you want to open the port 5000

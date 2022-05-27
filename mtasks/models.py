@@ -6,7 +6,7 @@ from django.db import models
 # from river.models.fields.state import StateField
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
-from common.models import CBU, ExtendUser
+from common.models import CBU, ExtendUser, State, Priority, PRIORITIES, STATES
 from psm.models import Project
 from psmprj.utils.mail import send_mail_async as send_mail
 from hashlib import sha1
@@ -19,27 +19,27 @@ number_tr = _("number")
 TASK_PRIORITY_FIELDS = ('state', '-priority', '-deadline')
 
 
-class State(enum.Enum):
-    """
-    Status of completion of the task
-    (codes are prefixed with numbers to be easily sorted in the DB).
-    """
-    TO_DO = '00-to-do'
-    IN_PROGRESS = '10-in-progress'
-    BLOCKED = '20-blocked'
-    DONE = '30-done'
-    DISMISSED = '40-dismissed'
+# class State(enum.Enum):
+#     """
+#     Status of completion of the task
+#     (codes are prefixed with numbers to be easily sorted in the DB).
+#     """
+#     TO_DO = '00-to-do'
+#     IN_PROGRESS = '10-in-progress'
+#     BLOCKED = '20-blocked'
+#     DONE = '30-done'
+#     DISMISSED = '40-dismissed'
 
 
-class Priority(enum.Enum):
-    """
-    The priority of the task
-    (codes are prefixed with numbers to be easily sorted in the DB).
-    """
-    LOW = '00-low'
-    NORMAL = '10-normal'
-    HIGH = '20-high'
-    CRITICAL = '30-critical'
+# class Priority(enum.Enum):
+#     """
+#     The priority of the task
+#     (codes are prefixed with numbers to be easily sorted in the DB).
+#     """
+#     LOW = '00-low'
+#     NORMAL = '10-normal'
+#     HIGH = '20-high'
+#     CRITICAL = '30-critical'
 
 
 class TaskManager(models.Manager):
@@ -70,20 +70,20 @@ class Task(models.Model):
         verbose_name_plural = _("Tasks")
 
 
-    STATES = (
-        (State.TO_DO.value, _('To Do')),
-        (State.IN_PROGRESS.value, _('In Progress')),
-        (State.BLOCKED.value, _('Blocked')),
-        (State.DONE.value, _('Done')),
-        (State.DISMISSED.value, _('Dismissed'))
-    )
+    # STATES = (
+    #     (State.TO_DO.value, _('To Do')),
+    #     (State.IN_PROGRESS.value, _('In Progress')),
+    #     (State.BLOCKED.value, _('Blocked')),
+    #     (State.DONE.value, _('Done')),
+    #     (State.DISMISSED.value, _('Dismissed'))
+    # )
 
-    PRIORITIES = (
-        (Priority.LOW.value, _('Low')),
-        (Priority.NORMAL.value, _('Normal')),
-        (Priority.HIGH.value, _('High')),
-        (Priority.CRITICAL.value, _('Critical')),
-    )
+    # PRIORITIES = (
+    #     (Priority.LOW.value, _('Low')),
+    #     (Priority.NORMAL.value, _('Normal')),
+    #     (Priority.HIGH.value, _('High')),
+    #     (Priority.CRITICAL.value, _('Critical')),
+    # )
 
     ttype = models.ForeignKey(TaskType, verbose_name=_("Task Type"), blank=True, null=True, on_delete=models.PROTECT)
     project = models.ForeignKey(Project, blank=True, null=True, verbose_name=_('related project'), on_delete=models.PROTECT)

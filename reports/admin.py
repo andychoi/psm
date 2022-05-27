@@ -15,7 +15,7 @@ from django.forms import formsets
 from django.forms.models import BaseInlineFormSet
 
 # Register your models here.
-from .models import Report, Milestone, ReportDist
+from .models import Report, Milestone, ReportDist, ReportRisk
 
 # Register your models here.
 @admin.register(ReportDist)
@@ -163,6 +163,89 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
             obj.project.progress = obj.progress
             obj.project.lstrpt = obj.updated_on   #update to project last report date
             obj.project.save()
+
+    actions = ['make_published', 'duplicate_event']
+
+    @admin.action(description='Mark selected as published', permissions=['change'])
+    def make_published(self, request, queryset):
+        updated = queryset.update(status=1)
+        self.message_user(request, ngettext(
+            '%d  was successfully marked as published.',
+            '%d  were successfully marked as published.',
+            updated,
+        ) % updated, messages.SUCCESS)
+
+    @admin.action(description="Duplicate selected record", permissions=['change'])
+    def duplicate_event(self, request, queryset):
+        for object in queryset:
+            object.id = None
+            object.save()
+            messages.add_message(request, messages.INFO, 'Report is copied/saved')
+
+
+
+@admin.register(ReportRisk)
+class ReportRiskAdmin(ImportExportMixin, admin.ModelAdmin):
+
+    list_display = ('project_link', 'title', 'CBU', 'dept','formatted_reporton', 'status')
+    list_display_links = ('title', 'formatted_reporton')
+    ordering = ('-id',)
+    readonly_fields = ('project_link', 'updated_on', 'updated_by', 'created_on', 'created_by')
+    search_fields = ('title', 'project__title', 'risk', 'plan', 'owner')
+
+    def project_link(self, obj):
+        return mark_safe('<a href="{}">{}</a>'.format(
+            reverse("admin:psm_project_change", args=(obj.project.pk,)), obj.project.title ))
+    project_link.short_description = 'Project'
+
+    fieldsets = (               # Edition form
+        (None, {'fields': (('project', 'title', 'status'), 
+                                ('risk', 'plan', 'owner'), ),  "classes": ("stack_labels",)}),
+            (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by'),('CBU','dept','div')), 'classes': ('collapse',)}),
+    )
+
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = super().get_fieldsets(request, obj)
+        if obj is None:
+            fieldsets = (      # Creation form
+                (None, {'fields': (('project', 'title', 'status', ), 
+                                ('risk', 'plan', 'owner'),)}),
+            )
+        return fieldsets
+
+    list_filter = (
+        ('project', RelatedDropdownFilter),
+        ('CBU', RelatedDropdownFilter),
+        ('div', RelatedDropdownFilter),
+        ('dept', RelatedDropdownFilter),
+        ('status', UnionFieldListFilter),
+        'report_on'
+    )
+
+    #https://stackoverflow.com/questions/910169/resize-fields-in-django-admin
+    def get_form(self, request, obj=None, change=False, **kwargs):
+        form = super().get_form(request, obj, change, **kwargs)
+        form.base_fields['risk'].widget.attrs.update({'rows':5,'cols':40})
+        form.base_fields['plan'].widget.attrs.update({'rows':5,'cols':40})
+        return form
+
+    # default initial in form: starting work week
+    def get_changeform_initial_data(self, request):
+        today = datetime.date.today()
+        start = today - datetime.timedelta(days=today.weekday())
+        return {'title': 'Risk Report - ' + start.strftime("%m/%d/%Y") }
+
+    def formatted_reporton(self, obj):
+        return obj.report_on.strftime("%b %Y")
+    formatted_reporton.short_description = 'Report On'
+
+    def save_model(self, request, obj, form, change):
+        if change is False:
+            obj.created_by = request.user
+            obj.updated_by = request.user
+        else:
+            obj.updated_by = request.user
+        super().save_model(request, obj, form, change)
 
     actions = ['make_published', 'duplicate_event']
 

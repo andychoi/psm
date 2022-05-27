@@ -1,4 +1,7 @@
+from ast import Or
 from django.contrib import admin
+from django.contrib import messages
+from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from import_export.admin import ImportExportMixin
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter, DropdownFilter, ChoiceDropdownFilter
@@ -9,6 +12,7 @@ from django.utils.html import mark_safe
 # Register your models here.
 from .models import Review, ReviewLog
 from psm.models import Project, STATE3, State3
+from common.models import ReviewTypes, REVIEWTYPES
 
 class ReviewInline(admin.TabularInline):
     model = ReviewLog
@@ -19,6 +23,7 @@ class ReviewInline(admin.TabularInline):
 
 @admin.register(Review)
 class ReviewAdmin(ImportExportMixin, admin.ModelAdmin):
+
 
     list_display = ('reviewtype', 'project_link', 'title', 'formatted_updated', 'is_escalated', 'CBU', 'dept', 'state')
     list_display_links = ('title', 'formatted_updated')
@@ -72,6 +77,13 @@ class ReviewAdmin(ImportExportMixin, admin.ModelAdmin):
     formatted_updated.short_description = 'Updated'
 
     def save_model(self, request, obj, form, change):
+        #permission check per request type
+        breakpoint()
+        if (obj.reviewtype == ReviewTypes.PRO.value and not request.user.has_perm(ReviewTypes.PRO.value, obj)) or (obj.reviewtype == ReviewTypes.SEC.value and not request.user.has_perm(ReviewTypes.SEC.value, obj)) or (obj.reviewtype == ReviewTypes.INF.value and not request.user.has_perm(ReviewTypes.INF.value, obj)) or (obj.reviewtype == ReviewTypes.APP.value and not request.user.has_perm(ReviewTypes.APP.value, obj)) or (obj.reviewtype == ReviewTypes.MGT.value and not request.user.has_perm(ReviewTypes.MGT.value, obj)):
+            messages.set_level(request, messages.ERROR)
+            messages.error(request, "You don't have permission on " + obj.reviewtype)
+            return
+
         if change is False:
             obj.created_by = request.user
             obj.updated_by = request.user

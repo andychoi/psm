@@ -42,13 +42,13 @@ Create a virtual environment and activate it with *(Optional)*::
 
 Install dependencies with::
 
-    $ pip install --upgrade pip wheel
-    $ pip install -r requirements.txt
+    $ python -m pip install --upgrade pip wheel
+    $ python -m pip install -r requirements.txt
 
 Create the database with::
 
     $ python manage.py makemigrations
-    $ python manage.py makemigrations common psm sap reports mtasks
+    $ python manage.py makemigrations common psm sap reports mtasks reviews
     $ python manage.py migrate
 
 To create an admin user::
@@ -57,7 +57,11 @@ To create an admin user::
 
 Then run in development mode with::
 
-    $ python manage.py runserver
+    $ python manage.py runserver 0.0.0.0:8000
+
+Or you can run with gunicorn::
+    
+    $ python -m gunicorn psmprj.wsgi:application --bind 0.0.0.0:8000 --workers 3
 
 Add at the end ``0:5000`` if you want to open the port 5000
 instead of the default 8000, and the ``0:`` prefix is to

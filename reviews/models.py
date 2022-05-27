@@ -10,6 +10,14 @@ from common.models import CBU, Dept, Div, STATE3, STATUS, Status, PRIORITIES, Pr
 
 # creating an django model class
 class Review(models.Model):
+    class Meta:
+        permissions = [
+            (ReviewTypes.PRO.value, 'TaskType:' + ReviewTypes.PRO.value),
+            (ReviewTypes.SEC.value, 'TaskType:' + ReviewTypes.SEC.value),
+            (ReviewTypes.INF.value, 'TaskType:' + ReviewTypes.INF.value),
+            (ReviewTypes.APP.value, 'TaskType:' + ReviewTypes.MGT.value),
+            (ReviewTypes.MGT.value, 'TaskType:' + ReviewTypes.MGT.value),
+        ]        
 
     reviewtype = models.CharField(_("Review Type"), max_length=40, choices=REVIEWTYPES, default=ReviewTypes.PRO.value)
     project = models.ForeignKey('psm.Project', on_delete=models.CASCADE, blank=True, null=True)

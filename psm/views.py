@@ -11,7 +11,7 @@ from django.db.models import Q
 from django.shortcuts import render
 from pyparsing import common
 from .models import Project
-from common.models import CBU, Dept, Div
+from common.models import Div, Dept, PHASE, PRIORITIES, CBU
 from django.views import generic
 
 
@@ -72,7 +72,7 @@ class projectListView(generic.ListView):
         context['filterItems'].append( {
             "key": "PHASE", "text": "Phase", "qId": "phase"
             , "selected": self.request.GET.get('phase', '')
-            , "items": [{"id": i, "name": x[1]} for i, x in enumerate(Project.PHASE)]
+            , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PHASE)]
         } )
 
         context['filterItems'].append( {
@@ -84,7 +84,7 @@ class projectListView(generic.ListView):
         context['filterItems'].append( {
             "key": "PRI", "text": "Priority", "qId": "pri"
             , "selected": self.request.GET.get('pri', '')
-            , "items": [{"id": i, "name": x[1]} for i, x in enumerate(Project.PRIORITIES)]
+            , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRIORITIES)]
         } )
 
         return context
@@ -109,7 +109,7 @@ class projectListView(generic.ListView):
 
         ltmp = self.request.GET.get('phase', '')
         if ltmp:
-            queryset = queryset.filter(phase=Project.PHASE[int(ltmp)][0])
+            queryset = queryset.filter(phase=common.PHASE[int(ltmp)][0])
 
         ltmp = self.request.GET.get('cbu', '')
         if ltmp:
@@ -117,7 +117,7 @@ class projectListView(generic.ListView):
 
         ltmp = self.request.GET.get('pri', '')
         if ltmp:
-            queryset = queryset.filter(priority=Project.PRIORITIES[int(ltmp)][0])
+            queryset = queryset.filter(priority=common.PRIORITIES[int(ltmp)][0])
 
         return queryset
 

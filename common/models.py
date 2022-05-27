@@ -61,8 +61,8 @@ STATUS = (
 class Phase(enum.Enum):
     PRE_PLAN = '0-Pre-Planning'
     PLANNING = '1-Planning'
-    DESIGN = '2-Planning'
-    DEVELOP = '3-Planning'
+    DESIGN = '2-Design'
+    DEVELOP = '3-Develop'
     TESTING = '4-Testing'
     LAUNCH = '5-Launch'
     COMPLETED = '8-Completed'
@@ -87,7 +87,7 @@ class PrjType(enum.Enum):
     MAJOR = '00-Major'
     SMALL = '10-Small'
     ENH = '20-Enhancement'
-    UNC = '30-Unclassifed'
+    UNC = '90-Unclassifed'
 
 PRJTYPE = (
     (PrjType.MAJOR.value, _('Major')),

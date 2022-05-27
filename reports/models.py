@@ -103,6 +103,8 @@ class ReportRisk(models.Model):
 
     status = models.IntegerField(choices=PUBLISH, default=0)
     report_on = models.DateField(_("Reporting On"), default=datetime.now, blank=False)
+    deadline = models.DateField(_("deadline"), null=True, blank=True)
+
     created_on = models.DateField(_("created at"), auto_now_add=True, editable=False)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="riskr_eport_created_by", null=True, on_delete=models.SET_NULL)
     updated_on = models.DateTimeField(_("last updated"), auto_now=True, editable=False)

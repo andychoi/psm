@@ -199,8 +199,8 @@ class ReportRiskAdmin(ImportExportMixin, admin.ModelAdmin):
     project_link.short_description = 'Project'
 
     fieldsets = (               # Edition form
-        (None, {'fields': (('project', 'title', 'status'), 
-                                ('risk', 'plan', 'owner'), ),  "classes": ("stack_labels",)}),
+        (None, {'fields': (('project'), ('report_on', 'title', 'status'), 
+                                ('risk', 'plan', 'owner'), ('deadline',) ),  "classes": ("stack_labels",)}),
             (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by'),('CBU','dept','div')), 'classes': ('collapse',)}),
     )
 
@@ -208,8 +208,8 @@ class ReportRiskAdmin(ImportExportMixin, admin.ModelAdmin):
         fieldsets = super().get_fieldsets(request, obj)
         if obj is None:
             fieldsets = (      # Creation form
-                (None, {'fields': (('project', 'title', 'status', ), 
-                                ('risk', 'plan', 'owner'),)}),
+                (None, {'fields': (('project'), ('report_on', 'title', 'status', ), 
+                                ('risk', 'plan', 'owner'),('deadline',))}),
             )
         return fieldsets
 

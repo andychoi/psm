@@ -79,6 +79,11 @@ class PrjType(enum.Enum):
     ENH = '20-Enhancement'
     UNC = '30-Unclassifed'
 
+class SimpleSelect(enum.Enum):
+    TBD = '00-TBD'
+    YES = '10-Yes'
+    NO  = '20-No'
+
 
 class Strategy(models.Model):
     class Meta:
@@ -197,6 +202,13 @@ class Project(models.Model):
         (PrjType.UNC.value, _('Unclassified')),
     )
 
+    SSELECT = (
+        (SimpleSelect.TBD.value, _('TBD')),
+        (SimpleSelect.YES.value, _('Yes')),
+        (SimpleSelect.NO.value, _('No')),
+    )
+
+
     code = models.CharField(_("Code"), max_length=10, null=True, blank=True) 
 
     title = models.CharField(_("title"), max_length=200)
@@ -262,8 +274,9 @@ class Project(models.Model):
     a_launch = models.DateField(_("actual launch"), null=True, blank=True)
     a_close = models.DateField(_("actual closing"), null=True, blank=True)
 
-    ssg_sec = models.BooleanField(_("Security Reviewed?"), default=False)
-    ssg_inf = models.BooleanField(_("Infra Architecture Reviewed?"), default=False)
+    req_pro = models.CharField(_("Procurement Review Needed?"), max_length=20, choices=SSELECT, default='00-TBD')
+    req_sec = models.CharField(_("Info Security Review Needed?"), max_length=20, choices=SSELECT, default='00-TBD')
+    req_inf = models.CharField(_("Infra Architecure Review Needed?"), max_length=20, choices=SSELECT, default='00-TBD')
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='prj_created_by', verbose_name=_('created by'),
                                    on_delete=models.SET_NULL, null=True)

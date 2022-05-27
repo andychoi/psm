@@ -104,13 +104,12 @@ TEMPLATES = [
 WSGI_APPLICATION = 'psmprj.wsgi.application'
 
 #NGNIX -> Django : origin checking failed... 
-_cto = []
 if "CSRF_TRUSTED_ORIGINS" in os.environ:
-    _cto = env.list("CSRF_TRUSTED_ORIGINS")
-CSRF_TRUSTED_ORIGINS = _cto     #["https://server-name-ip/", "http://server-name-ip/"]
+    CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS")     #["https://server-name-ip/", "http://server-name-ip/"]
+else:
+    CSRF_TRUSTED_ORIGINS = []
 #https://stackoverflow.com/questions/44034879/django-nginx-getting-csrf-verification-error-in-production-over-http
 #CSRF_COOKIE_HTTPONLY = env.bool('CSRF_COOKIE_HTTPONLY', False)
-
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases

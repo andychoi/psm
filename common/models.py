@@ -59,7 +59,7 @@ from django.db.models.deletion import CASCADE
 #https://docs.djangoproject.com/en/2.1/topics/auth/customizing/#extending-the-existing-user-model
 #how to use: request.user.extenduser.<field name>
 class ExtendUser(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name=_('extended user'), null=True, blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name=_('login user'), null=True, blank=True)
     name = models.CharField(max_length=100, blank=True, null=True, unique=True)
     email = models.EmailField(max_length=200, blank=True, null=True)
     manager = models.OneToOneField(User,on_delete=models.CASCADE, related_name='manager', verbose_name=_('manager'), null=True, blank=True)
@@ -72,8 +72,8 @@ class ExtendUser(models.Model):
 
     is_pro_reviewer = models.BooleanField(_("Procurement reviewer?"), default=False)
     is_sec_reviewer = models.BooleanField(_("Security reviewer?"), default=False)
-    is_inf_reviewer = models.BooleanField(_("Infra Architecture reviewer?"), default=False)
-    is_app_reviewer = models.BooleanField(_("App Architecture reviewer?"), default=False)
+    is_inf_reviewer = models.BooleanField(_("Infrastructure reviewer?"), default=False)
+    is_app_reviewer = models.BooleanField(_("App_Architect?"), default=False)
     is_mgt_reviewer = models.BooleanField(_("Management reviewer?"), default=False)
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="ext_user_created", null=True, on_delete=models.SET_NULL)

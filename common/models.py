@@ -87,7 +87,7 @@ class ExtendUser(models.Model):
 
     @property
     def is_admin(self):
-        return self.is_organization_admin
+        return self.is_staff
 
 
 

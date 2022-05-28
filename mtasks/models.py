@@ -114,9 +114,9 @@ class Task(models.Model):
         permissions = [
             # ("change_task_status", "Can change the status of tasks"),
             # ("close_task", "Can remove a task by setting its status as closed"),
-            ('assign_task', 'Assign task'),
             ('change_status', 'Change status'),
-            ('close_task', 'Close task'),
+            # ('assign_task', 'Assign task'),
+            # ('close_task', 'Close task'),
         ]        
 
     def __str__(self):
@@ -224,10 +224,10 @@ class Task(models.Model):
         return settings.TASKS_VIEWER_ENDPOINT.format(number=self.number, token=token)
 
 
-class Item(models.Model):
+class TaskItem(models.Model):
     class Meta:
-        verbose_name = _("Item")
-        verbose_name_plural = _("Check List")
+        verbose_name = _("Task Item")
+        verbose_name_plural = _("Task Items")
 
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     item_description = models.CharField(_("description"), max_length=200)

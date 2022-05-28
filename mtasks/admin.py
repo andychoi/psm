@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.db import models
 from django.forms import Textarea
 from django.utils.translation import gettext_lazy as _
-from .models import Task, Item, TASK_PRIORITY_FIELDS, TaskType
+from .models import Task, TaskItem, TASK_PRIORITY_FIELDS, TaskType
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter
 
 # permission
@@ -20,8 +20,8 @@ class TaskTypeAdmin(admin.ModelAdmin):
         model = TaskType
         import_id_fields = ('id',)
 
-class ItemInline(admin.TabularInline):
-    model = Item
+class TaskItemInline(admin.TabularInline):
+    model = TaskItem
     extra = 0
 
 
@@ -29,7 +29,7 @@ class ItemInline(admin.TabularInline):
 class TaskAdmin(admin.ModelAdmin):
     list_display = ('project', 'ttype', 'title', 'user', 'CBU', 'created_at', 'deadline', 'priority', 'state')
     list_display_links = ('project', 'title')
-    search_fields = ('id', 'title', 'project', 'project__title', 'item__item_description',
+    search_fields = ('id', 'title', 'project', 'project__title', 'taskitem__item_description',
                      'user__name')
     list_filter = (
         ('ttype', RelatedDropdownFilter),
@@ -48,7 +48,7 @@ class TaskAdmin(admin.ModelAdmin):
     #                                          ('state', 'priority'), ('description', 'resolution'))}),
     #     (_('More...'), {'fields': (('created_at', 'last_modified'), 'created_by'), 'classes': ('collapse',)}),
     # )
-    inlines = [ItemInline]
+    inlines = [TaskItemInline]
 
     formfield_overrides = {
         models.TextField: {

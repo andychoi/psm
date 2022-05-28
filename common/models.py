@@ -1,132 +1,7 @@
 from django.db import models
 from django.conf import settings
-from common.utils import ROLES
+from common.utils import *
 from django.utils.translation import gettext_lazy as _
-import enum
-
-class State(enum.Enum):
-    """
-    Status of completion of the Project
-    (codes are prefixed with numbers to be easily sorted in the DB).
-    """
-    BACKLOG = '00-backlog'
-    TO_DO = '10-to-do'
-    DOING = '20-doing'
-    HOLD = '30-on-hold'
-    DONE = '50-done'
-    CANCEL = '90-cancel'
-# from django.contrib.auth.models import (BaseUserManager, AbstractBaseUser)
-STATES = (
-    (State.BACKLOG.value, _('Backlog')),
-    (State.TO_DO.value, _('To Do')),
-    (State.DOING.value, _('Doing')),
-    (State.HOLD.value, _('Blocked')),
-    (State.DONE.value, _('Done')),
-    (State.CANCEL.value, _('Canceled'))
-)
-
-class Priority(enum.Enum):
-    """
-    The priority of the Project
-    (codes are prefixed with numbers to be easily sorted in the DB).
-    """
-    LOW = '00-low'
-    NORMAL = '10-normal'
-    HIGH = '20-high'
-    CRITICAL = '30-critical'
-
-PRIORITIES = (
-    (Priority.LOW.value, _('Low')),
-    (Priority.NORMAL.value, _('Normal')),
-    (Priority.HIGH.value, _('High')),
-    (Priority.CRITICAL.value, _('Critical')),
-)
-
-
-class Status(enum.Enum):
-    NA = '00-notApplicable'
-    GREEN = '10-green'
-    YELLOW = '20-yellow'
-    RED = '30-red'
-    COMPLETED = '90-completed'
-
-STATUS = (
-    (Status.GREEN.value, _('Green')),
-    (Status.YELLOW.value, _('Yellow')),
-    (Status.RED.value, _('Red')),
-    (Status.COMPLETED.value, _('Completed')),
-    (Status.NA.value, _('N/A')),
-)
-
-class Phase(enum.Enum):
-    PRE_PLAN = '0-Pre-Planning'
-    PLANNING = '1-Planning'
-    DESIGN = '2-Design'
-    DEVELOP = '3-Develop'
-    TESTING = '4-Testing'
-    LAUNCH = '5-Launch'
-    COMPLETED = '8-Completed'
-    CLOSED = '9-Closed'
-
-PHASE = (
-    ('0-Pre-Planning',"Pre-Planning"),
-    ('1-Planning',"Planning"),
-    ('2-Planning',"Design"),
-    ('3-Planning',"Development"),
-    ('4-Testing',"Testing"),        
-    ('5-Launch',"Launch"),        
-    ('6-Completed',"Completed"),        
-    ('9-Closed',"Closed")        
-)
-
-class PrjType(enum.Enum):
-    """
-    The priority of the Project
-    (codes are prefixed with numbers to be easily sorted in the DB).
-    """
-    MAJOR = '00-Major'
-    SMALL = '10-Small'
-    ENH = '20-Enhancement'
-    UNC = '90-Unclassifed'
-
-PRJTYPE = (
-    (PrjType.MAJOR.value, _('Major')),
-    (PrjType.SMALL.value, _('Small')),
-    (PrjType.ENH.value, _('Enhancement')),
-    (PrjType.UNC.value, _('Unclassified')),
-)
-
-class State3(enum.Enum):
-    TBD = '0-TBD'
-    YES = '1-Yes'
-    NO  = '2-No'
-STATE3 = (
-    (State3.TBD.value, _('TBD')),
-    (State3.YES.value, _('Yes')),
-    (State3.NO.value, _('No')),
-)
-
-class ReviewTypes(enum.Enum):
-    PRO = '00-Procurement'
-    SEC = '10-Security'
-    INF = '20-Infra-Architecture'
-    APP = '30-App-Architecture'
-    MGT = '90-Management'
-REVIEWTYPES = (
-    (ReviewTypes.PRO.value, _('00-Procurement')),
-    (ReviewTypes.SEC.value, _('10-Security')),
-    (ReviewTypes.INF.value, _('20-Infra-Architecture')),
-    (ReviewTypes.APP.value, _('30-App-Architecture')),
-    (ReviewTypes.MGT.value, _('90-Management'))
-)
-
-
-
-PUBLISH = (
-	(0,"Draft"),
-	(1,"Publish"),
-	(2, "Delete")
-)
 
 
 # Create your models here.
@@ -181,8 +56,10 @@ from django.contrib.auth.models import User
 from django.db.models.base import Model
 from django.db.models.deletion import CASCADE
 
+#https://docs.djangoproject.com/en/2.1/topics/auth/customizing/#extending-the-existing-user-model
+#how to use: request.user.extenduser.<field name>
 class ExtendUser(models.Model):
-    user = models.OneToOneField(User,on_delete=models.CASCADE, verbose_name=_('external user'), null=True, blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name=_('extended user'), null=True, blank=True)
     name = models.CharField(max_length=100, blank=True, null=True, unique=True)
     email = models.EmailField(max_length=200, blank=True, null=True)
     manager = models.OneToOneField(User,on_delete=models.CASCADE, related_name='manager', verbose_name=_('manager'), null=True, blank=True)
@@ -192,7 +69,12 @@ class ExtendUser(models.Model):
     role = models.CharField(max_length=50, choices=ROLES, default="USER")
     is_external = models.BooleanField(_("External user?"), default=False)
     is_active = models.BooleanField(default=True)
-    is_organization_admin = models.BooleanField(default=False)
+
+    is_pro_reviewer = models.BooleanField(_("Procurement reviewer?"), default=False)
+    is_sec_reviewer = models.BooleanField(_("Security reviewer?"), default=False)
+    is_inf_reviewer = models.BooleanField(_("Infra Architecture reviewer?"), default=False)
+    is_app_reviewer = models.BooleanField(_("App Architecture reviewer?"), default=False)
+    is_mgt_reviewer = models.BooleanField(_("Management reviewer?"), default=False)
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="ext_user_created", null=True, on_delete=models.SET_NULL)
     created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False, blank=True)

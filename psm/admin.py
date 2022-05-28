@@ -183,28 +183,41 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
         review_create = False
+        new_reviews = []
         if change is False:  #when create
             if obj.req_pro == State3.YES.value:
-                review_create = True
+                new_reviews.append(ReviewTypes.PRO.value)
+            if obj.req_sec == State3.YES.value:
+                new_reviews.append(ReviewTypes.SEC.value)
+            if obj.req_inf == State3.YES.value:
+                new_reviews.append(ReviewTypes.INF.value)
 
         else:   #when update      
+            upd_reviews = []
             if obj._loaded_values['req_pro'] != obj.req_pro:  #when changed state only
+                upd_reviews.append((ReviewTypes.PRO.value, obj.req_pro))
+            if obj._loaded_values['req_sec'] != obj.req_sec:
+                upd_reviews.append((ReviewTypes.SEC.value, obj.req_sec))
+            if obj._loaded_values['req_inf'] != obj.req_inf:
+                upd_reviews.append((ReviewTypes.INF.value, obj.req_inf))
 
+            for upd in upd_reviews:
                 # read review record
-                theproc = Review.objects.filter(Q(project = obj.id) | Q(reviewtype = ReviewTypes.PRO.value))      #[:1].get()
-
+                theproc = Review.objects.filter(Q(project = obj.id) & Q(reviewtype = upd[0]))      #[:1].get()
                 if theproc: #already exist
-                    update_dic = { 'project' : obj, 'CBU' : obj.CBU, 'dept' : obj.dept, 'div' : obj.div, 'onboaddt' : obj.p_kickoff, 'state' : obj.req_pro }
+                    update_dic = { 'project' : obj, 'CBU' : obj.CBU, 'dept' : obj.dept, 'div' : obj.div, 'state' : upd[1] }
                     theproc.update(**update_dic)
-                    messages.add_message(request, messages.INFO, ' reviews request is updated')
+                    messages.add_message(request, messages.INFO, '[' + upd[0][3:] + '] review type records are updated.')
 
                 elif obj.req_pro == State3.YES.value: #not exist and when target is YES only
-                    review_create = True
+                    new_reviews.append(upd[0]) 
 
-        if review_create == True:
-            Review.objects.create(project = obj, CBU = obj.CBU, dept = obj.dept, div = obj.div, onboaddt = obj.p_kickoff, 
-                reviewtype = ReviewTypes.PRO.value, state = obj.req_pro, priority = obj.priority, title = obj.title)
-            messages.add_message(request, messages.INFO, ' reviews review request is created')
+        if new_reviews:
+            # breakpoint()
+            for new in new_reviews:
+                Review.objects.create(reviewtype = new, project = obj, CBU = obj.CBU, dept = obj.dept, div = obj.div, onboaddt = obj.p_kickoff, 
+                                      state = obj.req_pro, priority = obj.priority, title = obj.title)
+                messages.add_message(request, messages.INFO, '[' + new[3:] + '] review type - New review request is created' )
 
     # def get_queryset(self, request):
     #     return super(ProjectAdmin, self).get_queryset(request)

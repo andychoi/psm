@@ -38,8 +38,6 @@ Docker, or:
 Install and Run
 ---------------
 
-Using Docker, check the section below. Otherwise:
-
 Create a virtual environment and activate it with *(Optional)*::
 
     $ python3.8 -m venv .venv && source .venv/bin/activate
@@ -76,6 +74,24 @@ with a uWSGI server::
 
     $ uwsgi uwsgi.ini
 
+Trouble Tips
+---------------
+
+To make an empty migration file:
+    $manage.py makemigrations --empty yourappname
+
+Django provides a manage.py command to remove old content types: 
+    $ manage.py remove_stale_contenttypes
+
+Custom permission name change
+https://stackoverflow.com/questions/17858199/django-clean-permission-table
+
+"Deletes stale content types including ones from previously installed apps that have been removed from INSTALLED_APPS."
+    $ ./manage.py remove_stale_contenttypes [--include-stale-apps]
+https://docs.djangoproject.com/en/4.0/ref/django-admin/#remove-stale-contenttypes
+
+To database shell
+    $ python manage.py dbshell
 
 Procfile and Honcho
 ^^^^^^^^^^^^^^^^^^^

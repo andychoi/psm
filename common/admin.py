@@ -41,7 +41,7 @@ class ExtendUserAdmin(ImportExportMixin, admin.ModelAdmin):
 
     readonly_fields = ('created_at', 'last_modified')
     fieldsets = (  # Edition form
-         (None, {'fields': (('user', 'name', 'email') , ('manager', 'is_external', 'is_active'), ('u_team','u_dept', 'u_div'))}),
+         (None, {'fields': (('user', 'name', 'email') , ('manager', 'is_external', 'is_active'), ('u_team','u_dept', 'u_div'), ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',))}),
         (_('More...'), {'fields': (('created_at', 'last_modified'), 'created_by'), 'classes': ('collapse',)}),
     )
 
@@ -49,7 +49,7 @@ class ExtendUserAdmin(ImportExportMixin, admin.ModelAdmin):
         fieldsets = super().get_fieldsets(request, obj)
         if obj is None:
             fieldsets = (      # Creation form
-                 (None, {'fields': ('user', ('name', 'email') , ('manager', 'is_external', 'is_active'), ('u_team','u_dept', 'u_div'))}),
+                 (None, {'fields': ('user', ('name', 'email') , ('manager', 'is_external', 'is_active'), ('u_team','u_dept', 'u_div'), ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',))}),
             )
         return fieldsets
 

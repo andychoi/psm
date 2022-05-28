@@ -25,6 +25,8 @@ def year_choices():
     return [(r,r) for r in range(2020, datetime.date.today().year+1)]
 def current_year():
     return datetime.date.today().year
+def min_year():
+    return datetime.date.today().year - 4
 def max_value_current_year(value):
     return MaxValueValidator(current_year()+1)(value)
 def max_value_program_year(value):
@@ -56,8 +58,8 @@ class Program(models.Model):
         verbose_name_plural = _("2.Programs")    
 
     name = models.CharField(max_length=200, blank=True, null=True)
-    startyr = models.PositiveIntegerField(_("Starting year"), default=current_year(), validators=[MinValueValidator(2020), max_value_current_year])
-    endyr = models.PositiveIntegerField(_("Ending year"), default=current_year(), validators=[MinValueValidator(2020), max_value_program_year])
+    startyr = models.PositiveIntegerField(_("Starting year"), default=current_year(), validators=[MinValueValidator(2018), max_value_current_year])
+    endyr = models.PositiveIntegerField(_("Ending year"), default=current_year(), validators=[MinValueValidator(2018), max_value_program_year])
     lead = models.ForeignKey(ExtendUser, verbose_name=_('Program lead'), on_delete=models.SET_NULL, null=True, blank=True)
     is_active = models.BooleanField(_("Is active?"), default=True)
     description = models.TextField(null=True, blank=True)
@@ -165,7 +167,7 @@ class Project(models.Model):
     created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False)
     last_modified = models.DateTimeField(_("last modified"), auto_now=True, editable=False)
 
-    attachment=models.FileField(_("attachment"), upload_to='attachments', null=True, blank=True)
+    attachment=models.FileField(_("attachment"), upload_to='projects', null=True, blank=True)
 
     # what is this for??
     objects = ProjectManager()

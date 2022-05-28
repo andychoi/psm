@@ -1,13 +1,13 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers, viewsets
 from common.serializers import CBUSerializer
-from common.models import ExtendUser
+from users.models import Profile
 from .models import Task
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = ExtendUser
+        model = Profile
         fields = (
             'username',
             # 'first_name',

@@ -19,6 +19,8 @@ Features
 * Pytest with some tests as example and code coverage reports configured.
 * Docker and Docker Compose configurations 
 * Ready to use "production" configurations as reference.
+* Bootstrap 5 and datatable 
+* Markdown https://markdown-it.github.io/
 
 Requirements
 ------------
@@ -33,7 +35,6 @@ Docker, or:
   database: psmdb
   user: postgres
   create .env file for password: POSTGRES_PASSWORD
-
 
 Install and Run
 ---------------
@@ -73,6 +74,12 @@ Or use the following script to startup in "production" mode,
 with a uWSGI server::
 
     $ uwsgi uwsgi.ini
+
+
+Production setup guide
+----------------------
+    $ python manage.py collectstatic
+
 
 Trouble Tips
 ---------------

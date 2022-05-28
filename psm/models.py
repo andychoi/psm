@@ -6,8 +6,9 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 
-from common.models import CBU, Div, Dept, Team, ExtendUser, Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, State3, STATE3
+from common.models import CBU, Div, Dept, Team, Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, State3, STATE3
 from sap.models import WBS
+from users.models import Profile
 
 from psmprj.utils.mail import send_mail_async as send_mail
 from hashlib import sha1
@@ -60,7 +61,7 @@ class Program(models.Model):
     name = models.CharField(max_length=200, blank=True, null=True)
     startyr = models.PositiveIntegerField(_("Starting year"), default=current_year(), validators=[MinValueValidator(2018), max_value_current_year])
     endyr = models.PositiveIntegerField(_("Ending year"), default=current_year(), validators=[MinValueValidator(2018), max_value_program_year])
-    lead = models.ForeignKey(ExtendUser, verbose_name=_('Program lead'), on_delete=models.SET_NULL, null=True, blank=True)
+    lead = models.ForeignKey(Profile, verbose_name=_('Program lead'), on_delete=models.SET_NULL, null=True, blank=True)
     is_active = models.BooleanField(_("Is active?"), default=True)
     description = models.TextField(null=True, blank=True)
 
@@ -103,7 +104,7 @@ class Project(models.Model):
     is_internal = models.BooleanField(_("Internal project"), default=False)
 
     CBU = models.ForeignKey(CBU, blank=True, null=True, on_delete=models.PROTECT)
-    CBUpm = models.ForeignKey(ExtendUser, related_name='cbu_pm', verbose_name=_('CBU PM'), on_delete=models.SET_NULL, null=True, blank=True)
+    CBUpm = models.ForeignKey(Profile, related_name='cbu_pm', verbose_name=_('CBU PM'), on_delete=models.SET_NULL, null=True, blank=True)
     team = models.ForeignKey(Team, blank=True, null=True, on_delete=models.PROTECT)
     dept = models.ForeignKey(Dept, blank=True, null=True, on_delete=models.PROTECT)
     div = models.ForeignKey(Div, blank=True, null=True, on_delete=models.PROTECT)
@@ -120,7 +121,7 @@ class Project(models.Model):
     status_s = models.CharField(_("status scope"), max_length=20, choices=STATUS, default=Status.GREEN.value)
     resolution = models.TextField(_("PM Memo"), max_length=2000, null=True, blank=True)
     #settings.AUTH_USER_MODEL
-    user = models.ForeignKey(ExtendUser, related_name='project_manager', verbose_name=_('HAEA PM'),
+    user = models.ForeignKey(Profile, related_name='project_manager', verbose_name=_('HAEA PM'),
                              on_delete=models.SET_NULL, null=True, blank=True)
     state = models.CharField(_("state"), max_length=20, choices=STATES, default=State.TO_DO.value)
     phase = models.CharField(_("Phase"), max_length=20, choices=PHASE, default=Phase.PRE_PLAN.value)

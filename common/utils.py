@@ -3,23 +3,24 @@ from django.utils.translation import gettext_lazy as _
 
 ROLES = (
     ("ADMIN", "ADMIN"),
+    ("STAFF", "STAFF"),
     ("USER", "USER"),
 )
 
 class Decision(enum.Enum):
-    NEW = 'New'
-    ASSIGNED = 'Assigned'
-    PENDING  = 'Pending'
-    REVIEWED = 'Reviewed'
-    CLOSED   = 'Closed'
-    REJECTED = 'Rejected'
-    DUPL     = 'Duplicate'
+    NEW = '00-New'
+    ASSIGNED = '10-Assigned'
+    PENDING  = '20-Pending'
+    REVIEW   = '30-Reviewing'
+    ACCEPTED = '50-Accepted'
+    REJECTED = '60-Rejected'
+    DUPL     = '70-Duplicate'
 DECISIONS = (
     (Decision.NEW.value,      _('New')),
     (Decision.ASSIGNED.value, _('Assigned')),
     (Decision.PENDING.value,  _('Pending')),
-    (Decision.REVIEWED.value, _('Reviewed')),
-    (Decision.CLOSED.value,   _('Closed')),
+    (Decision.REVIEW.value,   _('Reviewing')),
+    (Decision.ACCEPTED.value, _('Accepted')),
     (Decision.REJECTED.value, _('Rejected')),
     (Decision.DUPL.value,     _('Duplicate'))
 )
@@ -32,13 +33,13 @@ class State(enum.Enum):
     BACKLOG = '00-backlog'
     TO_DO = '10-to-do'
     DOING = '20-doing'
-    HOLD = '30-on-hold'
+    HOLD = '30-on_hold'
     DONE = '50-done'
     CANCEL = '90-cancel'
 # from django.contrib.auth.models import (BaseUserManager, AbstractBaseUser)
 STATES = (
     (State.BACKLOG.value, _('Backlog')),
-    (State.TO_DO.value, _('To Do')),
+    (State.TO_DO.value, _('To_Do')),
     (State.DOING.value, _('Doing')),
     (State.HOLD.value, _('Blocked')),
     (State.DONE.value, _('Done')),
@@ -50,10 +51,10 @@ class Priority(enum.Enum):
     The priority of the Project
     (codes are prefixed with numbers to be easily sorted in the DB).
     """
-    LOW = '00-low'
-    NORMAL = '10-normal'
-    HIGH = '20-high'
-    CRITICAL = '30-critical'    #urgent
+    LOW = '00-Low'
+    NORMAL = '10-Normal'
+    HIGH = '20-High'
+    CRITICAL = '30-Critical'    #urgent
 
 PRIORITIES = (
     (Priority.LOW.value, _('Low')),
@@ -64,11 +65,11 @@ PRIORITIES = (
 
 
 class Status(enum.Enum):
-    NA = '00-notApplicable'
-    GREEN = '10-green'
-    YELLOW = '20-yellow'
-    RED = '30-red'
-    COMPLETED = '90-completed'
+    NA = '00-N/A'
+    GREEN = '10-Green'
+    YELLOW = '20-Yellow'
+    RED = '30-Red'
+    COMPLETED = '90-Completed'
 
 STATUS = (
     (Status.GREEN.value, _('Green')),
@@ -89,14 +90,14 @@ class Phase(enum.Enum):
     CLOSED =   '90-Closed'
 
 PHASE = (
-    ('00-Pre-Planning',"Pre-Planning"),
-    ('10-Planning',"Planning"),
-    ('20-Planning',"Design"),
-    ('30-Planning',"Development"),
-    ('40-Testing',"Testing"),        
-    ('50-Launch',"Launch"),        
-    ('60-Completed',"Completed"),        
-    ('90-Closed',"Closed")        
+    (Phase.PRE_PLAN.value, _('Pre-Planning')),
+    (Phase.PLANNING.value, _('Planning')),
+    (Phase.DESIGN.value, _('Design')),
+    (Phase.DEVELOP.value, _('Development')),
+    (Phase.TESTING, _('Testing')),
+    (Phase.LAUNCH.value, _('Launch')),        
+    (Phase.COMPLETED.value, _('Completed')),        
+    (Phase.CLOSED.value, _('Closed')),
 )
 
 class PrjType(enum.Enum):

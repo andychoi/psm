@@ -21,7 +21,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('SECRET_KEY', 'here is secret key')
+SECRET_KEY = env('SECRET_KEY', 'secret key is in .env')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('DEBUG', True)
@@ -45,6 +45,11 @@ INSTALLED_APPS = [
     'reviews',
     'guardian',     # custom permission
 #    'river',        # simple workflow; not yet compatible with django 4.x
+    # blog
+    'users.apps.UsersConfig',
+    'blog.apps.BlogConfig',
+    'crispy_forms',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -55,6 +60,7 @@ INSTALLED_APPS = [
     'import_export',
     'django_admin_listfilter_dropdown',
     'adminfilters',
+
     # 'django_tables2',
     # 'ckeditor',
     # 'django_markdown',
@@ -62,6 +68,8 @@ INSTALLED_APPS = [
 #    'microsoft_auth',
 #    'django_auth_adfs',
 ]
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 REST_ENABLED = env.bool('REST_ENABLED', False)
 if REST_ENABLED:
@@ -82,9 +90,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'psmprj.urls'
 
+#
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        # project level templates
         'DIRS': [BASE_DIR + '/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -107,7 +117,8 @@ WSGI_APPLICATION = 'psmprj.wsgi.application'
 if "CSRF_TRUSTED_ORIGINS" in os.environ:
     CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS")     #["https://server-name-ip/", "http://server-name-ip/"]
 else:
-    CSRF_TRUSTED_ORIGINS = []
+    CSRF_TRUSTED_ORIGINS = ["http://localhost"]
+
 #https://stackoverflow.com/questions/44034879/django-nginx-getting-csrf-verification-error-in-production-over-http
 #CSRF_COOKIE_HTTPONLY = env.bool('CSRF_COOKIE_HTTPONLY', False)
 
@@ -185,10 +196,11 @@ en_formats.DATE_FORMAT = 'Y-m-d'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
-
+# https://docs.djangoproject.com/en/4.0/ref/settings/#staticfiles-dirs
+# https://learndjango.com/tutorials/django-static-files
 STATIC_URL = '/static/'
-
-STATIC_ROOT = BASE_DIR + '/static/'
+STATICFILES_DIRS = [BASE_DIR + '/static/', 'psmprj/static',]    #production only
+# STATIC_ROOT = BASE_DIR + '/static/'
 
 # Whether to enable or not the StaticFilesHandler
 # to serve the static resources from the WSGI

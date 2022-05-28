@@ -121,11 +121,11 @@ class ReviewAdmin(ImportExportMixin, admin.ModelAdmin):
 
             # when creating or updating by non-reviewer (except superuser)
             conditions = ( ( obj is None ) 
-                or ( request.user.extenduser.is_pro_reviewer and obj.reviewtype == ReviewTypes.PRO.value ) 
-                or ( request.user.extenduser.is_sec_reviewer and obj.reviewtype == ReviewTypes.SEC.value ) 
-                or ( request.user.extenduser.is_inf_reviewer and obj.reviewtype == ReviewTypes.INF.value ) 
-                or ( request.user.extenduser.is_app_reviewer and obj.reviewtype == ReviewTypes.APP.value ) 
-                or ( request.user.extenduser.is_mgt_reviewer and obj.reviewtype == ReviewTypes.MGT.value ) )
+                or ( request.user.profile.is_pro_reviewer and obj.reviewtype == ReviewTypes.PRO.value ) 
+                or ( request.user.profile.is_sec_reviewer and obj.reviewtype == ReviewTypes.SEC.value ) 
+                or ( request.user.profile.is_inf_reviewer and obj.reviewtype == ReviewTypes.INF.value ) 
+                or ( request.user.profile.is_app_reviewer and obj.reviewtype == ReviewTypes.APP.value ) 
+                or ( request.user.profile.is_mgt_reviewer and obj.reviewtype == ReviewTypes.MGT.value ) )
             if conditions and (not is_superuser):
                 # allow only reviewer to allow updating
                 form.base_fields['status'].disabled = True 
@@ -142,15 +142,15 @@ class ReviewAdmin(ImportExportMixin, admin.ModelAdmin):
         if (request.user.is_superuser):
             return True 
         if obj: 
-            if request.user.extenduser.is_pro_reviewer and obj.reviewtype == ReviewTypes.PRO.value:
+            if request.user.profile.is_pro_reviewer and obj.reviewtype == ReviewTypes.PRO.value:
                 return True
-            elif request.user.extenduser.is_sec_reviewer and obj.reviewtype == ReviewTypes.SEC.value:
+            elif request.user.profile.is_sec_reviewer and obj.reviewtype == ReviewTypes.SEC.value:
                 return True
-            elif request.user.extenduser.is_inf_reviewer and obj.reviewtype == ReviewTypes.INF.value:
+            elif request.user.profile.is_inf_reviewer and obj.reviewtype == ReviewTypes.INF.value:
                 return True
-            elif request.user.extenduser.is_app_reviewer and obj.reviewtype == ReviewTypes.APP.value:
+            elif request.user.profile.is_app_reviewer and obj.reviewtype == ReviewTypes.APP.value:
                 return True
-            elif request.user.extenduser.is_mgt_reviewer and obj.reviewtype == ReviewTypes.MGT.value:
+            elif request.user.profile.is_mgt_reviewer and obj.reviewtype == ReviewTypes.MGT.value:
                 return True
         return False
 

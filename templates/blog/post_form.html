@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="content-section">
+    <form method="POST">
+        {% csrf_token %}
+        <fieldset class="form-group  mb-3">
+            <legend class="border-bottom">Create Post</legend>
+            {{ form|crispy }}
+        </fieldset>
+        <div class="form-group mb-3">
+            <button class="btn btn-outline-info" type="submit">Post</button>
+        </div>
+    </form>
+</div>
+<!-- Medium Editor -->
+<script>var editor = new MediumEditor('.editable');</script>
+{% endblock content %}

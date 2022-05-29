@@ -1,0 +1,46 @@
+{% load calc_extras %}
+
+
+{% block headline %}  
+
+{% if not is_paginated or is_paginated and page_obj.number == 1 %}
+<div class="my-container-bg"><div class="container">
+  <!-- https://stackoverflow.com/questions/5848967/django-how-to-do-calculation-inside-the-template-html-page -->
+  <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+      {% for p in featured %}
+        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="{{forloop.counter0}}" class="{% if forloop.first %}active{% endif %}" aria-current="true" aria-label="Slide {{forloop.counter}}"></button>
+      {% endfor %}
+    </div>
+    <div class="carousel-inner">
+  
+      {% for p in featured %}
+  
+      <div class="carousel-item {% if forloop.first %}active{% endif %}">
+          <!-- TODO <img src="/media/{{p.image}}" class="img-fluid" alt="{{p.image}}"> -->
+          
+          <div class="carousel-caption text-start">
+            <h1>{{p.title}}</h1>
+            <p>{{p.excerpt|safe|truncatewords:"80"|linebreaks}}</p>
+            <p><a class="btn btn-lg btn-primary" href="/post/{{ p.id }}">See details</a></p>
+          </div>
+      </div>
+  
+    {% endfor  %}
+
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev" >
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next" >
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+
+</div>
+</div>
+{% endif %}
+
+{% endblock %}

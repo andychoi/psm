@@ -26,8 +26,12 @@ class Post(models.Model):
     #     settings.AUTH_USER_MODEL, blank=True, related_name='liked')
     status = models.IntegerField(choices=PUBLISH, default=0) 
     date_posted = models.DateTimeField(default=timezone.now)
-
+    featured = models.BooleanField(default=False)
+    image = models.ImageField(default='posts/default.jpg', upload_to='posts')
+    excerpt = models.TextField(blank=True, null=True)
     objects = PostManager()
+
+    updated_on = models.DateTimeField(default=timezone.now)
 
     class Meta:
         ordering = ('-date_posted', )
@@ -38,22 +42,26 @@ class Post(models.Model):
     def get_absolute_url(self):
         return reverse('post_detail', kwargs={'pk': self.pk})
 
+    def save(self, *args, **kwargs):
+        self.updated_on = timezone.now()
+        super(Post, self).save(*args, **kwargs)
 
-class Comment(models.Model):
-    post = models.ForeignKey(
-        Post, related_name='comments', on_delete=models.CASCADE)
-    author = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    text = models.TextField()
-    created_date = models.DateTimeField(default=timezone.now)
-    approved_comment = models.BooleanField(default=True)
 
-    def approve(self):
-        self.approved_comment = True
-        self.save()
+# class Comment(models.Model):
+#     post = models.ForeignKey(
+#         Post, related_name='comments', on_delete=models.CASCADE)
+#     author = models.ForeignKey(
+#         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+#     text = models.TextField()
+#     created_date = models.DateTimeField(default=timezone.now)
+#     approved_comment = models.BooleanField(default=True)
 
-    def get_absolute_url(self):
-        return reverse("post_list")
+#     def approve(self):
+#         self.approved_comment = True
+#         self.save()
 
-    def __str__(self):
-        return self.author
+#     def get_absolute_url(self):
+#         return reverse("post_list")
+
+#     def __str__(self):
+#         return self.author

@@ -84,3 +84,9 @@ if settings.ADMIN:
 
 admin.site.site_title = admin.site.site_header = settings.SITE_HEADER
 admin.site.index_title = settings.INDEX_TITLE
+
+#https://levelup.gitconnected.com/django-customize-404-error-page-72c6b6277317
+handler404 = 'psmprj.views.error_404'
+handler500 = 'psmprj.views.error_500'
+handler403 = 'psmprj.views.error_403'
+handler400 = 'psmprj.views.error_400'

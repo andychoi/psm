@@ -22,7 +22,7 @@ ul {
 }
 
 .site-header .navbar-nav .nav-link {
-  color: #cbd5db;
+  color: #656a6d;
 }
 
 .site-header .navbar-nav .nav-link:hover {
@@ -92,6 +92,20 @@ a.article-title:hover {
 .navbar { padding-left: 1.5rem; }
 
 
+.starter-template-headline {
+  padding: 3rem 1.5rem;
+}
+
 .starter-template {
   padding: 3rem 1.5rem;
+}
+
+#main-content {
+  margin-top: 5em;
+}
+
+.my-container-bg { background-color: #ececec;}
+.overlay-div{
+  background-color:#000;
+  opacity:.5;
 }

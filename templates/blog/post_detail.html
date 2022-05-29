@@ -2,6 +2,15 @@
 {% load crispy_forms_tags %}
 {% load markdown_extras %}
 
+{% block child_css %}
+<style>
+    #preview {
+        white-space: pre;
+    }
+    .form-group { padding-top:1.2em; }
+</style>
+{% endblock %}
+
 {% block content %}
 
 <!-- https://learndjango.com/tutorials/django-markdown-tutorial -->
@@ -17,22 +26,23 @@
         </div>
     </div>
     <hr-->
-
+    <!-- https://getbootstrap.com/docs/5.0/utilities/spacing/ -->
     <!-- Post information -->
-    <div class="row">
-        <h1 class="mt-4"  class="blockquote">{{object.title}}</h1>
-        <div class="float-start">Posted on {{ object.date_posted|date:"F d, Y" }}</div>
-        <div float-end">
-            {% if object.author == user %}
-            <a class="btn btn-info btn-sm mt-1 mb-1 float-right" href="{% url 'post_update' object.id %}">Update</a>
-            <a class="btn btn-danger btn-sm mt-1 mb-1 float-right mr-2 "
+    <div class="row ms-2 ">
+        <h1 class=""  class="blockquote">{{object.title}}</h1>
+        <div class="col-6 text-start">Posted on {{ object.date_posted|date:"F d, Y" }}</div>
+        <div class="col-6 text-end">
+            {% if object.author == user or user.is_superuser  %}
+            <a class="btn btn-info btn-sm mt-1 mb-1" href="{% url 'post_update' object.id %}">Update</a>
+            <a class="btn btn-danger btn-sm mt-1 mb-1 mr-2 "
                 href="{% url 'post_delete' object.id %}">Delete</a>
             {% endif %}
         </div>
     </div>
 
-    <div class="row ms-2">
+    <div class="row ms-2 pt-2">
         <!-- Post Content -->
+        <image src="/media/{{ object.image }}"></image>
         {{ object.content|markdown|safe }}
     </div>
 

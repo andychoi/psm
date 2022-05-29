@@ -164,7 +164,7 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
             obj.project.lstrpt = obj.updated_on   #update to project last report date
             obj.project.save()
 
-    actions = ['make_published', 'duplicate_event']
+    actions = ['make_published', 'duplicate_report']
 
     @admin.action(description='Mark selected as published', permissions=['change'])
     def make_published(self, request, queryset):
@@ -176,7 +176,7 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
         ) % updated, messages.SUCCESS)
 
     @admin.action(description="Duplicate selected record", permissions=['change'])
-    def duplicate_event(self, request, queryset):
+    def duplicate_report(self, request, queryset):
         for object in queryset:
             object.id = None
             object.save()

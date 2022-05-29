@@ -1,4 +1,10 @@
 {% extends "base.html" %}
+
+{% block child_css %}
+<link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.css">
+{% endblock %}
+
+
 {% block content %}
 <div class="container-fluid">
 <!-- Search Form -->
@@ -7,7 +13,7 @@
     <input class="btn btn-outline-success my-2 my-sm-0" type="submit" value="Search"> -->
 <!-- </form>  -->
 <!-- https://bootstrap-table.com/ -->
-<h5 class="md-4">Status report list</h5>
+<h5 class="md-4">Status report list - latest 500</h5>
 {% if object_list %}
     <div class="col m-2" id="report-list">
 
@@ -67,3 +73,12 @@
 
 </div>
 {% endblock content %}
+
+
+
+{% block child_js_above_files %} 
+<script src="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.js"></script>
+<!--script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+  integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
+</script-->
+{% endblock %}

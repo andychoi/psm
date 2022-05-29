@@ -54,9 +54,8 @@ class projectListView(generic.ListView):
     #     form = self.form_class(initial=self.initial)
     #     return render(request, self.template_name, {'form': form})    
     # pagination fix: https://stackoverflow.com/questions/61090168/why-is-my-pagination-not-working-django
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
         context['filterItems'] = []
 
         context['filterItems'].append( {
@@ -101,6 +100,12 @@ class projectListView(generic.ListView):
             , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRIORITIES)]
         } )
 
+        #https://stackoverflow.com/questions/59972694/django-pagination-maintaining-filter-and-order-by
+        get_copy = self.request.GET.copy()
+        if get_copy.get('page'):
+            get_copy.pop('page')
+        context['get_copy'] = get_copy
+        
         return context
 
 

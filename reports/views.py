@@ -15,9 +15,9 @@ from django.views import generic
 		
 # class based views for reports -> for selected project
 class reportList(generic.ListView):
-	queryset = Report.objects.filter(status=1).order_by('-updated_on')
+	queryset = Report.objects.filter(status=1).order_by('-id')
 	template_name = 'reports/report_list.html'
-	paginate_by = 100
+	paginate_by = 500
 	context_object_name = 'report_list'
 
 

@@ -1,18 +1,45 @@
 {% extends "base_with_sidebar.html" %}
 
 {% load markdown_extras %}
-
+{% load static %}
 
 {% block child_css %}
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
     integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
 
-  <!-- Medium Editor -->
+  <!-- Medium Editor https://yabwe.github.io/medium-editor/ -->
   <script src="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/js/medium-editor.min.js"></script>
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/css/medium-editor.min.css"
     type="text/css" media="screen" charset="utf-8">
+
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+      /* for carousel styling */
+      body { margin-top: 0; }
+
+      {% if not is_paginated or page_obj.number == 1 %}
+          #main-content { margin-top: 0;}
+      {% endif %}      
+    </style>
+    <!-- Custom styles for this template -->
+    <link href="{% static 'css/carousel.css' %}" rel="stylesheet">
+
 {% endblock %}
+
+{% block headline %}  {%  include "includes/headline.html"  %} {% endblock %}    
 
 {% block content %}
 <!-- Search Form -->
@@ -25,19 +52,20 @@
           <input class="form-control mr-sm-2" name="q" type="search" placeholder="Search" aria-label="Search" style="width: 200px">
           <input class="btn btn-outline-success my-2 my-sm-0" type="submit" value="Search">
       </form> 
-
+      
       <!-- https://learndjango.com/tutorials/django-markdown-tutorial -->
+
       {% for post in posts %}
           <article class="media content-section">
             <!-- img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}" -->
             <!-- https://stackoverflow.com/questions/18672452/left-align-and-right-align-within-div-in-bootstrap -->
             <div class="media-body">
-              <h2><a class="article-title" href="{% url 'post_detail' post.pk %}">{{ post.title }}</a></h2>
+              <h3><a class="article-title" href="{% url 'post_detail' post.pk %}">{{ post.title }}</a></h3>
 
               <p class="article-content">{{ post.content|markdown|safe|truncatewords:"50"|linebreaks}}</p>
-              <p class="text-end"><a type="button" class="btn btn-light" href="{% url 'post_detail' post.pk %}"">read more...</a></p>
+              <p class="text-end"><a type="button" class="btn btn-light" href="{% url 'post_detail' post.pk %}"">read more...</a>
                   
-              <p class="fs-6 text-end"><a class="mr-2" href="{% url 'user_posts' post.author.username %}">{{ post.author }}</a>
+              <a class="mr-2" href="{% url 'user_posts' post.author.username %}">{{ post.author }}</a>
                   <small class="text-muted">{{ post.date_posted|date:"F d, Y" }}</small>
               </p>
               
@@ -45,7 +73,7 @@
           </article>
       {% endfor %}
 
-      {% include "../includes/pagination.html" %}
+      {% include "includes/pagination.html" %} 
     <!-- </div>
 </div> -->
 

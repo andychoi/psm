@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'blog.apps.BlogConfig',
     'crispy_forms',
+    # 'django_filters'  ,   #FIXME
 
     'django.contrib.admin',
     'django.contrib.auth',

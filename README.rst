@@ -73,11 +73,19 @@ let Django accepts connection outside localhost (optional).
 Or use the following script to startup in "production" mode,
 with a uWSGI server::
 
+    $ sudo apt-get install libpcre3-dev
+    $ pip install uwsgi -I --no-cache-dir
+    $ sudo find / -name libpcre.so.*
+    $ sudo ln -s /home/anaconda3/lib/libpcre.so.1 /lib 
+
     $ uwsgi uwsgi.ini
 
+I recommend gunicorn rather than uWSGI, as uWSGI is duplicate with Apache/NGINX
 
 Production setup guide
 ----------------------
+Please refer README-production
+
     $ python manage.py collectstatic
 
 

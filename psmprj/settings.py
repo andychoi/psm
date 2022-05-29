@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'sap',
     'reports',
     'reviews',
-    'guardian',     # custom permission
+    'guardian',      # object level permission management; django default is class level 
 #    'river',        # simple workflow; not yet compatible with django 4.x
     # blog
     'users.apps.UsersConfig',
@@ -69,6 +69,7 @@ INSTALLED_APPS = [
 #    'django_auth_adfs',
 ]
 
+#form templates
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 REST_ENABLED = env.bool('REST_ENABLED', False)
@@ -200,7 +201,7 @@ en_formats.DATE_FORMAT = 'Y-m-d'
 # https://learndjango.com/tutorials/django-static-files
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR + '/static/', 'psmprj/static',]    #production only
-# STATIC_ROOT = BASE_DIR + '/static/'
+#STATIC_ROOT = BASE_DIR + '/static/'
 
 # Whether to enable or not the StaticFilesHandler
 # to serve the static resources from the WSGI

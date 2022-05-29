@@ -41,7 +41,7 @@ class ReviewAdmin(ImportExportMixin, admin.ModelAdmin):
     ordering = ('-id',)
     readonly_fields = ('created_on', 'created_by', 'updated_on', 'updated_by')
     Custom_fields = ('project_link', 'created_on', 'updated_on', 'created_by', 'updated_by')
-    search_fields = ('title', 'project__title', 'content', )
+    search_fields = ('title', 'project__title', 'req_content', 'res_content', 'reviewer__profile__name' )
 
     fieldsets = (               # Edition form
                 (None, {'fields':   (('project', 'title', 'reviewtype', ),('req_content',), ('proc_start', 'onboaddt', 'state', ), ('status', 'is_escalated', 'priority'), ( 'res_content','reviewer',),  ('attachment'),  

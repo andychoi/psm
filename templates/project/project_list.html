@@ -1,24 +1,5 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    
-    <!-- Bootstrap CSS, datatable . -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.css">
-
-    <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
-
-    <!--https://examples.bootstrap-table.com/#extensions/export.html#view-source-->
-
-	{% block metatags %}
-	<title>{{ object.title }}</title>
-	{% endblock %}
-
+{% extends "base.html" %}
+{% block child_css %}
 	<style type="text/css">
 		.fixed-panel {
 			min-height: 140px;
@@ -43,40 +24,39 @@
            font-size: 1.2em;
         }
 	</style>
-</head>
+{% endblock %}
 
-
-<body>
-	<div class="container mt-1">  <!-- container-float margin top 3 -->
+{% block content %}
+	<div class="container-fluid mt-1">  <!-- container-float margin top 3 -->
 		<div class="row">
-			<div class="col-8">
+			<div class="col-2">
 				<h4 class="font-weight-bold"><button class="btn btn-primary" type="button"  data-bs-toggle="collapse"  href="#collapseFilter" 
-                    role="button" aria-expanded="false" aria-controls="collapseFilter">PROJECT DASHBOARD</button></h4>
-				<p></p>
+                    role="button" aria-expanded="false" aria-controls="collapseFilter">PROJECT DASHBOARD</button></h4>                        
 		  	</div>
 		  	<!-- div class="col-4 text-nowrap float-end" >
 			<p class="text-end m-0 small"></p>
 			</div-->
-		</div>
-		<div class="row">
-            <div class="collapse show" id="collapseFilter">
-                <form class="row row-cols-lg-auto g-3 align-items-center form-control-sm">
-                  
-                        {% for filterItem in filterItems %}
-                        <div class="col-auto">
-                            <label  class="form-group label" for='sel_{{ filterItem.qId }}'>{{ filterItem.text }}</label>        
-                            <select class="form-select"  id='sel_{{ filterItem.qId }}' onchange="updateData()">
-                                <option value=''>ALL</option>
-                                {% for pItem in filterItem.items %}
-                                <option value={{ pItem.id }}>{{ pItem.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        {% endfor %}
-                 
-                </form>
+		    <div class="col-10">
+                <div class="collapse show float-end" id="collapseFilter">
+                    <form class="row row-cols-lg-auto g-3 align-items-center form-control-sm">
+                    
+                            {% for filterItem in filterItems %}
+                            <div class="col-auto">
+                                <label  class="form-group label" for='sel_{{ filterItem.qId }}'>{{ filterItem.text }}</label>        
+                                <select class="form-select"  id='sel_{{ filterItem.qId }}' onchange="updateData()">
+                                    <option value=''>ALL</option>
+                                    {% for pItem in filterItem.items %}
+                                    <option value={{ pItem.id }}>{{ pItem.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% endfor %}
+                    
+                    </form>                    
+                </div>
             </div>
-    
+        </div>
+        <div class="row">
             <!-- Filter  div class="input-group"> <span class="input-group-addon">Filter</span>
                 <input id="filter" type="text" class="form-control" placeholder="Type here...">
             </div -->
@@ -98,37 +78,37 @@
                 id="table" class="table table-striped table-bordered table-sm small">
                 <thead class="table-light">
                 <tr>
-                    <th data-sortable="true" scope="col">CBU</th>
-                    <th scope="col">Project</th>
+                    <th data-sortable="true" class="text-center" scope="col">CBU</th>
+                    <th data-sortable="true" class="text-center" scope="col">Project</th>
                     <th data-searchable="false" scope="col">Project-Name</th>
-                    <th data-sortable="true" scope="col">Progress</th>
+                    <th class="text-center" scope="col">Progress</th>
                     <th data-sortable="true" scope="col">Phase</th>
-                    <th scope="col">HAEA PM</th>
+                    <th data-sortable="true" scope="col">HAEA PM</th>
                     <th data-sortable="true" scope="col">HAEA Dept</th>
                     <!-- th data-sortable="true" scope="col">CBU PM</th-->
-                    <th scope="col">Initiation</th>
-                    <th scope="col">Design</th>
-                    <th scope="col">Develop</th>
-                    <th scope="col">Test</th>
-                    <th scope="col">Launch</th>
-                    <th scope="col">Schedule</th>
-                    <th scope="col">Scope</th>
-                    <th scope="col">Budget</th>
+                    <th data-sortable="true" scope="col">Initiation</th>
+                    <th data-sortable="true" scope="col">Design</th>
+                    <th data-sortable="true" scope="col">Develop</th>
+                    <th data-sortable="true" scope="col">Test</th>
+                    <th data-sortable="true" scope="col">Launch</th>
+                    <th data-sortable="true" scope="col">Schedule</th>
+                    <th data-sortable="true" scope="col">Scope</th>
+                    <th data-sortable="true" scope="col">Budget</th>
                 </tr>
                 </thead>
                 <tbody>
                     {% for p in object_list %}
                 <tr> <!-- https://getbootstrap.com/docs/4.1/components/badge/ https://icons.getbootstrap.com/ <i class="bi-class-name"></i> -->
                      <!-- p.status_t|slice:"0:1" -->
-                    <td>{{ p.CBU }}</td>
-                    <td scope="row">{{ p.PJcode }}</td>
+                    <td class="text-center">{{ p.CBU }}</td>
+                    <td class="text-center" scope="row"><a href="/admin/psm/project/{{ p.id }}">{{ p.PJcode }}</a></td>
                     <td class="text-left">{{ p.title }}</td>
                     <td class="text-center">
                         <div class="progress">
                             <div class="progress-bar" role="progressbar" style="width: {{ p.progress }}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{{ p.progress }}%</div>
                         </div>
                     </td>
-                    <td>{{ p.phase }}</td>
+                    <td>{{ p.phase|slice:'2:' }}</td>
                     <td>{{ p.user }}</td>
                     <td>{{ p.dept }}</td>
                     <!--td>{{ p.CBUpm }}</td-->
@@ -163,23 +143,17 @@
                 {% endfor %}	
                 </tbody>
             </table>
-            <p class="text-end text-muted small m-0 "><i class="text-success bi-check-circle-fill"></i>Good | <i class="text-warning bi-exclamation-circle"></i>Issue | <i class="text-danger  bi-exclamation-circle-fill"></i>Roadblocks | <i class="text-primary bi-circle-fill"></i>Complete | <i class="text-secondary  bi-dash-circle-dotted"></i>Not started</p>
-            {# .... **Now the pagination section** .... #}
-            {% if is_paginated %}
-                <div class="pagination small">
-                    <span class="page-links">
-                        {% if page_obj.has_previous %}
-                            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
-                        {% endif %}
-                        <span class="page-current">
-                             {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
-                        </span>
-                        {% if page_obj.has_next %}
-                            <a href="?page={{ page_obj.next_page_number }}">next</a>
-                        {% endif %}
-                    </span>
+            <div class="row">
+                <div class="col" ><div class="float-start inline">Pagination from server: 
+                    {# .... **Now the pagination section** .... #}
+                    {% include "includes/pagination.html" %}
+                </div></div>
+
+                <div class="col float-end"><p class="text-end text-muted small m-0 "><i class="text-success bi-check-circle-fill"></i>Good | <i class="text-warning bi-exclamation-circle"></i>Issue | <i class="text-danger  bi-exclamation-circle-fill"></i>Roadblocks | <i class="text-primary bi-circle-fill"></i>Complete | <i class="text-secondary  bi-dash-circle-dotted"></i>Not started</p>
                 </div>
-            {% endif %}
+            </div>
+
+            </div>
         {% else %}
             <p>No records found!!! :(</p>
         {% endif %}
@@ -188,40 +162,12 @@
 		</div>		
 	</div>
 
+{% endblock content %}
 
-    <!--script>
-        var $table = $('#milestonetbl')
-        $(function() {
-            $('#toolbar').find('select').change(function () {
-            $table.bootstrapTable('destroy').bootstrapTable({
-                exportDataType: $(this).val(),
-                exportTypes: ['json', 'xml', 'csv', 'txt', 'sql', 'excel', 'pdf']
-                
-            })
-            }).trigger('change')
-        })
-      </script -->
-    
-	<!--script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script-->
-    <!-- script src="/static/reports/css/jquery.table.marge.js"></script>
-    <script>
-        $('#milestonetbl').margetable({
-            type: 2,
-            colindex: [0]
-        });
-    </script-->
 
-	<!-- Load React. -->
-    <!-- Note: when deploying, replace "development.js" with "production.min.js". -->
-    <!-- script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-    -->
-
+{% block child_js_above_files %} 
     <!-- Optional JavaScript; choose one of the two! -->
-
-    <!-- Option 1: Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
 
     <script>
         // set preselected values
@@ -245,5 +191,4 @@
             window.location.href = '/project/' + q;
         }
     </script>    
-</body>
-</html>
+{% endblock %}

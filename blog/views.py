@@ -28,9 +28,12 @@ class PostListView(ListView):
             keyword = ''
         if (keyword != ''):
             object_list = self.model.objects.filter(
-                Q(content__icontains=keyword) | Q(title__icontains=keyword))
+                Q(status=1) &                                   #published only
+                ( Q(content__icontains=keyword) | Q(title__icontains=keyword) ) )
         else:
-            object_list = self.model.objects.all()
+            # object_list = self.model.objects.all()
+            object_list = self.model.objects.filter(status=1)   #published only
+            
         return object_list
 
 

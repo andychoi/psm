@@ -93,7 +93,6 @@ class Project(models.Model):
         verbose_name = _("Project")
         verbose_name_plural = _("3.Projects")
 
-
     code = models.CharField(_("Code"), max_length=10, null=True, blank=True) 
 
     title = models.CharField(_("title"), max_length=200)

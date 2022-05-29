@@ -2,7 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.urls import reverse
 from django.conf import settings
-
+from common.utils import PUBLISH
 
 class PostManager(models.Manager):
     pass
@@ -24,6 +24,7 @@ class Post(models.Model):
     content = models.TextField()
     # liked = models.ManyToManyField(
     #     settings.AUTH_USER_MODEL, blank=True, related_name='liked')
+    status = models.IntegerField(choices=PUBLISH, default=0) 
     date_posted = models.DateTimeField(default=timezone.now)
 
     objects = PostManager()

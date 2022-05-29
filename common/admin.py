@@ -18,6 +18,7 @@ class DivAdmin(ImportExportMixin, admin.ModelAdmin):
 class DeptAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display = ('id', 'name', 'head', 'div', 'is_active')
     list_display_links = ('id', 'name')
+    search_fields = ('id', 'name', 'head__name')    
     class Meta:
         model = Dept
         import_id_fields = ('id',)
@@ -26,6 +27,7 @@ class DeptAdmin(ImportExportMixin, admin.ModelAdmin):
 class TeamAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display = ('id', 'name', 'head', 'dept', 'div', 'is_active')
     list_display_links = ('id', 'name')
+    search_fields = ('id', 'name', 'head__name')
     readonly_fields = ('created_at', 'created_by')
     class Meta:
         model = Team

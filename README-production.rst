@@ -78,7 +78,7 @@ as example: ``postgresql://dpsmprj:postgres@localhost/dpsmprj_dev``,
 so to create a database ``dpsmprj_dev`` with a user ``dpsmprj`` and a
 password ``postgres``, first create the user with::
 
-    $ sudo -u postgres createuser --createdb --no-superuser --no-createrole --pwprompt dpsmprj
+    $ sudo -u postgres createuser --createdb --no-superuser --no-createrole --pwprompt psmprj
 
 If you are already logged-in as a superuser, you can execute instead the following, within the SQL session:
 ``CREATE USER dpsmprj;``, and then to be prompted for a password within a ``psql`` session
@@ -87,7 +87,7 @@ execute ``\password dpsmprj``.
 Then create the database with::
 
     $ sudo -u postgres psql
-    postgres=# CREATE DATABASE dpsmprj_dev OWNER dpsmprj;
+    postgres=# CREATE DATABASE psmdb OWNER psmprj;
 
 Another way to create user and database in Postgres is to use
 the Procfile task ``createdb``, checkout the section below.
@@ -102,3 +102,15 @@ Docker and Procfile
 task allows to launch the webserver, checkout the `<.env.example>`_
 file and the `<README.rst>`_ guides of how to use
 it with *Honcho*.
+
+
+Static files
+------------
+
+You can serve static in DEBUG=False using
+    $ python manage.py runserver --insecure
+
+https://stackoverflow.com/questions/54566491/why-does-django-not-load-static-files-if-debug-false
+Or you may run in DEBUG=False using middleware
+
+    $ pip install whitenoise

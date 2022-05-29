@@ -1,5 +1,14 @@
-{% extends "base.html" %}
+{% extends "base_with_sidebar.html" %}
 {% load crispy_forms_tags %}
+
+{% block child_css %}
+<style>
+    #preview {
+  white-space: pre;
+}
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="content-section">
     <form method="POST">
@@ -12,7 +21,23 @@
             <button class="btn btn-outline-info" type="submit">Post</button>
         </div>
     </form>
+
+    <!-- div row><h5>Preview</h5>
+       
+    <div class="card"  id="preview"></div>
+    </div-->
+    
 </div>
-<!-- Medium Editor -->
-<script>var editor = new MediumEditor('.editable');</script>
 {% endblock content %}
+
+{% block child_js_below_files %} 
+<script>
+    $(document).ready(function(){
+
+    $('textarea[name="content"]').on("keydown",function(){
+        $("#preview").html($(this).val());
+    });
+
+    });
+</script>
+{% endblock %}

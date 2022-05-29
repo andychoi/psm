@@ -80,7 +80,7 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
 
     readonly_fields = ('project_link', 'CBU', 'created_on', 'updated_on', 'created_by', 'updated_by')
 
-    search_fields = ('title', 'project__title', 'content_a', 'content_p', 'issue',
+    search_fields = ('title', 'project__title', 'content_a', 'content_p', 'issue', 'created_by__profile__name', 'updated_by__profile__name',
                     )
 
     def project_link(self, obj):

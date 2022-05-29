@@ -8,7 +8,7 @@ from common.utils import *
 #avoid circular import, use full name in model with ''. example='common.Team'
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from common.models import Team, Dept, Div
+    from common.models import Team, Dept, Div, CBU
 # from common.models import Team, Dept, Div
 
 class Profile(models.Model):
@@ -20,8 +20,11 @@ class Profile(models.Model):
     u_team = models.ForeignKey('common.Team', verbose_name=_('Team'), on_delete=models.SET_NULL, blank=True, null=True)
     u_dept = models.ForeignKey('common.Dept', verbose_name=_('Dept'), on_delete=models.SET_NULL, blank=True, null=True)
     u_div = models.ForeignKey('common.Div', verbose_name=_('Div'), on_delete=models.SET_NULL, blank=True, null=True)
-    role = models.CharField(max_length=50, choices=ROLES, default="USER")
+
     is_external = models.BooleanField(_("External user?"), default=False)
+    CBU = models.ForeignKey('common.CBU', blank=True, null=True, on_delete=models.SET_NULL)
+
+    is_psmadm = models.BooleanField(_("PSM Admin?"), default=False)
     is_active = models.BooleanField(default=True)
 
     #multi-select... FIXME

@@ -1,48 +1,52 @@
-{% extends "base.html" %}
+{% extends "base_with_sidebar.html" %}
+
 {% load markdown_extras %}
+
+
+{% block child_css %}
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
+    integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+
+  <!-- Medium Editor -->
+  <script src="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/js/medium-editor.min.js"></script>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/css/medium-editor.min.css"
+    type="text/css" media="screen" charset="utf-8">
+{% endblock %}
+
 {% block content %}
 <!-- Search Form -->
 
-<form class="form-inline ml-auto my-2 my-lg-0 pb-2" style="display: flex; justify-content: flex-end">
-    <input class="form-control mr-sm-2" name="q" type="search" placeholder="Search" aria-label="Search" style="width: 200px">
-    <input class="btn btn-outline-success my-2 my-sm-0" type="submit" value="Search">
-</form> 
+<!-- <div class="container">
+  <div class= "row"> -->
 
-    <!-- https://learndjango.com/tutorials/django-markdown-tutorial -->
-    {% for post in posts %}
-        <article class="media content-section">
-          <!-- img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}" -->
-          <!-- https://stackoverflow.com/questions/18672452/left-align-and-right-align-within-div-in-bootstrap -->
-          <div class="media-body">
-            <h2><a class="article-title" href="{% url 'post_detail' post.pk %}">{{ post.title }}</a></h2>
+    <!-- <div class="col-md-9"> -->
+      <form class="form-inline ml-auto my-2 my-lg-0 pb-2" style="display: flex; justify-content: flex-end">
+          <input class="form-control mr-sm-2" name="q" type="search" placeholder="Search" aria-label="Search" style="width: 200px">
+          <input class="btn btn-outline-success my-2 my-sm-0" type="submit" value="Search">
+      </form> 
 
-            <p class="article-content">{{ post.content|markdown|safe|truncatewords:"50"|linebreaks}}</p>
-            <p class="text-end"><a type="button" class="btn btn-light" href="{% url 'post_detail' post.pk %}"">read more...</a></p>
-                
-            <p class="fs-6 text-end"><a class="mr-2" href="{% url 'user_posts' post.author.username %}">{{ post.author }}</a>
-                <small class="text-muted">{{ post.date_posted|date:"F d, Y" }}</small>
-            </p>
-            
-          </div>
-        </article>
-    {% endfor %}
-    {% if is_paginated %}
-      {% if page_obj.has_previous %}
-        <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
-        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previous</a>
-      {% endif %}
+      <!-- https://learndjango.com/tutorials/django-markdown-tutorial -->
+      {% for post in posts %}
+          <article class="media content-section">
+            <!-- img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}" -->
+            <!-- https://stackoverflow.com/questions/18672452/left-align-and-right-align-within-div-in-bootstrap -->
+            <div class="media-body">
+              <h2><a class="article-title" href="{% url 'post_detail' post.pk %}">{{ post.title }}</a></h2>
 
-      {% for num in page_obj.paginator.page_range %}
-        {% if page_obj.number == num %}
-          <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
-        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-          <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
-        {% endif %}
+              <p class="article-content">{{ post.content|markdown|safe|truncatewords:"50"|linebreaks}}</p>
+              <p class="text-end"><a type="button" class="btn btn-light" href="{% url 'post_detail' post.pk %}"">read more...</a></p>
+                  
+              <p class="fs-6 text-end"><a class="mr-2" href="{% url 'user_posts' post.author.username %}">{{ post.author }}</a>
+                  <small class="text-muted">{{ post.date_posted|date:"F d, Y" }}</small>
+              </p>
+              
+            </div>
+          </article>
       {% endfor %}
 
-      {% if page_obj.has_next %}
-        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
-        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
-      {% endif %}
-    {% endif %}
+      {% include "../includes/pagination.html" %}
+    <!-- </div>
+</div> -->
+
 {% endblock content %}

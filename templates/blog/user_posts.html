@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_with_sidebar.html" %}
 {% block content %}
     <h3 class="mb-3">Posts By {{view.kwargs.username}} ({{ page_obj.paginator.count }})</h3>
     {% for post in posts %}

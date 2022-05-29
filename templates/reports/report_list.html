@@ -1,12 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="container-fluid">
 <!-- Search Form -->
 <!-- <form class="form-inline my-2 my-lg-0 pb-2">
     <input class="form-control mr-sm-2" name="q" type="search" placeholder="Search" aria-label="Search" style="width: 400px">
     <input class="btn btn-outline-success my-2 my-sm-0" type="submit" value="Search"> -->
 <!-- </form>  -->
 <!-- https://bootstrap-table.com/ -->
-<h3>Status report list</h3>
+<h5 class="md-4">Status report list</h5>
 {% if object_list %}
     <div class="col m-2" id="report-list">
 
@@ -21,7 +22,7 @@
           <th data-sortable="true" scope="col">Reported</th>
           <th data-sortable="true" scope="col">Updated_by</th>
           <th data-sortable="true" scope="col">Project</th>
-          <th data-sortable="true" scope="col" class="text-center">Status</th>
+          <th data-sortable="true" scope="col" class="text-center">Health</th>
           <th data-sortable="true" scope="col">Progress%</th>
           <th data-sortable="true" scope="col">Phase</th>
           <th data-sortable="true" scope="col">HAEA PM</th>
@@ -36,7 +37,7 @@
             <a class="article-title" href="{% url 'report_detail' report.pk %}" target="blank">{{ report.title }}</a> </td> 
             <td>{{ report.updated_on|date:'Y-m-d' }}</td>               
             <td>{{ report.updated_by }}</td> 
-            <td>{{ report.project }}</td> 
+            <td><a href="/admin/psm/project/{{ report.project.pk }}">{{ report.project }}</a></td> 
             <td class="text-center"> 
             {%   if report.status_o|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
             {% elif report.status_o|slice:'0:1' == '2' %}<i class="text-warning bi-exclamation-circle"></i>
@@ -56,29 +57,13 @@
         </tbody></table>
     </div>
 
-    {% if is_paginated %}
-      {% if page_obj.has_previous %}
-        <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
-        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previous</a>
-      {% endif %}
+    {% include "includes/pagination.html" %}
 
-      {% for num in page_obj.paginator.page_range %}
-        {% if page_obj.number == num %}
-          <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
-        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-          <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
-        {% endif %}
-      {% endfor %}
-
-      {% if page_obj.has_next %}
-        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
-        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
-      {% endif %}
-    {% endif %}
 
 
 {% else %}
   <p>No published report found!!! :(</p>
 {% endif %}
 
+</div>
 {% endblock content %}

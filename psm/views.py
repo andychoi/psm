@@ -3,7 +3,11 @@ from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.db.models import Q
+from django.http import Http404
+# from django.core.paginator import Paginator
+from rest_framework import generics
 
+# import logging   
 # Create your views here.
 
 
@@ -11,9 +15,10 @@ from django.db.models import Q
 from django.shortcuts import render
 from pyparsing import common
 from .models import Project
-from common.models import Div, Dept, PHASE, PRIORITIES, CBU
+from common.models import Div, Dept, CBU
+from common.utils import PHASE, PRIORITIES, PRJTYPE
 from django.views import generic
-
+from django.http import QueryDict
 
 # https://medium.com/@ksarthak4ever/django-class-based-views-vs-function-based-view-e74b47b2e41b
 # class based vs. function based views
@@ -35,17 +40,20 @@ class IndexView(generic.ListView):
 #https://docs.djangoproject.com/en/2.2/topics/class-based-views/generic-display/#dynamic-filtering
 #https://stackoverflow.com/questions/51121661/django-filter-multiple-values
 # class based views for project -> for selected project
+
+# https://stackoverflow.com/questions/57050000/how-to-return-pagination-with-django-framework
+# class projectListView(generic.ListView):
+
 class projectListView(generic.ListView):
     template_name = 'project/project_list.html'
     model = Project
-    paginate_by = 1000
+    paginate_by = 20    #FIXME
     context_object_name = 'project_list'    
-    # selectedCBU = self.request.GET.get('cbu', -1)    
     
     # def get(self, request, *args, **kwargs):
     #     form = self.form_class(initial=self.initial)
     #     return render(request, self.template_name, {'form': form})    
-
+    # pagination fix: https://stackoverflow.com/questions/61090168/why-is-my-pagination-not-working-django
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -54,7 +62,7 @@ class projectListView(generic.ListView):
         context['filterItems'].append( {
             "key": "YEAR", "text": "Year", "qId": "year"
             , "selected": self.request.GET.get('year', '')
-            , "items": map( lambda x: {"id": x['year'], "name": x['year']}, Project.objects.values('year').distinct() )
+            , "items": map( lambda x: {"id": x['year'], "name": x['year']}, Project.objects.values('year').distinct().order_by('-year') )
         } )
 
         context['filterItems'].append( {
@@ -82,6 +90,12 @@ class projectListView(generic.ListView):
         } )
 
         context['filterItems'].append( {
+            "key": "TYP", "text": "Type", "qId": "type"
+            , "selected": self.request.GET.get('type', '')
+            , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRJTYPE)]
+        } )
+
+        context['filterItems'].append( {
             "key": "PRI", "text": "Priority", "qId": "pri"
             , "selected": self.request.GET.get('pri', '')
             , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRIORITIES)]
@@ -89,7 +103,22 @@ class projectListView(generic.ListView):
 
         return context
 
+
+        # queryset = self.get_queryset().annotate(
+        #     first_name_len=Length('user__first_name'),
+        #     last_name_len=Length('user__last_name')
+        # ).filter(
+        #     first_name_len__gt=0,
+        #     last_name_len__gt=0,
+        # ).filter(
+        #     **parameters
+        # ).order_by(
+        #     '-created'
+        # )
+
+
     def get_queryset(self):
+        # self.request has GET parameter
         # # self.year = get_object_or_404(self.year, name=self.kwargs['year'])
         # # return Project.objects.filter(year=self.year).order_by('dept')
         # queryset = Project.objects.filter(year=self.kwargs['year'])
@@ -109,7 +138,7 @@ class projectListView(generic.ListView):
 
         ltmp = self.request.GET.get('phase', '')
         if ltmp:
-            queryset = queryset.filter(phase=common.PHASE[int(ltmp)][0])
+            queryset = queryset.filter(phase=PHASE[int(ltmp)][0])
 
         ltmp = self.request.GET.get('cbu', '')
         if ltmp:
@@ -117,34 +146,87 @@ class projectListView(generic.ListView):
 
         ltmp = self.request.GET.get('pri', '')
         if ltmp:
-            queryset = queryset.filter(priority=common.PRIORITIES[int(ltmp)][0])
+            queryset = queryset.filter(priority=PRIORITIES[int(ltmp)][0])
 
+        ltmp = self.request.GET.get('type', '')
+        if ltmp:
+            queryset = queryset.filter(type=PRJTYPE[int(ltmp)][0])
+
+        # pagenation http://localhost:8000/project/?page=3
+        # https://stackoverflow.com/questions/43544701/django-pagination-from-page-to-page
+        # https://stackoverflow.com/questions/29071312/pagination-in-django-rest-framework-using-api-view
+        # req_page = self.request.GET.get('page', '')
+        # page = self.paginate_queryset(queryset, req_page)
+        # if req_page:
+        #     return self.paginate_queryset(queryset, req_page)
+        
         return queryset
+
+    # def paginator(self):
+    #     """
+    #     The paginator instance associated with the view, or `None`.
+    #     """
+    #     if not hasattr(self, '_paginator'):
+    #         if self.pagination_class is None:
+    #             self._paginator = None
+    #         else:
+    #             self._paginator = self.pagination_class()
+    #     return self._paginator
+
+    # def paginate_queryset(self, queryset, page_size):
+    #     """
+    #     Paginate the queryset, if needed.
+    #     """
+    #     paginator = self.get_paginator(
+    #         queryset, page_size, orphans=self.get_paginate_orphans(),
+    #         allow_empty_first_page=self.get_allow_empty())
+    #     page_kwarg = self.page_kwarg
+
+    #     # HERE
+    #     page = self.kwargs.get(page_kwarg) or self.request.GET.get(page_kwarg) or 1
+
+    #     try:
+    #         page_number = int(page)
+    #     except ValueError:
+    #         if page == 'last':
+    #             page_number = paginator.num_pages
+    #         else:
+    #             raise Http404(_("Page is not 'last', nor can it be converted to an int."))
+    #     try:
+    #         page = paginator.page(page_number)
+    #         return (paginator, page, page.object_list, page.has_other_pages())
+    #     except:     # InvalidPage as e:
+    #         raise Http404(_('Invalid page (%(page_number)s): %(message)s') % {
+    #             'page_number': page_number,
+    #             'message': 'error'
+    #         })
+            
+        #return self.paginator.paginate_queryset(queryset, self.request, view=self)
 
     # def get_queryset(self):
     #     self.CBU = get_object_or_404(CBU, name=self.kwargs['CBU'])
     #     return Project.objects.filter(CBU=self.CBU).order_by('dept')
 
-class projectListYearView(generic.ListView):
-    template_name = 'project/project_list.html'
-    model = Project
-    paginate_by = 1000
-    context_object_name = 'project_list'    
+# class projectListYearView(generic.ListView):
+#     template_name = 'project/project_list.html'
+#     model = Project
+#     paginate_by = 10    #FIXME
+#     context_object_name = 'project_list'    
 
-    def get_queryset(self):
-        # self.year = get_object_or_404(self.year, name=self.kwargs['year'])
-        # return Project.objects.filter(year=self.year).order_by('dept')
-        queryset = Project.objects.filter(year=self.kwargs['year'])
-        return queryset
+#     def get_queryset(self):
+#         # self.year = get_object_or_404(self.year, name=self.kwargs['year'])
+#         # return Project.objects.filter(year=self.year).order_by('dept')
+#         queryset = Project.objects.filter(year=self.kwargs['year'])
+#         return queryset
 
-class projectListCBUView(generic.ListView):
-    # queryset = Project.objects.filter(CBU__group='HMNA')
-    template_name = 'project/project_list.html'
-    paginate_by = 1000
-    context_object_name = 'project_list'    
-    def get_queryset(self) :
-        queryset = Project.objects.filter(CBU__name=self.kwargs['CBU'])
-        return queryset
+# class projectListCBUView(generic.ListView):
+#     # queryset = Project.objects.filter(CBU__group='HMNA')
+#     template_name = 'project/project_list.html'
+#     paginate_by = 1000
+#     context_object_name = 'project_list'    
+#     def get_queryset(self) :
+#         queryset = Project.objects.filter(CBU__name=self.kwargs['CBU'])
+#         return queryset
 
 # class based view for each Project
 class projectDetail(generic.DetailView):

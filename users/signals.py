@@ -13,7 +13,7 @@ def create_profile(sender, instance, created, **kwargs):
         # check if same profile (email) exist
         found = Profile.objects.get(email=instance.email) if not instance.email is None else None
         if not found:    
-            Profile.objects.create(user=instance)
+            Profile.objects.create(user=instance, username=instance.username)
 
 # try to create profile double time: by signal and by form.
 # use get_or_create instead of create
@@ -22,18 +22,17 @@ def create_profile(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def save_profile(sender, instance, **kwargs):
     #profile not exist
-    profile_exist = True
-    try:
-        profile_exist = (instance.profile != None)
-    except:
-        found = Profile.objects.get(email=instance.email) if not instance.email is None else None
-        if found:
-            profile_exist = False
-        else:
-            Profile.objects.create(user=instance)
+    # profile_exist = True
+    if not hasattr(instance, 'profile'):
+        # profile_exist = (instance.profile != None)
+        try:
+            found = Profile.objects.get(email=instance.email) if not instance.email is None else None
+        except:
+            Profile.objects.create(user=instance, username=instance.username)
             print("profile created")
 
-    if profile_exist:
+    # if profile_exist:
+    else:
         changed = False
         if ( not instance.profile.email and instance.email ) or (instance.profile.email != instance.email)  :
             instance.profile.email = instance.email
@@ -68,6 +67,6 @@ def profile_receiver(sender, instance, created, **kwargs):
             if changed:
                 instance.user.save()
             print("user updated")
-        except:
-            print("user not exist! or user.save failed")
+        except Profile.DoesNotExist:
+            print("user not exist!")
 

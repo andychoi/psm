@@ -202,7 +202,7 @@ en_formats.DATE_FORMAT = 'Y-m-d'
 # https://learndjango.com/tutorials/django-static-files
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR + '/static/', 'psmprj/static',]    #production only
-STATIC_ROOT = env('STATIC_ROOT', "")  # BASE_DIR + '/static/'
+# STATIC_ROOT = env('STATIC_ROOT', "")  # BASE_DIR + '/static/'
 
 # Whether to enable or not the StaticFilesHandler
 # to serve the static resources from the WSGI

@@ -113,7 +113,7 @@ Debugging Tips
 Refer: https://django-extensions.readthedocs.io/en/latest/runserver_plus.html
 Run and enter Debugger PIN to enter debug console from error line (browser)
 
-    $ python manage.py runserver_plus --keep-meta-shutdown
+    $ python  manage.py runserver_plus 0.0.0.0:8000  --keep-meta-shutdown
 
 
 Procfile and Honcho

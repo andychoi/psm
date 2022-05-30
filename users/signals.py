@@ -33,7 +33,7 @@ def save_profile(sender, instance, **kwargs):
 
     # if profile_exist: #to avoid cyclic, check create_profile
     else:
-        if ( instance.profile.email != instance.email)  :
+        if instance.email and ( instance.profile.email is None or ( instance.profile.email != instance.email))  :
             instance.profile.email = instance.email
             instance.profile.save(update_fields=['email'])
         if ( instance.profile.is_active != instance.is_active ) : 

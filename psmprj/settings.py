@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'common',
     'psm',
     'mtasks',
-    'sap',
     'reports',
     'reviews',
     'guardian',      # object level permission management; django default is class level 
@@ -72,6 +71,10 @@ INSTALLED_APPS = [
 
 #form templates
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+#https://github.com/edoburu/django-private-storage -> not working
+# PRIVATE_STORAGE_ROOT = BASE_DIR + '/media-private/'
+# PRIVATE_STORAGE_AUTH_FUNCTION = 'private_storage.permissions.allow_staff'
 
 REST_ENABLED = env.bool('REST_ENABLED', False)
 if REST_ENABLED:

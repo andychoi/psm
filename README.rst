@@ -51,7 +51,7 @@ Install dependencies with::
 Create the database with::
 
     $ python manage.py makemigrations
-    $ python manage.py makemigrations common psm sap reports mtasks reviews
+    $ python manage.py makemigrations common psm reports mtasks reviews
     $ python manage.py migrate
 
 To create an admin user::

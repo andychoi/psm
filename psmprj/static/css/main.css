@@ -1,7 +1,7 @@
 body {
   /* background: #fafafa; */
   color: #234332; 
-  margin-top: 5rem;
+  margin-top: 3rem;
 }
 
 h1,
@@ -22,17 +22,22 @@ ul {
 }
 
 .site-header .navbar-nav .nav-link {
-  color: #656a6d;
+  color: #c5aa6a;
 }
 
 .site-header .navbar-nav .nav-link:hover {
   color: #ffffff;
-  background-color: #234332;
+  background-color: #c5aa6a;  
 }
 
 .site-header .navbar-nav .nav-link.active {
   font-weight: 500;
 }
+
+/* https://www.color-hex.com/color/2f2626 */
+.navbar-my-color { background-color: #2f2626 !important;  }
+.myheadline { background-color: #c0bdbd ;}
+.myheadline-content { color: #EAE9E9; }
 
 .content-section {
   background: #ffffff;
@@ -104,10 +109,9 @@ a.article-title:hover {
   margin-top: 5em;
 }
 
-.my-container-bg { background-color: #ececec;}
 .overlay-div{
   background-color:#000;
   opacity:.5;
 }
 
-#myCarousel { margin-top: 5em; }
+#myCarousel { margin-top: 24px; } /* bootstrap navbar 24px */

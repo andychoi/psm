@@ -6,8 +6,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 
-from common.models import CBU, Div, Dept, Team, Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, State3, STATE3
-from sap.models import WBS
+from common.models import CBU, Div, Dept, Team, Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, State3, STATE3, WBS
 from users.models import Profile
 
 from psmprj.utils.mail import send_mail_async as send_mail

@@ -27,6 +27,8 @@ from mtasks.serializers import TaskViewSet
 # auth, user
 from django.contrib.auth import views as auth_views
 from users import views as user_views
+# private media
+# import private_storage.urls
 
 router = routers.DefaultRouter()
 router.register(r'tasks', TaskViewSet)
@@ -65,6 +67,8 @@ urlpatterns = [
     path('', include('reports.urls')),
     path('', include('psm.urls')),
 
+    # private media files
+    # path('^media-private/', include(private_storage.urls)),
 
     # path('djrichtextfield/', include('djrichtextfield.urls')),
     # path('^markdown/', include( 'django_markdown.urls')),

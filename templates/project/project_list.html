@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% block child_css %}
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.css">
+ 
 	<style type="text/css">
 		.fixed-panel {
 			min-height: 140px;
@@ -39,7 +41,7 @@
 		    <div class="col-10">
                 <div class="collapse show float-end" id="collapseFilter">
                     <form class="row row-cols-lg-auto g-3 align-items-center form-control-sm">
-                            <label>Local filters:</label>
+                            <label><!-- Local filters:--></label>
                             {% for filterItem in filterItems %}
                             <div class="col-auto">
                                 <label  class="form-group label" for='sel_{{ filterItem.qId }}'>{{ filterItem.text }}</label>        
@@ -168,6 +170,7 @@
 {% block child_js_above_files %} 
     <!-- Optional JavaScript; choose one of the two! -->
     <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.js"></script>
 
     <script>
         // set preselected values

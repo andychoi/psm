@@ -41,9 +41,12 @@ venv*/
 
 # runtime
 run/
+tmp/
 
 # file upload folder
 media/
+media-private/
+
 
 #https://stackoverflow.com/questions/47307305/how-to-add-all-of-the-migrations-to-git-gitignore-file-in-django
 **/migrations/**

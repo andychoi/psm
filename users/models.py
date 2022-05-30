@@ -53,6 +53,14 @@ class Profile(models.Model):
     def save(self, *args, **kwargs):
         super(Profile, self).save(*args, **kwargs)
 
+    # models.FileField(upload_to=wrapper)
+    # def wrapper(user, filename):
+    #     file_upload_dir = os.path.join(settings.MEDIA_ROOT, 'file_upload')
+    #     if os.path.exists(file_upload_dir):
+    #         import shutil
+    #         shutil.rmtree(file_upload_dir)
+    #     return os.path.join(file_upload_dir, filename)
+
 
         # img = Image.open(self.image.path)
         # if img.height > 150 or img.width > 150:

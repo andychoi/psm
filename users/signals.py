@@ -31,21 +31,17 @@ def save_profile(sender, instance, **kwargs):
             Profile.objects.create(user=instance, username=instance.username)
             print("profile created")
 
-    # if profile_exist:
+    # if profile_exist: #to avoid cyclic, check create_profile
     else:
-        changed = False
-        if ( not instance.profile.email and instance.email ) or (instance.profile.email != instance.email)  :
+        if ( instance.profile.email != instance.email)  :
             instance.profile.email = instance.email
-            changed = True
+            instance.profile.save(update_fields=['email'])
         if ( instance.profile.is_active != instance.is_active ) : 
             instance.profile.is_active = instance.is_active
-            changed = True
+            instance.profile.save(update_fields=['is_active'])
         if not instance.profile.username:
             instance.profile.username = instance.username   #first+last
-
-        if changed:
-            instance.profile.save(update_fields=['email', 'is_active', 'username']) #to avoid cyclic, check create_profile
-            print("profile updated")
+            instance.profile.save(update_fields=['username']) 
 
 
 @receiver(post_save, sender=Profile)

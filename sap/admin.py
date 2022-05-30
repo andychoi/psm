@@ -30,8 +30,6 @@ class WBSAdmin(ImportExportMixin, admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if change is False:
             obj.created_by = request.user
-        # if obj.user  is not None:  #default from internal user name
-        #     obj.name = obj.user.username
         super().save_model(request, obj, form, change)
 
     def formatted_budget(self, obj):

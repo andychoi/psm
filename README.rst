@@ -108,6 +108,14 @@ https://docs.djangoproject.com/en/4.0/ref/django-admin/#remove-stale-contenttype
 To database shell
     $ python manage.py dbshell
 
+Debugging Tips
+
+Refer: https://django-extensions.readthedocs.io/en/latest/runserver_plus.html
+Run and enter Debugger PIN to enter debug console from error line (browser)
+
+    $ python manage.py runserver_plus --keep-meta-shutdown
+
+
 Procfile and Honcho
 ^^^^^^^^^^^^^^^^^^^
 

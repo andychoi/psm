@@ -247,7 +247,7 @@ class ReportRiskAdmin(ImportExportMixin, admin.ModelAdmin):
             obj.updated_by = request.user
         super().save_model(request, obj, form, change)
 
-    actions = ['make_published', 'duplicate_event']
+    actions = ['make_published', 'duplicate_record']
 
     @admin.action(description='Mark selected as published', permissions=['change'])
     def make_published(self, request, queryset):
@@ -259,7 +259,7 @@ class ReportRiskAdmin(ImportExportMixin, admin.ModelAdmin):
         ) % updated, messages.SUCCESS)
 
     @admin.action(description="Duplicate selected record", permissions=['change'])
-    def duplicate_event(self, request, queryset):
+    def duplicate_record(self, request, queryset):
         for object in queryset:
             object.id = None
             object.save()

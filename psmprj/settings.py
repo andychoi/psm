@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'blog.apps.BlogConfig',
     'crispy_forms',
-    # 'django_filters'  ,   #FIXME
+    'django_filters'  ,   #FIXME
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -57,7 +57,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_extensions',
+    'django_extensions',    #debugging tool
     'import_export',
     'django_admin_listfilter_dropdown',
     'adminfilters',
@@ -202,7 +202,7 @@ en_formats.DATE_FORMAT = 'Y-m-d'
 # https://learndjango.com/tutorials/django-static-files
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR + '/static/', 'psmprj/static',]    #production only
-#STATIC_ROOT = BASE_DIR + '/static/'
+STATIC_ROOT = env('STATIC_ROOT', "")  # BASE_DIR + '/static/'
 
 # Whether to enable or not the StaticFilesHandler
 # to serve the static resources from the WSGI

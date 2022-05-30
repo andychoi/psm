@@ -65,11 +65,10 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
         css = {
         'all': ('psm/css/custom_admin.css',),
     }    
-    # list_display = ('PJcode', 'title', 'user', 'CBU', 'formatted_created_at', 'dept', 'phase', 'state')
-    list_display = ('PJcode', 'title', 'user', 'CBU',  'dept', 'phase', 'state')
+    list_display = ('PJcode', 'title', 'pm', 'CBU',  'dept', 'phase', 'state')
     list_display_links = ('PJcode', 'title')
     search_fields = ('id', 'title', 'description', 'resolution', 'projectitem__item_description',
-                     'wbs__wbs', 'es', 'ref', 'user__name', 'CBUpm__name')
+                     'wbs__wbs', 'es', 'ref', 'pm__name', 'CBUpm__name')
     list_filter = (
         ('status_o', UnionFieldListFilter),
         ('year', DropdownFilter),
@@ -86,7 +85,7 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
     )
     ordering = ['-id']  #Project_PRIORITY_FIELDS
     readonly_fields = ('created_at', 'last_modified', 'created_by', 'lstrpt',)
-    autocomplete_fields = ['user', 'CBU']
+    autocomplete_fields = ['pm', 'CBU']
 
     fieldsets = (               # Edition form
         (None,  {'fields': (('title', 'type', 'year'), 
@@ -94,7 +93,7 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
                             ('status_o', 'status_t', 'status_b', 'status_s', 'lstrpt', 'resolution'), 
                             ('req_pro','req_sec','req_inf'), 
                             ('attachment')), "classes": ("stack_labels",)}),
-        (_('Detail...'),  {'fields': (('strategy', 'program'), ('CBU', 'CBUpm', 'ref'),('user', 'team', 'dept', 'div'), 
+        (_('Detail...'),  {'fields': (('strategy', 'program'), ('CBU', 'CBUpm', 'ref'),('pm', 'team', 'dept', 'div'), 
                             ( 'est_cost', 'app_budg', 'wbs', 'es', 'is_internal' ), ('description',), 
                                        ), 'classes': ('collapse',)}),
         (_('Schedule...'),  {'fields': (('p_pre_plan_b','p_pre_plan_e','p_kickoff','p_design_b','p_design_e','p_dev_b','p_dev_e','p_uat_b','p_uat_e','p_launch','p_close'),
@@ -107,7 +106,7 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
         fieldsets = super().get_fieldsets(request, obj)
         if obj is None:
             fieldsets = (      # Creation form
-                (None, {'fields': (('title', 'type', 'year'), ('strategy', 'program'), ('CBU', 'CBUpm', 'ref'), ('user', 'team', 'dept', 'div'), 
+                (None, {'fields': (('title', 'type', 'year'), ('strategy', 'program'), ('CBU', 'CBUpm', 'ref'), ('pm', 'team', 'dept', 'div'), 
                             ( 'est_cost', 'app_budg', 'wbs', 'es', 'is_internal' ),
                             ('state', 'phase', 'progress', 'priority'), 'description', 
                             ('p_pre_plan_b','p_pre_plan_e','p_kickoff','p_design_b','p_design_e','p_dev_b','p_dev_e','p_uat_b','p_uat_e','p_launch','p_close'),

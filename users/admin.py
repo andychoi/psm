@@ -1,10 +1,15 @@
 from django.contrib import admin
 from .models import Profile
-
+from django.contrib import messages
+from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from import_export.admin import ImportExportMixin
 from common.models import CBU, Div, Dept, Team
 
+#for RAW query
+from django.db import connection
 
 # class ProfileAdmin(admin.ModelAdmin):
 #     list_display = ('id', 'user')
@@ -17,14 +22,14 @@ from common.models import CBU, Div, Dept, Team
 
 @admin.register(Profile)
 class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
-    list_display = ('id', 'user', 'name', 'email', 'u_team', 'u_dept', 'u_div', 'is_active')
-    list_display_links = ('user', 'name')
-    search_fields = ('id', 'name', 'email') #, 'manager__name') -> dump... why? circular??
-    ordering = ('name',)
+    list_display = ('id', 'user', 'username', 'email', 'u_team', 'u_dept', 'u_div', 'is_active')
+    list_display_links = ('id', 'user', 'username')
+    search_fields = ('id', 'username', 'email', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
+    ordering = ('username',)
     readonly_fields = ('created_on', 'created_by', 'updated_on', 'updated_by')
 
     fieldsets = (  # Edition form
-         (None, {'fields': (('user', 'name', 'email') , ('manager', 'is_psmadm', 'is_active'), ('u_team','u_dept', 'u_div'), ('is_external', 'CBU'), ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',), ('image',), )}),
+         (None, {'fields': (('user', 'username', 'email') , ('manager', 'is_psmadm', 'is_active'), ('u_team','u_dept', 'u_div'), ('is_external', 'CBU'), ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',), ('image',), )}),
         (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by')), 'classes': ('collapse',)}),
     )
 
@@ -32,16 +37,63 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
         fieldsets = super().get_fieldsets(request, obj)
         if obj is None:
             fieldsets = (      # Creation form
-                 (None, {'fields': ('user', ('name', 'email') , ('manager', 'is_psmadm', 'is_active'), ('u_team','u_dept', 'u_div'), ('is_external', 'CBU'), ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',), ('image',))}),
+                 (None, {'fields': ('user', ('username', 'email') , ('manager', 'is_psmadm', 'is_active'), ('u_team','u_dept', 'u_div'), ('is_external', 'CBU'), ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',), ('image',), ('id_auto') )}),
             )
         return fieldsets
 
-    def save_model(self, request, obj, form, change):
-        if change is False:
-            obj.created_by = request.user
-        if obj.user  is not None and obj.name is None:  #default from internal user name
-            obj.name = obj.user.username
-        super().save_model(request, obj, form, change)
+    # validation check
+    def clean(self):
+        if not self.email and not User.objects.filter(email=self.email).exists():
+            raise ValidationError("Email is already registered in User table")
+
+    # use signals.py to sync between User and Profile        
+    # def save_model(self, request, obj, form, change):
+        # if change is False:     # create
+        #     obj.created_by = request.user
+        # super().save_model(request, obj, form, change)
+
+    actions = ['sync_user_master']
+
+    @admin.action(description='Migration - create User, link user with email', permissions=['change'])
+    def sync_user_master(self, request, queryset):
+        
+        for obj in queryset:
+            try:
+                found = User.objects.get(email=obj.email) if not obj.email is None else None
+            except:
+                found = None
+
+            if found and obj.user is None:
+                # one-to-one save/update: https://stackoverflow.com/questions/70622890/how-to-assign-value-to-one-to-one-field-in-django
+                # 3 methods available
+                # Profile.objects.filter(pk=obj.id).update(user=found)  
+                obj.user = found                  
+                obj.save(update_fields=['user'])    
+                # with connection.cursor() as cursor:
+                #     cursor.execute("UPDATE users_profile SET user_id = %s WHERE id = %s", ( found.id, obj.id ) )
+                                
+                messages.add_message(request, messages.INFO, obj.username + 'is linked with user using email')
+
+            elif not found and obj.user is None:
+                user_with_email = False
+                try:
+                    user_with_email = True if User.objects.get(username=obj.email) else False
+                except:
+                    pass
+                if user_with_email:
+                    messages.add_message(request, messages.INFO, obj.username + ' already exists with email address as username: ' + obj.email)
+                    break
+
+                #email as username, if not username from profile
+                username = obj.email if obj.email else obj.username.lower().replace(" ", "").replace(",",".")
+                user = User.objects.create_user( username=username, password='demo', email=obj.email )
+                obj.user = user
+                obj.save(update_fields=['user'])    
+                messages.add_message(request, messages.INFO, obj.username + ' is created to user as username: ' + username)
+                
+
+    def __str__(self):
+        return self.id if self.username is None else self.username
 
     class Meta:
         model = Profile

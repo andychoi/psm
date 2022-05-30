@@ -110,18 +110,14 @@ class Project(models.Model):
 
     description = models.TextField(_("description"), max_length=2000, null=True, blank=True)
 
-    # status_o = models.IntegerField(_("Overall"), choices=STATUS, default=0)
-    # status_t = models.IntegerField(_("Schedule"), choices=STATUS, default=0)
-    # status_b = models.IntegerField(_("Budget"), choices=STATUS, default=0)
-    # status_s = models.IntegerField(_("Scope"), choices=STATUS, default=0)
     status_o = models.CharField(_("status overall"), max_length=20, choices=STATUS, default=Status.GREEN.value)
     status_t = models.CharField(_("status schedule"), max_length=20, choices=STATUS, default=Status.GREEN.value)
     status_b = models.CharField(_("status budget"), max_length=20, choices=STATUS, default=Status.GREEN.value)
     status_s = models.CharField(_("status scope"), max_length=20, choices=STATUS, default=Status.GREEN.value)
     resolution = models.TextField(_("PM Memo"), max_length=2000, null=True, blank=True)
-    #settings.AUTH_USER_MODEL
-    user = models.ForeignKey(Profile, related_name='project_manager', verbose_name=_('HAEA PM'),
-                             on_delete=models.SET_NULL, null=True, blank=True)
+    #settings.AUTH_USER_MODEL - user directory...
+    pm = models.ForeignKey(Profile, related_name='project_manager', verbose_name=_('HAEA PM'),
+                           on_delete=models.SET_NULL, null=True, blank=True)
     state = models.CharField(_("state"), max_length=20, choices=STATES, default=State.TO_DO.value)
     phase = models.CharField(_("Phase"), max_length=20, choices=PHASE, default=Phase.PRE_PLAN.value)
     progress = models.SmallIntegerField(_("complete%"), default=0)

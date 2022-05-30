@@ -12,10 +12,9 @@ if TYPE_CHECKING:
 # from common.models import Team, Dept, Div
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
-
-    name = models.CharField(max_length=100, blank=True, null=True, unique=True)
-    email = models.EmailField(max_length=200, blank=True, null=True)
+    user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
+    username = models.CharField(max_length=100, blank=True, null=True, unique=True)
+    email = models.EmailField(max_length=150, blank=True, null=True, unique=True)
     manager = models.ForeignKey(User, verbose_name=_('manager'), related_name='report_to', on_delete=models.CASCADE, null=True, blank=True)
     u_team = models.ForeignKey('common.Team', verbose_name=_('Team'), on_delete=models.SET_NULL, blank=True, null=True)
     u_dept = models.ForeignKey('common.Dept', verbose_name=_('Dept'), on_delete=models.SET_NULL, blank=True, null=True)
@@ -34,20 +33,26 @@ class Profile(models.Model):
     is_app_reviewer = models.BooleanField(_("App_Architect?"), default=False)
     is_mgt_reviewer = models.BooleanField(_("Management reviewer?"), default=False)
 
-    image = models.ImageField(default='default.jpg', upload_to='profile_pics')
+    image = models.ImageField(default='default.jpg', upload_to='profile_pics', null=True, blank=True)
     created_on = models.DateTimeField(_("created at"), auto_now_add=True, editable=False, null=True, blank=True)
     created_by = models.ForeignKey(User, related_name="profile_created", null=True, on_delete=models.SET_NULL)
     updated_on = models.DateTimeField(_("last modified"), auto_now=True, editable=False)
     updated_by = models.ForeignKey(User, related_name="profile_updated", null=True, on_delete=models.SET_NULL)
-    
+    id_auto = models.BooleanField(_("User create from Profile"), default=False )    #auto creation of user from profile creation
+
     def __str__(self):
-        if getattr(self, 'user'):
+        if getattr(self, 'user') and not self.username :
             return self.user.username 
         else:
-            return self.name
+            return self.username    #preferred
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        return super().form_valid(form)
 
     def save(self, *args, **kwargs):
         super(Profile, self).save(*args, **kwargs)
+
 
         # img = Image.open(self.image.path)
         # if img.height > 150 or img.width > 150:

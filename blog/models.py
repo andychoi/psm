@@ -22,13 +22,14 @@ class Post(models.Model):
 
     title = models.CharField(max_length=100)
     content = models.TextField()
-    # liked = models.ManyToManyField(
-    #     settings.AUTH_USER_MODEL, blank=True, related_name='liked')
     status = models.IntegerField(choices=PUBLISH, default=0) 
     date_posted = models.DateTimeField(default=timezone.now)
+    private =  models.BooleanField(default=False)
     featured = models.BooleanField(default=False)
     image = models.ImageField(default='posts/default.jpg', upload_to='posts')
     excerpt = models.TextField(blank=True, null=True)
+
+    # liked = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name='liked')
     objects = PostManager()
 
     updated_on = models.DateTimeField(default=timezone.now)

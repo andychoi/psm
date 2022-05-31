@@ -22,14 +22,17 @@ from django.db import connection
 
 @admin.register(Profile)
 class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
-    list_display = ('id', 'user', 'username', 'email', 'u_team', 'u_dept', 'u_div', 'is_active')
+    # list_display = ('id', 'user', 'username', 'email', 'u_team', 'u_dept', 'u_div', 'is_active')
+    list_display = ('id', 'user', 'username', 'email', 'is_active')
     list_display_links = ('id', 'user', 'username')
     search_fields = ('id', 'username', 'email', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
     ordering = ('username',)
     readonly_fields = ('created_on', 'created_by', 'updated_on', 'updated_by')
 
     fieldsets = (  # Edition form
-         (None, {'fields': (('user', 'username', 'email') , ('manager', 'is_psmadm', 'is_active'), ('u_team','u_dept', 'u_div'), ('is_external', 'CBU'), ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',), ('image',), )}),
+         (None, {'fields': (('user', 'username', 'email') , ('manager', 'is_psmadm', 'is_active'), 
+                            # ('u_team','u_dept', 'u_div'), 
+                            ('is_external', 'CBU'), ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',), ('image',), )}),
         (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by')), 'classes': ('collapse',)}),
     )
 
@@ -37,7 +40,9 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
         fieldsets = super().get_fieldsets(request, obj)
         if obj is None:
             fieldsets = (      # Creation form
-                 (None, {'fields': ('user', ('username', 'email') , ('manager', 'is_psmadm', 'is_active'), ('u_team','u_dept', 'u_div'), ('is_external', 'CBU'), ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',), ('image',), ('id_auto') )}),
+                 (None, {'fields': ('user', ('username', 'email') , ('manager', 'is_psmadm', 'is_active'), 
+                            # ('u_team','u_dept', 'u_div'), 
+                            ('is_external', 'CBU'), ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',), ('image',), ('id_auto') )}),
             )
         return fieldsets
 

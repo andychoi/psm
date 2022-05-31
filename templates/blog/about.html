@@ -1,4 +1,49 @@
 {% extends "base_with_sidebar.html" %}
+{% load static %}
+
+{% block child_css %}
+{% endblock %}
+
 {% block content %}
-    <h1>About PSM</h1>
+
+<div id="content-markdown" style="display:none">
+## About Project System
+---
+
+### Features
+
++ Support Markdown tag
++ Project Registration
++ Project Dashboard 
++ Project Weekly Status Report
++ Project Risk Report
++ Review request from project master
+    + Procurement review
+    + Security review
+    + Infrastructure review
+    + ...
++ Reviewer to provide update (accept/reject)
+
+### To-do
++ Report distribution through Email
++ Project governance process
++ ...
+
+`
+This page is formatted with markdown
+`
+
+</div>
+<div id="content-markdown-result"></div>
 {% endblock content %}
+
+
+{% block child_js_above_files %} 
+<!-- https://embed.plnkr.co/atyuBnVNktl8YSfdfPJT/preview -->
+<!-- https://github.com/markedjs/marked -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        document.getElementById('content-markdown-result').innerHTML = 
+            marked.parse(document.getElementById('content-markdown').innerHTML);
+    </script>
+{% endblock %}

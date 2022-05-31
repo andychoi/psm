@@ -1,5 +1,7 @@
 # importing models and libraries
 from django.shortcuts import render
+# from django_filters import FilterSet
+
 from .models import Report, Milestone
 from django.views import generic
 
@@ -14,11 +16,37 @@ from django.views import generic
 # 		return Report.objects.order_by('-updated_on')[:25]
 		
 # class based views for reports -> for selected project
+
+# https://django-filter.readthedocs.io/en/stable/guide/usage.html#overriding-default-filters
+# class ReportFilter(FilterSet):
+#     class Meta:
+#         model = Report
+#         fields = {
+#             'title': ['icontains', ],
+#             'project__title': ['icontains', ],
+#         }
+
 class reportList(generic.ListView):
 	queryset = Report.objects.filter(status=1).order_by('-id')
 	template_name = 'reports/report_list.html'
-	paginate_by = 500
+	paginate_by = 200
 	context_object_name = 'report_list'
+	
+	# django-filter
+	# def get_queryset(self):
+	# 	queryset = super().get_queryset()
+	# 	filter = ReportFilter(self.request.GET, queryset)
+	# 	return filter.qs
+    
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		queryset = self.get_queryset()
+
+		# django-filter
+		# filter = ReportFilter(self.request.GET, queryset)
+		# context["filter"] = filter
+
+		return context
 
 
 # class based view for each report

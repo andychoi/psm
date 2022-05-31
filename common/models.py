@@ -33,7 +33,6 @@ class Dept(models.Model):
 class Team(models.Model):
     name = models.CharField(max_length=100, blank=False, null=False)
     head = models.ForeignKey('users.Profile', verbose_name=_('Team head'), on_delete=models.SET_NULL, null=True, blank=True)
-
     description = models.TextField(null=True, blank=True)
     dept = models.ForeignKey(Dept, on_delete=models.SET_NULL, null=True, blank=True)
     div = models.ForeignKey(Div, on_delete=models.SET_NULL, null=True, blank=True)

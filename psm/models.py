@@ -39,8 +39,8 @@ Project_PRIORITY_FIELDS = ('state', 'CBU', '-priority', '-lstrpt')
 
 class Strategy(models.Model):
     class Meta:
-        verbose_name = _("Strategy")
-        verbose_name_plural = _("1.Strategies")    
+        verbose_name = _("Project Strategy")
+        verbose_name_plural = _("Project Strategies")    
         
     name   = models.CharField(max_length=200, blank=True, null=True)
     description = models.TextField(null=True, blank=True)
@@ -55,7 +55,7 @@ class Strategy(models.Model):
 class Program(models.Model):
     class Meta:
         verbose_name = _("Program")
-        verbose_name_plural = _("2.Programs")    
+        verbose_name_plural = _("Programs")    
 
     name = models.CharField(max_length=200, blank=True, null=True)
     startyr = models.PositiveIntegerField(_("Starting year"), default=current_year(), validators=[MinValueValidator(2018), max_value_current_year])
@@ -291,6 +291,9 @@ class ProjectItemCategory(models.Model):
 
     def __str__(self):
         return self.name
+    class Meta:
+        verbose_name = _("Project Item category")
+        verbose_name_plural = _("Project Item categories")
 
 class ProjectItem(models.Model):
     class Meta:

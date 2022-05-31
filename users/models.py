@@ -1,30 +1,33 @@
 from django.db import models
 from django.contrib.auth.models import User
-# https://pillow.readthedocs.io
-# from PIL import Image  #performance issue https://placeholder.com/900x300
 from django.utils.translation import gettext_lazy as _
 from common.utils import *
 
+# https://pillow.readthedocs.io
+# from PIL import Image  #performance issue https://placeholder.com/900x300
+
 #avoid circular import, use full name in model with ''. example='common.Team'
+# from common.models import Team, Dept, Div
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from common.models import Team, Dept, Div, CBU
-# from common.models import Team, Dept, Div
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
     username = models.CharField(max_length=100, blank=True, null=True, unique=True)
     email = models.EmailField(max_length=150, blank=True, null=True, unique=True)
+    is_active = models.BooleanField(default=True)
+
     manager = models.ForeignKey(User, verbose_name=_('manager'), related_name='report_to', on_delete=models.CASCADE, null=True, blank=True)
+
+#FIXME circular dependency...??
     u_team = models.ForeignKey('common.Team', verbose_name=_('Team'), on_delete=models.SET_NULL, blank=True, null=True)
     u_dept = models.ForeignKey('common.Dept', verbose_name=_('Dept'), on_delete=models.SET_NULL, blank=True, null=True)
-    u_div = models.ForeignKey('common.Div', verbose_name=_('Div'), on_delete=models.SET_NULL, blank=True, null=True)
+    u_div  = models.ForeignKey('common.Div',  verbose_name=_('Div'),  on_delete=models.SET_NULL, blank=True, null=True)
+    CBU    = models.ForeignKey('common.CBU',  verbose_name=_('CBU'),  on_delete=models.SET_NULL, blank=True, null=True)
 
     is_external = models.BooleanField(_("External user?"), default=False)
-    CBU = models.ForeignKey('common.CBU', blank=True, null=True, on_delete=models.SET_NULL)
-
-    is_psmadm = models.BooleanField(_("PSM Admin?"), default=False)
-    is_active = models.BooleanField(default=True)
+    is_psmadm   = models.BooleanField(_("PSM Admin?"), default=False)
 
     #multi-select... FIXME
     is_pro_reviewer = models.BooleanField(_("Procurement reviewer?"), default=False)

@@ -11,7 +11,12 @@ def create_profile(sender, instance, created, **kwargs):
     if created:  #user created
 
         # check if same profile (email) exist
-        found = Profile.objects.get(email=instance.email) if not instance.email is None else None
+        # FIXME... initial setup -> dump...  users.models.DoesNotExist: Profile matching query does not exist.
+        found = None
+        try:
+            found = Profile.objects.get(email=instance.email) if not instance.email is None else None
+        except:
+            pass
         if not found:    
             Profile.objects.create(user=instance, username=instance.username)
 

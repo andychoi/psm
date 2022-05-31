@@ -1,7 +1,7 @@
-Django Project Service Management
+Django Project System
 =================================
 
-PSM: A very simple Project Service Management web app 
+PSM: A very simple Project System web app 
 *reference to Task Management web app written with **Django Admin**.
 
 Features
@@ -51,7 +51,7 @@ Install dependencies with::
 Create the database with::
 
     $ python manage.py makemigrations
-    $ python manage.py makemigrations common psm reports mtasks reviews
+    $ python manage.py makemigrations common users psm reports mtasks reviews
     $ python manage.py migrate
 
 To create an admin user::
@@ -114,6 +114,12 @@ Refer: https://django-extensions.readthedocs.io/en/latest/runserver_plus.html
 Run and enter Debugger PIN to enter debug console from error line (browser)
 
     $ python  manage.py runserver_plus 0.0.0.0:8000  --keep-meta-shutdown
+
+KNOWN ISSUES
+------------
++ django-filters package - problem with pagination: get_copy.urlencode returns BLANK.
+ href="?page={{ page_obj.previous_page_number }}&{{ get_copy.urlencode  }}"
+* django-filters package - cannot apply bootstrap styling
 
 
 Procfile and Honcho

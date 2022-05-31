@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'blog.apps.BlogConfig',
     'crispy_forms',
-    'django_filters'  ,   #FIXME
+    # 'django_filters'  ,   #bug with pagination
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -274,8 +274,8 @@ AUTHENTICATION_BACKENDS = [
 
 APP_NAME = env('APP_NAME', 'PSM')
 APP_EMAIL = env('APP_EMAIL', 'no-reply@localhost')
-SITE_HEADER = env('SITE_HEADER', 'PSM - Project Service Management')
-INDEX_TITLE = env('INDEX_TITLE', 'Project Service Management')
+SITE_HEADER = env('SITE_HEADER', 'Project System')
+INDEX_TITLE = env('INDEX_TITLE', 'Project System')
 
 ADMINS = (
     (APP_NAME, APP_EMAIL)

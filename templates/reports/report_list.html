@@ -13,7 +13,13 @@
     <input class="btn btn-outline-success my-2 my-sm-0" type="submit" value="Search"> -->
 <!-- </form>  -->
 <!-- https://bootstrap-table.com/ -->
-<h5 class="md-4">Status report list - latest 500</h5>
+<h5 class="md-4">Status report list - latest</h5>
+
+<!-- <form class="form-group" method="get">
+  filter.form.as_p 
+  <input type="submit" />
+</form>         -->
+
 {% if object_list %}
     <div class="col m-2" id="report-list">
 
@@ -35,7 +41,8 @@
       </tr>
       </thead>
       <tbody>
-        
+
+
         {% for report in report_list %}
           <tr>
             <td>{{ report.CBU }}</td> 

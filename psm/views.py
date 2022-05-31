@@ -47,7 +47,7 @@ class IndexView(generic.ListView):
 class projectListView(generic.ListView):
     template_name = 'project/project_list.html'
     model = Project
-    paginate_by = 200    #FIXME
+    paginate_by = 500    #FIXME
     context_object_name = 'project_list'    
     
     # def get(self, request, *args, **kwargs):

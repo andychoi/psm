@@ -24,6 +24,9 @@ DECISIONS = (
     (Decision.REJECTED.value, _('Rejected')),
     (Decision.DUPL.value,     _('Duplicate'))
 )
+# this way is possible... no translation
+            # (ReviewTypes.PRO.value, 'ReviewType - ' + ReviewTypes.PRO.value[3:]),
+            # (ReviewTypes.SEC.value, 'ReviewType - ' + ReviewTypes.SEC.value[3:]),
 
 class State(enum.Enum):
     """

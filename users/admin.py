@@ -63,6 +63,7 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
     def sync_user_master(self, request, queryset):
         
         for obj in queryset:
+            #check user with same email
             try:
                 found = User.objects.get(email=obj.email) if not obj.email is None else None
             except:
@@ -71,10 +72,10 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
             if found and obj.user is None:
                 # one-to-one save/update: https://stackoverflow.com/questions/70622890/how-to-assign-value-to-one-to-one-field-in-django
                 # 3 methods available
-                # Profile.objects.filter(pk=obj.id).update(user=found)  
                 obj.user = found                  
                 obj.save(update_fields=['user'])    
-                # with connection.cursor() as cursor:
+                # Profile.objects.filter(pk=obj.id).update(user=found)   #method 2
+                # with connection.cursor() as cursor:                    #method 3
                 #     cursor.execute("UPDATE users_profile SET user_id = %s WHERE id = %s", ( found.id, obj.id ) )
                                 
                 messages.add_message(request, messages.INFO, obj.username + 'is linked with user using email')
@@ -82,20 +83,38 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
             elif not found and obj.user is None:
                 user_with_email = False
                 try:
-                    user_with_email = True if User.objects.get(username=obj.email) else False
+                    found = User.objects.get(username=obj.email) if not obj.email is None else None
                 except:
-                    pass
-                if user_with_email:
-                    messages.add_message(request, messages.INFO, obj.username + ' already exists with email address as username: ' + obj.email)
-                    break
+                    found = None
 
-                #email as username, if not username from profile
-                username = obj.email if obj.email else obj.username.lower().replace(" ", "").replace(",",".")
-                user = User.objects.create_user( username=username, password='demo', email=obj.email )
-                obj.user = user
-                obj.save(update_fields=['user'])    
-                messages.add_message(request, messages.INFO, obj.username + ' is created to user as username: ' + username)
-                
+                if found:
+                    obj.user = found
+                    obj.save(update_fields=['user'])    
+                    messages.add_message(request, messages.INFO, obj.username + ' already exists with email address as username: ' + obj.email)
+                else:
+                    #email as username, if not username from profile
+                    if obj.email:
+                        new_user = User.objects.create_user( username=obj.email, password='demo', email=obj.email )
+                        if new_user:
+                            obj.user = new_user
+                            obj.save(update_fields=['user'])    
+                            messages.add_message(request, messages.INFO, obj.username + ' is created to user as username: ' + username)
+                    else:
+                        # causing duplicate key... signal User -> Profile (different username) -> don't create
+                        # username = obj.username.lower().replace(" ", "").replace(",",".")
+                        # user = User.objects.create_user( username=username, password='demo' )
+                        try:
+                            found = User.objects.get( username=obj.username )
+                        except:
+                            found = None
+                        # breakpoint()
+                        if found:
+                            obj.user = found
+                            obj.save(update_fields=['user'])    
+                            messages.add_message(request, messages.INFO, obj.username + ' found in user, linked now')
+                        else:
+                            messages.add_message(request, messages.INFO, obj.username + ' not found in user, cannot create user without email')
+
 
     def __str__(self):
         return self.id if self.username is None else self.username

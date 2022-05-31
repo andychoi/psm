@@ -13,7 +13,8 @@ from django.views.generic import (
     UpdateView,
     DeleteView
 )
-from .filters import PostFilter
+# django_filter
+# from .filters import PostFilter
 # 
 # https://stackoverflow.com/questions/48872380/display-multiple-queryset-in-list-view
 #  https://stackoverflow.com/questions/57234398/i-make-top-of-articles-but-when-i-start-my-project-i-had-error-unhashable-type

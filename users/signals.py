@@ -59,15 +59,15 @@ def profile_receiver(sender, instance, created, **kwargs):
         try:
             # if hasattr(instance, 'user') and instance.user != None: #user exist in linked way
             changed = False
-            if  instance.user.email != instance.email:
-                instance.user.email = instance.email
-                changed = True
-            if  instance.user.is_active != instance.is_active:
-                instance.user.is_active = instance.is_active
-                changed = True
-            if changed:
-                instance.user.save()
-            print("user updated")
+            if hasattr(instance, 'email') and hasattr(instance.user, 'email'):                
+                if  instance.user.email != instance.email:
+                    instance.user.email = instance.email
+                    instance.user.save(update_fields=['email'])
+            if hasattr(instance, 'is_active') and hasattr(instance.user, 'is_active'):                
+                if  instance.user.is_active != instance.is_active:
+                    instance.user.is_active = instance.is_active
+                    instance.user.save(update_fields=['is_active'])
+                # print("user updated")
         except Profile.DoesNotExist:
             print("user not exist!")
 

@@ -46,7 +46,7 @@ class Review(models.Model):
             (ReviewTypes.PRO.value, 'ReviewType - ' + ReviewTypes.PRO.value[3:]),
             (ReviewTypes.SEC.value, 'ReviewType - ' + ReviewTypes.SEC.value[3:]),
             (ReviewTypes.INF.value, 'ReviewType - ' + ReviewTypes.INF.value[3:]),
-            (ReviewTypes.APP.value, 'ReviewType - ' + ReviewTypes.MGT.value[3:]),
+            (ReviewTypes.APP.value, 'ReviewType - ' + ReviewTypes.APP.value[3:]),
             (ReviewTypes.MGT.value, 'ReviewType - ' + ReviewTypes.MGT.value[3:]),
         ]        
         ordering = ['-updated_on']

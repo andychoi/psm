@@ -27,12 +27,6 @@
           font-size: 3.5rem;
         }
       }
-      /* for carousel styling */
-      body { margin-top: 0; }
-
-      {% if not is_paginated or page_obj.number == 1 %}
-          #main-content { margin-top: 0;}
-      {% endif %}      
     </style>
     <!-- Custom styles for this template -->
     <link href="{% static 'css/carousel.css' %}" rel="stylesheet">
@@ -62,7 +56,13 @@
             <div class="media-body">
               <h3><a class="article-title" href="{% url 'post_detail' post.pk %}">{{ post.title }}</a></h3>
 
-              <p class="article-content">{{ post.content|markdown|safe|truncatewords:"50"|linebreaks}}</p>
+              <div class="article-content">
+                {% if post.excerpt %}
+                  {{ post.excerpt|safe|truncatewords:"50" }}
+                {% else %}
+                  {{ post.content|safe|truncatewords:"50" }}
+                {% endif %}
+              </div>
               <p class="text-end"><a type="button" class="btn btn-light" href="{% url 'post_detail' post.pk %}"">read more...</a>
                   
               <a class="mr-2" href="{% url 'user_posts' post.author.username %}">{{ post.author }}</a>
@@ -78,3 +78,5 @@
 </div> -->
 
 {% endblock content %}
+
+

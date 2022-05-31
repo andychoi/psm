@@ -3,6 +3,15 @@ from django.utils import timezone
 from django.urls import reverse
 from django.conf import settings
 from common.utils import PUBLISH
+import enum
+from django.utils.translation import gettext_lazy as _
+
+class Category(enum.Enum):
+    DEFAULT = '00-Default'
+
+CATEGORIES = (
+    (Category.DEFAULT.value, Category.DEFAULT.value[3:]),
+)
 
 class PostManager(models.Manager):
     pass
@@ -19,6 +28,8 @@ class PostManager(models.Manager):
 class Post(models.Model):
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+
+    category = models.CharField(_("Category"), max_length=50, choices=CATEGORIES, default=Category.DEFAULT.value)
 
     title = models.CharField(max_length=100)
     content = models.TextField()

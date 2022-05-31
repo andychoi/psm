@@ -4,6 +4,17 @@ body {
   margin-top: 5rem;
 }
 
+.navbar { padding-left: 1.5rem; }
+
+.starter-template-headline { padding: 3rem 1.5rem; }
+.starter-template { padding: 3rem 1.5rem; }
+
+#main-content { margin-top: 0.5em; }
+#myCarousel { margin-top: 0; } /* bootstrap navbar 24px */
+
+/* for markdown.. line spacing */
+ul {   margin: 0; }
+
 h1,
 h2,
 h3,
@@ -13,13 +24,8 @@ h6 {
   color: #444444;
 }
 
-ul {
-  margin: 0;
-}
 
-.bg-steel {
-  background-color: #5f788a;
-}
+.bg-steel {   background-color: #5f788a; }
 
 .site-header .navbar-nav .nav-link {
   color: #c5aa6a;
@@ -31,7 +37,7 @@ ul {
 }
 
 .site-header .navbar-nav .nav-link.active {
-  font-weight: 500;
+  font-weight: 800;
 }
 
 /* https://www.color-hex.com/color/2f2626 */
@@ -94,24 +100,9 @@ a.article-title:hover {
   font-size: 2.5rem;
 }
 
-.navbar { padding-left: 1.5rem; }
-
-
-.starter-template-headline {
-  padding: 3rem 1.5rem;
-}
-
-.starter-template {
-  padding: 3rem 1.5rem;
-}
-
-#main-content {
-  margin-top: 5em;
-}
 
 .overlay-div{
   background-color:#000;
   opacity:.5;
 }
 
-#myCarousel { margin-top: 24px; } /* bootstrap navbar 24px */

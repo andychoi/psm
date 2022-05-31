@@ -133,7 +133,7 @@ REVIEWTYPES = (
     (ReviewTypes.PRO.value, _('10-Procurement')),
     (ReviewTypes.SEC.value, _('20-Security')),
     (ReviewTypes.INF.value, _('30-Infrastructure')),
-    (ReviewTypes.APP.value, _('40-App_Archit')),
+    (ReviewTypes.APP.value, _('40-App_Architect')),
     (ReviewTypes.MGT.value, _('90-Management'))
 )
 

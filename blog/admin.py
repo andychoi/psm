@@ -14,8 +14,9 @@ class PostAdmin(admin.ModelAdmin):
         if change is False: #create
             if not obj.author:  
                 obj.author = request.user
-        if not obj.excerpt: #if blank, then fill from content
-            obj.excerpt = obj.content.strip()[:300] + ' ...'
+        # default from content...
+        # if not obj.excerpt: #if blank, then fill from content
+        #     obj.excerpt = obj.content.strip()[:300] + ' ...'
 
         super().save_model(request, obj, form, change)
 

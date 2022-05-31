@@ -1,6 +1,20 @@
 {% load calc_extras %}
 {% load markdown_extras %}
 
+{% block child_css %}
+<style>
+  {% if featured %}
+      /* for carousel styling */
+      body { margin-top: 0; }
+  {% else %}
+    {% if is_paginated or page_obj.number > 1  %}
+    #main-content { margin-top: 24px;}
+
+    {% endif %}      
+  {% endif %}      
+</style>
+{% endblock %}
+
 {% block headline %}  
 
 {% if not is_paginated or is_paginated and page_obj.number == 1 %}
@@ -22,7 +36,11 @@
           <div class="carousel-caption text-start">
             <h1>{{ post.title }}</h1>
             <div class="myheadline-content">
+              {% if post.excerpt %}
                 {{ post.excerpt|safe|linebreaks|truncatewords:"80" }}
+              {% else %}
+                {{ post.content|safe|linebreaks|truncatewords:"80" }}
+              {% endif %}
             </div>
             <p><a class="btn btn-lg btn-primary" href="/post/{{ post.id }}">See details</a></p>
           </div>

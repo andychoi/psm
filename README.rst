@@ -48,6 +48,9 @@ Install dependencies with::
     $ python -m pip install --upgrade pip wheel
     $ python -m pip install -r requirements.txt
 
+Determine database to use, sqllite or postgresql
+    $ vi psmprj/settings.py
+
 Create the database with::
 
     $ python manage.py makemigrations

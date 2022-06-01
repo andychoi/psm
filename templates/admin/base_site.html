@@ -11,15 +11,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous"> -->
     <style>
+      /* this should be here... otherwise caption location is bottom... #header { display: none; } */ 
       #header, .breadcrumbs { display: none; }
-      /* #header { display: none; } */ */
 
       /* Bootstrap issues with admin */
       /* * { box-sizing: unset; } */
 
-      div.module caption { caption-side: top !important; }
-      .collapse { display: block !important; }
-      .module h2, .module caption, .inline-group h2 { background-color: #ABA8A8; } 
     </style>
 {% endblock %}
 
@@ -40,8 +37,12 @@
     #changelist-filter h2 { font-size: 18px; }
     #changelist-filter h3 { font-size: 15px; }
     #navbarDropdownMenuLink { font-size: 1.2em;}  /* don't know why smaller */
-    .dropdown-menu > li { font-size: 1em; list-style-type: none;  }
+    /* .dropdown-menu { background-color: #e9a73c;} */
+    .dropdown-menu > li { font-size: 1em; list-style-type: none; margin-right: 20px; }
+    .collapse { display: block !important; }
     .module { font-size: 1.2em; }
+    .module h2, .module caption, .inline-group h2 { background-color: #ABA8A8; } 
+    div.module caption { caption-side: top !important; }
     /* .datetimeshortcuts { display: none; } */
     .object-tools a:link, .object-tools a:visited { background-color: #907676; font-size: 1.1em; }
     .button.default, input[type=submit].default, .submit-row input.default { background-color: #0275d8;}

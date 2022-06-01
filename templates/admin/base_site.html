@@ -12,20 +12,24 @@
     <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous"> -->
     <style>
       #header, .breadcrumbs { display: none; }
+      /* #header { display: none; } */ */
 
       /* Bootstrap issues with admin */
       /* * { box-sizing: unset; } */
 
       div.module caption { caption-side: top !important; }
       .collapse { display: block !important; }
-      .my-admin { margin-top: 56px;}
-      .navbar-my-color { background-color: #2f2626 !important; }
       .module h2, .module caption, .inline-group h2 { background-color: #ABA8A8; } 
     </style>
 {% endblock %}
 
 {% block extrastyle_end %}
 <style>
+    .my-admin { margin-top: 56px;}
+    .navbar-my-color { background-color: #2f2626 !important; }
+    #toolbar #searchbar { height: 2rem;}
+    .form-control { padding-top: 0.05rem;}
+    .select { height: auto;}
     /* em is not consistent... hmm */
     #content-related, #content h1 { font-size: 20px; }
     #content-related, #content h2 { font-size: 18px; }
@@ -38,6 +42,16 @@
     .dropdown-menu > li { font-size: 1em; }
     .module { font-size: 1.2em; }
     /* .datetimeshortcuts { display: none; } */
+    .object-tools a:link, .object-tools a:visited { background-color: #907676; font-size: 1.1em; }
+    .button.default, input[type=submit].default, .submit-row input.default { background-color: #0275d8;}
+    .button, input[type=submit], input[type=button], .submit-row input, a.button  { background-color: #ABA8A8;} 
+    
+    .button:active, input[type=submit]:active, input[type=button]:active,
+    .button:focus, input[type=submit]:focus, input[type=button]:focus,
+    .button:hover, input[type=submit]:hover, input[type=button]:hover {
+        background: #0275d8;  /* bootstrap primary */
+    }
+    .selector-chosen h2 {background-color: #ABA8A8;}  
 </style>
 {% endblock %}
 

@@ -52,8 +52,13 @@ class PostListView(ListView):
         else:
             # object_list = self.model.objects.all()
             object_list = self.model.objects.filter(status=1)   #published only
+        
         # breakpoint()
-        return object_list
+        if self.request.user.is_authenticated :   #not login
+            return object_list
+        else:
+            return object_list.filter(private = False)
+
 
 class UserPostListView(ListView):
     model = Post
@@ -80,7 +85,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
-    fields = ['title', 'content', 'image', 'featured', 'excerpt']
+    fields = ['title', 'content', 'image', 'featured', 'private', 'excerpt']
 
     def form_valid(self, form):
         form.instance.author = self.request.user

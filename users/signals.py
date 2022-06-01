@@ -1,10 +1,18 @@
-
+from django.db.models.signals import pre_save
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from .models import Profile
 
 # https://stackoverflow.com/questions/62252925/how-to-use-django-signals-using-singnals-py
+
+# @receiver(pre_save, sender=User)
+# def set_new_user_inactive(sender, instance, **kwargs):
+#     if instance._state.adding is True:
+#         print("Creating Inactive User")
+#         instance.is_active = False
+#     else:
+#         print("Updating User Record")
 
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, created, **kwargs):

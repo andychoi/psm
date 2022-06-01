@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_full.html" %}
 {% block child_css %}
     <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.css">
  
@@ -87,12 +87,13 @@
                     <th data-sortable="true" scope="col">Phase</th>
                     <th data-sortable="true" scope="col">HAEA PM</th>
                     <th data-sortable="true" scope="col">HAEA Dept</th>
-                    <!-- th data-sortable="true" scope="col">CBU PM</th-->
+                    <th data-sortable="true" scope="col">P-Launch</th>
                     <th data-sortable="true" scope="col">Initiation</th>
                     <th data-sortable="true" scope="col">Design</th>
                     <th data-sortable="true" scope="col">Develop</th>
                     <th data-sortable="true" scope="col">Test</th>
                     <th data-sortable="true" scope="col">Launch</th>
+                    <th data-sortable="true" scope="col">Overall</th>
                     <th data-sortable="true" scope="col">Schedule</th>
                     <th data-sortable="true" scope="col">Scope</th>
                     <th data-sortable="true" scope="col">Budget</th>
@@ -113,13 +114,22 @@
                     <td>{{ p.phase|slice:'2:' }}</td>
                     <td>{{ p.pm }}</td>
                     <td>{{ p.dept }}</td>
+                    <td>{{ p.p_launch }}</td>
                     <!--td>{{ p.CBUpm }}</td-->
                     <td class="text-center">{% if p.a_pre_plan_e %} <i class="text-success bi-check-square-fill"> {% else %} <i class="text-success bi-dash-square-dotted"> </i> {% endif %}</td>
                     <td class="text-center">{% if p.a_design_e %}   <i class="text-success bi-check-square-fill"> {% else %} <i class="text-success bi-dash-square-dotted"> </i> {% endif %}</td>
                     <td class="text-center">{% if p.a_dev_e %}      <i class="text-success bi-check-square-fill"> {% else %} <i class="text-success bi-dash-square-dotted"> </i> {% endif %}</td>
                     <td class="text-center">{% if p.a_uat_e  %}     <i class="text-success bi-check-square-fill"> {% else %} <i class="text-success bi-dash-square-dotted"> </i> {% endif %}</td>
                     <td class="text-center">{% if p.a_launch %}     <i class="text-success bi-check-square-fill"> {% else %} <i class="text-success bi-dash-square-dotted"> </i> {% endif %}</td>
+    
                     <td class="text-center">
+                        {%   if p.status_o|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
+                        {% elif p.status_o|slice:'0:1' == '2' %}<i class="text-warning bi-exclamation-circle"></i>
+                        {% elif p.status_o|slice:'0:1' == '3' %}<i class="text-danger  bi-exclamation-circle-fill"></i>
+                        {% elif p.status_o|slice:'0:1' == '9' %}<i class="text-primary bi-circle-fill"></i>
+                        {% else %}<i class="text-secondary  bi-dash-circle-dotted"></i>
+                        {% endif %}</td>
+                        <td class="text-center">
                         {%   if p.status_t|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
                         {% elif p.status_t|slice:'0:1' == '2' %}<i class="text-warning bi-exclamation-circle"></i>
                         {% elif p.status_t|slice:'0:1' == '3' %}<i class="text-danger  bi-exclamation-circle-fill"></i>
@@ -140,7 +150,6 @@
                         {% elif p.status_b|slice:'0:1' == '9' %}<i class="text-primary bi-circle-fill"></i>
                         {% else %}<i class="text-secondary  bi-dash-circle-dotted"></i>
                         {% endif %}</td>
-
                 </tr>						
                 {% endfor %}	
                 </tbody>

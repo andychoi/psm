@@ -1,8 +1,11 @@
 # importing models and libraries
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from django.db.models import Q
 # from django_filters import FilterSet
 
-from .models import Report, Milestone
+from common.utils import Status
+from .models import Report, Milestone, ReportRisk
 from django.views import generic
 
 # https://medium.com/@ksarthak4ever/django-class-based-views-vs-function-based-view-e74b47b2e41b
@@ -26,6 +29,8 @@ from django.views import generic
 #             'project__title': ['icontains', ],
 #         }
 
+# @login_required(login_url='/example url you want redirect/') #redirect when user is not logged in
+# for function based view
 class reportList(generic.ListView):
 	queryset = Report.objects.filter(status=1).order_by('-id')
 	template_name = 'reports/report_list.html'
@@ -63,3 +68,10 @@ class reportDetail(generic.DetailView):
 # how to pass multiple object
 # -> https://stackoverflow.com/questions/42250375/django-passing-multiple-objects-to-templates-but-nothing-in-there
 
+
+class reportRisks(generic.ListView):
+	queryset = ReportRisk.objects.filter(~Q(status=Status.COMPLETED.value)).order_by('-id')
+	template_name = 'reports/report_risks.html'
+	paginate_by = 10
+	context_object_name = 'report_risks'
+    

@@ -8,8 +8,8 @@ from django.utils.html import mark_safe
 from datetime import datetime   
 # from ckeditor.fields import RichTextField
 
-from common.models import CBU, Dept, Div, PUBLISH, STATUS
-from psm.models import Status
+from common.models import CBU, Dept, Div, PUBLISH, STATUS, STATES
+from psm.models import Status, State
 
 
 class ReportDist(models.Model):
@@ -93,17 +93,19 @@ class ReportRisk(models.Model):
     project = models.ForeignKey('psm.Project', on_delete=models.CASCADE, blank=True, null=True)
     title = models.CharField(max_length=200, null=True, blank=True)
     owner = models.CharField(max_length=200, null=True, blank=True)
-    CBU = models.ForeignKey(CBU, blank=True, null=True, on_delete=models.PROTECT)
-    dept = models.ForeignKey(Dept, blank=True, null=True, on_delete=models.PROTECT)
-    div = models.ForeignKey(Div, blank=True, null=True, on_delete=models.PROTECT)
 
 	# content field to store our post
     risk = models.TextField(_("Risk Details"))
     plan = models.TextField(_("Mitigation Plan"))
 
-    status = models.IntegerField(choices=PUBLISH, default=0)
+    status = models.CharField(_("status"), max_length=20, choices=STATUS, default=Status.NA.value)
+    state = models.CharField(_("State"), max_length=20, choices=STATES, default=State.TO_DO.value)
     report_on = models.DateField(_("Reporting On"), default=datetime.now, blank=False)
     deadline = models.DateField(_("deadline"), null=True, blank=True)
+
+    # CBU = models.ForeignKey(CBU, blank=True, null=True, on_delete=models.PROTECT)
+    # dept = models.ForeignKey(Dept, blank=True, null=True, on_delete=models.PROTECT)
+    # div = models.ForeignKey(Div, blank=True, null=True, on_delete=models.PROTECT)
 
     created_on = models.DateField(_("created at"), auto_now_add=True, editable=False)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="riskr_eport_created_by", null=True, on_delete=models.SET_NULL)

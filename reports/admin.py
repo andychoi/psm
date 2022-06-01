@@ -17,6 +17,10 @@ from django.forms.models import BaseInlineFormSet
 # Register your models here.
 from .models import Report, Milestone, ReportDist, ReportRisk
 
+# for duplicate https://stackoverflow.com/questions/437166/duplicating-model-instances-and-their-related-qrs-in-django-algorithm-for
+from django.db.models.deletion import Collector
+from django.db.models.fields.related import ForeignKey
+
 # Register your models here.
 @admin.register(ReportDist)
 class ReportDistAdmin(admin.ModelAdmin):
@@ -177,20 +181,33 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
 
     @admin.action(description="Duplicate selected record", permissions=['change'])
     def duplicate_report(self, request, queryset):
-        for object in queryset:
-            object.id = None
-            object.save()
-            messages.add_message(request, messages.INFO, 'Report is copied/saved')
+        # https://docs.djangoproject.com/en/dev/topics/db/queries/#copying-model-instances
+        # https://pypi.org/project/django-clone/#usage
+        for rpt in queryset:
+            old_id = rpt.id
+            rpt.id = None
+            rpt.title = '<new report>' 
+            rpt._state.adding = True           
+            rpt.save()  #adding
+
+            old_ms = Milestone.objects.filter(report=old_id)
+            # old_ms.update(report= rpt.id)     #not working, it overwrite existing.
+            for m in old_ms:
+                m.report = rpt
+                m.pk = None
+                m.save()
+            messages.add_message(request, messages.INFO, rpt.title + ' - copied/saved')
 
 
 
 @admin.register(ReportRisk)
 class ReportRiskAdmin(ImportExportMixin, admin.ModelAdmin):
 
-    list_display = ('project_link', 'title', 'CBU', 'dept','formatted_reporton', 'status')
+    # list_display = ('project_link', 'title', 'CBU', 'dept','formatted_reporton', 'state', 'status')
+    list_display = ('project_link', 'title', 'get_CBU', 'get_dept','formatted_reporton', 'state', 'status')
     list_display_links = ('title', 'formatted_reporton')
     ordering = ('-id',)
-    readonly_fields = ('project_link', 'updated_on', 'updated_by', 'created_on', 'created_by')
+    readonly_fields = ('project_link', 'updated_on', 'updated_by', 'created_on', 'created_by', 'get_CBU', 'get_dept')
     search_fields = ('title', 'project__title', 'risk', 'plan', 'owner')
 
     def project_link(self, obj):
@@ -199,34 +216,35 @@ class ReportRiskAdmin(ImportExportMixin, admin.ModelAdmin):
     project_link.short_description = 'Project'
 
     fieldsets = (               # Edition form
-        (None, {'fields': (('project'), ('report_on', 'title', 'status'), 
-                                ('risk', 'plan', 'owner'), ('deadline',) ),  "classes": ("stack_labels",)}),
-            (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by'),('CBU','dept','div')), 'classes': ('collapse',)}),
+        (None, {'fields': (('project', 'status'), ('report_on', 'title', ), 
+                                ('risk', 'plan', ), ('deadline', 'owner', 'state', ) ),  "classes": ("stack_labels",)}),
+            (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by'),('get_CBU', 'get_dept',)), 'classes': ('collapse',)}),
+            # (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by'),('CBU','dept','div')), 'classes': ('collapse',)}),
     )
 
     def get_fieldsets(self, request, obj=None):
         fieldsets = super().get_fieldsets(request, obj)
         if obj is None:
             fieldsets = (      # Creation form
-                (None, {'fields': (('project'), ('report_on', 'title', 'status', ), 
-                                ('risk', 'plan', 'owner'),('deadline',))}),
+                (None, {'fields': (('project', 'status'), ('report_on', 'title',  ), 
+                                ('risk', 'plan', ),('deadline', 'owner', 'state', ))}),
             )
         return fieldsets
 
     list_filter = (
         ('project', RelatedDropdownFilter),
-        ('CBU', RelatedDropdownFilter),
-        ('div', RelatedDropdownFilter),
-        ('dept', RelatedDropdownFilter),
-        ('status', UnionFieldListFilter),
+        ('project__CBU', RelatedDropdownFilter),
+        ('project__div', RelatedDropdownFilter),
+        ('project__dept', RelatedDropdownFilter),
+        ('state', UnionFieldListFilter),
         'report_on'
     )
 
     #https://stackoverflow.com/questions/910169/resize-fields-in-django-admin
     def get_form(self, request, obj=None, change=False, **kwargs):
         form = super().get_form(request, obj, change, **kwargs)
-        form.base_fields['risk'].widget.attrs.update({'rows':5,'cols':40})
-        form.base_fields['plan'].widget.attrs.update({'rows':5,'cols':40})
+        form.base_fields['risk'].widget.attrs.update({'rows':10,'cols':40})
+        form.base_fields['plan'].widget.attrs.update({'rows':10,'cols':40})
         return form
 
     # default initial in form: starting work week
@@ -239,6 +257,14 @@ class ReportRiskAdmin(ImportExportMixin, admin.ModelAdmin):
         return obj.report_on.strftime("%b %Y")
     formatted_reporton.short_description = 'Report On'
 
+    def get_CBU(self, obj):
+        return obj.project.CBU.name
+    get_CBU.short_description = 'CBU'
+
+    def get_dept(self, obj):
+        return obj.project.dept
+    get_dept.short_description = 'Dept'
+
     def save_model(self, request, obj, form, change):
         if change is False:
             obj.created_by = request.user
@@ -247,21 +273,12 @@ class ReportRiskAdmin(ImportExportMixin, admin.ModelAdmin):
             obj.updated_by = request.user
         super().save_model(request, obj, form, change)
 
-    actions = ['make_published', 'duplicate_record']
-
-    @admin.action(description='Mark selected as published', permissions=['change'])
-    def make_published(self, request, queryset):
-        updated = queryset.update(status=1)
-        self.message_user(request, ngettext(
-            '%d  was successfully marked as published.',
-            '%d  were successfully marked as published.',
-            updated,
-        ) % updated, messages.SUCCESS)
-
+    actions = ['duplicate_record']
     @admin.action(description="Duplicate selected record", permissions=['change'])
     def duplicate_record(self, request, queryset):
-        for object in queryset:
-            object.id = None
-            object.save()
+        for qr in queryset:
+            qr.id = None
+            qr.title = qr.title + '..copy'
+            qr.save()
             messages.add_message(request, messages.INFO, 'Report is copied/saved')
 

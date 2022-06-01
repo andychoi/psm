@@ -226,6 +226,17 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
         # return qs.filter(title__startswith='Project2')
 
 
+    # https://stackoverflow.com/questions/15196313/django-admin-override-delete-method
+    actions = ['delete_model']
+    def delete_queryset(self, request, queryset):
+        queryset.delete()
+        # pass
+
+    def delete_model(self, request, obj):
+        obj.delete()
+        # pass
+
+
     actions = ['duplicate_project']
     @admin.action(description="Duplicate selected record", permissions=['change'])
     def duplicate_project(self, request, queryset):

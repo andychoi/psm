@@ -283,9 +283,10 @@ ADMINS = (
 
 from .settings_emails import *
 
-# django_project/settings.py
-LOGIN_REDIRECT_URL = "home"
-LOGOUT_REDIRECT_URL = "home"
+# Default login https://docs.djangoproject.com/en/4.0/ref/settings/#login-url
+LOGIN_URL = "/login"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
 
 # django_project/settings.py
 EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"

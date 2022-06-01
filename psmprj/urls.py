@@ -33,6 +33,9 @@ from users import views as user_views
 router = routers.DefaultRouter()
 router.register(r'tasks', TaskViewSet)
 
+#https://stackoverflow.com/questions/67709529/django-admin-site-nav-sidebar-messed-up
+# admin.autodiscover()
+admin.site.enable_nav_sidebar = False
 
 urlpatterns = [
     re_path(r'^api/v1/', include(router.urls)),

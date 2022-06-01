@@ -9,7 +9,7 @@
     
     <div class="collapse navbar-collapse" id="navbarToggle">
       <div class="navbar-nav me-auto">
-        <!-- <a class="nav-item nav-link" href="{% url 'home' %}">Home</a> -->
+        <a class="nav-item nav-link" href="{% url 'home' %}">Home</a>
 
         {% if user.is_authenticated  %}
         <a class="nav-item nav-link text-capitalize" href="/project" target="blank">Project Dashboard</a>
@@ -23,11 +23,11 @@
             Administration
           </a>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-            <li><a class="dropdown-item" href="/admin">Admin Home</a></li>
             <li><a class="dropdown-item" href="/admin/psm/project">Admin - Project</a></li>
             <li><a class="dropdown-item" href="/admin/reports/report">Admin - Status Report</a></li>
             <li><a class="dropdown-item" href="/admin/reports/reportrisk">Admin - Project Risk</a></li>
-              </ul>
+            <li><a class="dropdown-item" href="/admin">Admin - Home</a></li>
+          </ul>
         </li>
         {% endif %}
 

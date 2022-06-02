@@ -1,0 +1,60 @@
+{% extends "base_full.html" %}
+{% block child_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.6.1/frappe-gantt.css" integrity="sha512-57KPd8WI3U+HC1LxsxWPL2NKbW82g0BH+0PuktNNSgY1E50mnIc0F0cmWxdnvrWx09l8+PU2Kj+Vz33I+0WApw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.6.1/frappe-gantt.min.js" integrity="sha512-HyGTvFEibBWxuZkDsE2wmy0VQ0JRirYgGieHp0pUmmwyrcFkAbn55kZrSXzCgKga04SIti5jZQVjbTSzFpzMlg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+{% endblock %}
+
+{% block content %}
+    <div class='container'>
+    
+    {% if tasks %}
+
+            <div class='container'>
+                <div class="card" style="overflow: scroll">
+                <svg id="gantt" ></svg>
+                </div>
+                <!-- <div class="mx-auto mt-3 btn-group" role="group">
+                    <button type="button" class="btn btn-sm btn-light">Quarter Day</button>
+                    <button type="button" class="btn btn-sm btn-light">Half Day</button>
+                    <button type="button" class="btn btn-sm btn-light">Day</button>
+                    <button type="button" class="btn btn-sm btn-light active">Week</button>
+                    <button type="button" class="btn btn-sm btn-light">Month</button>
+                </div> -->
+                </div>
+            </div>
+
+    {% else %}
+        <p>No records found!!! :(</p>
+    {% endif %}
+    {# .... **More content, footer, etc.** .... #}
+
+		</div>		
+	</div>
+
+{% endblock content %}
+
+
+{% block child_js_above_files %} 
+
+<script type="text/javascript">
+      
+    var tasks ={{project_chart|safe}};
+    
+    var gantt2 = new Gantt("#gantt", tasks, {
+        header_height: 50,
+        column_width: 30,
+        step: 24,
+        view_modes: ['Day', 'Week', 'Month'],
+        bar_height: 20,
+        bar_corner_radius: 3,
+        arrow_curve: 5,
+        padding: 18,
+        view_mode: 'Day',
+        date_format: 'YYYY-MM-DD',
+        custom_popup_html: null            
+    });
+    gantt2.change_view_mode('Week')
+
+</script>
+
+{% endblock %}

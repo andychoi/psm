@@ -168,70 +168,7 @@ class projectListView(generic.ListView):
         return queryset
 
     # def paginator(self):
-    #     """
-    #     The paginator instance associated with the view, or `None`.
-    #     """
-    #     if not hasattr(self, '_paginator'):
-    #         if self.pagination_class is None:
-    #             self._paginator = None
-    #         else:
-    #             self._paginator = self.pagination_class()
-    #     return self._paginator
-
     # def paginate_queryset(self, queryset, page_size):
-    #     """
-    #     Paginate the queryset, if needed.
-    #     """
-    #     paginator = self.get_paginator(
-    #         queryset, page_size, orphans=self.get_paginate_orphans(),
-    #         allow_empty_first_page=self.get_allow_empty())
-    #     page_kwarg = self.page_kwarg
-
-    #     # HERE
-    #     page = self.kwargs.get(page_kwarg) or self.request.GET.get(page_kwarg) or 1
-
-    #     try:
-    #         page_number = int(page)
-    #     except ValueError:
-    #         if page == 'last':
-    #             page_number = paginator.num_pages
-    #         else:
-    #             raise Http404(_("Page is not 'last', nor can it be converted to an int."))
-    #     try:
-    #         page = paginator.page(page_number)
-    #         return (paginator, page, page.object_list, page.has_other_pages())
-    #     except:     # InvalidPage as e:
-    #         raise Http404(_('Invalid page (%(page_number)s): %(message)s') % {
-    #             'page_number': page_number,
-    #             'message': 'error'
-    #         })
-            
-        #return self.paginator.paginate_queryset(queryset, self.request, view=self)
-
-    # def get_queryset(self):
-    #     self.CBU = get_object_or_404(CBU, name=self.kwargs['CBU'])
-    #     return Project.objects.filter(CBU=self.CBU).order_by('dept')
-
-# class projectListYearView(generic.ListView):
-#     template_name = 'project/project_list.html'
-#     model = Project
-#     paginate_by = 10    #FIXME
-#     context_object_name = 'project_list'    
-
-#     def get_queryset(self):
-#         # self.year = get_object_or_404(self.year, name=self.kwargs['year'])
-#         # return Project.objects.filter(year=self.year).order_by('dept')
-#         queryset = Project.objects.filter(year=self.kwargs['year'])
-#         return queryset
-
-# class projectListCBUView(generic.ListView):
-#     # queryset = Project.objects.filter(CBU__group='HMNA')
-#     template_name = 'project/project_list.html'
-#     paginate_by = 1000
-#     context_object_name = 'project_list'    
-#     def get_queryset(self) :
-#         queryset = Project.objects.filter(CBU__name=self.kwargs['CBU'])
-#         return queryset
 
 # class based view for each Project
 class projectDetail(generic.DetailView):
@@ -246,3 +183,17 @@ class projectDetail(generic.DetailView):
 
 # how to pass multiple object
 # -> https://stackoverflow.com/questions/42250375/django-passing-multiple-objects-to-templates-but-nothing-in-there
+
+
+
+class projectChartView(generic.ListView):
+    template_name = 'project/project_chart.html'
+    context_object_name = 'project_chart'
+
+    def get_queryset(self):
+        """Return the last five project."""
+        return Project.objects.order_by('-last_modified')[:5]
+
+
+
+

@@ -5,7 +5,8 @@
     <li><a href="/admin/reports/report/?project__id__exact={{original.pk}}" class="status-report">Status Reports</a></li>
     <li><a href="/admin/reports/reportrisk/add/?project__id={{original.pk}}" class="risk-report">Add Risk+</a></li>
     <li><a href="/admin/reports/reportrisk/?project__id__exact={{original.pk}}" class="risk-report">Risks</a></li>
-    <li><a href="/reports/?project__id__exact={{original.pk}}" class="historylink">Test</a></li>
+    <li><a href="/admin/reviews/review/?project__id__exact={{original.pk}}" class="project-review">Reviews</a></li>
+    <!-- <li><a href="/reports/?project__id__exact={{original.pk}}" class="historylink">Reviews</a></li> -->
 
     <li>
         <a href="{% url opts|admin_urlname:'history' original.pk|admin_urlquote %}" class="historylink">{% translate "History" %}</a>

@@ -213,7 +213,8 @@ class Project(models.Model):
             # Emails are sent if the order is new
             # or the CBU has changed
             self.send_new_Project_email()
-
+    
+    # validation logic
     def clean(self):
         validation_errors = {}
         title = self.title.strip() if self.title else self.title

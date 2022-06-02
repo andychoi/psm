@@ -13,11 +13,11 @@
             <div class="card" >
             <svg id="gantt" ></svg>
             </div>
-            <!-- <div class="mx-auto mt-3 btn-group" role="group">
+            <div class="mx-auto mt-3 btn-group" role="group">
                 <button type="button" class="btn btn-sm btn-light">Day</button>
                 <button type="button" class="btn btn-sm btn-light active">Week</button>
                 <button type="button" class="btn btn-sm btn-light">Month</button>
-            </div> -->
+            </div>
             </div>
         </div>
 
@@ -53,8 +53,8 @@
     var gantt = new Gantt("#gantt", tasks, {
         header_height: 50,
         column_width: 10,
-        // step: 12,
-        view_modes: ['Day', 'Week', 'Month'],
+        step: 24,
+        view_modes: ['Day', 'Week', 'Month', 'Year'],
         bar_height: 20,
         bar_corner_radius: 3,
         arrow_curve: 5,
@@ -63,7 +63,27 @@
         date_format: 'YYYY-MM-DD',
         custom_popup_html: null            
     });
-    gantt.change_view_mode('Month')
+    // https://github.com/frappe/gantt/issues/223
+    // gantt.change_view_mode('Month')
+
+
+    frappe.ready(() => {
+    
+    // change view mode example
+    var gantt = new Gantt("#gantt", tasks);
+    gantt.change_view_mode('Week');
+
+    $(function() {
+        $(".btn-group").on("click", "button", function() {
+            $btn = $(this);
+            var mode = $btn.text();
+            gantt.change_view_mode(mode);
+            $btn.parent().find('button').removeClass('active');
+            $btn.addClass('active');
+        });
+    });
+
+})
 
 </script>
 

@@ -7,6 +7,7 @@ urlpatterns = [
 	# home page to blog
 	#path('', views.IndexView.as_view(), name='project_index'),
 	path('project/', views.projectListView.as_view(), name='project_list'),
-	path('projectchart/', views.projectChartView.as_view(), name='project_chart'),
 	path('project/<pk>/', views.projectDetail.as_view(), name='project_detail'),
+	path('projectchartplan/', views.projectChartPlanView.as_view(), name='project_chart_plan'),
+	path('projectchartactual/', views.projectChartActualView.as_view(), name='project_chart_actual'),
 ]

@@ -186,13 +186,24 @@ class projectDetail(generic.DetailView):
 
 
 
-class projectChartView(generic.ListView):
+class projectChartPlanView(generic.ListView):
     template_name = 'project/project_chart.html'
     context_object_name = 'project_chart'
 
     def get_queryset(self):
         """Return the last five project."""
-        return Project.objects.order_by('-last_modified')[:50]
+        # planning dashboard
+        return Project.objects.filter(progress=0).order_by('-last_modified')[:25]
+
+
+class projectChartActualView(generic.ListView):
+    template_name = 'project/project_chart.html'
+    context_object_name = 'project_chart'
+
+    def get_queryset(self):
+        """Return the last five project."""
+        # planning dashboard
+        return Project.objects.order_by('-last_modified')[:25]
 
 
 

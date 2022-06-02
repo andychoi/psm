@@ -134,22 +134,26 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
         return form
 
     # default initial in form: starting work week
+    # FIXME - to-do default value from parameter (project__id)
+    # https://stackoverflow.com/questions/51685472/how-to-assign-default-value-using-url-parameter-changelist-filters
+    # not working randomly... trying __init__ ??
+    # example: http://localhost:8000/admin/reports/report/add/?project__id=1064
     def get_changeform_initial_data(self, request):
         today = datetime.date.today()
         start = today - datetime.timedelta(days=today.weekday())
-        return {'title': 'Status Report - ' + start.strftime("%m/%d/%Y") }
+        project_id = request.GET.get('project__id')
+        return {'title': 'Status Report - ' + start.strftime("%m/%d/%Y"),
+                'project' : project_id
+         }
+
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     self.initial['field_name'] = 'initial_value'
 
     def formatted_updated(self, obj):
         return obj.updated_on.strftime("%m/%d/%y")
     formatted_updated.short_description = 'Updated'
 
-    # FIXME - to-do default value from parameter (project__id)
-    # https://stackoverflow.com/questions/51685472/how-to-assign-default-value-using-url-parameter-changelist-filters
-    # add/?_changelist_filters
-    def get_changeform_initial_data(self, request):
-        project_id = request.GET.get('project__id')
-        return { 'project' : project_id }
-    
 
     def save_model(self, request, obj, form, change):
         if change is False:
@@ -259,12 +263,16 @@ class ReportRiskAdmin(ImportExportMixin, admin.ModelAdmin):
         form.base_fields['plan'].widget.attrs.update({'rows':10,'cols':40})
         return form
 
+    # https://stackoverflow.com/questions/51685472/how-to-assign-default-value-using-url-parameter-changelist-filters
     # default initial in form: starting work week
     def get_changeform_initial_data(self, request):
         today = datetime.date.today()
         start = today - datetime.timedelta(days=today.weekday())
-        return {'title': 'Risk Report - ' + start.strftime("%m/%d/%Y") }
-
+        project_id = request.GET.get('project__id')
+        return { 'project' : project_id,
+                 'title': 'Risk Report - ' + start.strftime("%m/%d/%Y")     
+         }
+         
     def formatted_reporton(self, obj):
         return obj.report_on.strftime("%b %Y")
     formatted_reporton.short_description = 'Report On'
@@ -277,11 +285,6 @@ class ReportRiskAdmin(ImportExportMixin, admin.ModelAdmin):
         return obj.project.dept
     get_dept.short_description = 'Dept'
 
-    # https://stackoverflow.com/questions/51685472/how-to-assign-default-value-using-url-parameter-changelist-filters
-    # add/?_changelist_filters
-    def get_changeform_initial_data(self, request):
-        project_id = request.GET.get('project__id')
-        return { 'project' : project_id }
 
     def save_model(self, request, obj, form, change):
         if change is False:

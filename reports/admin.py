@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from adminfilters.multiselect import UnionFieldListFilter
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter
 from import_export.admin import ImportExportMixin
+from django.http import HttpResponseRedirect
 
 import datetime
 from django.urls import reverse
@@ -303,3 +304,18 @@ class ReportRiskAdmin(ImportExportMixin, admin.ModelAdmin):
             qr.save()
             messages.add_message(request, messages.INFO, 'Report is copied/saved')
 
+    # FIXME TODO
+    # return to callback URL if page comes from project
+    # https://stackoverflow.com/questions/1339845/redirect-on-admin-save
+    # http://localhost:8000/admin/psm/project/953/
+    # def response_add(self, request, obj, post_url_continue="../%s/"):
+    #     if '_continue' not in request.POST:
+    #         return HttpResponseRedirect("%s%s" % ("/admin/psm/project/?project__id__exact=",obj.project.pk))
+    #     else:
+    #         return super(ReportRiskAdmin, self).response_add(request, obj, post_url_continue)
+
+    # def response_change(self, request, obj):
+    #     if '_continue' not in request.POST:
+    #         return HttpResponseRedirect("/")
+    #     else:
+    #         return super(ReportRiskAdmin, self).response_change(request, obj)

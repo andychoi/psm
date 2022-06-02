@@ -206,7 +206,7 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
                     theproc.update(**update_dic)
                     messages.add_message(request, messages.INFO, '[' + upd[0][3:] + '] review type records are updated.')
 
-                elif obj.req_pro == State3.YES.value: #not exist and when target is YES only
+                elif upd[1] == State3.YES.value: #not exist and when target is YES only
                     new_reviews.append(upd[0]) 
 
         if new_reviews:

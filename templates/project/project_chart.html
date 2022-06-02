@@ -5,31 +5,27 @@
 {% endblock %}
 
 {% block content %}
-    <div class='container'>
+    <div class='container-fluid'>
     
-    {% if tasks %}
+    {% if project_chart %}
 
-            <div class='container'>
-                <div class="card" style="overflow: scroll">
-                <svg id="gantt" ></svg>
-                </div>
-                <!-- <div class="mx-auto mt-3 btn-group" role="group">
-                    <button type="button" class="btn btn-sm btn-light">Quarter Day</button>
-                    <button type="button" class="btn btn-sm btn-light">Half Day</button>
-                    <button type="button" class="btn btn-sm btn-light">Day</button>
-                    <button type="button" class="btn btn-sm btn-light active">Week</button>
-                    <button type="button" class="btn btn-sm btn-light">Month</button>
-                </div> -->
-                </div>
+        <div class='container-fluid'>
+            <div class="card" >
+            <svg id="gantt" ></svg>
             </div>
+            <!-- <div class="mx-auto mt-3 btn-group" role="group">
+                <button type="button" class="btn btn-sm btn-light">Day</button>
+                <button type="button" class="btn btn-sm btn-light active">Week</button>
+                <button type="button" class="btn btn-sm btn-light">Month</button>
+            </div> -->
+            </div>
+        </div>
 
     {% else %}
         <p>No records found!!! :(</p>
     {% endif %}
-    {# .... **More content, footer, etc.** .... #}
 
-		</div>		
-	</div>
+    </div>		
 
 {% endblock content %}
 
@@ -37,13 +33,27 @@
 {% block child_js_above_files %} 
 
 <script type="text/javascript">
-      
-    var tasks ={{project_chart|safe}};
+
+
+    var tasks = [
+        {% for item in project_chart %}
+        {
+            id: '{{item.id}}',
+            name: '{{item.title}}',
+            start: '{{item.p_pre_plan_b}}',
+            end: '{{item.p_close}}',
+            progress: {{item.progress}},
+            dependencies: '',
+            custom_class: 'bar-milestone' // optional
+        },
+        {% endfor %}
+    ]
+    // var tasks ={{project_chart|safe}};
     
-    var gantt2 = new Gantt("#gantt", tasks, {
+    var gantt = new Gantt("#gantt", tasks, {
         header_height: 50,
-        column_width: 30,
-        step: 24,
+        column_width: 10,
+        step: 12,
         view_modes: ['Day', 'Week', 'Month'],
         bar_height: 20,
         bar_corner_radius: 3,
@@ -53,7 +63,7 @@
         date_format: 'YYYY-MM-DD',
         custom_popup_html: null            
     });
-    gantt2.change_view_mode('Week')
+    gantt.change_view_mode('Month')
 
 </script>
 

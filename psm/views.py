@@ -192,7 +192,7 @@ class projectChartView(generic.ListView):
 
     def get_queryset(self):
         """Return the last five project."""
-        return Project.objects.order_by('-last_modified')[:5]
+        return Project.objects.order_by('-last_modified')[:50]
 
 
 

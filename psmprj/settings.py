@@ -144,9 +144,9 @@ DATABASES = {
 # postgresql,  python -m pip install psycopg2
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'psmdb', 
-        'USER': 'postgres', 
-        'PASSWORD': env("POSTGRES_PASSWORD"),
+        'NAME': env("POSTGRES_DB", "psmdb"), 
+        'USER': env("POSTGRES_USER", 'postgres'), 
+        'PASSWORD': env("POSTGRES_PASSWORD", "postgres"),
         'HOST': '127.0.0.1', 
         'PORT': '5432',
     }

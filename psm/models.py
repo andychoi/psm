@@ -130,17 +130,17 @@ class Project(models.Model):
     ref = models.CharField(_("Reference"), blank=True, null=True, max_length=30)
     lstrpt = models.DateField(_("last report"), null=True, blank=True)
 
-    p_pre_plan_b = models.DateField(_("planned pre-planning start"), null=True, blank=False)
+    p_pre_plan_b = models.DateField(_("planned pre-planning start"), null=True, blank=False, default=date.today)
     p_pre_plan_e = models.DateField(_("planned pre-planning end"), null=True, blank=True)
-    p_kickoff = models.DateField(_("planned kick-off date"), null=True, blank=False)
+    p_kickoff = models.DateField(_("planned kick-off date"), null=True, blank=False, default=date.today)
     p_design_b = models.DateField(_("planned design start"), null=True, blank=True)
     p_design_e = models.DateField(_("planned design end"), null=True, blank=True)
     p_dev_b = models.DateField(_("planned develop start"), null=True, blank=True)
     p_dev_e = models.DateField(_("planned develop end"), null=True, blank=True)
     p_uat_b = models.DateField(_("planned UAT start"), null=True, blank=True)
     p_uat_e = models.DateField(_("planned UAT end"), null=True, blank=True)
-    p_launch = models.DateField(_("planned launch"), null=True, blank=False)
-    p_close = models.DateField(_("planned closing"), null=True, blank=False)
+    p_launch = models.DateField(_("planned launch"), null=True, blank=False, default=date.today)
+    p_close = models.DateField(_("planned closing"), null=True, blank=False, default=date.today)
 
     a_pre_plan_b = models.DateField(_("actual pre-planning start"), null=True, blank=True)
     a_pre_plan_e = models.DateField(_("actual pre-planning end"), null=True, blank=True)
@@ -205,8 +205,8 @@ class Project(models.Model):
             if old_Project_data.CBU != self.CBU:
                 send_email = True
 
-        if self.code is None:
-            self.code = f'{self.year % 100}-{"{:04d}".format(self.pk)}'
+        # if self.code is None:
+        #     self.code = f'{self.year % 100}-{"{:04d}".format(self.pk)}'
 
         super().save(*args, **kwargs)
         if send_email:

@@ -1,16 +1,12 @@
 {% extends "admin/change_form.html" %}
 {% load i18n admin_urls %}
 {% block object-tools-items %}
-    <li>
-        <!-- <a class='btn btn-outline-success p-1 my-admin-link' style='color:fff' href='/admin/reports/report/?project__id__exact={obj.id}'> GO TO project report list </a>" -->
-        <a href="/admin/reports/report/?project__id__exact={{original.pk}}" class="historylink">Status Reports</a>
-    </li>
-    <li>
-        <a href="/admin/reports/reportrisk/?project__id__exact={{original.pk}}" class="historylink">Risks</a>
-    </li>
-    <li>
-        <a href="/reports/?project__id__exact={{original.pk}}" class="historylink">Test</a>
-    </li>
+    <li><a href="/admin/reports/report/add/?project__id={{original.pk}}" class="status-report">Add Report+</a></li>
+    <li><a href="/admin/reports/report/?project__id__exact={{original.pk}}" class="status-report">Status Reports</a></li>
+    <li><a href="/admin/reports/reportrisk/add/?project__id={{original.pk}}" class="risk-report">Add Risk+</a></li>
+    <li><a href="/admin/reports/reportrisk/?project__id__exact={{original.pk}}" class="risk-report">Risks</a></li>
+    <li><a href="/reports/?project__id__exact={{original.pk}}" class="historylink">Test</a></li>
+
     <li>
         <a href="{% url opts|admin_urlname:'history' original.pk|admin_urlquote %}" class="historylink">{% translate "History" %}</a>
     </li>

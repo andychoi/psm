@@ -143,6 +143,13 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
         return obj.updated_on.strftime("%m/%d/%y")
     formatted_updated.short_description = 'Updated'
 
+    # FIXME - to-do default value from parameter (project__id)
+    # https://stackoverflow.com/questions/51685472/how-to-assign-default-value-using-url-parameter-changelist-filters
+    # add/?_changelist_filters
+    def get_changeform_initial_data(self, request):
+        project_id = request.GET.get('project__id')
+        return { 'project' : project_id }
+    
 
     def save_model(self, request, obj, form, change):
         if change is False:
@@ -269,6 +276,12 @@ class ReportRiskAdmin(ImportExportMixin, admin.ModelAdmin):
     def get_dept(self, obj):
         return obj.project.dept
     get_dept.short_description = 'Dept'
+
+    # https://stackoverflow.com/questions/51685472/how-to-assign-default-value-using-url-parameter-changelist-filters
+    # add/?_changelist_filters
+    def get_changeform_initial_data(self, request):
+        project_id = request.GET.get('project__id')
+        return { 'project' : project_id }
 
     def save_model(self, request, obj, form, change):
         if change is False:

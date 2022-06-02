@@ -100,7 +100,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         # project level templates
-        'DIRS': [BASE_DIR + '/templates'],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -204,7 +204,7 @@ en_formats.DATE_FORMAT = 'Y-m-d'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#staticfiles-dirs
 # https://learndjango.com/tutorials/django-static-files
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR + '/static/', 'psmprj/static',]    #production only
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'psm', 'static'), os.path.join('psmprj', 'static'),]    #production only
 # STATIC_ROOT = env('STATIC_ROOT', "")  # BASE_DIR + '/static/'
 
 # Whether to enable or not the StaticFilesHandler
@@ -290,7 +290,7 @@ LOGOUT_REDIRECT_URL = "/"
 
 # django_project/settings.py
 EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
-EMAIL_FILE_PATH = BASE_DIR + '/sent_emails'
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
 
 #ckeditor 
 # CKEDITOR_BASEPATH = "/static/ckeditor/ckeditor/"

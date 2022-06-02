@@ -6,24 +6,15 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from import_export.admin import ImportExportMixin
-from common.models import CBU, Div, Dept, Team
+from common.models import CBU, Div, Dept
 
 #for RAW query
-from django.db import connection
-
-# class ProfileAdmin(admin.ModelAdmin):
-#     list_display = ('id', 'user')
-#     list_display_links = ('id', 'user')
-#     list_filter = ('user', )
-#     list_per_page = 20
-# admin.site.register(Profile, ProfileAdmin)
-
-
+# from django.db import connection
 
 @admin.register(Profile)
 class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
-    # list_display = ('id', 'user', 'username', 'email', 'u_team', 'u_dept', 'u_div', 'is_active')
-    list_display = ('id', 'user', 'username', 'email', 'is_active')
+    # list_display = ('id', 'user', 'username', 'email', 'u_dept', 'u_div', 'is_active')
+    list_display = ('id', 'user', 'username', 'email', 'u_dept', 'is_active')
     list_display_links = ('id', 'user', 'username')
     search_fields = ('id', 'username', 'email', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
     ordering = ('username',)
@@ -107,7 +98,6 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
                             found = User.objects.get( username=obj.username )
                         except:
                             found = None
-                        # breakpoint()
                         if found:
                             obj.user = found
                             obj.save(update_fields=['user'])    

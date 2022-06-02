@@ -12,9 +12,10 @@ from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter, Drop
 from django import forms
 
 from django.utils.html import format_html
+from django.utils.html import mark_safe
 
 from common.models import State3, ReviewTypes
-from .models import Project, ProjectItem, ProjectItemCategory, Project_PRIORITY_FIELDS, Strategy, Program
+from .models import Project, ProjectDeliverable, ProjectDeliverableType, Project_PRIORITY_FIELDS, Strategy, Program
 from reviews.models import  Review
 
 @admin.register(Strategy)
@@ -41,20 +42,20 @@ class ProgramAdmin(ImportExportMixin, admin.ModelAdmin):
         import_id_fields = ('id',)
 
 # to make textarea format
-class ProjectItemModelForm( forms.ModelForm ):
+class ProjectDeliverableModelForm( forms.ModelForm ):
     desc = forms.CharField( widget=forms.Textarea )
     class Meta:
-        model = ProjectItemCategory
+        model = ProjectDeliverableType
         fields = '__all__'
 
-@admin.register(ProjectItemCategory)
-class ProjectItemCategoryAdmin(ImportExportMixin, admin.ModelAdmin):
-    form = ProjectItemModelForm
+@admin.register(ProjectDeliverableType)
+class ProjectDeliverableTypeAdmin(ImportExportMixin, admin.ModelAdmin):
+    form = ProjectDeliverableModelForm
     class Meta:
         import_id_fields = ('id',)
 
-class ProjectItemInline(admin.TabularInline):
-    model = ProjectItem
+class ProjectDeliverableInline(admin.TabularInline):
+    model = ProjectDeliverable
     extra = 0
     class Media:
         css = {"all": ("psm/css/custom_admin.css",)}
@@ -65,9 +66,9 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
         css = {
         'all': ('psm/css/custom_admin.css',),
     }    
-    list_display = ('PJcode', 'title', 'pm', 'CBU',  'dept', 'phase', 'state')
+    list_display = ('PJcode', 'title', 'pm', 'CBU',  'dept', 'phase', 'state', )
     list_display_links = ('PJcode', 'title')
-    search_fields = ('id', 'title', 'description', 'resolution', 'projectitem__item_description',
+    search_fields = ('id', 'title', 'description', 'resolution', 'ProjectDeliverable__item_description',
                      'wbs__wbs', 'es', 'ref', 'pm__username', 'CBUpm__username')
     list_filter = (
         ('status_o', UnionFieldListFilter),
@@ -84,29 +85,29 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
 #        'deadline'
     )
     ordering = ['-id']  #Project_PRIORITY_FIELDS
-    readonly_fields = ('created_at', 'last_modified', 'created_by', 'lstrpt',)
+    readonly_fields = ('created_at', 'last_modified', 'created_by', 'lstrpt', 'link', )
     autocomplete_fields = ['pm', 'CBU']
 
     fieldsets = (               # Edition form
-        (None,  {'fields': (('title', 'type', 'year'), 
+        (None,  {'fields': (('title', 'type', 'year', ), 
                             ('state', 'phase', 'progress', 'priority'), 
                             ('status_o', 'status_t', 'status_b', 'status_s', 'lstrpt', 'resolution'), 
-                            ('req_pro','req_sec','req_inf'), 
-                            ('attachment')), "classes": ("stack_labels",)}),
-        (_('Detail...'),  {'fields': (('strategy', 'program'), ('CBU', 'CBUpm', 'ref'),('pm', 'team', 'dept', 'div'), 
+                            ), "classes": ("stack_labels",)}),
+        (_('Detail...'),  {'fields': (('strategy', 'program', 'is_agile'), ('CBU', 'CBUpm', 'ref'),('pm', 'dept', 'div'), 
                             ( 'est_cost', 'app_budg', 'wbs', 'es', 'is_internal' ), ('description',), 
                                        ), 'classes': ('collapse',)}),
         (_('Schedule...'),  {'fields': (('p_pre_plan_b','p_pre_plan_e','p_kickoff','p_design_b','p_design_e','p_dev_b','p_dev_e','p_uat_b','p_uat_e','p_launch','p_close'),
                                         ('a_pre_plan_b','a_pre_plan_e','a_kickoff','a_design_b','a_design_e','a_dev_b','a_dev_e','a_uat_b','a_uat_e','a_launch','a_close'), 
                                        ), 'classes': ('collapse',)}),
-        (_('More...'), {'fields': ( ('created_at', 'last_modified'), 'created_by'), 'classes': ('collapse',)}),
+        (_('More...'), {'fields': ( ('created_at', 'last_modified'), 'created_by', ('attachment'), ('req_pro','req_sec','req_inf'), ), 'classes': ('collapse',)}),
+        # (None, {'fields': (('link',),) })
     )
 
     def get_fieldsets(self, request, obj=None):
         fieldsets = super().get_fieldsets(request, obj)
         if obj is None:
             fieldsets = (      # Creation form
-                (None, {'fields': (('title', 'type', 'year'), ('strategy', 'program'), ('CBU', 'CBUpm', 'ref'), ('pm', 'team', 'dept', 'div'), 
+                (None, {'fields': (('title', 'type', 'year'), ('strategy', 'program','is_agile'), ('CBU', 'CBUpm', 'ref'), ('pm', 'dept', 'div'), 
                             ( 'est_cost', 'app_budg', 'wbs', 'es', 'is_internal' ),
                             ('state', 'phase', 'progress', 'priority'), 'description', 
                             ('p_pre_plan_b','p_pre_plan_e','p_kickoff','p_design_b','p_design_e','p_dev_b','p_dev_e','p_uat_b','p_uat_e','p_launch','p_close'),
@@ -115,29 +116,26 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
             )
         return fieldsets
 
-    inlines = [ProjectItemInline]
-
+    inlines = [ProjectDeliverableInline]
+    
     class Meta:
         import_id_fields = ('id',)
 
+    # https://docs.djangoproject.com/en/4.0/ref/contrib/admin/#overriding-vs-replacing-an-admin-template
+    change_form_template = 'admin/psm/project/change_form.html'
+
+    # https://stackoverflow.com/questions/19542295/overridding-django-admins-object-tools-bar-for-one-model
+    # change_list_template = 'admin/psm/project/change_list.html'
+
+    # admin/base_site.html - field-link { display: none;}    
+    def link(self, obj):
+        return mark_safe(f"<a class='btn btn-outline-success p-1 my-admin-link' style='color:fff' href='/admin/reports/report/?project__id__exact={obj.id}'> GO TO project report list </a>")
+    link.short_description = 'Links'        
+    # the following is necessary if 'link' method is also used in list_display
+    # link.allow_tags = True
+
+
     #not working...https://stackoverflow.com/questions/46892851/django-simple-history-displaying-changed-fields-in-admin
-    # history_list_display = ["changed_fields","list_changes"]
-    
-    # def changed_fields(self, obj):
-    #     if obj.prev_record:
-    #         delta = obj.diff_against(obj.prev_record)
-    #         return delta.changed_fields
-    #     return None
-
-    # def list_changes(self, obj):
-    #     fields = ""
-    #     if obj.prev_record:
-    #         delta = obj.diff_against(obj.prev_record)
-
-    #         for change in delta.changes:
-    #             fields += str("<strong>{}</strong> changed from <span style='background-color:#ffb5ad'>{}</span> to <span style='background-color:#b3f7ab'>{}</span> . <br/>".format(change.field, change.old, change.new))
-    #         return format_html(fields)
-    #     return None
 
     # formfield_overrides = {
     #     models.TextField: {

@@ -16,6 +16,7 @@ from django.forms.models import BaseInlineFormSet
 
 # Register your models here.
 from .models import Report, Milestone, ReportDist, ReportRisk
+from psm.models import Project
 
 # for duplicate https://stackoverflow.com/questions/437166/duplicating-model-instances-and-their-related-qrs-in-django-algorithm-for
 from django.db.models.deletion import Collector
@@ -36,7 +37,7 @@ class MilestoneFormSet(forms.models.BaseInlineFormSet):
         # breakpoint()
         if not self.instance.pk: 
             self.initial = [
-            {'no': 1,  'stage': 'Overall', 'description': 'Overall project status', },
+            # {'no': 1,  'stage': 'Overall', 'description': 'Overall project status', },
             {'no': 2,  'stage': '1.Plan & Define', 'description': 'Requirements gathering', },
             {'no': 3,  'stage': '1.Plan & Define', 'description': 'Validate requirement expectations', },
             {'no': 4,  'stage': '1.Plan & Define', 'description': 'Architectural,Technical and Security Design', },
@@ -198,7 +199,11 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
                 m.save()
             messages.add_message(request, messages.INFO, rpt.title + ' - copied/saved')
 
-
+    # sorting dropbox
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "project":
+            kwargs["queryset"] = Project.objects.order_by('-code')
+        return super(ReportAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 @admin.register(ReportRisk)
 class ReportRiskAdmin(ImportExportMixin, admin.ModelAdmin):

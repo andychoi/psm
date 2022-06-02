@@ -37,12 +37,15 @@ class reportList(generic.ListView):
 	paginate_by = 200
 	context_object_name = 'report_list'
 	
-	# django-filter
-	# def get_queryset(self):
-	# 	queryset = super().get_queryset()
-	# 	filter = ReportFilter(self.request.GET, queryset)
-	# 	return filter.qs
-    
+	#FIXME
+	def get_queryset(self):
+		queryset = super().get_queryset()
+		query = self.request.GET.get("project__id")
+		if query:
+			queryset = queryset.filter(project__id__exact=query)
+		return queryset
+
+		
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		queryset = self.get_queryset()

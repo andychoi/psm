@@ -6,7 +6,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 
-from common.models import CBU, Div, Dept, Team, Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, State3, STATE3, WBS
+from common.models import CBU, Div, Dept, Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, State3, STATE3, WBS
 from users.models import Profile
 
 from psmprj.utils.mail import send_mail_async as send_mail
@@ -39,8 +39,8 @@ Project_PRIORITY_FIELDS = ('state', 'CBU', '-priority', '-lstrpt')
 
 class Strategy(models.Model):
     class Meta:
-        verbose_name = _("Project Strategy")
-        verbose_name_plural = _("Project Strategies")    
+        verbose_name = _("Strategy")
+        verbose_name_plural = _("Strategies")    
         
     name   = models.CharField(max_length=200, blank=True, null=True)
     description = models.TextField(null=True, blank=True)
@@ -100,10 +100,11 @@ class Project(models.Model):
     strategy = models.ForeignKey(Strategy, blank=True, null=True, on_delete=models.PROTECT)
     program = models.ForeignKey(Program, blank=True, null=True, on_delete=models.PROTECT)
     is_internal = models.BooleanField(_("Internal project"), default=False)
+    is_agile = models.BooleanField(_("Agile project"), default=False)
 
     CBU = models.ForeignKey(CBU, blank=True, null=True, on_delete=models.PROTECT)
     CBUpm = models.ForeignKey(Profile, related_name='cbu_pm', verbose_name=_('CBU PM'), on_delete=models.SET_NULL, null=True, blank=True)
-    team = models.ForeignKey(Team, blank=True, null=True, on_delete=models.PROTECT)
+    # team = models.ForeignKey(Team, blank=True, null=True, on_delete=models.PROTECT)
     dept = models.ForeignKey(Dept, blank=True, null=True, on_delete=models.PROTECT)
     div = models.ForeignKey(Div, blank=True, null=True, on_delete=models.PROTECT)
 
@@ -129,17 +130,17 @@ class Project(models.Model):
     ref = models.CharField(_("Reference"), blank=True, null=True, max_length=30)
     lstrpt = models.DateField(_("last report"), null=True, blank=True)
 
-    p_pre_plan_b = models.DateField(_("planned pre-planning start"), null=True, blank=True)
+    p_pre_plan_b = models.DateField(_("planned pre-planning start"), null=True, blank=False)
     p_pre_plan_e = models.DateField(_("planned pre-planning end"), null=True, blank=True)
-    p_kickoff = models.DateField(_("planned kick-off date"), null=True, blank=True)
+    p_kickoff = models.DateField(_("planned kick-off date"), null=True, blank=False)
     p_design_b = models.DateField(_("planned design start"), null=True, blank=True)
     p_design_e = models.DateField(_("planned design end"), null=True, blank=True)
     p_dev_b = models.DateField(_("planned develop start"), null=True, blank=True)
     p_dev_e = models.DateField(_("planned develop end"), null=True, blank=True)
     p_uat_b = models.DateField(_("planned UAT start"), null=True, blank=True)
     p_uat_e = models.DateField(_("planned UAT end"), null=True, blank=True)
-    p_launch = models.DateField(_("planned launch"), null=True, blank=True)
-    p_close = models.DateField(_("planned closing"), null=True, blank=True)
+    p_launch = models.DateField(_("planned launch"), null=True, blank=False)
+    p_close = models.DateField(_("planned closing"), null=True, blank=False)
 
     a_pre_plan_b = models.DateField(_("actual pre-planning start"), null=True, blank=True)
     a_pre_plan_e = models.DateField(_("actual pre-planning end"), null=True, blank=True)
@@ -153,9 +154,9 @@ class Project(models.Model):
     a_launch = models.DateField(_("actual launch"), null=True, blank=True)
     a_close = models.DateField(_("actual closing"), null=True, blank=True)
 
-    req_pro = models.CharField(_("Review Review Needed?"), max_length=20, choices=STATE3, default='00-TBD')
-    req_sec = models.CharField(_("Info Security Review Needed?"), max_length=20, choices=STATE3, default='00-TBD')
-    req_inf = models.CharField(_("Infra Architecure Review Needed?"), max_length=20, choices=STATE3, default='00-TBD')
+    req_pro = models.CharField(_("Procurement Review Needed?"), max_length=20, choices=STATE3, default='00-TBD', blank=True)
+    req_sec = models.CharField(_("Info Security Review Needed?"), max_length=20, choices=STATE3, default='00-TBD', blank=True)
+    req_inf = models.CharField(_("Infra Architecure Review Needed?"), max_length=20, choices=STATE3, default='00-TBD', blank=True)
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='prj_created_by', verbose_name=_('created by'),
                                    on_delete=models.SET_NULL, null=True)
@@ -203,6 +204,10 @@ class Project(models.Model):
             old_Project_data = Project.objects.get(pk=self.pk)
             if old_Project_data.CBU != self.CBU:
                 send_email = True
+
+        if self.code is None:
+            self.code = f'{self.year % 100}-{"{:04d}".format(self.pk)}'
+
         super().save(*args, **kwargs)
         if send_email:
             # Emails are sent if the order is new
@@ -285,24 +290,26 @@ class Project(models.Model):
         return settings.ProjectS_VIEWER_ENDPOINT.format(number=self.number, token=token)
 
 # checklist
-class ProjectItemCategory(models.Model):
+class ProjectDeliverableType(models.Model):
     name = models.CharField(_("name"), max_length=200, db_index=True)
     desc = models.CharField(_("description"), max_length=2000, blank=True, null=True)
 
     def __str__(self):
         return self.name
     class Meta:
-        verbose_name = _("Project Item category")
-        verbose_name_plural = _("Project Item categories")
+        verbose_name = _("Deliverable Type")
+        verbose_name_plural = _("Deliverable Types")
 
-class ProjectItem(models.Model):
+class ProjectDeliverable(models.Model):
     class Meta:
-        verbose_name = _("Project action item")
-        verbose_name_plural = _("Project action items")
+        verbose_name = _("Project Deliverable")
+        verbose_name_plural = _("Project Deliverables")
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    project_item_category = models.ForeignKey(ProjectItemCategory, blank=True, null=True, on_delete=models.PROTECT)
-    item_description = models.CharField(_("description"), max_length=200, blank=True)
+    deliverable_type = models.ForeignKey(ProjectDeliverableType, blank=True, null=True, on_delete=models.PROTECT)
+    item_description = models.CharField(_("Description"), max_length=200, blank=True)
+    deadline = models.DateField(_("Deadline"), null=True, blank=True)
+
     is_done = models.BooleanField(_("done?"), default=False)
 
     def __str__(self):

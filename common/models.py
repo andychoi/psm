@@ -30,68 +30,21 @@ class Dept(models.Model):
     def __str__(self):
         return self.name
 
-class Team(models.Model):
-    name = models.CharField(max_length=100, blank=False, null=False)
-    head = models.ForeignKey('users.Profile', verbose_name=_('Team head'), on_delete=models.SET_NULL, null=True, blank=True)
-    description = models.TextField(null=True, blank=True)
-    dept = models.ForeignKey(Dept, on_delete=models.SET_NULL, null=True, blank=True)
-    div = models.ForeignKey(Div, on_delete=models.SET_NULL, null=True, blank=True)
-    is_active = models.BooleanField(default=True)
-#    users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="user_teams")
-    created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="team_created", null=True, on_delete=models.SET_NULL)
-
-    class Meta:
-        ordering = ("name",)
-
-    def __str__(self):
-        return self.name
-
-    # def get_users(self):
-    #     return ",".join(
-    #         [str(_id) for _id in list(self.users.values_list("id", flat=True))]
-    #     )
-        # return ','.join(list(self.users.values_list('id', flat=True)))
-
-# from django.db import models
-# from django.contrib.auth.models import User
-# from django.db.models.base import Model
-# from django.db.models.deletion import CASCADE
-
-# #https://docs.djangoproject.com/en/2.1/topics/auth/customizing/#extending-the-existing-user-model
-# #how to use: request.user.extenduser.<field name>
-# class ExtendUser(models.Model):
-#     user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name=_('login user'), null=True, blank=True)
-#     name = models.CharField(max_length=100, blank=True, null=True, unique=True)
-#     email = models.EmailField(max_length=200, blank=True, null=True)
-#     manager = models.ForeignKey(User,on_delete=models.CASCADE, related_name='manager', verbose_name=_('manager'), null=True, blank=True)
-#     u_team = models.ForeignKey('Team', verbose_name=_('Team'), on_delete=models.SET_NULL, blank=True, null=True)
-#     u_dept = models.ForeignKey('Dept', verbose_name=_('Dept'), on_delete=models.SET_NULL, blank=True, null=True)
-#     u_div = models.ForeignKey('Div', verbose_name=_('Div'), on_delete=models.SET_NULL, blank=True, null=True)
-#     role = models.CharField(max_length=50, choices=ROLES, default="USER")
-#     is_external = models.BooleanField(_("External user?"), default=False)
+# class Team(models.Model):
+#     name = models.CharField(max_length=100, blank=False, null=False)
+#     head = models.ForeignKey('users.Profile', verbose_name=_('Team head'), on_delete=models.SET_NULL, null=True, blank=True)
+#     description = models.TextField(null=True, blank=True)
+#     dept = models.ForeignKey(Dept, on_delete=models.SET_NULL, null=True, blank=True)
+#     div = models.ForeignKey(Div, on_delete=models.SET_NULL, null=True, blank=True)
 #     is_active = models.BooleanField(default=True)
+# #    users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="user_teams")
+#     created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False)
+#     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="team_created", null=True, on_delete=models.SET_NULL)
 
-#     is_pro_reviewer = models.BooleanField(_("Procurement reviewer?"), default=False)
-#     is_sec_reviewer = models.BooleanField(_("Security reviewer?"), default=False)
-#     is_inf_reviewer = models.BooleanField(_("Infrastructure reviewer?"), default=False)
-#     is_app_reviewer = models.BooleanField(_("App_Architect?"), default=False)
-#     is_mgt_reviewer = models.BooleanField(_("Management reviewer?"), default=False)
-
-#     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="ext_user_created", null=True, on_delete=models.SET_NULL)
-#     created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False, blank=True)
-#     last_modified = models.DateTimeField(_("last modified"), auto_now=True, editable=False)
-
+#     class Meta:
+#         ordering = ("name",)
 #     def __str__(self):
-#         # FIXME
-#         return getattr(self.user, 'username', self.name)
-#         #return self.name
-
-#     @property
-#     def is_admin(self):
-#         return self.is_staff
-
-
+#         return self.name
 
 class CBU(models.Model):
     """

@@ -66,25 +66,19 @@
     // https://github.com/frappe/gantt/issues/223
     // gantt.change_view_mode('Month')
 
-
-    frappe.ready(() => {
+    var btnGroups = document.getElementsByClassName('btn-group');
+    if (btnGroups) {
+        btnGroups[0].addEventListener("click", function(e) {
+            e.preventDefault();
+            var target = e.target || e.srcElement, text = target.textContent || target.innerText;
+            for (let i = 0; i < this.children.length; i++) {
+                this.children[i].classList.remove('active');
+            }
+            target.classList.add('active');
+            gantt.change_view_mode(text);
+        }, false);
+    }
     
-    // change view mode example
-    var gantt = new Gantt("#gantt", tasks);
-    gantt.change_view_mode('Week');
-
-    $(function() {
-        $(".btn-group").on("click", "button", function() {
-            $btn = $(this);
-            var mode = $btn.text();
-            gantt.change_view_mode(mode);
-            $btn.parent().find('button').removeClass('active');
-            $btn.addClass('active');
-        });
-    });
-
-})
-
 </script>
 
 {% endblock %}

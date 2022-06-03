@@ -37,9 +37,9 @@
             <h1>{{ post.title }}</h1>
             <div class="myheadline-content">
               {% if post.excerpt %}
-                {{ post.excerpt|safe|linebreaks|truncatewords:"80" }}
+                {{ post.excerpt|safe|linebreaks|truncatewords:"25" }}
               {% else %}
-                {{ post.content|safe|linebreaks|truncatewords:"80" }}
+                {{ post.content|safe|linebreaks|truncatewords:"25" }}
               {% endif %}
             </div>
             <p><a class="btn btn-lg btn-primary" href="/post/{{ post.id }}">See details</a></p>

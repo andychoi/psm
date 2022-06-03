@@ -68,8 +68,8 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
     }    
     list_display = ('PJcode', 'title', 'pm', 'CBU',  'dept', 'phase', 'state', )
     list_display_links = ('PJcode', 'title')
-    search_fields = ('id', 'title', 'description', 'resolution', 'ProjectDeliverable__item_description',
-                     'wbs__wbs', 'es', 'ref', 'pm__username', 'CBUpm__username')
+    search_fields = ('id', 'title', 'description', 'resolution', 
+        'wbs__wbs', 'es', 'ref', 'pm__username', 'CBUpm__username', 'CBU__name')
     list_filter = (
         ('status_o', UnionFieldListFilter),
         ('year', DropdownFilter),
@@ -94,7 +94,7 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
                             ('status_o', 'status_t', 'status_b', 'status_s', 'lstrpt', 'resolution'), 
                             ), "classes": ("stack_labels",)}),
         (_('Detail...'),  {'fields': (('strategy', 'program', 'is_agile'), ('CBU', 'CBUpm', 'ref'),('pm', 'dept', 'div'), 
-                            ( 'est_cost', 'app_budg', 'wbs', 'es', 'is_internal' ), ('description',), 
+                            ( 'est_cost', 'app_budg', 'wbs', 'es', 'is_unplanned', 'is_internal' ), ('description',), 
                                        ), 'classes': ('collapse',)}),
         (_('Schedule...'),  {'fields': (('p_pre_plan_b','p_pre_plan_e','p_kickoff','p_design_b','p_design_e','p_dev_b','p_dev_e','p_uat_b','p_uat_e','p_launch','p_close'),
                                         ('a_pre_plan_b','a_pre_plan_e','a_kickoff','a_design_b','a_design_e','a_dev_b','a_dev_e','a_uat_b','a_uat_e','a_launch','a_close'), 
@@ -107,12 +107,13 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
         fieldsets = super().get_fieldsets(request, obj)
         if obj is None:
             fieldsets = (      # Creation form
-                (None, {'fields': (('title', 'type', 'year'), ('strategy', 'program','is_agile'), ('CBU', 'CBUpm', 'ref'), ('pm', 'dept', 'div'), 
+                (None, {'fields': (('title', 'type', 'year'), ('strategy', 'program','is_agile'), ('CBU', 'CBUpm', 'ref', 'is_unplanned', ), ('pm', 'dept', 'div'), 
                             ( 'est_cost', 'app_budg', 'wbs', 'es', 'is_internal' ),
                             ('state', 'phase', 'progress', 'priority'), 'description', 
                             ('p_pre_plan_b','p_pre_plan_e','p_kickoff','p_design_b','p_design_e','p_dev_b','p_dev_e','p_uat_b','p_uat_e','p_launch','p_close'),
-                            ('req_pro','req_sec','req_inf'), 
-                            'attachment')}),
+                            # ('req_pro','req_sec','req_inf'), 
+                            # 'attachment'
+                        )}),
             )
         return fieldsets
 

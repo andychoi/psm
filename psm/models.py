@@ -101,6 +101,7 @@ class Project(models.Model):
     program = models.ForeignKey(Program, blank=True, null=True, on_delete=models.PROTECT)
     is_internal = models.BooleanField(_("Internal project"), default=False)
     is_agile = models.BooleanField(_("Agile project"), default=False)
+    is_unplanned = models.BooleanField(_("Unplanned project"), default=True)
 
     CBU = models.ForeignKey(CBU, blank=True, null=True, on_delete=models.PROTECT)
     CBUpm = models.ForeignKey(Profile, related_name='cbu_pm', verbose_name=_('CBU PM'), on_delete=models.SET_NULL, null=True, blank=True)

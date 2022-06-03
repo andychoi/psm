@@ -7,8 +7,37 @@
 {% endblock %}
 
 {% block content %}
-    <div class='container-fluid'>
-    
+<div class="container-fluid mt-1">  <!-- container-float margin top 3 -->
+    <div class="row">
+        <div class="col-2">
+            <h4 class="font-weight-bold"><button class="btn btn-primary" type="button"  data-bs-toggle="collapse"  href="#collapseFilter" 
+                role="button" aria-expanded="false" aria-controls="collapseFilter">PROJECT GANTT</button></h4>                        
+          </div>
+          <!-- div class="col-4 text-nowrap float-end" >
+        <p class="text-end m-0 small"></p>
+        </div-->
+        <div class="col-10">
+            <div class="collapse show float-end" id="collapseFilter">
+                <form class="row row-cols-lg-auto g-3 align-items-center form-control-sm">
+                        <label><!-- Local filters:--></label>
+                        {% for filterItem in filterItems %}
+                        <div class="col-auto">
+                            <label  class="form-group label" for='sel_{{ filterItem.qId }}'>{{ filterItem.text }}</label>        
+                            <select class="form-select"  id='sel_{{ filterItem.qId }}' onchange="updateData()">
+                                <option value=''>ALL</option>
+                                {% for pItem in filterItem.items %}
+                                <option value={{ pItem.id }}>{{ pItem.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% endfor %}
+                
+                </form>                    
+            </div>
+        </div>
+    </div>
+    <div class="row">
+
     {% if project_chart %}
 
         <div class='container-fluid'>
@@ -87,7 +116,31 @@
             gantt.change_view_mode(text);
         }, false);
     }
-    
+
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+<script>
+    // set preselected values
+    {% for filterItem in filterItems %}
+        $('#sel_{{filterItem.qId}}').val("{{ filterItem.selected }}");
+    {% endfor %}
+
+    function updateData() {
+        var q = "";
+        var qs = [];
+        var tmp = '';
+
+        {% for filterItem in filterItems %}
+            tmp = $('#sel_{{filterItem.qId}}').val();
+            if (tmp != '') qs.push('{{filterItem.qId}}=' + tmp);
+        {% endfor %}
+
+        if (qs.length > 0) {
+            q = "?" + qs.join("&");
+        }            
+        window.location.href = '/projectchart/' + q;
+    }
+</script>    
 
 {% endblock %}

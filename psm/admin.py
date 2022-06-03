@@ -60,6 +60,7 @@ class ProjectDeliverableInline(admin.TabularInline):
     class Media:
         css = {"all": ("psm/css/custom_admin.css",)}
 
+
 @admin.register(Project)
 class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
     class Media:
@@ -68,6 +69,7 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
     }    
     list_display = ('PJcode', 'title', 'pm', 'CBU',  'dept', 'phase', 'state', )
     list_display_links = ('PJcode', 'title')
+    list_editable = ("phase", 'state',)
     search_fields = ('id', 'title', 'description', 'resolution', 
         'wbs__wbs', 'es', 'ref', 'pm__username', 'CBUpm__username', 'CBU__name')
     list_filter = (

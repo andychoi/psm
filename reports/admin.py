@@ -82,6 +82,7 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
 
     list_display = ('project_link', 'title', 'CBU', 'is_monthly','formatted_updated', 'status','preview_link')
     list_display_links = ('title', 'formatted_updated')
+    list_editable = ('status',)
     ordering = ('-id',)
 
     readonly_fields = ('project_link', 'CBU', 'created_on', 'updated_on', 'created_by', 'updated_by')
@@ -223,6 +224,7 @@ class ReportRiskAdmin(ImportExportMixin, admin.ModelAdmin):
     # list_display = ('project_link', 'title', 'CBU', 'dept','formatted_reporton', 'state', 'status')
     list_display = ('project_link', 'title', 'get_CBU', 'get_dept','formatted_reporton', 'state', 'status')
     list_display_links = ('title', 'formatted_reporton')
+    list_editable = ("state", 'status',)
     ordering = ('-id',)
     readonly_fields = ('project_link', 'updated_on', 'updated_by', 'created_on', 'created_by', 'get_CBU', 'get_dept')
     search_fields = ('title', 'project__title', 'risk', 'plan', 'owner')

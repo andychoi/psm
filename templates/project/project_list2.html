@@ -1,4 +1,7 @@
 {% extends "base_full.html" %}
+{% load humanize %}
+{% load crispy_forms_tags %}
+
 {% block child_css %}
     <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.css">
  
@@ -102,11 +105,12 @@
   </div> -->
 <!-- filter -->
 
-                    <!-- <form method="get">
-                        {{ filter.form.as_p }}
+                    <form method="get">
+                        <!-- https://stackoverflow.com/questions/57444339/where-form-as-pin-django-templates-come-from -->
+                        {{ filter.form|crispy }}
                         <input type="submit" />
         
-                    </form>                     -->
+                    </form>                    
                 </div>
             </div>
 
@@ -125,7 +129,7 @@
               </div-->
               
             <!-- table-sm : smaller padding -->
-            {% if project_list2 %}
+            {% if filter.qs %}
             <table data-toggle="table" data-pagination="true" data-page-size="25" data-page-list="[10, 25, 50, 100, all]"
                 data-search="true" data-filter-control="true" data-show-search-clear-button="false" data-show-refresh="false"
                 data-show-export="true" data-toolbar="#toolbar" data-show-toggle="true" data-show-columns="true"
@@ -133,57 +137,37 @@
                 id="table" class="table table-striped table-bordered table-sm small">
                 <thead class="table-light">
                 <tr>
-                    <th data-sortable="true" class="text-center" scope="col">CBU</th>
-                    <th data-sortable="true" class="text-center" scope="col">Project</th>
-                    <th data-sortable="true" scope="col">Project-Name</th>
-                    <th class="text-center" scope="col">Progress</th>
-                    <th data-sortable="true" scope="col">Phase</th>
                     <th data-sortable="true" scope="col">HAEA PM</th>
-                    <th data-sortable="true" scope="col">HAEA Dept</th>
-                    <th data-sortable="true" scope="col">P-Launch</th>
-                    <th data-sortable="true" scope="col">Initiation</th>
-                    <th data-sortable="true" scope="col">Design</th>
-                    <th data-sortable="true" scope="col">Develop</th>
-                    <th data-sortable="true" scope="col">Test</th>
-                    <th data-sortable="true" scope="col">Launch</th>
-                    <th data-sortable="true" scope="col">Overall</th>
+                    <th data-sortable="true" class="text-center" scope="col">Code</th>
+                    <th data-sortable="true" class="text-center" scope="col">CBU</th>
+                    <th data-sortable="true" scope="col">Project-Name</th>
+                    <th data-sortable="true" scope="col">Est.Cost$</th>
+                    <th data-sortable="true" scope="col">Approved$</th>
+                    <th data-sortable="true" scope="col">Start</th>
+                    <th data-sortable="true" scope="col">End</th>
                     <th data-sortable="true" scope="col">Schedule</th>
                     <th data-sortable="true" scope="col">Scope</th>
                     <th data-sortable="true" scope="col">Budget</th>
+                    <th data-sortable="false" scope="col">Resolution</th>
+                    <th data-sortable="true" scope="col">HOD</th>
+                    <!-- <th class="text-center" scope="col">Progress</th> -->
                 </tr>
                 </thead>
                 <tbody>
                     <!-- https://stackoverflow.com/questions/59480402/how-to-use-django-filter-with-a-listview-class-view-for-search -->
-                    {% for p in project_list2 %}
+                    {% for p in filter.qs %}
                 <tr> <!-- https://getbootstrap.com/docs/4.1/components/badge/ https://icons.getbootstrap.com/ <i class="bi-class-name"></i> -->
                      <!-- p.status_t|slice:"0:1" -->
-                    <td class="text-center">{{ p.CBU }}</td>
+                     <td>{{ p.pm }}</td>
                     <td class="text-center" scope="row"><a href="/admin/psm/project/{{ p.id }}">{{ p.PJcode }}</a></td>
+                    <td class="text-center">{{ p.CBU }}</td>
                     <td class="text-left">{{ p.title }}</td>
-                    <td class="text-center">
-                        <div class="progress">
-                            <div class="progress-bar" role="progressbar" style="width: {{ p.progress }}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{{ p.progress }}%</div>
-                        </div>
-                    </td>
-                    <td>{{ p.phase|slice:'2:' }}</td>
-                    <td>{{ p.pm }}</td>
-                    <td>{{ p.dept }}</td>
-                    <td>{{ p.p_launch }}</td>
+                    <td class="text-end">{% if p.est_cost %}{{ p.est_cost|intcomma }}{% else %}0{% endif %}</td>
+                    <td class="text-end">{% if p.app_budg %}{{ p.app_budg|intcomma }}{% else %}0{% endif %}</td>
+                    <td class="text-center">{{ p.p_pre_plan_b }}</td>
+                    <td class="text-center">{{ p.p_launch }}</td>
                     <!--td>{{ p.CBUpm }}</td-->
-                    <td class="text-center">{% if p.a_pre_plan_e %} <i class="text-success bi-check-square-fill"> {% else %} <i class="text-success bi-dash-square-dotted"> </i> {% endif %}</td>
-                    <td class="text-center">{% if p.a_design_e %}   <i class="text-success bi-check-square-fill"> {% else %} <i class="text-success bi-dash-square-dotted"> </i> {% endif %}</td>
-                    <td class="text-center">{% if p.a_dev_e %}      <i class="text-success bi-check-square-fill"> {% else %} <i class="text-success bi-dash-square-dotted"> </i> {% endif %}</td>
-                    <td class="text-center">{% if p.a_uat_e  %}     <i class="text-success bi-check-square-fill"> {% else %} <i class="text-success bi-dash-square-dotted"> </i> {% endif %}</td>
-                    <td class="text-center">{% if p.a_launch %}     <i class="text-success bi-check-square-fill"> {% else %} <i class="text-success bi-dash-square-dotted"> </i> {% endif %}</td>
-    
                     <td class="text-center">
-                        {%   if p.status_o|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
-                        {% elif p.status_o|slice:'0:1' == '2' %}<i class="text-warning bi-exclamation-circle"></i>
-                        {% elif p.status_o|slice:'0:1' == '3' %}<i class="text-danger  bi-exclamation-circle-fill"></i>
-                        {% elif p.status_o|slice:'0:1' == '9' %}<i class="text-primary bi-circle-fill"></i>
-                        {% else %}<i class="text-secondary  bi-dash-circle-dotted"></i>
-                        {% endif %}</td>
-                        <td class="text-center">
                         {%   if p.status_t|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
                         {% elif p.status_t|slice:'0:1' == '2' %}<i class="text-warning bi-exclamation-circle"></i>
                         {% elif p.status_t|slice:'0:1' == '3' %}<i class="text-danger  bi-exclamation-circle-fill"></i>
@@ -204,7 +188,14 @@
                         {% elif p.status_b|slice:'0:1' == '9' %}<i class="text-primary bi-circle-fill"></i>
                         {% else %}<i class="text-secondary  bi-dash-circle-dotted"></i>
                         {% endif %}</td>
-                </tr>						
+                    <td class="text-begin">{{ p.resolution }}</td>
+                    <td class="text-begin">{{ p.dept.head }}</td>
+                    <!-- <td class="text-center">
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: {{ p.progress }}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{{ p.progress }}%</div>
+                        </div>
+                    </td> -->
+                    </tr>						
                 {% endfor %}	
                 </tbody>
             </table>

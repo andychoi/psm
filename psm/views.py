@@ -52,17 +52,23 @@ class IndexView(generic.ListView):
 from django_filters.views import FilterView
 from .filters import ProjectFilter
 # class projectList2View(FilterView):
-class projectList2View(generic.ListView):
-    model = Project
-    template_name = 'project/project_list2.html'
-    context_object_name = 'project_list2'
-    # filterset_class = ProjectFilter
+# class projectList2View(generic.ListView):
+#     model = Project
+#     template_name = 'project/project_list2.html'
+#     context_object_name = 'project_list2'
+#     # filterset_class = ProjectFilter
 
-    def get_queryset(self):
-        # return Project.objects.all()[:25]
-        qs = self.model.objects.all()
-        project_filtered_list = ProjectFilter(self.request.GET, queryset=qs)
-        return project_filtered_list.qs
+#     def get_queryset(self):
+#         # return Project.objects.all()[:25]
+#         qs = self.model.objects.all()
+#         project_filtered_list = ProjectFilter(self.request.GET, queryset=qs)
+#         return project_filtered_list.qs
+# why not class...
+def project_list2(request):
+    project_list = Project.objects.all()
+    project_filter = ProjectFilter(request.GET, queryset=project_list)
+    # project_list2 = project_filter.qs
+    return render(request, 'project/project_list2.html', {'filter': project_filter })    
 
 class projectList1View(generic.ListView):
     template_name = 'project/project_list1.html'

@@ -142,7 +142,7 @@ class WBSAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
             # while True:
             #     print u"----Begin of Batch---"
             #     result = conn.call('RFC_READ_TABLE', \
-            #                         QUERY_TABLE = 'PROJ', \
+            #                         QUERY_TABLE = 'ZSUSPSV0020', \
             #                         OPTIONS = options, \
             #                         FIELDS = fields, \
             #                         ROWSKIPS = rowskips, ROWCOUNT = ROWS_AT_A_TIME)

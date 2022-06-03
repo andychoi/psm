@@ -1,0 +1,206 @@
+{% extends "base_full.html" %}
+{% block child_css %}
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.css">
+ 
+	<style type="text/css">
+		.fixed-panel {
+			min-height: 140px;
+			max-height: 300px;
+		}
+/*		.panel-body {background:#f8f9fa;;} */
+		.panel-heading {background-color: #dee2e6; font-weight: 600;}
+		.panel-body-border { 
+    		border: 1px solid #dee2e6 !important;
+		}
+		/*text area to keep new line */
+		label {
+			white-space: pre-wrap;
+		}
+		#myleft > .panel.mypadding-top {
+			padding-top: 10px;
+		}
+        #toolbar {
+            margin: 0;
+        }
+        .form-group label{
+           font-size: 1.2em;
+        }
+	</style>
+{% endblock %}
+
+{% block content %}
+	<div class="container-fluid mt-1">  <!-- container-float margin top 3 -->
+		<div class="row">
+			<div class="col-2">
+				<h4 class="font-weight-bold"><button class="btn btn-primary" type="button"  data-bs-toggle="collapse"  href="#collapseFilter" 
+                    role="button" aria-expanded="false" aria-controls="collapseFilter">PROJECT DASHBOARD</button></h4>                        
+		  	</div>
+		  	<!-- div class="col-4 text-nowrap float-end" >
+			<p class="text-end m-0 small"></p>
+			</div-->
+		    <div class="col-10">
+                <div class="collapse show float-end" id="collapseFilter">
+                    <form class="row row-cols-lg-auto g-3 align-items-center form-control-sm">
+                            <label><!-- Local filters:--></label>
+                            {% for filterItem in filterItems %}
+                            <div class="col-auto">
+                                <label  class="form-group label" for='sel_{{ filterItem.qId }}'>{{ filterItem.text }}</label>        
+                                <select class="form-select"  id='sel_{{ filterItem.qId }}' onchange="updateData()">
+                                    <option value=''>ALL</option>
+                                    {% for pItem in filterItem.items %}
+                                    <option value={{ pItem.id }}>{{ pItem.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% endfor %}
+                    
+                    </form>                    
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <!-- Filter  div class="input-group"> <span class="input-group-addon">Filter</span>
+                <input id="filter" type="text" class="form-control" placeholder="Type here...">
+            </div -->
+            <!-- https://examples.bootstrap-table.com/#extensions/export.html#view-source -->
+            <!--div id="toolbar" class="select">
+                <select class="form-control">
+                  <option value="">Export Basic</option>
+                  <option value="all">Export All</option>
+                  <option value="selected">Export Selected</option>
+                </select>
+              </div-->
+              
+            <!-- table-sm : smaller padding -->
+            {% if object_list %}
+            <table data-toggle="table" data-pagination="true" data-page-size="25" data-page-list="[10, 25, 50, 100, all]"
+                data-search="true" data-filter-control="true" data-show-search-clear-button="false" data-show-refresh="false"
+                data-show-export="true" data-toolbar="#toolbar" data-show-toggle="true" data-show-columns="true"
+                data-export-data-type="all" 
+                id="table" class="table table-striped table-bordered table-sm small">
+                <thead class="table-light">
+                <tr>
+                    <th data-sortable="true" class="text-center" scope="col">CBU</th>
+                    <th data-sortable="true" class="text-center" scope="col">Project</th>
+                    <th data-sortable="true" scope="col">Project-Name</th>
+                    <th class="text-center" scope="col">Progress</th>
+                    <th data-sortable="true" scope="col">Phase</th>
+                    <th data-sortable="true" scope="col">HAEA PM</th>
+                    <th data-sortable="true" scope="col">HAEA Dept</th>
+                    <th data-sortable="true" scope="col">P-Launch</th>
+                    <th data-sortable="true" scope="col">Initiation</th>
+                    <th data-sortable="true" scope="col">Design</th>
+                    <th data-sortable="true" scope="col">Develop</th>
+                    <th data-sortable="true" scope="col">Test</th>
+                    <th data-sortable="true" scope="col">Launch</th>
+                    <th data-sortable="true" scope="col">Overall</th>
+                    <th data-sortable="true" scope="col">Schedule</th>
+                    <th data-sortable="true" scope="col">Scope</th>
+                    <th data-sortable="true" scope="col">Budget</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for p in object_list %}
+                <tr> <!-- https://getbootstrap.com/docs/4.1/components/badge/ https://icons.getbootstrap.com/ <i class="bi-class-name"></i> -->
+                     <!-- p.status_t|slice:"0:1" -->
+                    <td class="text-center">{{ p.CBU }}</td>
+                    <td class="text-center" scope="row"><a href="/admin/psm/project/{{ p.id }}">{{ p.PJcode }}</a></td>
+                    <td class="text-left">{{ p.title }}</td>
+                    <td class="text-center">
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: {{ p.progress }}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{{ p.progress }}%</div>
+                        </div>
+                    </td>
+                    <td>{{ p.phase|slice:'2:' }}</td>
+                    <td>{{ p.pm }}</td>
+                    <td>{{ p.dept }}</td>
+                    <td>{{ p.p_launch }}</td>
+                    <!--td>{{ p.CBUpm }}</td-->
+                    <td class="text-center">{% if p.a_pre_plan_e %} <i class="text-success bi-check-square-fill"> {% else %} <i class="text-success bi-dash-square-dotted"> </i> {% endif %}</td>
+                    <td class="text-center">{% if p.a_design_e %}   <i class="text-success bi-check-square-fill"> {% else %} <i class="text-success bi-dash-square-dotted"> </i> {% endif %}</td>
+                    <td class="text-center">{% if p.a_dev_e %}      <i class="text-success bi-check-square-fill"> {% else %} <i class="text-success bi-dash-square-dotted"> </i> {% endif %}</td>
+                    <td class="text-center">{% if p.a_uat_e  %}     <i class="text-success bi-check-square-fill"> {% else %} <i class="text-success bi-dash-square-dotted"> </i> {% endif %}</td>
+                    <td class="text-center">{% if p.a_launch %}     <i class="text-success bi-check-square-fill"> {% else %} <i class="text-success bi-dash-square-dotted"> </i> {% endif %}</td>
+    
+                    <td class="text-center">
+                        {%   if p.status_o|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
+                        {% elif p.status_o|slice:'0:1' == '2' %}<i class="text-warning bi-exclamation-circle"></i>
+                        {% elif p.status_o|slice:'0:1' == '3' %}<i class="text-danger  bi-exclamation-circle-fill"></i>
+                        {% elif p.status_o|slice:'0:1' == '9' %}<i class="text-primary bi-circle-fill"></i>
+                        {% else %}<i class="text-secondary  bi-dash-circle-dotted"></i>
+                        {% endif %}</td>
+                        <td class="text-center">
+                        {%   if p.status_t|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
+                        {% elif p.status_t|slice:'0:1' == '2' %}<i class="text-warning bi-exclamation-circle"></i>
+                        {% elif p.status_t|slice:'0:1' == '3' %}<i class="text-danger  bi-exclamation-circle-fill"></i>
+                        {% elif p.status_t|slice:'0:1' == '9' %}<i class="text-primary bi-circle-fill"></i>
+                        {% else %}<i class="text-secondary  bi-dash-circle-dotted"></i>
+                        {% endif %}</td>
+                    <td class="text-center">
+                        {%   if p.status_s|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
+                        {% elif p.status_s|slice:'0:1' == '2' %}<i class="text-warning bi-exclamation-circle"></i>
+                        {% elif p.status_s|slice:'0:1' == '3' %}<i class="text-danger  bi-exclamation-circle-fill"></i>
+                        {% elif p.status_s|slice:'0:1' == '9' %}<i class="text-primary bi-circle-fill"></i>
+                        {% else %}<i class="text-secondary  bi-dash-circle-dotted"></i>
+                        {% endif %}</td>
+                    <td class="text-center">
+                        {%   if p.status_b|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
+                        {% elif p.status_b|slice:'0:1' == '2' %}<i class="text-warning bi-exclamation-circle"></i>
+                        {% elif p.status_b|slice:'0:1' == '3' %}<i class="text-danger  bi-exclamation-circle-fill"></i>
+                        {% elif p.status_b|slice:'0:1' == '9' %}<i class="text-primary bi-circle-fill"></i>
+                        {% else %}<i class="text-secondary  bi-dash-circle-dotted"></i>
+                        {% endif %}</td>
+                </tr>						
+                {% endfor %}	
+                </tbody>
+            </table>
+            <div class="row">
+                <div class="col" ><div class="float-start inline">Pagination from server: 
+                    {# .... **Now the pagination section** .... #}
+                    {% include "includes/pagination.html" %}
+                </div></div>
+
+                <div class="col float-end"><p class="text-end text-muted small m-0 "><i class="text-success bi-check-circle-fill"></i>Good | <i class="text-warning bi-exclamation-circle"></i>Issue | <i class="text-danger  bi-exclamation-circle-fill"></i>Roadblocks | <i class="text-primary bi-circle-fill"></i>Complete | <i class="text-secondary  bi-dash-circle-dotted"></i>Not started</p>
+                </div>
+            </div>
+
+            </div>
+        {% else %}
+            <p>No records found!!! :(</p>
+        {% endif %}
+        {# .... **More content, footer, etc.** .... #}
+
+		</div>		
+	</div>
+
+{% endblock content %}
+
+
+{% block child_js_above_files %} 
+    <!-- Optional JavaScript; choose one of the two! -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.js"></script>
+
+    <script>
+        // set preselected values
+        {% for filterItem in filterItems %}
+            $('#sel_{{filterItem.qId}}').val("{{ filterItem.selected }}");
+        {% endfor %}
+
+        function updateData() {
+            var q = "";
+            var qs = [];
+            var tmp = '';
+
+            {% for filterItem in filterItems %}
+                tmp = $('#sel_{{filterItem.qId}}').val();
+                if (tmp != '') qs.push('{{filterItem.qId}}=' + tmp);
+            {% endfor %}
+
+            if (qs.length > 0) {
+                q = "?" + qs.join("&");
+            }            
+            window.location.href = '/project/' + q;
+        }
+    </script>    
+{% endblock %}

@@ -44,8 +44,26 @@ class IndexView(generic.ListView):
 # https://stackoverflow.com/questions/57050000/how-to-return-pagination-with-django-framework
 # class projectListView(generic.ListView):
 
-class projectListView(generic.ListView):
-    template_name = 'project/project_list.html'
+
+# https://django-filter.readthedocs.io/en/stable/guide/usage.html#declaring-filters
+# https://stackoverflow.com/questions/59480402/how-to-use-django-filter-with-a-listview-class-view-for-search
+# https://velog.io/@daylee/Django-filter-function-based-views
+
+from django_filters.views import FilterView
+from .filters import ProjectFilter
+class projectList2View(FilterView):
+    model = Project
+    template_name = 'project/project_list2.html'
+    context_object_name = 'project_list2'
+    # filterset_class = ProjectFilter
+
+    def product_list(request):
+        qs = self.model.objects.all()
+        project_filtered_list = ProjectFilter(self.request.GET, queryset=qs)
+        return project_filtered_list.qs
+
+class projectList1View(generic.ListView):
+    template_name = 'project/project_list1.html'
     model = Project
     paginate_by = 500    #FIXME
     context_object_name = 'project_list'    

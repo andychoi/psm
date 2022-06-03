@@ -124,6 +124,7 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
     class Meta:
         import_id_fields = ('id',)
 
+    # easier option for admin-actions: https://pypi.org/project/django-object-actions/
     # https://docs.djangoproject.com/en/4.0/ref/contrib/admin/#overriding-vs-replacing-an-admin-template
     change_form_template = 'admin/psm/project/change_form.html'
 

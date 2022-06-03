@@ -71,3 +71,4 @@ Pillow
 Markdown==3.3.7
 django_filter==21.1
 # django-private-storage==3.0
+django_object_actions==4.0.0

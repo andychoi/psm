@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     'crispy_forms',
     # 'django_filters'  ,   #bug with pagination
 
+    'django_object_actions', 
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

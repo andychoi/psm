@@ -1,7 +1,9 @@
 {% extends "base_full.html" %}
 {% block child_css %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.6.1/frappe-gantt.css" integrity="sha512-57KPd8WI3U+HC1LxsxWPL2NKbW82g0BH+0PuktNNSgY1E50mnIc0F0cmWxdnvrWx09l8+PU2Kj+Vz33I+0WApw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.6.1/frappe-gantt.min.js" integrity="sha512-HyGTvFEibBWxuZkDsE2wmy0VQ0JRirYgGieHp0pUmmwyrcFkAbn55kZrSXzCgKga04SIti5jZQVjbTSzFpzMlg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.6.1/frappe-gantt.css" integrity="sha512-57KPd8WI3U+HC1LxsxWPL2NKbW82g0BH+0PuktNNSgY1E50mnIc0F0cmWxdnvrWx09l8+PU2Kj+Vz33I+0WApw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.6.1/frappe-gantt.min.js" integrity="sha512-HyGTvFEibBWxuZkDsE2wmy0VQ0JRirYgGieHp0pUmmwyrcFkAbn55kZrSXzCgKga04SIti5jZQVjbTSzFpzMlg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+<link rel="stylesheet" href="/static/libs/frappe-gantt/frappe-gantt.css" />
+<script src="/static/libs/frappe-gantt/frappe-gantt.min.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -17,6 +19,7 @@
                 <button type="button" class="btn btn-sm btn-light">Day</button>
                 <button type="button" class="btn btn-sm btn-light active">Week</button>
                 <button type="button" class="btn btn-sm btn-light">Month</button>
+                <button type="button" class="btn btn-sm btn-light">Custom</button>
             </div>
             </div>
         </div>
@@ -52,14 +55,15 @@
     
     var gantt = new Gantt("#gantt", tasks, {
         header_height: 50,
-        column_width: 10,
-        step: 24,
-        view_modes: ['Day', 'Week', 'Month', 'Year'],
+        column_width: 32,
+        step: 720,
+        // view_modes: ['Day', 'Week', 'Month', 'Year'],
         bar_height: 20,
         bar_corner_radius: 3,
         arrow_curve: 5,
         padding: 18,
-        view_mode: 'Month',
+        // view_mode: 'Month',
+        view_mode: 'Custom',
         date_format: 'YYYY-MM-DD',
         custom_popup_html: null            
     });
@@ -75,6 +79,11 @@
                 this.children[i].classList.remove('active');
             }
             target.classList.add('active');
+            
+            if (text === 'Custom') {
+                gantt.options.column_width = 32;
+                gantt.options.step = 720;
+            }
             gantt.change_view_mode(text);
         }, false);
     }

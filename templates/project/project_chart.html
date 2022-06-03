@@ -40,7 +40,7 @@
 
     {% if project_chart %}
 
-        <div class='container d-flex  align-items-center justify-content-center'>
+        <div class='container-fluid align-items-center justify-content-center'>
             <div class="card" >
                 <svg id="gantt" ></svg>
                 </div>
@@ -84,7 +84,7 @@
     
     var gantt = new Gantt("#gantt", tasks, {
         header_height: 50,
-        column_width: 32,
+        column_width: 40,
         step: 720,
         // view_modes: ['Day', 'Week', 'Month', 'Year'],
         bar_height: 20,

@@ -7,6 +7,7 @@ import django_filters
 class ProjectFilter(django_filters.FilterSet):
 
     class Meta:
+        model = Project
         exclude = ['attachment']
         fields = {
             'title'         : ['icontains'],

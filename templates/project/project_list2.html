@@ -40,19 +40,7 @@
 			</div-->
 		    <div class="col-10">
                 <div class="collapse show float-end" id="collapseFilter">
-                    <!-- <form class="row row-cols-lg-auto g-3 align-items-center form-control-sm">
-                            {% for filterItem in filterItems %}
-                            <div class="col-auto">
-                                <label  class="form-group label" for='sel_{{ filterItem.qId }}'>{{ filterItem.text }}</label>        
-                                <select class="form-select"  id='sel_{{ filterItem.qId }}' onchange="updateData()">
-                                    <option value=''>ALL</option>
-                                    {% for pItem in filterItem.items %}
-                                    <option value={{ pItem.id }}>{{ pItem.name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            {% endfor %} -->
-
+                   
                     <!-- https://django-filter.readthedocs.io/en/stable/guide/usage.html#the-view -->
 
 <!--Filter-->
@@ -106,7 +94,7 @@
 
 
         <div class="col-sm-1 form-group is-valid">
-        <a class="btn btn-secondary btn-md reset-btn filter-btn" href="{% url 'hub:home'%}" role="button">Reset</a>
+        <a class="btn btn-secondary btn-md reset-btn filter-btn" href="#" role="button">Reset</a>
         </div>
 
       </div>
@@ -114,11 +102,11 @@
   </div> -->
 <!-- filter -->
 
-                    <form method="get">
+                    <!-- <form method="get">
                         {{ filter.form.as_p }}
                         <input type="submit" />
         
-                    </form>                    
+                    </form>                     -->
                 </div>
             </div>
 

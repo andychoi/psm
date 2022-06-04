@@ -14,7 +14,7 @@ from rest_framework import generics
 # importing models and libraries
 from django.shortcuts import render
 from pyparsing import common
-from .models import Project
+from .models import Project, Program
 from common.models import Div, Dept, CBU
 from common.utils import PHASE, PRIORITIES, PRJTYPE
 from django.views import generic
@@ -125,6 +125,13 @@ class projectList1View(generic.ListView):
             , "selected": self.request.GET.get('pri', '')
             , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRIORITIES)]
         } )
+        
+        context['filterItems'].append( {
+            "key": "PRG", "text": "Program", "qId": "prg"
+            , "selected": self.request.GET.get('prg', '')
+            # , "items": Project.objects.values('program').distinct()
+            , "items": Program.objects.all()
+        } )
 
         #https://stackoverflow.com/questions/59972694/django-pagination-maintaining-filter-and-order-by
         get_copy = self.request.GET.copy()
@@ -178,6 +185,10 @@ class projectList1View(generic.ListView):
         ltmp = self.request.GET.get('pri', '')
         if ltmp:
             queryset = queryset.filter(priority=PRIORITIES[int(ltmp)][0])
+
+        ltmp = self.request.GET.get('prg', '')
+        if ltmp:
+            queryset = queryset.filter(program__id=ltmp)
 
         ltmp = self.request.GET.get('type', '')
         if ltmp:

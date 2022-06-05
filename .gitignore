@@ -29,7 +29,7 @@ prod.sh
 dev.sh
 
 # Static files collected
-# /static
+/static
 
 # Virtual environments
 venv*/

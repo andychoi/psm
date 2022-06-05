@@ -118,6 +118,10 @@ Run and enter Debugger PIN to enter debug console from error line (browser)
 
     $ python  manage.py runserver_plus 0.0.0.0:8000  --keep-meta-shutdown
 
+Static js/css browser cache issue 
+---------------------------------
+to invalid js/css in browser side, TO-DO
+
 KNOWN ISSUES
 ------------
 + django-filters package - problem with pagination: get_copy.urlencode returns BLANK.

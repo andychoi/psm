@@ -1,0 +1,18 @@
+{% extends "base_root.html" %}
+
+{% block base_body %}  
+    <!--div class="container-fluid"-->
+    <main role="main" class="content">
+      <div class="container-fluid start-template">
+        <div class="row">
+          {% include "includes/messages.html" %}
+
+          <!-- content -->
+          {% block content %}{% endblock %}
+          <!-- content   -->
+        </div>
+        <!--  Bootstrap 5's new Offcanvas component: https://dev.to/codeply/bootstrap-5-sidebar-examples-38pb -->
+      </div>  
+    </main>
+
+{% endblock %}

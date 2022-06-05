@@ -20,24 +20,23 @@ The static resources must served with a HTTP server
 like *Nginx* or *Apache HTTP*. To collect all static resources
 in the folder ``static/``, execute once::
 
-    $ python3 manage.py collectstatic
-
+    $ python manage.py collectstatic
 
 Nginx configuration
 -------------------
-
+Nginx default site should be removed.
 This is an example of how should looks like a *Nginx* configuration
-file for PSM::
 
     server {
         listen      80;
-        server_name django-psmprj;
+        server_name <server name>;
         access_log  /var/log/nginx/django.access.log;
         error_log   /var/log/nginx/django.error.log;
 
-        root /path/to/project/django-psmprj;
+        root /path/to/project;
 
         location /static {
+            alias /path/to/project/psm/static 
         }
 
         location / {
@@ -53,6 +52,34 @@ file for PSM::
         proxy_set_header        X-Real-IP       $remote_addr;
         proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
     }
+
+    server {
+        listen     443 default ssl;
+        server_name  <Nginx_server_name>;
+
+        ## edit the rest of the server{} section to look like this ##
+        ssl_certificate     /etc/nginx/cert/nginx-server.crt;
+        ssl_certificate_key /etc/nginx/cert/nginx-server.key;
+    
+        #ssl on;  <- not need for mixed use http,https
+        ssl_session_cache  builtin:1000  shared:SSL:10m;
+        ssl_protocols  TLSv1 TLSv1.1 TLSv1.2;
+        ssl_ciphers HIGH:!aNULL:!eNULL:!EXPORT:!CAMELLIA:!DES:!MD5:!PSK:!RC4;
+        ssl_prefer_server_ciphers  on;
+        ssl_session_timeout  5m;
+
+        location /static {
+            alias /path/to/project/psm/static 
+        }
+
+        location / {
+            access_log off;
+            proxy_pass https://127.0.0.1:8443;
+            proxy_http_version 1.1;  
+            proxy_connect_timeout 5s;
+            proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
+      }
 
 With the above configuration, the Admin interface should be accessible
 at http://django-psmprj/admin

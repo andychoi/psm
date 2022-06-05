@@ -68,13 +68,6 @@ INSTALLED_APPS = [
 #    'django_auth_adfs',
 ]
 
-#form templates
-CRISPY_TEMPLATE_PACK = 'bootstrap4'
-
-#https://github.com/edoburu/django-private-storage -> not working
-# PRIVATE_STORAGE_ROOT = BASE_DIR + '/media-private/'
-# PRIVATE_STORAGE_AUTH_FUNCTION = 'private_storage.permissions.allow_staff'
-
 REST_ENABLED = env.bool('REST_ENABLED', False)
 if REST_ENABLED:
     INSTALLED_APPS += ['rest_framework']
@@ -117,12 +110,12 @@ TEMPLATES = [
 #https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-18-04
 WSGI_APPLICATION = 'psmprj.wsgi.application'
 
-#NGNIX -> Django : origin checking failed... 
-if "CSRF_TRUSTED_ORIGINS" in os.environ:
-    CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS")     #["https://server-name-ip/", "http://server-name-ip/"]
-else:
-    CSRF_TRUSTED_ORIGINS = ["http://localhost"]
-# CSRF_TRUSTED_ORIGINS = env('CSRF_TRUSTED_ORIGINS', ["http://localhost"] )
+#NGNIX -> Django : ensure to remove nignix default site 
+# if "CSRF_TRUSTED_ORIGINS" in os.environ:
+#     CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS")     #["https://server-name-ip/", "http://server-name-ip/"]
+# else:
+#     CSRF_TRUSTED_ORIGINS = ["http://localhost"]
+CSRF_TRUSTED_ORIGINS = ["http://localhost"]
 
 #https://stackoverflow.com/questions/44034879/django-nginx-getting-csrf-verification-error-in-production-over-http
 #CSRF_COOKIE_HTTPONLY = env.bool('CSRF_COOKIE_HTTPONLY', False)
@@ -136,7 +129,8 @@ else:
 # otherwise the default SQLite database below is used.
 # See more options at https://github.com/kennethreitz/dj-database-url
 #
-if ENV == "PROD":
+DB = env('DB', "SQLITE3")
+if DB == "POSTGRES":
     #postgresql,  python -m pip install psycopg2
     DATABASES  = { 'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -155,7 +149,6 @@ else:   #Development
     }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -178,27 +171,21 @@ if AUTH_PASSWORD_VALIDATORS_ENABLED:
     ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/3.2/topics/i18n/
-
-LANGUAGE_CODE = env('LANGUAGE_CODE', 'en-us')
-
 TIME_ZONE = env('TIME_ZONE', 'America/Los_Angeles')
-
-USE_I18N = True
-USE_L10N = True
 USE_TZ = True
 
-
-from django.conf.locale.es import formats as es_formats
-es_formats.DATETIME_FORMAT = 'd M Y, H:i'
-es_formats.DATE_FORMAT = 'd M, Y'
-
-
+# Internationalization
+# https://docs.djangoproject.com/en/3.2/topics/i18n/
+LANGUAGE_CODE = env('LANGUAGE_CODE', 'en-us')
+USE_I18N = True
+USE_L10N = True
+# from django.conf.locale.es import formats as es_formats
+# es_formats.DATETIME_FORMAT = 'd M Y, H:i'
+# es_formats.DATE_FORMAT = 'd M, Y'
 from django.conf.locale.en import formats as en_formats
 #en_formats.DATETIME_FORMAT = 'M d Y, H:i'
-# en_formats.DATE_FORMAT = 'M d, Y'
 en_formats.DATETIME_FORMAT = 'm/d/y g:i a'
+# en_formats.DATE_FORMAT = 'M d, Y'
 en_formats.DATE_FORMAT = 'Y-m-d'
 
 # Static files (CSS, JavaScript, Images)
@@ -206,8 +193,17 @@ en_formats.DATE_FORMAT = 'Y-m-d'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#staticfiles-dirs
 # https://learndjango.com/tutorials/django-static-files
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'psm', 'static'), os.path.join('psmprj', 'static'),]    #production only
-# STATIC_ROOT = env('STATIC_ROOT', "")  # BASE_DIR + '/static/'
+STATIC_ROOT = env('STATIC_ROOT', BASE_DIR + '/static/')
+STATICFILES_DIRS = [BASE_DIR + '/psmprj/static',]    
+# if ENV == "PROD":
+#     # python manage.py collectstatic - how to include project level static files?
+#     STATIC_ROOT = env('STATIC_ROOT', BASE_DIR + '/static/')
+#     STATICFILES_DIRS = [os.path.join('psmprj', 'static'),]    
+
+# else:
+#     STATIC_ROOT = env('STATIC_ROOT', BASE_DIR + '/static/')
+#     STATICFILES_DIRS = [os.path.join('psmprj', 'static'),]    
+
 
 # Whether to enable or not the StaticFilesHandler
 # to serve the static resources from the WSGI
@@ -217,9 +213,7 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'psm', 'static'), os.path.join('psmpr
 # proxy like Nginx, unless little workloads
 STATIC_ENABLE_WSGI_HANDLER = env.bool('STATIC_ENABLE_WSGI_HANDLER', DEBUG)
 
-
 from .settings_logging import *
-
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
@@ -232,6 +226,13 @@ REST_FRAMEWORK = {
 # Fileupload
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+#form templates
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+#https://github.com/edoburu/django-private-storage -> not working
+# PRIVATE_STORAGE_ROOT = BASE_DIR + '/media-private/'
+# PRIVATE_STORAGE_AUTH_FUNCTION = 'private_storage.permissions.allow_staff'
 
 # export/import
 #IMPORT_EXPORT_EXPORT_PERMISSION_CODE = 'import '
@@ -293,6 +294,8 @@ LOGOUT_REDIRECT_URL = "/"
 # django_project/settings.py
 EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
+if ENV == "DEV":
+    EMAIL_SUBJECT_PREFIX="[PSM-DEV] "
 
 #ckeditor 
 # CKEDITOR_BASEPATH = "/static/ckeditor/ckeditor/"

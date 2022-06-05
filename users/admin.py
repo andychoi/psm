@@ -6,13 +6,15 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from import_export.admin import ImportExportMixin
+from django_object_actions import DjangoObjectActions
+
 from common.models import CBU, Div, Dept
 
 #for RAW query
 # from django.db import connection
 
 @admin.register(Profile)
-class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
+class ProfileAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     # list_display = ('id', 'user', 'username', 'email', 'u_dept', 'u_div', 'is_active')
     list_display = ('id', 'user', 'username', 'email', 'u_dept', 'is_active')
     list_display_links = ('id', 'user', 'username')
@@ -36,6 +38,23 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
                             ('is_external', 'CBU'), ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',), ('image',), ('id_auto') )}),
             )
         return fieldsets
+
+    # object-function
+    # def email_test(self, request, obj):
+    #     from django.core.mail import send_mail
+    #     no_mails = send_mail(
+    #         'Subject here',
+    #         'Here is the message.',
+    #         'no-reply-psm@autoeveramerica.com',
+    #         ['andychoi@autoeveramerica.com'],
+    #         fail_silently=False,
+    #     )
+    #     breakpoint()
+    #     messages.add_message(request, messages.INFO, '%s emails sent!' % no_mails)
+
+    # email_test.label = "Email Test"  
+    # change_actions = ('email_test', )
+    # conflict import/export: changelist_actions = ('email_test', )    
 
     # validation check
     def clean(self):

@@ -3,7 +3,7 @@ from django.conf import settings
 from common.utils import *
 from django.utils.translation import gettext_lazy as _
 
-# from users.models import Profile
+# https://stackoverflow.com/questions/45309128/circular-dependency-error-in-django
 # from typing import TYPE_CHECKING
 # if TYPE_CHECKING:
 #     from users.models import Profile

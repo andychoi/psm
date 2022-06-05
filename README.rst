@@ -35,6 +35,8 @@ Docker, or:
   database: psmdb
   user: postgres
   create .env file for password: POSTGRES_PASSWORD
+* users.Profile has circular dependencies with Div and Dept in common app
+  python manage.py squashmigrations
 
 Install and Run
 ---------------

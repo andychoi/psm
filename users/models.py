@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
-    username = models.CharField('User Name', max_length=100, blank=True, null=True, unique=True)
+    username = models.CharField(max_length=100, blank=True, null=True, unique=True)
     email = models.EmailField(max_length=150, blank=True, null=True, unique=True)
     is_active = models.BooleanField(default=True)
 

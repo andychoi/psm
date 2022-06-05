@@ -16,7 +16,7 @@ from common.models import CBU, Div, Dept
 @admin.register(Profile)
 class ProfileAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     # list_display = ('id', 'user', 'username', 'email', 'u_dept', 'u_div', 'is_active')
-    list_display = ('id', 'user', 'username', 'email', 'u_dept', 'is_active')
+    list_display = ('id', 'user', 'username', 'email', 'is_active')
     list_display_links = ('id', 'user', 'username')
     search_fields = ('id', 'username', 'email', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
     ordering = ('username',)

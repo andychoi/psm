@@ -3,10 +3,10 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.db.models import Q
 # from django_filters import FilterSet
+from django.views import generic
 
 from common.utils import Status
 from .models import Report, Milestone, ReportRisk
-from django.views import generic
 
 # https://medium.com/@ksarthak4ever/django-class-based-views-vs-function-based-view-e74b47b2e41b
 # class based vs. function based views

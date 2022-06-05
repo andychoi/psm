@@ -23,6 +23,9 @@ from psm.models import Project
 from django.db.models.deletion import Collector
 from django.db.models.fields.related import ForeignKey
 
+
+#queryset filter with list of values: https://stackoverflow.com/questions/9304908/how-can-i-filter-a-django-query-with-a-list-of-values
+
 # Register your models here.
 @admin.register(ReportDist)
 class ReportDistAdmin(admin.ModelAdmin):
@@ -73,18 +76,19 @@ class MilestoneInline(admin.TabularInline):
         return extra
 
 
+#https://docs.djangoproject.com/en/4.0/ref/contrib/admin/#django.contrib.admin.ModelAdmin.autocomplete_fields
 @admin.register(Report)
 class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
     class Media:
-        css = {
-        'all': ('reports/css/custom_admin.css',),
-    }
+        css = { 'all': ('reports/css/custom_admin.css',), }
+
+    # form = ReportAdminForm  
 
     list_display = ('project_link', 'title', 'CBU', 'is_monthly','formatted_updated', 'status','preview_link')
     list_display_links = ('title', 'formatted_updated')
     list_editable = ('status',)
     ordering = ('-id',)
-
+    autocomplete_fields = [ 'project' ]
     readonly_fields = ('project_link', 'CBU', 'created_on', 'updated_on', 'created_by', 'updated_by')
 
     search_fields = ('title', 'project__title', 'content_a', 'content_p', 'issue', 'created_by__profile__name', 'updated_by__profile__name',

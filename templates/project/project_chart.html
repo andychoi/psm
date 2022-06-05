@@ -38,7 +38,7 @@
     </div>
     <div class="row">
 
-    {% if project_chart %}
+    {% if project_list %}
 
         <div class='container-fluid align-items-center justify-content-center'>
             <div class="card" >
@@ -68,7 +68,7 @@
 
 
     var tasks = [
-        {% for item in project_chart %}
+        {% for item in project_list %}
         {
             id: '{{item.id}}',
             name: '{{item.title}}',
@@ -80,7 +80,7 @@
         },
         {% endfor %}
     ]
-    // var tasks ={{project_chart|safe}};
+    // var tasks ={{project_list|safe}};
     
     var gantt = new Gantt("#gantt", tasks, {
         header_height: 50,

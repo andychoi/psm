@@ -12,7 +12,7 @@
         <a class="nav-item nav-link" href="{% url 'home' %}">Home</a>
 
         {% if user.is_authenticated  %}
-        <a class="nav-item nav-link text-capitalize" href="/project-list1">Project Dashboard</a>
+        <a class="nav-item nav-link text-capitalize" href="{% url 'project_list1' %}">Project Dashboard</a>
         <a class="nav-item nav-link text-capitalize" href="/reports">Status Report</a>          
         <a class="nav-item nav-link text-capitalize" href="/report-risks">Risk Report</a>
         {% endif %}
@@ -30,7 +30,7 @@
             <li><a class="dropdown-item" href="/admin">Admin - Home</a></li>
             <li><hr></li>
             <li><a class="dropdown-item" href="/projectchart">Gantt chart (wip)</a></li>
-            <li><a class="dropdown-item" href="/project-list2">Key project summary</a></li>
+            <li><a class="dropdown-item" href="{% url 'project_list2' %}">Key project summary</a></li>
           </ul>
         </li>
         {% endif %}

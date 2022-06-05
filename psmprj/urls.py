@@ -69,6 +69,7 @@ urlpatterns = [
     # urls handling report app  routes
     path('', include('reports.urls')),
     path('', include('psm.urls')),
+    # path('', include('resources.urls')),
 
     # private media files
     # path('^media-private/', include(private_storage.urls)),

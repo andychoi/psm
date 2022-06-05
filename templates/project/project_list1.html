@@ -72,7 +72,7 @@
               </div-->
               
             <!-- table-sm : smaller padding -->
-            {% if object_list %}
+            {% if project_list %}
             <table data-toggle="table" data-pagination="true" data-page-size="25" data-page-list="[10, 25, 50, 100, all]"
                 data-search="true" data-filter-control="true" data-show-search-clear-button="false" data-show-refresh="false"
                 data-show-export="true" data-toolbar="#toolbar" data-show-toggle="true" data-show-columns="true"
@@ -100,7 +100,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                    {% for p in object_list %}
+                    {% for p in project_list %}
                 <tr> <!-- https://getbootstrap.com/docs/4.1/components/badge/ https://icons.getbootstrap.com/ <i class="bi-class-name"></i> -->
                      <!-- p.status_t|slice:"0:1" -->
                     <td class="text-center">{{ p.CBU }}</td>

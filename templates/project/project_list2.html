@@ -43,77 +43,23 @@
 			</div-->
 		    <div class="col-10">
                 <div class="collapse show float-end" id="collapseFilter">
-                   
-                    <!-- https://django-filter.readthedocs.io/en/stable/guide/usage.html#the-view -->
-
-<!--Filter-->
-<!-- https://velog.io/@daylee/Django-filter-function-based-views -->
-<!-- <div class="card card-body filter-bar">
-
-    <form method="get">
-
-      <div class="row justify-content-md-center">
-
-      <div class="col-sm-2 form-group is-valid">
-          <label for="id_title__icontains">by Title</label>
-          <input type="text" name="title__icontains" class="form-control is-valid" placeholder="search" title="" id="id_title__icontains">
-      </div>
-
-      <div class="col-sm-2 form-group is-valid">
-          <label for="id_instructor__icontains">by Instructor</label>
-          <input type="text" name="instructor__icontains" class="form-control is-valid" placeholder="search" title="" id="id_instructor__icontains">
-      </div>
-
-      <div class="col-sm-2 form-group is-valid"><label for="id_language">Language</label>
-          <select name="language" class="language form-control is-valid" title="" id="id_language">
-          <option value="" selected> select </option>
-          <option value="Korean">Korean</option>
-          <option value="English">English</option>
-          </select>
-      </div>
-
-      <div class="col-sm-2 form-group is-valid">
-          <label for="id_difficulty"Choose Difficulty> Difficulty </label>
-          <select name="difficulty" class="difficulty form-control is-valid" title="" id="id_difficulty">
-          <option value="" selected >select</option>
-          <option value="Beginner">Beginner</option>
-          <option value="Intermediate">Intermediate</option>
-          <option value="Advanced">Advanced</option>
-          </select>
-      </div>
-
-      <div class="col-sm-2 form-group is-valid">
-          <label for="id_date_sort">Sort by Date </label>
-          <select name="date_sort" class="sortbydate form-control form-control-sm is-valid" placeholder="1234" title="" id="id_date_sort">
-          <option value="" selected> Newest to Oldest </option>
-          <option value="newest">Newest</option>
-          <option value="oldest" >Oldest</option>
-          </select>
-      </div>
-
-        <div class="col-sm-1 form-group is-valid" style="padding-left: 0.2px;">
-          <button class="btn btn-warning btn-md search_btn search_btn filter-btn" type="submit"> Search </button>
-        </div>
-
-
-        <div class="col-sm-1 form-group is-valid">
-        <a class="btn btn-secondary btn-md reset-btn filter-btn" href="#" role="button">Reset</a>
-        </div>
-
-      </div>
-    </form>
-  </div> -->
-<!-- filter -->
-
-                    <form method="get">
-                        <!-- https://stackoverflow.com/questions/57444339/where-form-as-pin-django-templates-come-from -->
-                        {{ filter.form|crispy }}
-                        <input type="submit" />
-        
+                    <form class="row row-cols-lg-auto g-3 align-items-center form-control-sm">
+                            <label><!-- Local filters:--></label>
+                            {% for filterItem in filterItems %}
+                            <div class="col-auto">
+                                <label  class="form-group label" for='sel_{{ filterItem.qId }}'>{{ filterItem.text }}</label>        
+                                <select class="form-select"  id='sel_{{ filterItem.qId }}' onchange="updateData()">
+                                    <option value=''>ALL</option>
+                                    {% for pItem in filterItem.items %}
+                                    <option value={{ pItem.id }}>{{ pItem.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% endfor %}
+                    
                     </form>                    
                 </div>
             </div>
-
         </div>
         <div class="row">
             <!-- Filter  div class="input-group"> <span class="input-group-addon">Filter</span>
@@ -129,7 +75,7 @@
               </div-->
               
             <!-- table-sm : smaller padding -->
-            {% if filter.qs %}
+            {% if project_list %}
             <table data-toggle="table" data-pagination="true" data-page-size="25" data-page-list="[10, 25, 50, 100, all]"
                 data-search="true" data-filter-control="true" data-show-search-clear-button="false" data-show-refresh="false"
                 data-show-export="true" data-toolbar="#toolbar" data-show-toggle="true" data-show-columns="true"
@@ -155,7 +101,7 @@
                 </thead>
                 <tbody>
                     <!-- https://stackoverflow.com/questions/59480402/how-to-use-django-filter-with-a-listview-class-view-for-search -->
-                    {% for p in filter.qs %}
+                    {% for p in project_list %}
                 <tr> <!-- https://getbootstrap.com/docs/4.1/components/badge/ https://icons.getbootstrap.com/ <i class="bi-class-name"></i> -->
                      <!-- p.status_t|slice:"0:1" -->
                      <td>{{ p.pm }}</td>
@@ -245,7 +191,7 @@
             if (qs.length > 0) {
                 q = "?" + qs.join("&");
             }            
-            window.location.href = '/project_list2/' + q;
+            window.location.href = '{% url 'project_list2' %}' + q;
         }
     </script>    
 {% endblock %}

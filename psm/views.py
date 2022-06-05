@@ -63,12 +63,6 @@ from .filters import ProjectFilter
 #         qs = self.model.objects.all()
 #         project_filtered_list = ProjectFilter(self.request.GET, queryset=qs)
 #         return project_filtered_list.qs
-# why not class...
-def project_list2(request):
-    project_list = Project.objects.all()
-    project_filter = ProjectFilter(request.GET, queryset=project_list)
-    # project_list2 = project_filter.qs
-    return render(request, 'project/project_list2.html', {'filter': project_filter })    
 
 class projectList1View(generic.ListView):
     template_name = 'project/project_list1.html'
@@ -207,6 +201,21 @@ class projectList1View(generic.ListView):
     # def paginator(self):
     # def paginate_queryset(self, queryset, page_size):
 
+# why not class...
+# def project_list2(request):
+#     project_list = Project.objects.all()
+#     project_filter = ProjectFilter(request.GET, queryset=project_list)
+#     return render(request, 'project/project_list2.html', {'filter': project_filter })    
+
+class projectList2View(projectList1View):
+    template_name = 'project/project_list2.html'
+
+class projectChartView(projectList1View):
+    template_name = 'project/project_chart.html'
+
+class projectChartPlanView(projectList1View):
+    template_name = 'project/project_chart.html'
+
 # class based view for each Project
 class projectDetail(generic.DetailView):
 	model = Project
@@ -220,241 +229,4 @@ class projectDetail(generic.DetailView):
 
 # how to pass multiple object
 # -> https://stackoverflow.com/questions/42250375/django-passing-multiple-objects-to-templates-but-nothing-in-there
-
-
-
-class projectChartPlanView(generic.ListView):
-    template_name = 'project/project_chart.html'
-    context_object_name = 'project_chart'
-
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-        context['filterItems'] = []
-
-        context['filterItems'].append( {
-            "key": "YEAR", "text": "Year", "qId": "year"
-            , "selected": self.request.GET.get('year', '')
-            , "items": map( lambda x: {"id": x['year'], "name": x['year']}, Project.objects.values('year').distinct().order_by('-year') )
-        } )
-
-        context['filterItems'].append( {
-            "key": "DIV", "text": "Div", "qId": "div"
-            , "selected": self.request.GET.get('div', '')
-            , "items": Div.objects.all()
-        } )
-
-        context['filterItems'].append( {
-            "key": "DEP", "text": "Dept.", "qId": "dep"
-            , "selected": self.request.GET.get('dep', '')
-            , "items": Dept.objects.all()
-        } )
-    
-        context['filterItems'].append( {
-            "key": "PHASE", "text": "Phase", "qId": "phase"
-            , "selected": self.request.GET.get('phase', '')
-            , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PHASE)]
-        } )
-
-        context['filterItems'].append( {
-            "key": "CBU", "text": "CBU", "qId": "cbu"
-            , "selected": self.request.GET.get('cbu', '')
-            , "items": CBU.objects.all()
-        } )
-
-        context['filterItems'].append( {
-            "key": "TYP", "text": "Type", "qId": "type"
-            , "selected": self.request.GET.get('type', '')
-            , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRJTYPE)]
-        } )
-
-        context['filterItems'].append( {
-            "key": "PRI", "text": "Priority", "qId": "pri"
-            , "selected": self.request.GET.get('pri', '')
-            , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRIORITIES)]
-        } )
-
-        #https://stackoverflow.com/questions/59972694/django-pagination-maintaining-filter-and-order-by
-        get_copy = self.request.GET.copy()
-        if get_copy.get('page'):
-            get_copy.pop('page')
-        context['get_copy'] = get_copy
-        
-        return context
-
-        # queryset = self.get_queryset().annotate(
-        #     first_name_len=Length('user__first_name'),
-        #     last_name_len=Length('user__last_name')
-        # ).filter(
-        #     first_name_len__gt=0,
-        #     last_name_len__gt=0,
-        # ).filter(
-        #     **parameters
-        # ).order_by(
-        #     '-created'
-        # )
-
-
-    def get_queryset(self):
-        # self.request has GET parameter
-        # # self.year = get_object_or_404(self.year, name=self.kwargs['year'])
-        # # return Project.objects.filter(year=self.year).order_by('dept')
-        # queryset = Project.objects.filter(year=self.kwargs['year'])
-
-        queryset = Project.objects.all().filter(progress=0)
-        ltmp = self.request.GET.get('year', '')
-        if ltmp:
-            queryset = queryset.filter(year=ltmp)
-
-        ltmp = self.request.GET.get('div', '')
-        if ltmp:
-            queryset = queryset.filter(div__id=ltmp)
-
-        ltmp = self.request.GET.get('dep', '')
-        if ltmp:
-            queryset = queryset.filter(dept__id=ltmp)
-
-        ltmp = self.request.GET.get('phase', '')
-        if ltmp:
-            queryset = queryset.filter(phase=PHASE[int(ltmp)][0])
-
-        ltmp = self.request.GET.get('cbu', '')
-        if ltmp:
-            queryset = queryset.filter(CBU__id=ltmp)
-
-        ltmp = self.request.GET.get('pri', '')
-        if ltmp:
-            queryset = queryset.filter(priority=PRIORITIES[int(ltmp)][0])
-
-        ltmp = self.request.GET.get('type', '')
-        if ltmp:
-            queryset = queryset.filter(type=PRJTYPE[int(ltmp)][0])
-
-        # pagenation http://localhost:8000/project/?page=3
-        # https://stackoverflow.com/questions/43544701/django-pagination-from-page-to-page
-        # https://stackoverflow.com/questions/29071312/pagination-in-django-rest-framework-using-api-view
-        # req_page = self.request.GET.get('page', '')
-        # page = self.paginate_queryset(queryset, req_page)
-        # if req_page:
-        #     return self.paginate_queryset(queryset, req_page)
-        
-        return queryset
-
-
-
-class projectChartView(generic.ListView):
-    template_name = 'project/project_chart.html'
-    context_object_name = 'project_chart'
-
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-        context['filterItems'] = []
-
-        context['filterItems'].append( {
-            "key": "YEAR", "text": "Year", "qId": "year"
-            , "selected": self.request.GET.get('year', '')
-            , "items": map( lambda x: {"id": x['year'], "name": x['year']}, Project.objects.values('year').distinct().order_by('-year') )
-        } )
-
-        context['filterItems'].append( {
-            "key": "DIV", "text": "Div", "qId": "div"
-            , "selected": self.request.GET.get('div', '')
-            , "items": Div.objects.all()
-        } )
-
-        context['filterItems'].append( {
-            "key": "DEP", "text": "Dept.", "qId": "dep"
-            , "selected": self.request.GET.get('dep', '')
-            , "items": Dept.objects.all()
-        } )
-    
-        context['filterItems'].append( {
-            "key": "PHASE", "text": "Phase", "qId": "phase"
-            , "selected": self.request.GET.get('phase', '')
-            , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PHASE)]
-        } )
-
-        context['filterItems'].append( {
-            "key": "CBU", "text": "CBU", "qId": "cbu"
-            , "selected": self.request.GET.get('cbu', '')
-            , "items": CBU.objects.all()
-        } )
-
-        context['filterItems'].append( {
-            "key": "TYP", "text": "Type", "qId": "type"
-            , "selected": self.request.GET.get('type', '')
-            , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRJTYPE)]
-        } )
-
-        context['filterItems'].append( {
-            "key": "PRI", "text": "Priority", "qId": "pri"
-            , "selected": self.request.GET.get('pri', '')
-            , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRIORITIES)]
-        } )
-
-        #https://stackoverflow.com/questions/59972694/django-pagination-maintaining-filter-and-order-by
-        get_copy = self.request.GET.copy()
-        if get_copy.get('page'):
-            get_copy.pop('page')
-        context['get_copy'] = get_copy
-        
-        return context
-
-        # queryset = self.get_queryset().annotate(
-        #     first_name_len=Length('user__first_name'),
-        #     last_name_len=Length('user__last_name')
-        # ).filter(
-        #     first_name_len__gt=0,
-        #     last_name_len__gt=0,
-        # ).filter(
-        #     **parameters
-        # ).order_by(
-        #     '-created'
-        # )
-
-
-    def get_queryset(self):
-        # self.request has GET parameter
-        # # self.year = get_object_or_404(self.year, name=self.kwargs['year'])
-        # # return Project.objects.filter(year=self.year).order_by('dept')
-        # queryset = Project.objects.filter(year=self.kwargs['year'])
-
-        # queryset = Project.objects.all().filter(progress=0)
-        queryset = Project.objects.all()
-        ltmp = self.request.GET.get('year', '')
-        if ltmp:
-            queryset = queryset.filter(year=ltmp)
-
-        ltmp = self.request.GET.get('div', '')
-        if ltmp:
-            queryset = queryset.filter(div__id=ltmp)
-
-        ltmp = self.request.GET.get('dep', '')
-        if ltmp:
-            queryset = queryset.filter(dept__id=ltmp)
-
-        ltmp = self.request.GET.get('phase', '')
-        if ltmp:
-            queryset = queryset.filter(phase=PHASE[int(ltmp)][0])
-
-        ltmp = self.request.GET.get('cbu', '')
-        if ltmp:
-            queryset = queryset.filter(CBU__id=ltmp)
-
-        ltmp = self.request.GET.get('pri', '')
-        if ltmp:
-            queryset = queryset.filter(priority=PRIORITIES[int(ltmp)][0])
-
-        ltmp = self.request.GET.get('type', '')
-        if ltmp:
-            queryset = queryset.filter(type=PRJTYPE[int(ltmp)][0])
-
-        # pagenation http://localhost:8000/project/?page=3
-        # https://stackoverflow.com/questions/43544701/django-pagination-from-page-to-page
-        # https://stackoverflow.com/questions/29071312/pagination-in-django-rest-framework-using-api-view
-        # req_page = self.request.GET.get('page', '')
-        # page = self.paginate_queryset(queryset, req_page)
-        # if req_page:
-        #     return self.paginate_queryset(queryset, req_page)
-        
-        return queryset
 

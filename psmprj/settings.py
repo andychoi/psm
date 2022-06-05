@@ -37,12 +37,14 @@ INSTALLED_APPS = [
     'mtasks',
     'reports',
     'reviews',
+    # 'resources',
     'guardian',      # object level permission management; django default is class level 
 #    'river',        # simple workflow; not yet compatible with django 4.x
     # blog
     'users.apps.UsersConfig',
     'blog.apps.BlogConfig',
     'crispy_forms',
+    'django_tables2',
     # 'django_filters'  ,   #bug with pagination
 
     'django_object_actions', 
@@ -59,7 +61,6 @@ INSTALLED_APPS = [
     'django_admin_listfilter_dropdown',
     'adminfilters',
 
-    # 'django_tables2',
     # 'ckeditor',
     # 'django_markdown',
 #    'django.contrib.sites',
@@ -121,6 +122,7 @@ if "CSRF_TRUSTED_ORIGINS" in os.environ:
     CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS")     #["https://server-name-ip/", "http://server-name-ip/"]
 else:
     CSRF_TRUSTED_ORIGINS = ["http://localhost"]
+# CSRF_TRUSTED_ORIGINS = env('CSRF_TRUSTED_ORIGINS', ["http://localhost"] )
 
 #https://stackoverflow.com/questions/44034879/django-nginx-getting-csrf-verification-error-in-production-over-http
 #CSRF_COOKIE_HTTPONLY = env.bool('CSRF_COOKIE_HTTPONLY', False)

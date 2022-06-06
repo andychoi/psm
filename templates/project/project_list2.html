@@ -192,7 +192,7 @@
             if (qs.length > 0) {
                 q = "?" + qs.join("&");
             }            
-            window.location.href = '{% url 'project_list2' %}' + q;
+            window.location.href = window.location.pathname + q;
         }
     </script>    
 {% endblock %}

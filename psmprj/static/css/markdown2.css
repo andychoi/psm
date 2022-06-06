@@ -1,9 +1,12 @@
 /* -------------------------------------- */
 
-.psm-md2  p {
-   margin-top: 0.5rem;
-   margin-bottom: 0.2rem;
-}
+.psm-md2  p { margin-top: 0.5rem; margin-bottom: 0.2rem; }
+.psm-md2  dl, ol, ul { padding-left: 1rem; line-height:50%; }
+.psm-md2  li { line-height: 1.5rem; } 
+/* 
+.psm-md2  dl, ol, ul { margin-top: 0.3rem; margin-bottom: 0.1rem; padding-left: 0.5rem; }
+.psm-md2  li { line-height: 1.2rem; } 
+*/
 
 /* -------------------------------------- */
 

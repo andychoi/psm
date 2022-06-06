@@ -25,7 +25,11 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
     fieldsets = (  # Edition form
          (None, {'fields': (('user', 'username', 'email') , ('manager', 'is_psmadm', 'is_active'), 
                             # ('u_team','u_dept', 'u_div'), 
-                            ('is_external', ), ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',), ('image',), )}),
+                            ('u_dept', 'u_div'), 
+                            ('is_external', 'CBU',), 
+                            # ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',),
+                            ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', ),
+                            ('image',), )}),
         (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by')), 'classes': ('collapse',)}),
     )
 
@@ -35,7 +39,11 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
             fieldsets = (      # Creation form
                  (None, {'fields': ('user', ('username', 'email') , ('manager', 'is_psmadm', 'is_active'), 
                             # ('u_team','u_dept', 'u_div'), 
-                            ('is_external', ), ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',), ('image',), ('id_auto') )}),
+                            ('u_dept', 'u_div'), 
+                            ('is_external', 'CBU' ), 
+                            ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', ), 
+                            # ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',), 
+                            ('image',), ('id_auto') )}),
             )
         return fieldsets
 
@@ -108,7 +116,7 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
                         if new_user:
                             obj.user = new_user
                             obj.save(update_fields=['user'])    
-                            messages.add_message(request, messages.INFO, obj.username + ' is created to user as username: ' + username)
+                            messages.add_message(request, messages.INFO, obj.user + ' is created to user as username: ' + username)
                     else:
                         # causing duplicate key... signal User -> Profile (different username) -> don't create
                         # username = obj.username.lower().replace(" ", "").replace(",",".")

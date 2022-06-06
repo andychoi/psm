@@ -67,10 +67,10 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
         css = {
         'all': ('psm/css/custom_admin.css',),
     }    
-    list_display = ('PJcode', 'title', 'pm', 'CBU',  'dept', 'phase', 'state', )
-    list_display_links = ('PJcode', 'title')
+    list_display = ('pjcode', 'title', 'pm', 'CBU',  'dept', 'phase', 'state', )
+    list_display_links = ('pjcode', 'title')
     list_editable = ("phase", 'state',)
-    search_fields = ('id', 'title', 'description', 'resolution', 
+    search_fields = ('id', 'title', 'description', 'resolution', 'code',
         'wbs__wbs', 'es', 'ref', 'pm__username', 'CBUpm__username', 'CBU__name')
     list_filter = (
         ('status_o', UnionFieldListFilter),

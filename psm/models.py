@@ -177,15 +177,15 @@ class Project(models.Model):
     def __str__(self):
 #        return "[%s] %s" % (self.number, self.title)
 #        return "[%s] %s" % (f'{self.created_at.strftime("%y")}-{"{:04d}".format(self.pk)}', self.title)    
-        return "[%s] %s" % (self.PJcode, self.title)
+        return "[%s] %s" % (self.pjcode, self.title)
         # return f'{self.year % 100}-{"{:04d}".format(self.pk)}'
 
     @property
     def description_md2(self):
-        return markdown2.markdown(self.description)
+        return "<div class='psm-md2'>" + markdown2.markdown(self.description) + "</div>"
 
     @property
-    def PJcode(self) -> str:
+    def pjcode(self) -> str:
 #        return "{:08d}".format(self.pk)
 #       yy-serial
 #        return f'{self.created_at.strftime("%y")}-{"{:04d}".format(self.pk)}'

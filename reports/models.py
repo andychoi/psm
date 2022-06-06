@@ -82,13 +82,13 @@ class Report(models.Model):
 
     @property
     def content_p_md2(self):
-        return markdown2.markdown(self.content_p)
+        return "<div class='psm-md2'>" + markdown2.markdown(self.content_p) + "</div>"
     @property
     def content_a_md2(self):
-        return markdown2.markdown(self.content_a)
+        return "<div class='psm-md2'>" + markdown2.markdown(self.content_a) + "</div>"
     @property
     def issue_md2(self):
-        return markdown2.markdown(self.issue)
+        return "<div class='psm-md2'>" + markdown2.markdown(self.issue) + "</div>"
 
 
 class Milestone(models.Model):

@@ -51,7 +51,7 @@ class Post(models.Model):
 
     @property
     def md2(self):
-        return markdown2.markdown(self.content)
+        return "<div class='psm-md2'>" + markdown2.markdown(self.content) + "</div>"
 
     def __str__(self):
         return self.title

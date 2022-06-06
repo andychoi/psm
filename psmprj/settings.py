@@ -37,7 +37,9 @@ INSTALLED_APPS = [
     'mtasks',
     'reports',
     'reviews',
+
     # 'resources',
+    
     'guardian',      # object level permission management; django default is class level 
 #    'river',        # simple workflow; not yet compatible with django 4.x
     # blog

@@ -36,7 +36,7 @@
           <div class="carousel-caption text-start">
             <h1>{{ post.title }}</h1>
             <div class="myheadline-content">
-              {{ post.md2|safe|linebreaks|truncatewords:"25" }}
+              {{ post.md2|safe|truncatewords:"25" }}
             </div>
             <p><a class="btn btn-lg btn-primary" href="/post/{{ post.id }}">See details</a></p>
           </div>

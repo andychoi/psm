@@ -1,105 +1,115 @@
-   #markdown-reference {
-    border:1px solid #d9e3ea;
-    box-shadow:none;
-    text-shadow:none;
-    -webkit-box-shadow:none;
-    -moz-box-shadow:none;
-    background:0 0;
-    border-spacing:0;
-    margin-right:18px;
-    margin-left:0;
-    font-size:14px;
-    color:#2e4453
-   }
-   #markdown-reference thead th {
-    font-size:16px;
-    padding-bottom:10px !important
-   }
-   #markdown-reference th {
-    font-size:14px;
-    font-weight:700
-   }
-   #markdown-reference th,
-   #markdown-reference td {
-    padding:10px 10px 32px;
-    margin:0 !important;
-    border:none;
-    text-align:left;
-    vertical-align:top;
-    background:0 0;
-    border-bottom:1px solid #d9e3ea
-   }
-   #markdown-reference p {
-    margin-left:0 !important;
-    font-size:14px
-   }
-   #markdown-reference pre {
-    margin-bottom:1.4em;
-    color:#2e4453;
-    font-size:13px
-   }
-   #markdown-reference ul,
-   #markdown-reference ol {
-    /* margin-left:23px !important; */
-    margin-bottom:0
-   }
-   #markdown-reference th:nth-child(2),
-   #markdown-reference td:nth-child(2) {
-    background-color:#fafafa;
-    border-bottom:1px solid #e9eff3
-   }
-   #markdown-reference tbody tr:last-child th,
-   #markdown-reference tbody tr:last-child td {
-    border-bottom:none !important
-   }
-   #markdown-reference td:nth-child(3) a {
-    color:#1e8cbe
-   }
-   #markdown-reference .markdown-h1,
-   #markdown-reference .markdown-h2,
-   #markdown-reference .markdown-h3,
-   #markdown-reference .markdown-h4 {
-    font-weight:700;
-    margin-bottom:4px
-   }
-   #markdown-reference .markdown-h1 {
-    font-size:22px
-   }
-   #markdown-reference .markdown-h2 {
-    font-size:20px
-   }
-   #markdown-reference .markdown-h3 {
-    font-size:18px
-   }
-   #markdown-reference .markdown-h4 {
-    font-size:16px
-   }
-   #markdown-reference dd {
-    margin-left:24px;
-    margin-bottom:1.4em;
-    font-size:15px
-   }
-   dl,
-   dd,
-   dt {
-    font-size:15px;
-    line-height:1.6em;
-    margin-bottom:1.4em
-   }
-   #markdown-reference abbr {
-    border-bottom:1px dotted #444
-   }
-   #markdown-reference hr {
-    height:1px;
-    color:#aaa;
-    background:#aaa;
-    border:0
-   }
-   #markdown-reference .markdown-comment {
-    font-size:12px;
-    padding:0;
-    margin:-5px 0 0;
-    font-style:italic;
-    color:#87a6bc
-   }
+/* -------------------------------------- */
+
+.psm-md2  p {
+   margin-top: 0.5rem;
+   margin-bottom: 0.2rem;
+}
+
+/* -------------------------------------- */
+
+#markdown-reference {
+   border:1px solid #d9e3ea;
+   box-shadow:none;
+   text-shadow:none;
+   -webkit-box-shadow:none;
+   -moz-box-shadow:none;
+   background:0 0;
+   border-spacing:0;
+   margin-right:18px;
+   margin-left:0;
+   font-size:14px;
+   color:#2e4453
+}
+#markdown-reference thead th {
+   font-size:16px;
+   padding-bottom:10px !important
+}
+#markdown-reference th {
+   font-size:14px;
+   font-weight:700
+}
+#markdown-reference th,
+#markdown-reference td {
+   /* padding:10px 10px 32px; */
+   padding:10px 10px 6px;
+   margin:0 !important;
+   border:none;
+   text-align:left;
+   vertical-align:top;
+   background:0 0;
+   border-bottom:1px solid #d9e3ea
+}
+#markdown-reference p {
+   margin-left:0 !important;
+   font-size:14px
+}
+#markdown-reference pre {
+   margin-bottom: 0.5em; /* 1.4em; */
+   color:#2e4453;
+   font-size:13px
+}
+#markdown-reference ul,
+#markdown-reference ol {
+   /* margin-left:23px !important; */
+   margin-bottom:0
+}
+#markdown-reference th:nth-child(2),
+#markdown-reference td:nth-child(2) {
+   background-color:#fafafa;
+   border-bottom:1px solid #e9eff3
+}
+#markdown-reference tbody tr:last-child th,
+#markdown-reference tbody tr:last-child td {
+   border-bottom:none !important
+}
+#markdown-reference td:nth-child(3) a {
+   color:#1e8cbe
+}
+#markdown-reference .markdown-h1,
+#markdown-reference .markdown-h2,
+#markdown-reference .markdown-h3,
+#markdown-reference .markdown-h4 {
+   font-weight:700;
+   margin-bottom:4px
+}
+#markdown-reference .markdown-h1 {
+   font-size:22px
+}
+#markdown-reference .markdown-h2 {
+   font-size:20px
+}
+#markdown-reference .markdown-h3 {
+   font-size:18px
+}
+#markdown-reference .markdown-h4 {
+   font-size:16px
+}
+#markdown-reference dd {
+   margin-left:24px;
+   margin-bottom:1.4em;
+   font-size:15px
+}
+dl,
+dd,
+dt {
+   font-size:15px;
+   line-height:1.6em;
+   margin-bottom:1.4em
+}
+#markdown-reference abbr {
+   border-bottom:1px dotted #444
+}
+#markdown-reference hr {
+   height:1px;
+   color:#aaa;
+   background:#aaa;
+   border:0
+}
+#markdown-reference .markdown-comment {
+   font-size:12px;
+   padding:0;
+   margin:-5px 0 0;
+   font-style:italic;
+   color:#87a6bc
+}
 

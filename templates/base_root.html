@@ -15,7 +15,7 @@
 
   <!-- Custom Style, start-template -->
   <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}?1.0">
-
+  
   {% if title %}
   <title>PSM System - {{ title }}</title>
   {% else %}
@@ -24,6 +24,8 @@
 
   {% block child_css %}
   {% endblock %}
+  <link rel="stylesheet" type="text/css" href="{% static 'css/markdown2.css' %}?1.0">
+  
 </head>
 
 <body>

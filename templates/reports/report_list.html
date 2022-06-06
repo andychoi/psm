@@ -32,6 +32,7 @@
           <th data-sortable="true" scope="col">CBU</th>
           <th data-sortable="true" scope="col">Title</th>
           <th data-sortable="true" scope="col">Reported</th>
+          <th data-sortable="false" scope="col">Edit</th>
           <th data-sortable="true" scope="col">Updated_by</th>
           <th data-sortable="true" scope="col">Project</th>
           <th data-sortable="true" scope="col" class="text-center">Health</th>
@@ -47,8 +48,9 @@
           <tr>
             <td>{{ report.CBU }}</td> 
             <td class="report-count-{{ forloop.counter }}">
-            <a class="article-title" href="{% url 'report_detail' report.pk %}" target="blank">{{ report.title }}</a> </td> 
+            <a class="report-title" href="{% url 'report_detail' report.pk %}" target="blank">{{ report.title }}</a> </td> 
             <td>{{ report.updated_on|date:'Y-m-d' }}</td>               
+            <td><a class="" href="/admin/reports/report/{{ report.pk }}">Edit</a> </td> 
             <td>{{ report.updated_by }}</td> 
             <td><a href="/admin/psm/project/{{ report.project.pk }}">{{ report.project }}</a></td> 
             <td class="text-center"> 

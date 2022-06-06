@@ -7,6 +7,8 @@ from adminfilters.multiselect import UnionFieldListFilter
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter
 from import_export.admin import ImportExportMixin
 from django.http import HttpResponseRedirect
+# from django.conf import settings
+from psmprj import env
 
 import datetime
 from django.urls import reverse
@@ -14,6 +16,9 @@ from django.utils.html import mark_safe
 
 from django.forms import formsets
 from django.forms.models import BaseInlineFormSet
+
+# README issue with import/export https://github.com/crccheck/django-object-actions/issues/67
+from django_object_actions import DjangoObjectActions
 
 # Register your models here.
 from .models import Report, Milestone, ReportDist, ReportRisk
@@ -78,7 +83,7 @@ class MilestoneInline(admin.TabularInline):
 
 #https://docs.djangoproject.com/en/4.0/ref/contrib/admin/#django.contrib.admin.ModelAdmin.autocomplete_fields
 @admin.register(Report)
-class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
+class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
     class Media:
         css = { 'all': ('reports/css/custom_admin.css',), }
 
@@ -160,7 +165,74 @@ class ReportAdmin(ImportExportMixin, admin.ModelAdmin):
         return obj.updated_on.strftime("%m/%d/%y")
     formatted_updated.short_description = 'Updated'
 
+    # object-function
+    def send_report(self, request, obj):
+        from psmprj.utils.mail import send_mail_async as send_mail
+        # to display name: from_email = "Name <info@domain.com>"
 
+        from django.template import Context
+        from django.template.loader import get_template
+        from django.core.mail import EmailMultiAlternatives
+        from .views import reportDetail
+
+        # converted HTML rendering using https://templates.mailchimp.com/resources/inline-css/
+        htmly = get_template('reports/report_email.html')
+        context = { 
+            'object'    : obj, 
+            'milestone' : Milestone.objects.filter(report=obj.pk).order_by('no') }
+
+        # Bootstrap Email https://bootstrapemail.com/docs/introduction    
+        html_content = htmly.render(context)
+        # msg.attach_alternative(html_content, "text/html")
+        # breakpoint()
+
+        email_sender   = env("EMAIL_TEST_SENDER",   "test@localhost.localdomain")
+        email_receiver = env("EMAIL_TEST_RECEIVER", "test@localhost.localdomain,").split(",")
+        no_mails = send_mail(
+            subject=obj.title,
+            message='The report is in HTML format.',
+            html_message=html_content,
+            from_email=email_sender, 
+            recipient_list=email_receiver,
+            fail_silently=False,
+        )
+        # breakpoint()
+        messages.add_message(request, messages.INFO, 'Email job running!')
+
+    send_report.label = "Send Report with Email"  
+
+    # object-function
+    def goto_project(self, request, obj):
+        return HttpResponseRedirect(f'/admin/psm/project/{obj.project.id}')
+        # from django.shortcuts import redirect
+        # redirect('/admin/psm/project/%s' % obj.project.pk)
+
+    def preview(self, request, obj):
+        return HttpResponseRedirect(reverse('report_detail', args=[obj.pk]))
+    preview.attrs = {'target': '_blank'}
+
+    def past_reports(self, request, obj):
+        return HttpResponseRedirect(f'/admin/reports/report/?project__id__exact={obj.project.id}')
+
+    def clone(self, request, obj):
+        old_id = obj.id     #obj.id = new.id
+        new = obj
+        new.id = None
+        new.title = '<new report>' 
+        new._state.adding = True           
+        new.save()  #adding
+        # breakpoint()
+        old_ms = Milestone.objects.filter(report=old_id)
+        for m in old_ms:
+            m.report = new
+            m.pk = None
+            m.save()
+        messages.add_message(request, messages.INFO, "Report is cloned to #%i with title %s" % (new.id, new.title))
+        return HttpResponseRedirect(f'/admin/reports/report/{new.id}')
+
+
+    change_actions = ('preview', 'send_report', 'clone', 'past_reports', 'goto_project')
+    
     def save_model(self, request, obj, form, change):
         if change is False:
             obj.created_by = request.user

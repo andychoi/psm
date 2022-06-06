@@ -14,7 +14,7 @@ from common.models import CBU, Div, Dept
 # from django.db import connection
 
 @admin.register(Profile)
-class ProfileAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
+class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
     # list_display = ('id', 'user', 'username', 'email', 'u_dept', 'u_div', 'is_active')
     list_display = ('id', 'user', 'username', 'email', 'is_active')
     list_display_links = ('id', 'user', 'username')
@@ -25,7 +25,7 @@ class ProfileAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     fieldsets = (  # Edition form
          (None, {'fields': (('user', 'username', 'email') , ('manager', 'is_psmadm', 'is_active'), 
                             # ('u_team','u_dept', 'u_div'), 
-                            ('is_external', 'CBU'), ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',), ('image',), )}),
+                            ('is_external', ), ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',), ('image',), )}),
         (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by')), 'classes': ('collapse',)}),
     )
 
@@ -35,25 +35,25 @@ class ProfileAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
             fieldsets = (      # Creation form
                  (None, {'fields': ('user', ('username', 'email') , ('manager', 'is_psmadm', 'is_active'), 
                             # ('u_team','u_dept', 'u_div'), 
-                            ('is_external', 'CBU'), ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',), ('image',), ('id_auto') )}),
+                            ('is_external', ), ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',), ('image',), ('id_auto') )}),
             )
         return fieldsets
 
     # object-function
-    # def email_test(self, request, obj):
-    #     from django.core.mail import send_mail
-    #     no_mails = send_mail(
-    #         'Subject here',
-    #         'Here is the message.',
-    #         'no-reply-psm@autoeveramerica.com',
-    #         ['andychoi@autoeveramerica.com'],
-    #         fail_silently=False,
-    #     )
-    #     breakpoint()
-    #     messages.add_message(request, messages.INFO, '%s emails sent!' % no_mails)
+    def email_test(self, request, obj):
+        from psmprj.utils.mail import send_mail_async as send_mail
+        no_mails = send_mail(
+            subject='Subject here',
+            message='Here is the message.',
+            html_message="<h1>Here is title</h1>",
+            from_email='postmaster@sandbox8d3a1fef491c445da7a28136096d4050.mailgun.org',
+            recipient_list=['choibc9@gmail.com'],
+            fail_silently=False,
+        )
+        messages.add_message(request, messages.INFO, '%s emails sent!' % no_mails)
 
-    # email_test.label = "Email Test"  
-    # change_actions = ('email_test', )
+    email_test.label = "Email Test"  
+    change_actions = ('email_test', )
     # conflict import/export: changelist_actions = ('email_test', )    
 
     # validation check

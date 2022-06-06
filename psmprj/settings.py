@@ -115,7 +115,7 @@ WSGI_APPLICATION = 'psmprj.wsgi.application'
 #     CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS")     #["https://server-name-ip/", "http://server-name-ip/"]
 # else:
 #     CSRF_TRUSTED_ORIGINS = ["http://localhost"]
-CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS")     
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", ["http://localhost",])     
 
 #https://stackoverflow.com/questions/44034879/django-nginx-getting-csrf-verification-error-in-production-over-http
 #CSRF_COOKIE_HTTPONLY = env.bool('CSRF_COOKIE_HTTPONLY', False)
@@ -292,9 +292,12 @@ LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
 # django_project/settings.py
-EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
-EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
-if ENV == "DEV":
+EMAIL_ENV = env("EMAIL_ENV", "file")
+if EMAIL_ENV == "smtp":
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+    EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
     EMAIL_SUBJECT_PREFIX="[PSM-DEV] "
 
 #ckeditor 

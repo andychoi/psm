@@ -43,6 +43,7 @@ venv*/
 # runtime
 run/
 tmp/
+sent_emails/
 
 # file upload folder
 media/

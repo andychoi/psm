@@ -2,10 +2,11 @@
 {% load static %}
 
 {% block child_css %}
+    <link href="{% static 'css/markdown2.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
-
+<div class="container">
 <div id="content-markdown" style="display:none">
 ## About Project System
 ---
@@ -42,11 +43,192 @@
 + ...
 
 `
-This page is formatted with markdown
-`
+#### Markdown tip
 
 </div>
 <div id="content-markdown-result"></div>
+</div>
+
+<div class="table-responsive-sm">
+<table id="markdown-reference" class="table">
+
+<thead>
+    <tr>
+    <th scope="col"> </th>
+    <th scope="col">Markdown</th>
+    <th scope="col">Processed</th>
+    </tr>
+</thead>
+<tbody>
+<tr>
+<th>Emphasis</th>
+<td>
+<pre>*Emphasize* _emphasize_
+**Strong** __Strong__</pre>
+</td>
+<td><em>Emphasize</em><br /><strong>Strong</strong>
+<p> </p>
+<p class="markdown-comment">Some WordPress.com themes may have different formatting for these styles</p>
+</td>
+</tr>
+<th><a id="foot" name="foot"></a>Footnotes</th>
+<td>
+<pre>I have more [^1] to say up here.
+
+[^1]: To say down here.</pre>
+<p class="markdown-comment">Footnotes will be added to the bottom of the document, with a link back to the original reference<a href="https://wordpress.com/support/markdown-quick-reference/#notes">*</a>.</p>
+</td>
+<td>I have more <sup id="fnref-68137-1"><a href="68137-1" rel="footnote">1</a></sup> to say up here.
+<p> </p>
+<div class="footnotes"><hr />
+<ol>
+<li id="fn-68137-1">To say down here. <a href="68137-1" rev="footnote">↩</a></li>
+</ol>
+</div>
+</td>
+</tr> 
+<tr>
+<th>Line breaks</th>
+<td><em>We do not support Markdown&#8217;s typical double-space to generate a line break due to our built-in auto-linebreaking function. A regular line break will generate a line break on output.</em></td>
+<td> </td>
+</tr>
+<tr>
+<th>Bullet Lists</th>
+<td>
+<pre>* Item
+* Item
+- Item
+- Item</pre>
+</td>
+<td>
+<ul>
+<li>Item</li>
+<li>Item</li>
+<li>Item</li>
+<li>Item</li>
+</ul>
+</td>
+</tr>
+<tr>
+<th>Numbered Lists</th>
+<td>
+<pre>1. Item
+2. Item</pre>
+</td>
+<td>
+<ol>
+<li>Item</li>
+<li>Item</li>
+</ol>
+</td>
+</tr>
+<tr>
+<th>Mixed Lists</th>
+<td>
+<pre>1. Item
+2. Item
+    * Mixed
+    * Mixed  
+3. Item</pre>
+</td>
+<td>
+<ol>
+<li>Item</li>
+<li>Item
+<ul>
+<li>Mixed</li>
+<li>Mixed</li>
+</ul>
+</li>
+<li>Item</li>
+</ol>
+</td>
+</tr>
+<tr>
+<th>Blockquotes</th>
+<td>
+<pre>&gt; Quoted text.
+&gt; &gt; Quoted quote.
+
+&gt; * Quoted 
+&gt; * List</pre>
+</td>
+<td>
+<blockquote>
+<p>Quoted text.</p>
+<blockquote>
+<p>Quoted quote.</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<ul>
+<li>Quoted</li>
+<li>List</li>
+</ul>
+</blockquote>
+</td>
+</tr>
+<tr>
+<th>Preformatted</th>
+<td>
+<pre>  Begin each line with 
+    two spaces or more to 
+    make text look
+    e x a c t l y 
+    like  you  type i
+    t.</pre>
+</td>
+<td>
+<pre>Begin each line with 
+two spaces or more to 
+make text look
+e x a c t l y 
+like  you  type i
+t.</pre>
+</td>
+</tr>
+<tr>
+<th>Headers</th>
+<td>
+<pre># Header 1
+## Header 2
+### Header 3 
+#### Header 4 ####
+##### Header 5 #####
+###### Header 6 ######</pre>
+<p class="markdown-comment">Closing hash marks are optional on all levels</p>
+</td>
+<td>
+<p class="markdown-h1">Header 1</p>
+<p class="markdown-h2">Header 2</p>
+<p class="markdown-h3">Header 3</p>
+<p class="markdown-h4">Header 4</p>
+<p class="markdown-h4">Header 5</p>
+<p class="markdown-h4">Header 6</p>
+</td>
+</tr>
+<tr>
+<th>Definition Lists</th>
+<td>
+<pre>WordPress
+:  A semantic personal publishing platform 
+
+Markdown
+:  Text-to-HTML conversion tool</pre>
+</td>
+<td>
+<dl>
+<dt>WordPress</dt>
+<dd>A semantic personal publishing platform</dd>
+<dt>Markdown</dt>
+<dd>Text-to-HTML conversion tool</dd>
+</dl>
+<p class="markdown-comment">Formatting for definition lists may vary between themes</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>    
 {% endblock content %}
 
 
@@ -58,4 +240,5 @@ This page is formatted with markdown
         document.getElementById('content-markdown-result').innerHTML = 
             marked.parse(document.getElementById('content-markdown').innerHTML);
     </script>
+
 {% endblock %}

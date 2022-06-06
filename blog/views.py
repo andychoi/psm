@@ -74,6 +74,13 @@ class UserPostListView(ListView):
 class PostDetailView(DetailView):
     model = Post
 
+    # def get_context_data(self, *args, **kwargs):
+    #     context = self.get_object()
+    #     context['md2'] = { 
+    #         "content": markdown2.markdown(context.object.content),
+    #         "title": context.object.title,
+    #     }
+
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     form_class = PostForm
@@ -85,7 +92,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
-    fields = ['title', 'content', 'image', 'featured', 'private', 'excerpt']
+    fields = ['title', 'content', 'image', 'featured', 'private']
 
     def form_valid(self, form):
         form.instance.author = self.request.user

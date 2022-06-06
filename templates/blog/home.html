@@ -57,12 +57,9 @@
               <h3><a class="article-title" href="{% url 'post_detail' post.pk %}">{{ post.title }}</a></h3>
 
               <div class="article-content">
-                {% if post.excerpt %}
-                  {{ post.excerpt|safe|truncatewords:"50" }}
-                {% else %}
-                  {{ post.content|safe|truncatewords:"50" }}
-                {% endif %}
-              </div>
+                  <!-- {{ post.content|safe|truncatewords:"50" }} -->
+                  {{ post.md2|safe|truncatewords:"50" }} 
+                </div>
               <p class="text-end"><a type="button" class="btn btn-light" href="{% url 'post_detail' post.pk %}"">read more...</a>
                   
               <a class="mr-2" href="{% url 'user_posts' post.author.username %}">{{ post.author }}</a>

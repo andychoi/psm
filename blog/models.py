@@ -5,6 +5,7 @@ from django.conf import settings
 from common.utils import PUBLISH
 import enum
 from django.utils.translation import gettext_lazy as _
+import markdown2    #https://github.com/trentm/python-markdown2
 
 class Category(enum.Enum):
     DEFAULT = '00-Default'
@@ -38,7 +39,7 @@ class Post(models.Model):
     private =  models.BooleanField(default=False)
     featured = models.BooleanField(default=False)
     image = models.ImageField(null=True, blank=True, upload_to='posts') #default='posts/default.jpg'
-    excerpt = models.TextField(blank=True, null=True)
+    # excerpt = models.TextField(blank=True, null=True)
 
     # liked = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name='liked')
     objects = PostManager()
@@ -47,6 +48,10 @@ class Post(models.Model):
 
     class Meta:
         ordering = ('-date_posted', )
+
+    @property
+    def md2(self):
+        return markdown2.markdown(self.content)
 
     def __str__(self):
         return self.title

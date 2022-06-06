@@ -43,7 +43,8 @@
     <div class="row ms-2 pt-2">
         <!-- Post Content -->
         <image src="/media/{{ object.image }}"></image>
-        {{ object.content|markdown|safe }}
+        <!-- {{ object.content|markdown|safe }} -->
+        {{ object.md2|safe }} 
     </div>
 
 </div>

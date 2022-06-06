@@ -71,18 +71,19 @@
 <p class="markdown-comment">Some WordPress.com themes may have different formatting for these styles</p>
 </td>
 </tr>
+<tr>
 <th><a id="foot" name="foot"></a>Footnotes</th>
 <td>
 <pre>I have more [^1] to say up here.
 
 [^1]: To say down here.</pre>
-<p class="markdown-comment">Footnotes will be added to the bottom of the document, with a link back to the original reference<a href="https://wordpress.com/support/markdown-quick-reference/#notes">*</a>.</p>
+<p class="markdown-comment">Footnotes will be added to the bottom of the document, with a link back to the original reference<a href="/#notes">*</a>.</p>
 </td>
-<td>I have more <sup id="fnref-68137-1"><a href="68137-1" rel="footnote">1</a></sup> to say up here.
+<td>I have more <sup id="#"><a href="#" rel="footnote">1</a></sup> to say up here.
 <p> </p>
 <div class="footnotes"><hr />
 <ol>
-<li id="fn-68137-1">To say down here. <a href="68137-1" rev="footnote">↩</a></li>
+<li id="#">To say down here. <a href="#" rev="footnote">↩</a></li>
 </ol>
 </div>
 </td>
@@ -154,13 +155,13 @@
 &gt; * List</pre>
 </td>
 <td>
-<blockquote>
+<blockquote style="background-color: #f3f6f8">
 <p>Quoted text.</p>
 <blockquote>
 <p>Quoted quote.</p>
 </blockquote>
 </blockquote>
-<blockquote>
+<blockquote  style="background-color: #f3f6f8">
 <ul>
 <li>Quoted</li>
 <li>List</li>
@@ -226,8 +227,30 @@ Markdown
 <p class="markdown-comment">Formatting for definition lists may vary between themes</p>
 </td>
 </tr>
+<tr>
+    <th>Inline Links</th>
+    <td>
+    <pre>A [link](http://example.com "Title").</pre>
+    <p class="markdown-comment">Most browsers show the title text when hovering over a link.</p>
+    <p>Please note that WordPress shortcodes, like [video] or [audio], will take priority over Markdown links and shouldn&#8217;t be used for link text.</p>
+    </td>
+    <td>A <a title="Title" href="http://example.com/">link</a>.</td>
+    </tr>
+    <tr>
+    <th>Referenced Links</th>
+    <td>
+    <pre>Some text with [a link][1] and
+    another [link][2].
+    
+    [1]: http://example.com/ "Title"
+    [2]: http://example.org/ "Title"</pre>
+    <p class="markdown-comment">The reference section can be anywhere in the document.</p>
+    </td>
+    <td>Some text with <a title="Title" href="http://example.com/">a link</a> and another <a title="Title" href="http://example.org/">link</a>.</td>
+    </tr>
 </tbody>
 </table>
+Official Markdown project: https://daringfireball.net/projects/markdown/
 </div>    
 {% endblock content %}
 

@@ -12,13 +12,13 @@ from users.models import Profile
 from psmprj.utils.mail import send_mail_async as send_mail
 from hashlib import sha1
 
-from datetime import date
-
+import markdown2
 
 logger = logging.getLogger(__name__)
 
 number_tr = _("number")
 
+from datetime import date
 #for year input, validation
 import datetime
 def year_choices():
@@ -180,6 +180,9 @@ class Project(models.Model):
         return "[%s] %s" % (self.PJcode, self.title)
         # return f'{self.year % 100}-{"{:04d}".format(self.pk)}'
 
+    @property
+    def description_md2(self):
+        return markdown2.markdown(self.description)
 
     @property
     def PJcode(self) -> str:

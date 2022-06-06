@@ -73,3 +73,5 @@ django_filter==21.1
 # django-private-storage==3.0
 django_object_actions==4.0.0
 django_tables2==2.4.1
+# django-multi-email-field==0.6.2
+markdown2

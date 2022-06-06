@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django_tables2',
     # 'django_filters'  ,   #bug with pagination
 
+    # 'multi_email_field',  #not compatible with django 4.x
     'django_object_actions', 
 
     'django.contrib.admin',

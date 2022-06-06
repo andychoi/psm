@@ -20,7 +20,7 @@ Features
 * Docker and Docker Compose configurations 
 * Ready to use "production" configurations as reference.
 * Bootstrap 5 and datatable 
-* Markdown https://markdown-it.github.io/
+* Markdown2 https://github.com/trentm/python-markdown2
 
 Requirements
 ------------

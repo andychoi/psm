@@ -69,6 +69,9 @@ class reportDetail(generic.DetailView):
 		# breakpoint()
 		return context
 
+class reportEmail(reportDetail):
+	template_name = "reports/report_email.html"
+
 # how to pass multiple object
 # -> https://stackoverflow.com/questions/42250375/django-passing-multiple-objects-to-templates-but-nothing-in-there
 

@@ -10,6 +10,7 @@ urlpatterns = [
 	# home page
 	#path('', views.IndexView.as_view(), name='index'),
 	path('reports/', login_required(views.reportList.as_view()), name='report_list'),
+	path('reports/email/<pk>/', login_required(views.reportEmail.as_view()), name='report_email'),
 	path('reports/<pk>/', login_required(views.reportDetail.as_view()), name='report_detail'),
 	path('report-risks/', login_required(views.reportRisks.as_view()), name='report_risks'),
 ]

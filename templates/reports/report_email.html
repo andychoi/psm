@@ -29,19 +29,29 @@
 			<div class="col-6" id="myleft" style="box-sizing: border-box;flex-shrink: 0;width: 50%;max-width: 100%;padding-right: calc(var(--bs-gutter-x) * .5);padding-left: calc(var(--bs-gutter-x) * .5);margin-top: var(--bs-gutter-y);flex: 0 0 auto;">
 				<div class="panel panel-default " style="box-sizing: border-box;">
 					<div class="panel-heading" style="box-sizing: border-box;background-color: #dee2e6;font-weight: 600;"><div class="ms-2" style="box-sizing: border-box;margin-left: .5rem!important;">Objective</div></div>
-					<div class="panel-body fixed-panel panel-body-border" style="box-sizing: border-box;min-height: 140px;border: 1px solid #dee2e6 !important;"><div class="ms-2" style="box-sizing: border-box;margin-left: .5rem!important;"><small style="box-sizing: border-box;font-size: .875em;"></small><p style="box-sizing: border-box;margin-top: 0;margin-bottom: 1px;">{{ object.project.description|markdown|safe }}</p></div></div>
+					<div class="panel-body fixed-panel panel-body-border" style="box-sizing: border-box;min-height: 140px;border: 1px solid #dee2e6 !important;"><div class="ms-2" style="box-sizing: border-box;margin-left: .5rem!important;">
+						<p style="box-sizing: border-box;margin-top: 0;margin-bottom: 1px;">{{ object.project.description_md2|safe }}</p>
+					</div></div>
 				</div>
 				  <div class="panel panel-default mypadding-top" style="box-sizing: border-box;padding-top: 10px;">
 					<div class="panel-heading" style="box-sizing: border-box;background-color: #dee2e6;font-weight: 600;"><div class="ms-2" style="box-sizing: border-box;margin-left: .5rem!important;">Achievement</div></div>
-					<div class="panel-body fixed-panel panel-body-border" style="box-sizing: border-box;min-height: 140px;border: 1px solid #dee2e6 !important;"><div class="ms-2" style="box-sizing: border-box;margin-left: .5rem!important;"><label style="box-sizing: border-box;display: inline-block;white-space: pre-wrap;"><small style="box-sizing: border-box;font-size: .875em;"></small></label><p style="box-sizing: border-box;margin-top: 0;margin-bottom: 1px;">{{ object.content_a|markdown|safe }}</p></div></div> 							
+					<div class="panel-body fixed-panel panel-body-border" style="box-sizing: border-box;min-height: 140px;border: 1px solid #dee2e6 !important;"><div class="ms-2" style="box-sizing: border-box;margin-left: .5rem!important;">
+						
+						<p style="box-sizing: border-box;margin-top: 0;margin-bottom: 1px;">{{ object.content_a_md2|safe }}</p>
+					</div></div> 							
 				</div>
 				  <div class="panel panel-default mypadding-top" style="box-sizing: border-box;padding-top: 10px;">
 					<div class="panel-heading" style="box-sizing: border-box;background-color: #dee2e6;font-weight: 600;"><div class="ms-2" style="box-sizing: border-box;margin-left: .5rem!important;">Plan for next period</div></div>
-					<div class="panel-body fixed-panel panel-body-border" style="box-sizing: border-box;min-height: 140px;border: 1px solid #dee2e6 !important;"><div class="ms-2" style="box-sizing: border-box;margin-left: .5rem!important;"><label style="box-sizing: border-box;display: inline-block;white-space: pre-wrap;"><small style="box-sizing: border-box;font-size: .875em;"></small></label><p style="box-sizing: border-box;margin-top: 0;margin-bottom: 1px;">{{ object.content_p|markdown|safe  }}</p></div></div>
+					<div class="panel-body fixed-panel panel-body-border" style="box-sizing: border-box;min-height: 140px;border: 1px solid #dee2e6 !important;"><div class="ms-2" style="box-sizing: border-box;margin-left: .5rem!important;">
+						<p style="box-sizing: border-box;margin-top: 0;margin-bottom: 1px;">{{ object.content_p_md2|safe  }}</p>
+					</div></div>
 				</div>
 				  <div class="panel panel-default mypadding-top" style="box-sizing: border-box;padding-top: 10px;">
 					<div class="panel-heading" style="box-sizing: border-box;background-color: #dee2e6;font-weight: 600;"><div class="ms-2" style="box-sizing: border-box;margin-left: .5rem!important;">Issues/Plan</div></div>
-					<div class="panel-body fixed-panel panel-body-border" style="box-sizing: border-box;min-height: 140px;border: 1px solid #dee2e6 !important;"><div class="ms-2" style="box-sizing: border-box;margin-left: .5rem!important;"><label style="box-sizing: border-box;display: inline-block;white-space: pre-wrap;"><small style="box-sizing: border-box;font-size: .875em;"></small></label><p style="box-sizing: border-box;margin-top: 0;margin-bottom: 1px;">{{ object.issue|markdown|safe  }}</p></div></div>
+					<div class="panel-body fixed-panel panel-body-border" style="box-sizing: border-box;min-height: 140px;border: 1px solid #dee2e6 !important;"><div class="ms-2" style="box-sizing: border-box;margin-left: .5rem!important;">
+						<label style="box-sizing: border-box;display: inline-block;white-space: pre-wrap;"><small style="box-sizing: border-box;font-size: .875em;"></small></label>
+						<p style="box-sizing: border-box;margin-top: 0;margin-bottom: 1px;">{{ object.issue_md2|safe  }}</p>
+					</div></div>
 				</div>				  				  				
 			</div>
 			<div class="col-6" style="box-sizing: border-box;flex-shrink: 0;width: 50%;max-width: 100%;padding-right: calc(var(--bs-gutter-x) * .5);padding-left: calc(var(--bs-gutter-x) * .5);margin-top: var(--bs-gutter-y);flex: 0 0 auto;">
@@ -130,7 +140,7 @@
 							
 						</tbody>
 					</table>								<!-- Primary #0d6efd  Success #28a745  Danger #dc3545  Warning #ffc107  Light f8f9fa Secondary 6c757d  Info 17a2b8  -->
-					<p class="text-end text-muted small m-0 " style="box-sizing: border-box;margin-top: 0;margin-bottom: 1px;font-size: .875em;margin: 0!important;text-align: right!important;color: #6c757d!important;"><i class="text-success bi-check-circle-fill" style="box-sizing: border-box;color: #198754!important; background-color:#28a745; ">G</i> Good | <i class="text-warning bi-exclamation-circle" style="box-sizing: border-box;color: #ffc107!important;background-color:#ffc107; ">Y</i> Issue | <i class="text-danger  bi-exclamation-circle-fill" style="box-sizing: border-box;color: #dc3545!important; background-color: #dc3545;"> R</i> Roadblocks | <i class="text-primary bi-circle-fill" style="box-sizing: border-box;color: #0d6efd!important; background-color:#0d6efd;">C</i> Complete | <i class="text-secondary  bi-dash-circle-dotted" style="box-sizing: border-box;color: #6c757d!important;background-color:#6c757d">N</i> Not started
+					<p class="text-end text-muted small m-0 " style="box-sizing: border-box;margin-top: 0;margin-bottom: 1px;font-size: .875em;margin: 0!important;text-align: right!important;color: #6c757d!important;"><i class="text-success bi-check-circle-fill" style="box-sizing: border-box;color: #198754!important; background-color:#28a745; ">__</i> Good | <i class="text-warning bi-exclamation-circle" style="box-sizing: border-box;color: #ffc107!important;background-color:#ffc107; ">__</i> Issue | <i class="text-danger  bi-exclamation-circle-fill" style="box-sizing: border-box;color: #dc3545!important; background-color: #dc3545;">__</i> Roadblocks | <i class="text-primary bi-circle-fill" style="box-sizing: border-box;color: #0d6efd!important; background-color:#0d6efd;">__</i> Complete | <i class="text-secondary  bi-dash-circle-dotted" style="box-sizing: border-box;color: #6c757d!important;background-color:#6c757d">__</i> Not started
 					</p>
 
 				</div>				

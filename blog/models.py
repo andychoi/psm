@@ -50,8 +50,10 @@ class Post(models.Model):
         ordering = ('-date_posted', )
 
     @property
-    def md2(self):
-        return "<div class='psm-md2'>" + markdown2.markdown(self.content) + "</div>"
+    def content_md2(self):
+        return "<div class='psm-md2'>" + markdown2.markdown(self.content) + "</div><!--psm-md2-->"
+    def content_short_md2(self):
+        return "<div class='psm-md2'>" + markdown2.markdown(self.content[:300] + '...') + "</div><!--psm-md2-->"
 
     def __str__(self):
         return self.title

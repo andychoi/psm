@@ -8,7 +8,8 @@
       body { margin-top: 0; }
   {% else %}
     {% if is_paginated or page_obj.number > 1  %}
-    #main-content { margin-top: 24px;}
+    
+      #main-content { margin-top: 24px;}
 
     {% endif %}      
   {% endif %}      
@@ -17,46 +18,48 @@
 
 {% block headline %}  
 
-{% if not is_paginated or is_paginated and page_obj.number == 1 %}
-<div class="myheadline"><div class="container">
-  <!-- https://stackoverflow.com/questions/5848967/django-how-to-do-calculation-inside-the-template-html-page -->
-  <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
-    <div class="carousel-indicators">
-      {% for post in featured %}
-        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="{{forloop.counter0}}" class="{% if forloop.first %}active{% endif %}" aria-current="true" aria-label="Slide {{forloop.counter}}"></button>
-      {% endfor %}
-    </div>
-    <div class="carousel-inner">
-  
-      {% for post in featured %}
-  
-      <div class="carousel-item {% if forloop.first %}active{% endif %}">
-          <!-- TODO <img src="/media/{{p.image}}" class="img-fluid" alt="{{p.image}}"> -->
-          
-          <div class="carousel-caption text-start">
-            <h1>{{ post.title }}</h1>
-            <div class="myheadline-content">
-              {{ post.md2|safe|truncatewords:"25" }}
-            </div>
-            <p><a class="btn btn-lg btn-primary" href="/post/{{ post.id }}">See details</a></p>
-          </div>
-      </div>
-  
-    {% endfor  %}
+  {% if not is_paginated or is_paginated and page_obj.number == 1 %}
+  <div class="myheadline">
+    <div class="container">
+      <!-- https://stackoverflow.com/questions/5848967/django-how-to-do-calculation-inside-the-template-html-page -->
+      <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
 
-    </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev" >
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next" >
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Next</span>
-    </button>
-  </div>
+        <div class="carousel-indicators">
+          {% for post in featured %}
+            <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="{{forloop.counter0}}" class="{% if forloop.first %}active{% endif %}" aria-current="true" aria-label="Slide {{forloop.counter}}"></button>
+          {% endfor %}
+        </div><!--carousel-indicators-->
+        
+        <div class="carousel-inner">
+          {% for post in featured %}
 
-</div>
-</div>
-{% endif %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                <!-- TODO <img src="/media/{{p.image}}" class="img-fluid" alt="{{p.image}}"> -->
+                
+                <div class="carousel-caption text-start">
+                  <h1>{{ post.title }}</h1>
+                  <div class="myheadline-content">
+                    {{ post.content_short_md2|safe }}
+                  </div><!--myheadline-content-->
+                  <p><a class="btn btn-lg btn-primary" href="/post/{{ post.id }}">See details</a></p>
+                </div><!--carousel-caption text-start-->
+            </div><!--carousel-item -->
+        
+          {% endfor  %}
+        </div><!--carousel-inner-->
+
+        <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev" >
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next" >
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div><!-- myCarousel-->
+
+    </div><!--container-->
+  </div><!--myheadline-->
+  {% endif %}
 
 {% endblock %}

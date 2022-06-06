@@ -1,6 +1,4 @@
-{% extends "base.html" %}
-
-{% load markdown_extras %}
+{% extends "base_root.html" %}
 {% load static %}
 
 {% block child_css %}
@@ -30,50 +28,64 @@
     </style>
     <!-- Custom styles for this template -->
     <link href="{% static 'css/carousel.css' %}" rel="stylesheet">
-
+    <style>
+        .home-headline { padding-right: 0 !important; padding-left: 0 !important; }
+    </style>
 {% endblock %}
 
-{% block headline %}  {%  include "includes/headline.html"  %} {% endblock %}    
+{% block base_body %}  
 
-{% block content %}
-<!-- Search Form -->
 
-<!-- <div class="container">
-  <div class= "row"> -->
+<div class="container-fluid home-headline">
+    {%  include "includes/headline.html"  %}
+</div> <!-- container-fluid home-headline -->
 
-    <!-- <div class="col-md-9"> -->
-      <form class="form-inline ml-auto my-2 my-lg-0 pb-2" style="display: flex; justify-content: flex-end">
-          <input class="form-control mr-sm-2" name="q" type="search" placeholder="Search" aria-label="Search" style="width: 200px">
-          <input class="btn btn-outline-success my-2 my-sm-0" type="submit" value="Search">
-      </form> 
-      
-      <!-- https://learndjango.com/tutorials/django-markdown-tutorial -->
+<div class="container">
+  <main role="main" class="content" id="main-content">
 
-      {% for post in posts %}
-          <article class="media content-section">
-            <!-- img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}" -->
-            <!-- https://stackoverflow.com/questions/18672452/left-align-and-right-align-within-div-in-bootstrap -->
-            <div class="media-body">
-              <h3><a class="article-title" href="{% url 'post_detail' post.pk %}">{{ post.title }}</a></h3>
+    <div class="container">
+      <div class= "row">
+        {% include "includes/messages.html" %}
 
-              <div class="article-content">
-                  <!-- {{ post.content|safe|truncatewords:"50" }} -->
-                  {{ post.md2|safe|truncatewords:"50" }} 
-                </div>
-              <p class="text-end"><a type="button" class="btn btn-light" href="{% url 'post_detail' post.pk %}"">read more...</a>
+        <div class="col-md-9">
+
+          <form class="form-inline ml-auto my-2 my-lg-0 pb-2" style="display: flex; justify-content: flex-end">
+              <input class="form-control mr-sm-2" name="q" type="search" placeholder="Search" aria-label="Search" style="width: 200px">
+              <input class="btn btn-outline-success my-2 my-sm-0" type="submit" value="Search">
+          </form> 
+          
+          {% for post in posts %}
+              <article class="media content-section">
+                <!-- img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}" -->
+                <!-- https://stackoverflow.com/questions/18672452/left-align-and-right-align-within-div-in-bootstrap -->
+                <div class="media-body">
+                  <h3><a class="article-title" href="{% url 'post_detail' post.pk %}">{{ post.title }}</a></h3>
+
+                  <div class="article-content">
+                      <!-- {{ post.content|safe|truncatewords:"50" }} -->
+                      {{ post.content_short_md2|safe|truncatewords:"50" }} 
+                    </div>
+                  <p class="text-end"><a type="button" class="btn btn-light" href="{% url 'post_detail' post.pk %}"">read more...</a>
+                      
+                  <a class="mr-2" href="{% url 'user_posts' post.author.username %}">{{ post.author }}</a>
+                      <small class="text-muted">{{ post.date_posted|date:"F d, Y" }}</small>
+                  </p>
                   
-              <a class="mr-2" href="{% url 'user_posts' post.author.username %}">{{ post.author }}</a>
-                  <small class="text-muted">{{ post.date_posted|date:"F d, Y" }}</small>
-              </p>
-              
-            </div>
-          </article>
-      {% endfor %}
+                </div>
+              </article>
+          {% endfor %}
 
-      {% include "includes/pagination.html" %} 
-    <!-- </div>
-</div> -->
+          {% include "includes/pagination.html" %} 
 
-{% endblock content %}
+        </div>
+        <div class="col-md-3 collapse show" id="collapseWidget"">
+          {% include "includes/widget.html" %}
+        </div>
 
+      </div><!-- row -->
+    </div><!-- container -->
+
+  </main>
+</div><!-- main container -->
+{% endblock base_body %}
 

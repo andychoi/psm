@@ -1,5 +1,5 @@
 body {
-  /* background: #fafafa; */
+  background: #fafafa;
   color: #234332; 
   margin-top: 5rem;
 }
@@ -9,7 +9,7 @@ body {
 .starter-template-headline { padding: 3rem 1.5rem; }
 .starter-template { padding: 3rem 1.5rem; }
 
-#main-content { margin-top: 0.5em; }
+#main-content { margin-top: 0.5em; background-color: #fafafa; }
 #myCarousel { margin-top: 0; } /* bootstrap navbar 24px */
 
 /* for markdown.. line spacing */

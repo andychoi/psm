@@ -10,7 +10,6 @@ body {
 .starter-template { padding: 3rem 1.5rem; }
 
 #main-content { margin-top: 0.5em; background-color: #fafafa; }
-#myCarousel { margin-top: 0; } /* bootstrap navbar 24px */
 
 /* for markdown.. line spacing */
 ul {   margin: 0; }

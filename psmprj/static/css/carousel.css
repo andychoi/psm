@@ -104,10 +104,10 @@ body {
   }
   
   #myCarousel { margin-top: 24px; padding-top: 20px;} /* bootstrap navbar 24px */
-  .carousel-caption { padding-top: 0.25rem; }
+  .carousel-caption { padding-top: 0.5rem; }
   .carousel-item { height: 20rem; }
   .carousel-caption {
-    top: 0;
+    top: 20px;
     bottom: auto;
 }
 .my-carousal-button {

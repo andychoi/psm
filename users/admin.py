@@ -7,6 +7,8 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from import_export.admin import ImportExportMixin
 from django_object_actions import DjangoObjectActions
+from adminfilters.multiselect import UnionFieldListFilter
+from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter, DropdownFilter, ChoiceDropdownFilter
 
 from common.models import CBU, Div, Dept
 
@@ -15,17 +17,16 @@ from common.models import CBU, Div, Dept
 
 @admin.register(Profile)
 class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
-    # list_display = ('id', 'user', 'username', 'email', 'u_dept', 'u_div', 'is_active')
-    list_display = ('id', 'user', 'username', 'email', 'is_active')
+    # list_display = ('id', 'user', 'username', 'email', 'u_dept', 'manager', 'u_div', 'CBU', 'is_active')
+    list_display = ('id', 'user', 'username', 'email', 'u_dept', 'CBU', 'is_active')
     list_display_links = ('id', 'user', 'username')
     search_fields = ('id', 'username', 'email', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
     ordering = ('username',)
     readonly_fields = ('created_on', 'created_by', 'updated_on', 'updated_by')
-
     fieldsets = (  # Edition form
          (None, {'fields': (('user', 'username', 'email') , ('manager', 'is_psmadm', 'is_active'), 
                             # ('u_team','u_dept', 'u_div'), 
-                            ('u_dept', 'u_div'), 
+                            ('u_dept', ), 
                             ('is_external', 'CBU',), 
                             # ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',),
                             ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', ),
@@ -40,7 +41,7 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
             fieldsets = (      # Creation form
                  (None, {'fields': ('user', ('username', 'email') , ('manager', 'is_psmadm', 'is_active'), 
                             # ('u_team','u_dept', 'u_div'), 
-                            ('u_dept', 'u_div'), 
+                            ('u_dept', ), 
                             ('is_external', 'CBU' ), 
                             ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', ), 
                             # ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',), 

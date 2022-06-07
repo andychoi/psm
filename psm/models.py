@@ -90,9 +90,6 @@ class ProjectManager(models.Manager):
 # # 나중에 팀 실적이나 담당자 실적에도 중요한 사항들이구요.
 # TODO : GMDM, SSG
 class Project(models.Model):
-    class Meta:
-        verbose_name = _("Project")
-        verbose_name_plural = _("3.Projects")
 
     code = models.CharField(_("Code"), max_length=10, null=True, blank=True) 
 
@@ -177,6 +174,8 @@ class Project(models.Model):
     objects = ProjectManager()
 
     class Meta:
+        verbose_name = _("Project")
+        verbose_name_plural = _("Projects")
         indexes = [
             models.Index(fields=Project_PRIORITY_FIELDS, name='mProjects_Project_priority_idx'),
         ]
@@ -186,6 +185,10 @@ class Project(models.Model):
 #        return "[%s] %s" % (f'{self.created_at.strftime("%y")}-{"{:04d}".format(self.pk)}', self.title)    
         return "[%s] %s" % (self.pjcode, self.title)
         # return f'{self.year % 100}-{"{:04d}".format(self.pk)}'
+
+    # @property
+    # def div(self):
+    #     return self.u_dept.div if (self.u_dept.div) else None
 
     @property
     def description_md2(self):
@@ -224,6 +227,8 @@ class Project(models.Model):
             if old_Project_data.CBU != self.CBU:
                 send_email = True
 
+        #FIXME
+        self.div = self.dept.div    
         # if self.code is None:
         #     self.code = f'{self.year % 100}-{"{:04d}".format(self.pk)}'
 

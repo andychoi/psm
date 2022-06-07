@@ -1,4 +1,3 @@
-from adminfilters.multiselect import UnionFieldListFilter
 from django.db.models.query import QuerySet
 from django.contrib import messages
 from django.contrib import admin
@@ -8,6 +7,7 @@ from django.forms import Textarea
 from django.utils.translation import gettext_lazy as _
 from import_export.admin import ImportExportMixin
 
+from adminfilters.multiselect import UnionFieldListFilter
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter, DropdownFilter, ChoiceDropdownFilter
 from django import forms
 
@@ -63,6 +63,9 @@ class ProjectDeliverableInline(admin.TabularInline):
 
 @admin.register(Project)
 class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
+    class Meta:
+        import_id_fields = ('id',)
+        exclude = ('div', )
     class Media:
         css = {
         'all': ('psm/css/custom_admin.css',),
@@ -75,14 +78,14 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
     list_filter = (
         ('status_o', UnionFieldListFilter),
         ('year', DropdownFilter),
-        ('div', RelatedDropdownFilter),
+        ('div', RelatedDropdownFilter), #FIXME dept__div not working
         ('dept', RelatedDropdownFilter),
         ('CBU', RelatedDropdownFilter),
         ('state', UnionFieldListFilter),
         ('priority', UnionFieldListFilter),
         ('req_pro', DropdownFilter),
-        ('req_sec', DropdownFilter),
-        ('req_sec', DropdownFilter),
+        # ('req_sec', DropdownFilter),
+        # ('req_sec', DropdownFilter),
         
 #        'deadline'
     )
@@ -110,7 +113,8 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
         fieldsets = super().get_fieldsets(request, obj)
         if obj is None:
             fieldsets = (      # Creation form
-                (None, {'fields': (('title', 'type', 'year'), ('strategy', 'program','is_agile'), ('CBU', 'CBUpm', 'ref', 'is_unplanned', ), ('pm', 'dept', 'div'), 
+                (None, {'fields': (('title', 'type', 'year'), ('strategy', 'program','is_agile'), 
+                            ('CBU', 'CBUpm', 'ref', 'is_unplanned', ), ('pm', 'dept','div' ), 
                             ( 'est_cost', 'app_budg', 'wbs', 'es', 'is_internal' ),
                             ('state', 'phase', 'progress', 'priority'), 'description', 
                             ('p_pre_plan_b','p_pre_plan_e','p_kickoff','p_design_b','p_design_e','p_dev_b','p_dev_e','p_uat_b','p_uat_e','p_launch','p_close'),
@@ -122,9 +126,6 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
 
     inlines = [ProjectDeliverableInline]
     
-    class Meta:
-        import_id_fields = ('id',)
-
     # easier option for admin-actions: https://pypi.org/project/django-object-actions/
     # https://docs.djangoproject.com/en/4.0/ref/contrib/admin/#overriding-vs-replacing-an-admin-template
     change_form_template = 'admin/psm/project/change_form.html'
@@ -216,7 +217,7 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
                 # read review record
                 theproc = Review.objects.filter(Q(project = obj.id) & Q(reviewtype = upd[0]))      #[:1].get()
                 if theproc: #already exist
-                    update_dic = { 'project' : obj, 'CBU' : obj.CBU, 'dept' : obj.dept, 'div' : obj.div, 'state' : upd[1] }
+                    update_dic = { 'project' : obj, 'CBU' : obj.CBU, 'dept' : obj.dept, 'state' : upd[1] }
                     theproc.update(**update_dic)
                     messages.add_message(request, messages.INFO, '[' + upd[0][3:] + '] review type records are updated.')
 
@@ -226,7 +227,7 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
         if new_reviews:
             # breakpoint()
             for new in new_reviews:
-                Review.objects.create(reviewtype = new, project = obj, CBU = obj.CBU, dept = obj.dept, div = obj.div, onboaddt = obj.p_kickoff, 
+                Review.objects.create(reviewtype = new, project = obj, CBU = obj.CBU, dept = obj.dept, onboaddt = obj.p_kickoff, 
                                       state = obj.req_pro, priority = obj.priority, title = obj.title)
                 messages.add_message(request, messages.INFO, '[' + new[3:] + '] review type - New review request is created' )
 

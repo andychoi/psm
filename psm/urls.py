@@ -16,4 +16,6 @@ urlpatterns = [
 	# path('projectchartactual/', views.projectChartActualView.as_view(), name='project_chart_actual'),
 
 	path('projectchart2/', views.projectChartView2.as_view(), name='project_chart_plan2'),
+
+	path('api/1.0/', include('apis.urls')),
 ]

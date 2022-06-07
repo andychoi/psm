@@ -29,6 +29,7 @@ ALLOWED_HOSTS = [ '*' ]
 
 # Application definition
 INSTALLED_APPS = [
+    'apis',
 #    'jazzmin',
     # 'mtasks.apps.MtasksConfig',
     # 'CBU',

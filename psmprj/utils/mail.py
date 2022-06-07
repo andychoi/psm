@@ -31,7 +31,7 @@ def split_combined_addresses(addresses):
     # add missing emails without name
     emails = re.findall(r"[\w.+-]+@[\w-]+\.[\w.-]+", addresses)
     for email in emails:
-        if (not email in list(zip(*addrs_clean))[1]):
+        if (not addrs_clean) or (not email in list(zip(*addrs_clean))[1]):
             addrs_clean.append(('', email))
 
     return addrs_clean

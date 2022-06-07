@@ -105,15 +105,36 @@ body {
   
   #myCarousel { margin-top: 24px; padding-top: 20px;} /* bootstrap navbar 24px */
   .carousel-caption { padding-top: 0.5rem; }
-  .carousel-item { height: 20rem; }
+  .carousel-item { height: 30rem; }
   .carousel-caption {
     top: 20px;
     bottom: auto;
 }
 .my-carousal-button {
   position: absolute;
-  top: 15rem;
+  top: 18rem;
   right: 0;
   z-index: 999; /*not working */
   pointer-events: auto;
 }
+
+#myCarousel .carousel-item img {
+  object-fit: cover;
+  object-position: right;
+  height: 50vh;
+  overflow: hidden;
+  width:100%;
+}
+
+#myCarousel .carousel-item:before {
+  content: "";
+  background-image: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.5));
+  display: block;
+  position: absolute;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+#myCarousel h1 { color: #fff; }
+#myCarousel myheadline-content { color: #bbbaba ; }

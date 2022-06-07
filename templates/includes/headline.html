@@ -1,6 +1,4 @@
-{% load calc_extras %}
-{% load markdown_extras %}
-
+{% load static %}
 {% block child_css %}
 <style>
   {% if featured %}
@@ -33,15 +31,15 @@
         <div class="carousel-inner">
           {% for post in featured %}
 
-            <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                <!-- TODO <img src="/media/{{p.image}}" class="img-fluid" alt="{{p.image}}"> -->
+          <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                <img src="{% static '/img/headline.jpg' %}" class="img-fluid text-end" alt="{{p.image}}">
                 
                 <div class="carousel-caption text-start">
                   <h1>{{ post.title }}</h1>
                   <div class="myheadline-content">
                     {{ post.content_short_md2|safe }}
                   </div><!--myheadline-content-->
-                  <p class="text-end my-carousal-button"><a class="btn btn-lg btn-primary" href="/post/{{ post.id }}">See details</a></p>
+                  <p class="my-carousal-button"><a class="btn btn-lg btn-primary" href="/post/{{ post.id }}">See details</a></p>
                 </div><!--carousel-caption text-start-->
             </div><!--carousel-item -->
         

@@ -138,3 +138,6 @@ body {
 
 #myCarousel h1 { color: #fff; }
 #myCarousel myheadline-content { color: #bbbaba ; }
+/* .myheadline { background-color: #c0bdbd ;} */
+.myheadline { background-color: #000 ;}
+.myheadline-content { color: #EAE9E9; }

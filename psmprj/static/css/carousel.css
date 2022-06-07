@@ -128,7 +128,7 @@ body {
 
 #myCarousel .carousel-item:before {
   content: "";
-  background-image: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.5));
+  background-image: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.8));
   display: block;
   position: absolute;
   top: 0;

@@ -7,10 +7,6 @@ from common.utils import *
 # from PIL import Image  #performance issue https://placeholder.com/900x300
 
 #avoid circular import, use full name in model with ''. example='common.Team'
-# from common.models import Team, Dept, Div
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    from common.models import Team, Dept, Div, CBU
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)

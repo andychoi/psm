@@ -14,7 +14,7 @@ class Div(models.Model):
         verbose_name = _("Division")
         verbose_name_plural = _("Divisions")
     name = models.CharField(max_length=100, blank=False, null=False)
-    head = models.ForeignKey('users.Profile', verbose_name=_('Div head'), on_delete=models.SET_NULL, null=True, blank=True)
+    head = models.ForeignKey(Profile, related_name='div_head', verbose_name=_('Div head'), on_delete=models.SET_NULL, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     def __str__(self):
         return self.name
@@ -24,7 +24,7 @@ class Dept(models.Model):
         verbose_name = _("Department")
         verbose_name_plural = _("Departments")
     name = models.CharField(max_length=100, blank=False, null=False)
-    head = models.ForeignKey('users.Profile', verbose_name=_('Dept head'), on_delete=models.SET_NULL, null=True, blank=True)
+    head = models.ForeignKey(Profile, related_name='dept_head', verbose_name=_('Dept head'), on_delete=models.SET_NULL, null=True, blank=True)
     div = models.ForeignKey(Div, on_delete=models.SET_NULL, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     def __str__(self):

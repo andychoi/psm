@@ -95,3 +95,13 @@ body {
       margin-top: 7rem;
     }
   }
+
+
+  /* https://raybo.org/posts/2021-03-27-consistent-height-carousels-with-css-gradients-by-hacking-the-bootstrap-5-carousel/ */
+  .carousel-inner{
+    width:100%;
+    max-height: 400px !important;
+  }
+
+  .carousel-caption { padding-top: 0.25rem; }
+  .carousel-item { height: 28rem; }

@@ -14,4 +14,6 @@ urlpatterns = [
 	path('project/<pk>/', views.projectDetail.as_view(), name='project_detail'),
 	path('projectchart/', views.projectChartView.as_view(), name='project_chart_plan'),
 	# path('projectchartactual/', views.projectChartActualView.as_view(), name='project_chart_actual'),
+
+	path('projectchart2/', views.projectChartView2.as_view(), name='project_chart_plan2'),
 ]

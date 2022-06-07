@@ -213,6 +213,9 @@ class projectList2View(projectList1View):
 class projectChartView(projectList1View):
     template_name = 'project/project_chart.html'
 
+class projectChartView2(projectList1View):
+    template_name = 'project/project_chart2.html'
+
 class projectChartPlanView(projectList1View):
     template_name = 'project/project_chart.html'
 

@@ -1,6 +1,7 @@
+import ast
 import logging
 import datetime
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import validate_email, MaxValueValidator, MinValueValidator
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -9,8 +10,9 @@ from django.conf import settings
 from common.models import CBU, Div, Dept, Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, State3, STATE3, WBS
 from users.models import Profile
 
-from psmprj.utils.mail import send_mail_async as send_mail
+from psmprj.utils.mail import send_mail_async as send_mail, split_combined_addresses
 from hashlib import sha1
+
 
 import markdown2
 
@@ -155,6 +157,11 @@ class Project(models.Model):
     a_launch = models.DateField(_("actual launch"), null=True, blank=True)
     a_close = models.DateField(_("actual closing"), null=True, blank=True)
 
+    # communication
+    email_active = models.BooleanField(_("Mailinglist  Active?"), default=False)
+    recipients_to = models.TextField(_("Recipients (to)"), max_length=1000, blank=True, null=True)
+    recipients_cc = models.TextField(_("Recipients (cc)"), max_length=1000, blank=True, null=True)
+
     req_pro = models.CharField(_("Procurement Review Needed?"), max_length=20, choices=STATE3, default='00-TBD', blank=True)
     req_sec = models.CharField(_("Info Security Review Needed?"), max_length=20, choices=STATE3, default='00-TBD', blank=True)
     req_inf = models.CharField(_("Infra Architecure Review Needed?"), max_length=20, choices=STATE3, default='00-TBD', blank=True)
@@ -193,6 +200,14 @@ class Project(models.Model):
             return f'{self.year % 100}-{"{:04d}".format(self.pk)}'
         else:
             return self.code    #migrated records
+
+    @property
+    def emails_to(self):
+        return split_combined_addresses(self.recipients_to)
+
+    @property
+    def emails_cc(self):
+        return split_combined_addresses(self.recipients_cc)
 
     @classmethod
     def from_db(cls, db, field_names, values):
@@ -234,6 +249,11 @@ class Project(models.Model):
                     .exclude(state__in=(State.DONE.value, State.CANCEL.value)) \
                     .exists():
                 validation_errors['title'] = _('Open Project with this title and no CBU already exists.')
+
+        if self.recipients_to and not self.emails_to:
+            validation_errors['title'] = _('Email format is not acceptable in Recipients(to)')
+        if self.recipients_cc and not self.emails_cc:
+            validation_errors['title'] = _('Email format is not acceptable in Recipients(cc)')
 
         # Add more validations HERE
 

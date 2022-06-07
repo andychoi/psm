@@ -101,6 +101,7 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
         (_('Schedule...'),  {'fields': (('p_pre_plan_b','p_pre_plan_e','p_kickoff','p_design_b','p_design_e','p_dev_b','p_dev_e','p_uat_b','p_uat_e','p_launch','p_close'),
                                         ('a_pre_plan_b','a_pre_plan_e','a_kickoff','a_design_b','a_design_e','a_dev_b','a_dev_e','a_uat_b','a_uat_e','a_launch','a_close'), 
                                        ), 'classes': ('collapse',)}),
+        (_('Communication...'),  {'fields': (('email_active'), ('recipients_to',), ), 'classes': ('collapse',)}),
         (_('More...'), {'fields': ( ('created_at', 'last_modified'), 'created_by', ('attachment'), ('req_pro','req_sec','req_inf'), ), 'classes': ('collapse',)}),
         # (None, {'fields': (('link',),) })
     )
@@ -149,8 +150,11 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
     def get_form(self, request, obj=None, change=False, **kwargs):
         form = super().get_form(request, obj, change, **kwargs)
         form.base_fields['description'].widget.attrs.update({'rows':5,'cols':80})
-        if  obj:
+        if  obj:    #change
             form.base_fields['resolution'].widget.attrs.update({'rows':5,'cols':40})
+            form.base_fields['recipients_to'].widget.attrs.update({'rows':6,'cols':800})
+            # form.base_fields['recipients_cc'].widget.attrs.update({'rows':5,'cols':120})      #not yet implemented
+            form.base_fields["recipients_to"].help_text = 'Use semi-colon to add multiple. Example: "Johnny Test" <johnny@test.com>; Jack <another@test.com>; "Scott Summers" <scotts@test.com>; noname@test.com'
         return form
 
     def formatted_created_at(self, obj):
@@ -177,10 +181,16 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
 
     # (not called from admin-import-export)
     def save_model(self, request, obj, form, change):
+        from psmprj.utils.mail import combine_to_addresses
         if change is False:  #when create
             obj.created_by = request.user
+
             # if not obj.code: #not migration 
             #     obj.code = f'{obj.year % 100}-{"{:04d}".format(obj.pk+1000)}'
+        # else:
+            # if (obj.recipients_to):
+            #     obj.recipients_to = combine_to_addresses( obj.emails_to )   #comma separated... problem
+
         super().save_model(request, obj, form, change)
 
         review_create = False
@@ -249,4 +259,4 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
             messages.add_message(request, messages.INFO, ' is copied/saved')
 
 
-        
+    

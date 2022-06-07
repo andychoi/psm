@@ -17,25 +17,25 @@ from common.models import CBU, Dept, Div, PUBLISH, STATUS, STATES
 from psm.models import Status, State, Project
 
 
-import ast
-class ReportDist(models.Model):
-    project = models.OneToOneField(Project, on_delete=models.CASCADE, null=True)
-    # title field using charfield constraint with unique constraint
-    is_active = models.BooleanField(_("Is Active?"), default=True)
-    recipients_to = models.CharField(_("Recipients (to)"), max_length=1000, blank=True, null=True)
-    recipients_cc = models.CharField(_("Recipients (cc)"), max_length=1000, blank=True, null=True)
+# import ast
+# class ReportDist(models.Model):
+#     project = models.OneToOneField(Project, on_delete=models.CASCADE, null=True)
+#     # title field using charfield constraint with unique constraint
+#     is_active = models.BooleanField(_("Is Active?"), default=True)
+#     recipients_to = models.CharField(_("Recipients (to)"), max_length=1000, blank=True, null=True)
+#     recipients_cc = models.CharField(_("Recipients (cc)"), max_length=1000, blank=True, null=True)
 
-    class Meta:
-        verbose_name = _("Report Distribution List")
-        verbose_name_plural = _("Report Distribution List")    
+#     class Meta:
+#         verbose_name = _("Report Distribution List")
+#         verbose_name_plural = _("Report Distribution List")    
 
-    @property
-    def emails_to(self):
-        return ast.literal_eval(self.recipients_to) 
+#     @property
+#     def emails_to(self):
+#         return ast.literal_eval(self.recipients_to) 
 
-    @property
-    def emails_cc(self):
-        return ast.literal_eval(self.recipients_cc) 
+#     @property
+#     def emails_cc(self):
+#         return ast.literal_eval(self.recipients_cc) 
 
 # creating an django model class
 class Report(models.Model):

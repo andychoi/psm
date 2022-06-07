@@ -21,7 +21,7 @@ from django.forms.models import BaseInlineFormSet
 from django_object_actions import DjangoObjectActions
 
 # Register your models here.
-from .models import Report, Milestone, ReportDist, ReportRisk
+from .models import Report, Milestone, ReportRisk
 from psm.models import Project
 
 # for duplicate https://stackoverflow.com/questions/437166/duplicating-model-instances-and-their-related-qrs-in-django-algorithm-for
@@ -32,11 +32,11 @@ from django.db.models.fields.related import ForeignKey
 #queryset filter with list of values: https://stackoverflow.com/questions/9304908/how-can-i-filter-a-django-query-with-a-list-of-values
 
 # Register your models here.
-@admin.register(ReportDist)
-class ReportDistAdmin(admin.ModelAdmin):
-    list_display = ('id', 'project', 'is_active')
-    list_display_links = ('id', 'project')
-    pass
+# @admin.register(ReportDist)
+# class ReportDistAdmin(admin.ModelAdmin):
+#     list_display = ('id', 'project', 'is_active')
+#     list_display_links = ('id', 'project')
+#     pass
 
 class MilestoneFormSet(forms.models.BaseInlineFormSet):
     model = Milestone
@@ -142,6 +142,7 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
         form.base_fields['content_a'].widget.attrs.update({'rows':5,'cols':40})
         form.base_fields['content_p'].widget.attrs.update({'rows':5,'cols':40})
         form.base_fields['issue'].widget.attrs.update({'rows':5,'cols':40})
+        form.base_fields['project'].widget.attrs.update({'style': 'width: 400px'})
         return form
 
     # default initial in form: starting work week
@@ -167,7 +168,7 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
 
     # object-function
     def send_report(self, request, obj):
-        from psmprj.utils.mail import send_mail_async as send_mail
+        from psmprj.utils.mail import send_mail_async as send_mail, split_combined_addresses, combine_to_addresses
         # to display name: from_email = "Name <info@domain.com>"
 
         from django.template import Context
@@ -175,31 +176,33 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
         from django.core.mail import EmailMultiAlternatives
         from .views import reportDetail
 
-        # converted HTML rendering using https://templates.mailchimp.com/resources/inline-css/
-        htmly = get_template('reports/report_email.html')
-        context = { 
-            'object'    : obj, 
-            'milestone' : Milestone.objects.filter(report=obj.pk).order_by('no') }
+        email_receiver = [ combine_to_addresses( split_combined_addresses(obj.project.recipients_to) ) ]
+        # email_receiver = env("EMAIL_TEST_RECEIVER", "test@localhost.localdomain,").split(",")
+        
+        if obj.project.email_active and email_receiver:  
+            # converted HTML rendering using https://templates.mailchimp.com/resources/inline-css/
+            htmly = get_template('reports/report_email.html')
+            context = { 
+                'object'    : obj, 
+                'milestone' : Milestone.objects.filter(report=obj.pk).order_by('no') }
 
-        # Bootstrap Email https://bootstrapemail.com/docs/introduction    
-        html_content = htmly.render(context)
-        # msg.attach_alternative(html_content, "text/html")
-        # breakpoint()
+            # Bootstrap Email https://bootstrapemail.com/docs/introduction    
+            html_content = htmly.render(context)
+            # msg.attach_alternative(html_content, "text/html")
+            # breakpoint()
+            email_sender   = obj.project.pm.email if (obj.project.pm.email) else env("EMAIL_TEST_SENDER", "test@localhost.localdomain")
+            no_mails = send_mail(
+                subject=obj.title,
+                message='The report is in HTML format.',
+                html_message=html_content,
+                from_email=email_sender, 
+                recipient_list=email_receiver,
+                fail_silently=False,
+            )
+            # breakpoint()
+            messages.add_message(request, messages.INFO, 'Email job running!')
 
-        email_sender   = env("EMAIL_TEST_SENDER",   "test@localhost.localdomain")
-        email_receiver = env("EMAIL_TEST_RECEIVER", "test@localhost.localdomain,").split(",")
-        no_mails = send_mail(
-            subject=obj.title,
-            message='The report is in HTML format.',
-            html_message=html_content,
-            from_email=email_sender, 
-            recipient_list=email_receiver,
-            fail_silently=False,
-        )
-        # breakpoint()
-        messages.add_message(request, messages.INFO, 'Email job running!')
-
-    send_report.label = "Send Report with Email"  
+    send_report.label = "Send Email"  
 
     # object-function
     def goto_project(self, request, obj):
@@ -210,6 +213,10 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
     def preview(self, request, obj):
         return HttpResponseRedirect(reverse('report_detail', args=[obj.pk]))
     preview.attrs = {'target': '_blank'}
+
+    def email(self, request, obj):
+        return HttpResponseRedirect(reverse('report_email', args=[obj.pk]))
+    email.attrs = {'target': '_blank'}
 
     def past_reports(self, request, obj):
         return HttpResponseRedirect(f'/admin/reports/report/?project__id__exact={obj.project.id}')
@@ -229,9 +236,10 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
             m.save()
         messages.add_message(request, messages.INFO, "Report is cloned to #%i with title %s" % (new.id, new.title))
         return HttpResponseRedirect(f'/admin/reports/report/{new.id}')
+    clone.label = "Clone+"  
 
 
-    change_actions = ('preview', 'send_report', 'clone', 'past_reports', 'goto_project')
+    change_actions = ('preview', 'send_report', 'email', 'clone', 'past_reports', 'goto_project')
     
     def save_model(self, request, obj, form, change):
         if change is False:

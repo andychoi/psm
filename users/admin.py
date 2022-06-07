@@ -29,7 +29,8 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
                             ('is_external', 'CBU',), 
                             # ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',),
                             ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', ),
-                            ('image',), )}),
+                            # ('image',), 
+                            )}),
         (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by')), 'classes': ('collapse',)}),
     )
 
@@ -43,7 +44,8 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
                             ('is_external', 'CBU' ), 
                             ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', ), 
                             # ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',), 
-                            ('image',), ('id_auto') )}),
+                            # ('image',), 
+                            ('id_auto') )}),
             )
         return fieldsets
 

@@ -56,7 +56,7 @@
           
           {% for post in posts %}
               <article class="media content-section">
-                <!-- img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}" -->
+                <!-- img class="rounded-circle article-img" src="{ post.author.profile.image.url }" -->
                 <!-- https://stackoverflow.com/questions/18672452/left-align-and-right-align-within-div-in-bootstrap -->
                 <div class="media-body">
                   <h3><a class="article-title" href="{% url 'post_detail' post.pk %}">{{ post.title }}</a></h3>

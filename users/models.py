@@ -36,7 +36,7 @@ class Profile(models.Model):
     is_app_reviewer = models.BooleanField(_("App_Architect?"), default=False)
     is_mgt_reviewer = models.BooleanField(_("Management reviewer?"), default=False)
 
-    image = models.ImageField(default='default.jpg', upload_to='profile_pics', null=True, blank=True)
+    image = models.ImageField(upload_to='profile_pics', null=True, blank=True)  #default='default.jpg', 
     created_on = models.DateTimeField(_("created at"), auto_now_add=True, editable=False, null=True, blank=True)
     created_by = models.ForeignKey(User, related_name="profile_created", null=True, on_delete=models.SET_NULL)
     updated_on = models.DateTimeField(_("last modified"), auto_now=True, editable=False)

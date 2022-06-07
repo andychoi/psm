@@ -1,0 +1,21 @@
+{% extends "base_wide.html" %}
+
+{% block child_css %}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<!-- <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script> -->
+{% endblock %}
+
+{% block content %}
+<div id="content_root" class="container-fluid mt-1"></div>  <!-- container-float margin top 3 -->
+{% endblock content %}
+
+{% block child_js_above_files %} 
+<script>
+    const e = React.createElement;
+    const root = ReactDOM.createRoot(document.getElementById('content_root'));
+    root.render(e('h1', null, 'Hello, world!'));
+</script>
+{% endblock %}

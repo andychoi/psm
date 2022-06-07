@@ -17,5 +17,11 @@
     const e = React.createElement;
     const root = ReactDOM.createRoot(document.getElementById('content_root'));
     root.render(e('h1', null, 'Hello, world!'));
+
+    fetch("/api/1.0/projects")
+    .then(response => response.json())
+    .then((res)=>{
+        console.log(res);
+    });
 </script>
 {% endblock %}

@@ -47,11 +47,11 @@ class PostListView(ListView):
             keyword = ''
         if (keyword != ''):
             object_list = self.model.objects.filter(
-                Q(status=1) &                                   #published only
+                Q(status=1) & Q(featured=0) &                 #published only, exclude featured..
                 ( Q(content__icontains=keyword) | Q(title__icontains=keyword) ) )
         else:
             # object_list = self.model.objects.all()
-            object_list = self.model.objects.filter(status=1)   #published only
+            object_list = self.model.objects.filter(status=1).filter(featured=0)   #published only
         
         # breakpoint()
         if self.request.user.is_authenticated :   #not login

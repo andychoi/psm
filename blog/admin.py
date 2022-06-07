@@ -6,7 +6,7 @@ from django.utils.translation import ngettext
 class PostAdmin(admin.ModelAdmin):
     list_display = ('id', 'title', 'author', 'status', 'featured', 'private', 'date_posted')
     list_display_links = ('id', 'title')
-    list_filter = ('author', 'date_posted')
+    list_filter = ('featured', 'private', 'category', 'author', 'date_posted')
     search_fields = ('id', 'title', 'content', 'author__profile__name')    
     list_per_page = 20
 

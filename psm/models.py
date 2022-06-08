@@ -102,7 +102,7 @@ class Project(models.Model):
     title = models.CharField(_("title"), max_length=200)
     type = models.CharField(_("type"), max_length=20, choices=PRJTYPE, default=PrjType.UNC.value)
     year = models.PositiveIntegerField(_("Year"), default=current_year(), validators=[MinValueValidator(2014), max_value_current_year])
-    strategy = models.ForeignKey(Strategy, blank=True, null=True, on_delete=models.PROTECT)
+    strategy = models.ManyToManyField(Strategy, blank=True, null=True,)
     program = models.ForeignKey(Program, blank=True, null=True, on_delete=models.PROTECT)
     is_internal = models.BooleanField(_("Internal project"), default=False)
     is_agile = models.BooleanField(_("Agile project"), default=False)
@@ -208,6 +208,11 @@ class Project(models.Model):
     def CBU_str(self):
         # this is not working... FIXME 
         return " ,".join(p.name for p in self.CBUs.all())
+
+    @property
+    def strategy_str(self):
+        # this is not working... FIXME 
+        return " ,".join(p.name for p in self.strategy.all())
 
     @property
     def emails_to(self):

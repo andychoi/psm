@@ -15,35 +15,35 @@ def project_list(request):
     projects = Project.objects.all()
 
     ltmp = request.GET.get('year', '')
-    if ltmp:
+    if len(projects) > 0 and ltmp:
         projects = projects.filter(year=ltmp)
 
     # ltmp = request.GET.get('div', '')
-    # if ltmp:
+    # if len(projects) > 0 and ltmp:
     #     projects = projects.filter(div__id=ltmp)
 
     ltmp = request.GET.get('dep', '')
-    if ltmp:
+    if len(projects) > 0 and ltmp:
         projects = projects.filter(dept__id=ltmp)
 
     ltmp = request.GET.get('phase', '')
-    if ltmp:
+    if len(projects) > 0 and ltmp:
         projects = projects.filter(phase=PHASE[int(ltmp)][0])
 
     # ltmp = request.GET.get('cbu', '')
-    # if ltmp:
+    # if len(projects) > 0 and ltmp:
     #     projects = projects.filter(CBU__id=ltmp)
 
     ltmp = request.GET.get('pri', '')
-    if ltmp:
+    if len(projects) > 0 and ltmp:
         projects = projects.filter(priority=PRIORITIES[int(ltmp)][0])
 
     ltmp = request.GET.get('prg', '')
-    if ltmp:
+    if len(projects) > 0 and ltmp:
         projects = projects.filter(program__id=ltmp)
 
     ltmp = request.GET.get('type', '')
-    if ltmp:
+    if len(projects) > 0 and ltmp:
         projects = projects.filter(type=PRJTYPE[int(ltmp)][0])
 
     serializer = ProjectSerializer(projects, many=True)

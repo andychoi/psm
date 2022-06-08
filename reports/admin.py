@@ -233,8 +233,8 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
             # Bootstrap Email https://bootstrapemail.com/docs/introduction    
             html_content = htmly.render(context)
             # msg.attach_alternative(html_content, "text/html")
-            # breakpoint()
-            email_sender   = obj.project.pm.email if (obj.project.pm.email) else env("EMAIL_TEST_SENDER", "test@localhost.localdomain")
+            # email_sender   = obj.project.pm.email if (obj.project.pm.email) else env("DEFAULT_FROM_EMAIL", "test@localhost.localdomain")
+            email_sender   = env("DEFAULT_FROM_EMAIL", "test@localhost.localdomain")
             no_mails = send_mail(
                 subject=obj.title,
                 message='The report is in HTML format.',
@@ -258,9 +258,9 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
         return HttpResponseRedirect(reverse('report_detail', args=[obj.pk]))
     preview.attrs = {'target': '_blank'}
 
-    def email(self, request, obj):
-        return HttpResponseRedirect(reverse('report_email', args=[obj.pk]))
-    email.attrs = {'target': '_blank'}
+    def preview_e(self, request, obj):
+        return HttpResponseRedirect(reverse('report-email', args=[obj.pk]))
+    preview_e.attrs = {'target': '_blank'}
 
     def past_reports(self, request, obj):
         return HttpResponseRedirect(f'/admin/reports/report/?project__id__exact={obj.project.id}')

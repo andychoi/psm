@@ -91,7 +91,7 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
     )
     ordering = ['-id']  #Project_PRIORITY_FIELDS
     readonly_fields = ('created_at', 'last_modified', 'created_by', 'lstrpt',  'link', )
-    autocomplete_fields = ['pm', 'CBUs', 'strategy']
+    autocomplete_fields = ['pm', 'CBUs', 'strategy', 'CBUpm']
 
     fieldsets = (               # Edition form
         (None,  {'fields': (('title', 'type', 'year', ), 

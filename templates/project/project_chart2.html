@@ -9,20 +9,48 @@
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script> -->
 <!-- <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script> -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 {% endblock %}
 
 {% block content %}
-<div id="container"></div>
+<div id="container">
+    <!-- filter area -->
+    <div id="chart_fiter" class="row p-3">
+        {% for filterItem in filterItems %}
+        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+            <label  class="form-group label" for='sel_{{ filterItem.qId }}'>{{ filterItem.text }}</label>        
+            <select class="form-select"  id='sel_{{ filterItem.qId }}' onchange="updateData()">
+                <option value=''>ALL</option>
+                {% for pItem in filterItem.items %}
+                <option value={{ pItem.id }}>{{ pItem.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endfor %}
+    </div>
+    <!-- chart area -->
+    <div id="chart_area"></div>
+</div>
 <!-- <div id="content_root" class="container-fluid mt-1"></div>   -->
 <!-- container-float margin top 3 -->
 {% endblock content %}
 
 {% block child_js_above_files %} 
 <script>
-    let tDefaultOptions = {
-        title: {
-            text: 'Projects'
-        },
+    // set preselected values
+    {% for filterItem in filterItems %}
+        $('#sel_{{filterItem.qId}}').val("{{ filterItem.selected }}");
+    {% endfor %}
+    
+    function convertDate(pYYYYMMDD) {
+        let tData = pYYYYMMDD.split("-");
+        return Date.UTC(Number.parseInt(tData[0]), Number.parseInt(tData[1]) - 1, Number.parseInt(tData[2]));
+    }
+
+    var tDefaultOptions = {
+        // title: {
+        //     text: 'Projects'
+        // },
 
         xAxis: {
             currentDateIndicator: true,
@@ -92,29 +120,37 @@
 
         series: []
     };
-    
-    let tChart = Highcharts.ganttChart('container', Object.assign({}, tDefaultOptions));
-    function convertDate(pYYYYMMDD) {
-        let tData = pYYYYMMDD.split("-");
-        return Date.UTC(Number.parseInt(tData[0]), Number.parseInt(tData[1]) - 1, Number.parseInt(tData[2]));
-    }
 
-    fetch("/api/1.0/projects")
-    .then(response => response.json())
-    .then((res)=>{
-        let tList = [];
-        let tMinTime = Date.now(), tMaxTime = Date.now();
-        // let tList = res.map((pItem) => { return {start: convertDate(pItem.p_pre_plan_b), end: convertDate(pItem.p_close), completed: pItem.progress / 100, name: pItem.title}; });
-        res.forEach((pItem) => {
-            let tStart = convertDate(pItem.p_pre_plan_b);
-            let tEnd = convertDate(pItem.p_close);
-            tMinTime = Math.min(tMinTime, new Date(tStart).getTime());
-            tMaxTime = Math.max(tMaxTime, new Date(tEnd).getTime());
-            tList.push({start: tStart, end: tEnd, completed: (pItem.progress / 100), name: pItem.title});
+    function updateData() {
+        var tUrl = '/api/1.0/projects';
+        var tParams = {};
+        {% for filterItem in filterItems %}
+            var tmp = $('#sel_{{filterItem.qId}}').val();
+            if (tmp != '') tParams['{{filterItem.qId}}'] = tmp;
+        {% endfor %}
+        if (Object.keys(tParams).length > 0) {
+            tUrl += '?' + new URLSearchParams(tParams).toString(); 
+        }
+        fetch(tUrl)
+        .then(response => response.json())
+        .then((res)=>{
+            console.log(res);
+            var tList = [];
+            // var tList = res.map((pItem) => { return {start: convertDate(pItem.p_pre_plan_b), end: convertDate(pItem.p_close), completed: pItem.progress / 100, name: pItem.title}; });
+            var tMinTime = Date.now(), tMaxTime = Date.now();
+            res.forEach((pItem) => {
+                var tStart = convertDate(pItem.p_pre_plan_b);
+                var tEnd = convertDate(pItem.p_close);
+                tMinTime = Math.min(tMinTime, new Date(tStart).getTime());
+                tMaxTime = Math.max(tMaxTime, new Date(tEnd).getTime());
+                tList.push({start: tStart, end: tEnd, completed: (pItem.progress / 100), name: pItem.title});
+            });
+    
+            var tChart = Highcharts.ganttChart('chart_area', Object.assign({}, tDefaultOptions, {series: [{ name: '', data: tList }]}));
+            tChart.xAxis[0].setExtremes(tMinTime, tMaxTime);
         });
-        tChart = Highcharts.ganttChart('container', Object.assign({}, tDefaultOptions, {series: [{ name: '', data: tList }]}));
-        tChart.xAxis[0].setExtremes(tMinTime, tMaxTime);
-        console.log(tChart);
-    });
+    }
+    updateData();
+
 </script>
 {% endblock %}

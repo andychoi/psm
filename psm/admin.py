@@ -91,7 +91,7 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
     )
     ordering = ['-id']  #Project_PRIORITY_FIELDS
     readonly_fields = ('created_at', 'last_modified', 'created_by', 'lstrpt',  'link', )
-    autocomplete_fields = ['pm', 'CBUs']
+    autocomplete_fields = ['pm', 'CBUs', 'strategy']
 
     fieldsets = (               # Edition form
         (None,  {'fields': (('title', 'type', 'year', ), 
@@ -164,6 +164,7 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
             form.base_fields['recipients_to'].widget.attrs.update({'rows':6,'cols':800})
             # form.base_fields['recipients_cc'].widget.attrs.update({'rows':5,'cols':120})      #not yet implemented
             form.base_fields["recipients_to"].help_text = 'Use semi-colon to add multiple. Example: "Johnny Test" <johnny@test.com>; Jack <another@test.com>; "Scott Summers" <scotts@test.com>; noname@test.com'
+            # form.base_fields["is_agile"].help_text = 'Mark if the project requires multiple launches'
         return form
 
     def formatted_created_at(self, obj):

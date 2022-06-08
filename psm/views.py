@@ -154,47 +154,48 @@ class projectList1View(generic.ListView):
         # # self.year = get_object_or_404(self.year, name=self.kwargs['year'])
         # # return Project.objects.filter(year=self.year).order_by('dept')
         # queryset = Project.objects.filter(year=self.kwargs['year'])
+        queryset = []
+        if (Project.objects.count() > 0):
+            queryset = Project.objects.all()
+            ltmp = self.request.GET.get('year', '')
+            if ltmp:
+                queryset = queryset.filter(year=ltmp)
 
-        queryset = Project.objects.all()
-        ltmp = self.request.GET.get('year', '')
-        if ltmp:
-            queryset = queryset.filter(year=ltmp)
+            # ltmp = self.request.GET.get('div', '')
+            # if ltmp:
+            #     queryset = queryset.filter(div__id=ltmp)
 
-        ltmp = self.request.GET.get('div', '')
-        if ltmp:
-            queryset = queryset.filter(div__id=ltmp)
+            ltmp = self.request.GET.get('dep', '')
+            if ltmp:
+                queryset = queryset.filter(dept__id=ltmp)
 
-        ltmp = self.request.GET.get('dep', '')
-        if ltmp:
-            queryset = queryset.filter(dept__id=ltmp)
+            ltmp = self.request.GET.get('phase', '')
+            if ltmp:
+                queryset = queryset.filter(phase=PHASE[int(ltmp)][0])
 
-        ltmp = self.request.GET.get('phase', '')
-        if ltmp:
-            queryset = queryset.filter(phase=PHASE[int(ltmp)][0])
+            # ltmp = self.request.GET.get('cbu', '')
+            # if ltmp:
+            #     queryset = queryset.filter(CBUs__id=ltmp)
 
-        ltmp = self.request.GET.get('cbu', '')
-        if ltmp:
-            queryset = queryset.filter(CBUs__id=ltmp)
+            ltmp = self.request.GET.get('pri', '')
+            if ltmp:
+                queryset = queryset.filter(priority=PRIORITIES[int(ltmp)][0])
 
-        ltmp = self.request.GET.get('pri', '')
-        if ltmp:
-            queryset = queryset.filter(priority=PRIORITIES[int(ltmp)][0])
+            ltmp = self.request.GET.get('prg', '')
+            if ltmp:
+                queryset = queryset.filter(program__id=ltmp)
 
-        ltmp = self.request.GET.get('prg', '')
-        if ltmp:
-            queryset = queryset.filter(program__id=ltmp)
+            ltmp = self.request.GET.get('type', '')
+            if ltmp:
+                queryset = queryset.filter(type=PRJTYPE[int(ltmp)][0])
 
-        ltmp = self.request.GET.get('type', '')
-        if ltmp:
-            queryset = queryset.filter(type=PRJTYPE[int(ltmp)][0])
-
-        # pagenation http://localhost:8000/project/?page=3
-        # https://stackoverflow.com/questions/43544701/django-pagination-from-page-to-page
-        # https://stackoverflow.com/questions/29071312/pagination-in-django-rest-framework-using-api-view
-        # req_page = self.request.GET.get('page', '')
-        # page = self.paginate_queryset(queryset, req_page)
-        # if req_page:
-        #     return self.paginate_queryset(queryset, req_page)
+            # pagenation http://localhost:8000/project/?page=3
+            # https://stackoverflow.com/questions/43544701/django-pagination-from-page-to-page
+            # https://stackoverflow.com/questions/29071312/pagination-in-django-rest-framework-using-api-view
+            # req_page = self.request.GET.get('page', '')
+            # page = self.paginate_queryset(queryset, req_page)
+            # if req_page:
+            #     return self.paginate_queryset(queryset, req_page)
         
         return queryset
 

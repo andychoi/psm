@@ -21,12 +21,12 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display = ('id', 'user', 'username', 'email', 'u_dept', 'CBU', 'is_active')
     list_display_links = ('id', 'user', 'username')
     search_fields = ('id', 'username', 'email', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
-    ordering = ('username',)
+    ordering = ('CBU', 'u_dept', 'u_team', 'username',)
     readonly_fields = ('created_on', 'created_by', 'updated_on', 'updated_by')
     fieldsets = (  # Edition form
          (None, {'fields': (('user', 'username', 'email') , ('manager', 'is_psmadm', 'is_active'), 
                             # ('u_team','u_dept', 'u_div'), 
-                            ('u_dept', ), 
+                            ('u_dept', 'u_team'), 
                             ('is_external', 'CBU',), 
                             # ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',),
                             ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', ),
@@ -34,14 +34,19 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
                             )}),
         (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by')), 'classes': ('collapse',)}),
     )
-
+    list_filter = (
+        ('CBU', RelatedDropdownFilter),
+        ('u_dept', RelatedDropdownFilter),
+        ('u_team', RelatedDropdownFilter),
+        'is_active'
+    )
     def get_fieldsets(self, request, obj=None):
         fieldsets = super().get_fieldsets(request, obj)
         if obj is None:
             fieldsets = (      # Creation form
                  (None, {'fields': ('user', ('username', 'email') , ('manager', 'is_psmadm', 'is_active'), 
                             # ('u_team','u_dept', 'u_div'), 
-                            ('u_dept', ), 
+                            ('u_dept', 'u_team' ), 
                             ('is_external', 'CBU' ), 
                             ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', ), 
                             # ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',), 
@@ -113,9 +118,15 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
                     obj.save(update_fields=['user'])    
                     messages.add_message(request, messages.INFO, obj.username + ' already exists with email address as username: ' + obj.email)
                 else:
+                    if obj.migrated:
+                        new_user = User.objects.create_user( username=obj.migrated, password='init1234', email=obj.email )
+                        if new_user:
+                            obj.user = new_user
+                            obj.save(update_fields=['user'])    
+                            messages.add_message(request, messages.INFO, obj.user + ' is created to user as username: ' + username)
                     #email as username, if not username from profile
-                    if obj.email:
-                        new_user = User.objects.create_user( username=obj.email, password='demo', email=obj.email )
+                    elif obj.email:
+                        new_user = User.objects.create_user( username=obj.email, password='init1234', email=obj.email )
                         if new_user:
                             obj.user = new_user
                             obj.save(update_fields=['user'])    

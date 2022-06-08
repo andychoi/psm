@@ -11,13 +11,13 @@ from common.utils import *
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
     username = models.CharField(max_length=100, blank=True, null=True, unique=True)
-    email = models.EmailField(max_length=150, blank=True, null=True, unique=True)
+    email = models.EmailField(max_length=150, blank=True, null=True, unique=False)
     is_active = models.BooleanField(default=True)
 
     manager = models.ForeignKey(User, verbose_name=_('manager'), related_name='report_to', on_delete=models.CASCADE, null=True, blank=True)
 
 #FIXME circular dependency...??
-    # u_team = models.ForeignKey('common.Team', verbose_name=_('Team'), on_delete=models.SET_NULL, blank=True, null=True)
+    u_team = models.ForeignKey('common.Team', verbose_name=_('Team'), on_delete=models.SET_NULL, blank=True, null=True)
     u_dept = models.ForeignKey('common.Dept', verbose_name=_('Dept'), on_delete=models.SET_NULL, blank=True, null=True)
     # u_div  = models.ForeignKey('common.Div',  verbose_name=_('Div'),  on_delete=models.SET_NULL, blank=True, null=True)
     CBU    = models.ForeignKey('common.CBU',  verbose_name=_('CBU'),  on_delete=models.SET_NULL, blank=True, null=True)
@@ -38,6 +38,9 @@ class Profile(models.Model):
     updated_on = models.DateTimeField(_("last modified"), auto_now=True, editable=False)
     updated_by = models.ForeignKey(User, related_name="profile_updated", null=True, on_delete=models.SET_NULL)
     id_auto = models.BooleanField(_("User create from Profile"), default=False )    #auto creation of user from profile creation
+
+    notes      = models.TextField(_("notes"), max_length=500, null=True, blank=True)
+    migrated   = models.TextField(_("notes"), max_length=10, null=True, blank=True)
 
     def __str__(self):
         if getattr(self, 'user') and not self.username :

@@ -65,7 +65,7 @@ class ProjectDeliverableInline(admin.TabularInline):
 class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
     class Meta:
         import_id_fields = ('id',)
-        exclude = ('div', )
+        exclude = ()
     class Media:
         css = {
         'all': ('psm/css/custom_admin.css',),
@@ -78,10 +78,11 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
     list_filter = (
         ('status_o', UnionFieldListFilter),
         ('year', DropdownFilter),
-        ('div', RelatedDropdownFilter), #FIXME dept__div not working
-        ('dept', RelatedDropdownFilter),
-        ('CBUs', RelatedDropdownFilter),   #FIXME many to many
+        ('phase', UnionFieldListFilter),
         ('state', UnionFieldListFilter),
+        ('CBUs', RelatedDropdownFilter),   #FIXME many to many
+        ('dept', RelatedDropdownFilter),
+        ('dept__div', RelatedDropdownFilter), #FIXME dept__div not working
         ('priority', UnionFieldListFilter),
         ('req_pro', DropdownFilter),
         # ('req_sec', DropdownFilter),
@@ -90,7 +91,7 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
 #        'deadline'
     )
     ordering = ['-id']  #Project_PRIORITY_FIELDS
-    readonly_fields = ('created_at', 'last_modified', 'created_by', 'lstrpt', 'link', )
+    readonly_fields = ('created_at', 'last_modified', 'created_by', 'lstrpt',  'link', )
     autocomplete_fields = ['pm', 'CBUs']
 
     fieldsets = (               # Edition form
@@ -98,11 +99,11 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
                             ('state', 'phase', 'progress', 'priority'), 
                             ('status_o', 'status_t', 'status_b', 'status_s', 'lstrpt', 'resolution'), 
                             ), "classes": ("stack_labels",)}),
-        (_('Detail...'),  {'fields': (('strategy', 'program', 'is_agile'), ('CBUs', 'CBUpm', 'ref'),('pm', 'dept', 'div'), 
+        (_('Detail...'),  {'fields': (('strategy', 'program', 'is_agile'), ('CBUs', 'CBUpm', 'ref'),('pm', 'dept', ), 
                             ( 'est_cost', 'app_budg', 'wbs', 'es', 'is_unplanned', 'is_internal' ), ('description',), 
                                        ), 'classes': ('collapse',)}),
-        (_('Schedule...'),  {'fields': (('p_pre_plan_b','p_pre_plan_e','p_kickoff','p_design_b','p_design_e','p_dev_b','p_dev_e','p_uat_b','p_uat_e','p_launch','p_close'),
-                                        ('a_pre_plan_b','a_pre_plan_e','a_kickoff','a_design_b','a_design_e','a_dev_b','a_dev_e','a_uat_b','a_uat_e','a_launch','a_close'), 
+        (_('Schedule...'),  {'fields': (('p_ideation','p_plan_b','p_plan_e','p_kickoff','p_design_b','p_design_e','p_dev_b','p_dev_e','p_uat_b','p_uat_e','p_launch','p_close'),
+                                        ('a_plan_b','a_plan_e','a_kickoff','a_design_b','a_design_e','a_dev_b','a_dev_e','a_uat_b','a_uat_e','a_launch','a_close'), 
                                        ), 'classes': ('collapse',)}),
         (_('Communication...'),  {'fields': (('email_active'), ('recipients_to',), ), 'classes': ('collapse',)}),
         (_('More...'), {'fields': ( ('created_at', 'last_modified'), 'created_by', ('attachment'), ('req_pro','req_sec','req_inf'), ), 'classes': ('collapse',)}),
@@ -114,10 +115,10 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
         if obj is None:
             fieldsets = (      # Creation form
                 (None, {'fields': (('title', 'type', 'year'), ('strategy', 'program','is_agile'), 
-                            ('CBU', 'CBUpm', 'ref', 'is_unplanned', ), ('pm', 'dept','div' ), 
+                            ('CBUs', 'CBUpm', 'ref', 'is_unplanned', ), ('pm', 'dept', ), 
                             ( 'est_cost', 'app_budg', 'wbs', 'es', 'is_internal' ),
                             ('state', 'phase', 'progress', 'priority'), 'description', 
-                            ('p_pre_plan_b','p_pre_plan_e','p_kickoff','p_design_b','p_design_e','p_dev_b','p_dev_e','p_uat_b','p_uat_e','p_launch','p_close'),
+                            ('p_ideation', 'p_plan_b','p_plan_e','p_kickoff','p_design_b','p_design_e','p_dev_b','p_dev_e','p_uat_b','p_uat_e','p_launch','p_close'),
                             # ('req_pro','req_sec','req_inf'), 
                             # 'attachment'
                         )}),

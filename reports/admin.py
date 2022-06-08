@@ -96,13 +96,13 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
 
     # form = ReportAdminForm  
 
-    list_display = ('project_link', 'title', 'cbu_list', 'is_monthly','formatted_updated', 'status','preview_link')
+    list_display = ('project_link', 'title', 'cbu_list', 'get_dept','formatted_updated', 'status', 'is_monthly','preview_link')
     list_display_links = ('title', 'formatted_updated')
     list_editable = ('status',)
     ordering = ('-id',)
     autocomplete_fields = [ 'project' ]
-    readonly_fields = ('project_link', 'CBUs', 'dept', 'created_on', 'updated_on', 'created_by', 'updated_by')
-
+    readonly_fields = ('project_link', 'created_on', 'updated_on', 'created_by', 'updated_by')
+    #'CBUs', 'dept', 
     search_fields = ('title', 'project__title', 'content_a', 'content_p', 'issue', 'created_by__profile__name', 'updated_by__profile__name',
                     )
 
@@ -119,7 +119,9 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
         (None, {'fields': (('project', 'title', 'status', 'is_monthly'), 
                             ('status_o', 'status_t', 'status_b', 'status_s', 'progress' ), 
                             ('content_a', 'content_p', 'issue'), ),  "classes": ("stack_labels",)}),
-            (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by'),('CBUs','dept',)), 'classes': ('collapse',)}),
+            (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by'),
+                        # ('CBUs','dept',)
+            ), 'classes': ('collapse',)}),
     )
 
     def get_fieldsets(self, request, obj=None):
@@ -136,6 +138,7 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
         ('project', RelatedDropdownFilter),
         ('project__CBUs', RelatedDropdownFilter),
         ('project__dept', RelatedDropdownFilter),
+        ('project__dept__div', RelatedDropdownFilter),
         # ('div', RelatedDropdownFilter),
         # ('dept', RelatedDropdownFilter),
         ('status', UnionFieldListFilter),
@@ -200,8 +203,12 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
     formatted_updated.short_description = 'Updated'
 
     def cbu_list(self, obj):
-        return " ,".join(p.name for p in obj.CBUs.all())
+        return " ,".join(p.name for p in obj.project.CBUs.all())
     cbu_list.short_description = 'CBUs'
+
+    def get_dept(self, obj):
+        return obj.project.dept
+    get_dept.short_description = 'Dept'
 
     # object-function
     def send_report(self, request, obj):
@@ -266,7 +273,7 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
         new._state.adding = True           
         new.save()  #adding
         # update many-to-many after save
-        new.CBUs.set(obj.project.CBUs.all())
+        # new.CBUs.set(obj.project.CBUs.all())
         new.save()
         # clone milestones
         old_ms = Milestone.objects.filter(report=old_id)
@@ -289,15 +296,15 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
             obj.updated_by = request.user
 
         #redundant, but need for filtering in admin list
-        obj.dept = obj.project.dept
+        # obj.dept = obj.project.dept
 
         super().save_model(request, obj, form, change)
 
         #FIXME manytomany : queryset list(q1) == list(q2)
         #needs to have "id" before many-to-many relations can be used
-        if (not obj.CBUs.exists()): 
-            obj.CBUs.set(obj.project.CBUs.all())
-            obj.save()
+        # if (not obj.CBUs.exists()): 
+        #     obj.CBUs.set(obj.project.CBUs.all())
+        #     obj.save()
 
 
         if obj.status == 1:  #if published, update project master info
@@ -356,6 +363,7 @@ class ReportRiskAdmin(ImportExportMixin, admin.ModelAdmin):
     ordering = ('-id',)
     readonly_fields = ('project_link', 'updated_on', 'updated_by', 'created_on', 'created_by', 'cbu_list', 'get_dept')
     search_fields = ('title', 'project__title', 'risk', 'plan', 'owner')
+    autocomplete_fields = [ 'project' ]
 
     def project_link(self, obj):
         return mark_safe('<a href="{}">{}</a>'.format(
@@ -392,6 +400,7 @@ class ReportRiskAdmin(ImportExportMixin, admin.ModelAdmin):
         form = super().get_form(request, obj, change, **kwargs)
         form.base_fields['risk'].widget.attrs.update({'rows':10,'cols':40})
         form.base_fields['plan'].widget.attrs.update({'rows':10,'cols':40})
+        form.base_fields['project'].widget.attrs.update({'style': 'width: 400px'})
         return form
 
     # https://stackoverflow.com/questions/51685472/how-to-assign-default-value-using-url-parameter-changelist-filters

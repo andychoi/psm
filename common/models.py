@@ -30,21 +30,18 @@ class Dept(models.Model):
     def __str__(self):
         return self.name
 
-# class Team(models.Model):
-#     name = models.CharField(max_length=100, blank=False, null=False)
-#     head = models.ForeignKey('users.Profile', verbose_name=_('Team head'), on_delete=models.SET_NULL, null=True, blank=True)
-#     description = models.TextField(null=True, blank=True)
-#     dept = models.ForeignKey(Dept, on_delete=models.SET_NULL, null=True, blank=True)
-#     div = models.ForeignKey(Div, on_delete=models.SET_NULL, null=True, blank=True)
-#     is_active = models.BooleanField(default=True)
-# #    users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="user_teams")
-#     created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False)
-#     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="team_created", null=True, on_delete=models.SET_NULL)
+class Team(models.Model):
+    name = models.CharField(max_length=100, blank=False, null=False)
+    head = models.ForeignKey(Profile, related_name='team_head', on_delete=models.SET_NULL, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    dept = models.ForeignKey(Dept, on_delete=models.SET_NULL, null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+#    users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="user_teams")
 
-#     class Meta:
-#         ordering = ("name",)
-#     def __str__(self):
-#         return self.name
+    class Meta:
+        ordering = ("name",)
+    def __str__(self):
+        return self.name
 
 class CBU(models.Model):
     """
@@ -55,7 +52,7 @@ class CBU(models.Model):
     class Meta:
         ordering = ["name"]
         verbose_name = _("CBU")
-        verbose_name_plural = _("CBUs")
+        verbose_name_plural = _("CBU")
 
     name = models.CharField(_("name"), max_length=10, db_index=True, unique=True)
     fullname = models.CharField(_("full name"), max_length=100)

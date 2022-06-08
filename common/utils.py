@@ -34,11 +34,11 @@ class State(enum.Enum):
     (codes are prefixed with numbers to be easily sorted in the DB).
     """
     BACKLOG = '00-backlog'
-    TO_DO = '10-to-do'
-    DOING = '20-doing'
-    HOLD = '30-on_hold'
-    DONE = '50-done'
-    CANCEL = '90-cancel'
+    TO_DO   = '10-to-do'
+    DOING   = '20-doing'
+    HOLD    = '30-on_hold'
+    DONE    = '40-done'
+    CANCEL  = '50-cancel'
 # from django.contrib.auth.models import (BaseUserManager, AbstractBaseUser)
 STATES = (
     (State.BACKLOG.value, _('Backlog')),
@@ -90,8 +90,8 @@ class Phase(enum.Enum):
     DEVELOP =   '40-Develop'
     TESTING =   '50-Testing'
     LAUNCH =    '60-Launch'
-    COMPLETED = '80-Completed'
-    CLOSED =    '90-Closed'
+    COMPLETED = '70-Completed'
+    CLOSED =    '80-Closed'
 
 PHASE = (
     (Phase.IDEATION.value, _('Ideation')),
@@ -106,10 +106,10 @@ PHASE = (
 )
 
 class PrjType(enum.Enum):
-    MAJOR = '00-Major'
-    SMALL = '10-Small'
-    ENH   = '20-Enhancement'
-    UNC   = '90-Unclassifed'
+    MAJOR = '10-Major'
+    SMALL = '20-Small'
+    ENH   = '30-Enhancement'
+    UNC   = '00-Unclassifed'
 
 PRJTYPE = (
     (PrjType.MAJOR.value, _('Major')),

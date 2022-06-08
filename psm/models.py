@@ -7,7 +7,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 
-from common.models import CBU, Div, Dept, Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, State3, STATE3, WBS
+from common.models import CBU, Div, Dept, Team, Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, State3, STATE3, WBS
 from users.models import Profile
 
 from psmprj.utils.mail import send_mail_async as send_mail, split_combined_addresses
@@ -101,7 +101,7 @@ class Project(models.Model):
 
     title = models.CharField(_("title"), max_length=200)
     type = models.CharField(_("type"), max_length=20, choices=PRJTYPE, default=PrjType.UNC.value)
-    year = models.PositiveIntegerField(_("Year"), default=current_year(), validators=[MinValueValidator(2020), max_value_current_year])
+    year = models.PositiveIntegerField(_("Year"), default=current_year(), validators=[MinValueValidator(2014), max_value_current_year])
     strategy = models.ForeignKey(Strategy, blank=True, null=True, on_delete=models.PROTECT)
     program = models.ForeignKey(Program, blank=True, null=True, on_delete=models.PROTECT)
     is_internal = models.BooleanField(_("Internal project"), default=False)
@@ -110,9 +110,9 @@ class Project(models.Model):
 
     CBUs  = models.ManyToManyField(CBU, blank=True, null=True, related_name="projects")
     CBUpm = models.ForeignKey(Profile, related_name='cbu_pm', verbose_name=_('CBU PM'), on_delete=models.SET_NULL, null=True, blank=True)
-    # team = models.ForeignKey(Team, blank=True, null=True, on_delete=models.PROTECT)
+    team = models.ForeignKey(Team, blank=True, null=True, on_delete=models.PROTECT)
     dept = models.ForeignKey(Dept, blank=True, null=True, on_delete=models.PROTECT)
-    div = models.ForeignKey(Div, blank=True, null=True, on_delete=models.PROTECT)
+    # div = models.ForeignKey(Div, blank=True, null=True, on_delete=models.PROTECT)
 
     description = models.TextField(_("description"), max_length=2000, null=True, blank=True)
 
@@ -136,8 +136,9 @@ class Project(models.Model):
     ref = models.CharField(_("Reference"), blank=True, null=True, max_length=30)
     lstrpt = models.DateField(_("last report"), null=True, blank=True)
 
-    p_pre_plan_b = models.DateField(_("planned pre-planning start"), null=True, blank=False, default=date.today)
-    p_pre_plan_e = models.DateField(_("planned pre-planning end"), null=True, blank=True)
+    p_ideation   = models.DateField(_("Planned Ideation start"), null=True, blank=True, default=date.today)
+    p_plan_b = models.DateField(_("planned planning start"), null=True, blank=False, default=date.today)
+    p_plan_e = models.DateField(_("planned planning end"), null=True, blank=True)
     p_kickoff = models.DateField(_("planned kick-off date"), null=True, blank=False, default=date.today)
     p_design_b = models.DateField(_("planned design start"), null=True, blank=True)
     p_design_e = models.DateField(_("planned design end"), null=True, blank=True)
@@ -148,8 +149,8 @@ class Project(models.Model):
     p_launch = models.DateField(_("planned launch"), null=True, blank=False, default=date.today)
     p_close = models.DateField(_("planned closing"), null=True, blank=False, default=date.today)
 
-    a_pre_plan_b = models.DateField(_("actual pre-planning start"), null=True, blank=True)
-    a_pre_plan_e = models.DateField(_("actual pre-planning end"), null=True, blank=True)
+    a_plan_b = models.DateField(_("actual planning start"), null=True, blank=True)
+    a_plan_e = models.DateField(_("actual planning end"), null=True, blank=True)
     a_kickoff = models.DateField(_("actual kick-off date"), null=True, blank=True)
     a_design_b = models.DateField(_("actual design start"), null=True, blank=True)
     a_design_e = models.DateField(_("actual design end"), null=True, blank=True)
@@ -232,18 +233,19 @@ class Project(models.Model):
             if list(old_Project_data.CBUs.all()) != list(self.CBUs.all()):
                 send_email = True
 
-        #FIXME
-        if self.dept:
-            self.div = self.dept.div    
-        # if self.code is None:
-        #     self.code = f'{self.year % 100}-{"{:04d}".format(self.pk)}'
+        # if self.dept:
+        #     self.div = self.dept.div    
 
         super().save(*args, **kwargs)
+        
+        if self.code is None:
+            self.code = f'{self.year % 100}-{"{:04d}".format(self.pk+2000)}'    #migration upto 1999
+            self.save()
 
         if send_email:
             # Emails are sent to manager/HOD if the order is new
             # or the CBU has changed
-            self.send_new_Project_email()
+            self.send_new_project_email()
     
     # validation logic
     def clean(self):
@@ -274,7 +276,7 @@ class Project(models.Model):
         if len(validation_errors):
             raise ValidationError(validation_errors)
 
-    def send_new_Project_email(self):
+    def send_new_project_email(self):
         """
         Override with a custom email
         """
@@ -319,7 +321,7 @@ class Project(models.Model):
         See: psmprj/settings_emails.py
              https://github.com/FIXME/tornado-dpsmprj-mProjects-viewer
         """
-        salt = settings.ProjectS_VIEWER_HASH_SALT
+        salt = settings.PSM_VIEWER_HASH_SALT
         if not settings.DEBUG and salt == '1two3':
             logger.warning("Insecure salt code used to send email orders, do NOT use it in PRODUCTION")
         # created_at_as_iso = self.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ") # This ISO format is the same used

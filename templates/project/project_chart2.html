@@ -15,6 +15,17 @@
 {% block content %}
 <div id="container">
     <!-- filter area -->
+    <div style="display: flex; justify-content: space-between;">
+        <div>
+            <h3>Projects</h3>
+        </div>
+        <div id="chart_filter_ctrl" style="height: 2rem; display: flex;">
+            <label>Max Display Item:</label>
+            <input type="number" min="1" max="200" id="input_max_item" style="width: 100px; text-align: end; margin: 0 3px;"></input>
+            <button onclick="applyMaxItem()" id="btn_set_max_item" class="btn btn-sm btn-secondary">Apply</button>
+            <button onclick="toggleFilter()" id="btn_toggle_filter" class="btn btn-sm btn-link"></button>
+        </div>
+    </div>
     <div id="chart_fiter" class="row p-3">
         {% for filterItem in filterItems %}
         <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
@@ -37,6 +48,40 @@
 
 {% block child_js_above_files %} 
 <script>
+    var tChartData = [];
+    var tMaxItem = 200;
+
+    document.getElementById("input_max_item").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            document.getElementById("btn_set_max_item").click();
+        }
+    });
+
+    $('#input_max_item').val(tMaxItem);
+    function applyMaxItem() {
+        var tInputVal = $('#input_max_item').val();
+        tMaxItem = tInputVal;
+        if (tInputVal < 1) tMaxItem = 1;
+        else if (tInputVal > 200) tMaxItem = 200;
+        if (tInputVal !== tMaxItem) {
+            $('#input_max_item').val(tMaxItem);
+        }
+        updateChart();
+    }
+    
+    var tShowFilter = false;
+    function toggleFilter() {
+        tShowFilter = !tShowFilter;
+        $('#btn_toggle_filter').text( tShowFilter ? 'Hide Filter' : 'Show Filter');
+        if (tShowFilter) {
+            $('#chart_fiter').show();
+        } else {
+            $('#chart_fiter').hide();
+        }
+    }
+    toggleFilter();
+
     // set preselected values
     {% for filterItem in filterItems %}
         $('#sel_{{filterItem.qId}}').val("{{ filterItem.selected }}");
@@ -136,36 +181,43 @@
         return tParams;
     }
 
+    function updateChart() {
+        var tList = [];
+        // var tList = res.map((pItem) => { return {start: convertDate(pItem.p_plan_b), end: convertDate(pItem.p_close), completed: pItem.progress / 100, name: pItem.title}; });
+        var tMinTime = Date.now(), tMaxTime = Date.now();
+        var tCounter = 0;
+        tChartData.forEach((pItem) => {
+            if (tCounter++ < tMaxItem) {
+                var tStart = convertDate(pItem.p_plan_b);
+                var tEnd = convertDate(pItem.p_close);
+                tMinTime = Math.min(tMinTime, new Date(tStart).getTime());
+                tMaxTime = Math.max(tMaxTime, new Date(tEnd).getTime());
+                tList.push({start: tStart, end: tEnd, completed: (pItem.progress / 100), name: pItem.title});
+            }
+        });
+
+        var tChartOptions = Object.assign({}, tDefaultOptions, {series: [{ name: '', data: tList }]});
+        tChartOptions.yAxis.max = Math.min(25, Math.min(tCounter, tMaxItem)) - 1;
+
+        var tChart = Highcharts.ganttChart('chart_area', tChartOptions);
+        tChart.xAxis[0].setExtremes(tMinTime, tMaxTime);
+        if (tCounter >= tMaxItem) {
+            // alert("Too many projects - limit to display 200 items, please use filter.")
+        }
+    }
+
     function updateData() {
         var tUrl = '/api/1.0/projects';
         var tParams = getParams();        
         if (Object.keys(tParams).length > 0) {
             tUrl += '?' + new URLSearchParams(tParams).toString(); 
         }
-
         fetch(tUrl)
         .then(response => response.json())
         .then((res)=>{
             console.log(res);
-            var tList = [];
-            // var tList = res.map((pItem) => { return {start: convertDate(pItem.p_plan_b), end: convertDate(pItem.p_close), completed: pItem.progress / 100, name: pItem.title}; });
-            var tMinTime = Date.now(), tMaxTime = Date.now();
-            var tCounter = 0;
-            res.forEach((pItem) => {
-                if (tCounter++ < 100) {
-                    var tStart = convertDate(pItem.p_plan_b);
-                    var tEnd = convertDate(pItem.p_close);
-                    tMinTime = Math.min(tMinTime, new Date(tStart).getTime());
-                    tMaxTime = Math.max(tMaxTime, new Date(tEnd).getTime());
-                    tList.push({start: tStart, end: tEnd, completed: (pItem.progress / 100), name: pItem.title});
-                }
-            });            
-    
-            var tChart = Highcharts.ganttChart('chart_area', Object.assign({}, tDefaultOptions, {series: [{ name: '', data: tList }]}));
-            tChart.xAxis[0].setExtremes(tMinTime, tMaxTime);
-            if (tCounter >= 100) {
-                alert("Too many projects - limit to display 100 items, please use filter.")
-            }
+            tChartData = res;
+            updateChart();
         });
     }
 
@@ -179,6 +231,5 @@
 
     setDefaultYear();
     updateData();
-
 </script>
 {% endblock %}

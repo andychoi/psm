@@ -33,9 +33,9 @@ def project_list(request):
         if ltmp:
             projects = projects.filter(phase=PHASE[int(ltmp)][0])
 
-        # ltmp = request.GET.get('cbu', '')
-        # if len(projects) > 0 and ltmp:
-        #     projects = projects.filter(CBU__id=ltmp)
+        ltmp = request.GET.get('cbu', '')
+        if len(projects) > 0 and ltmp:
+            projects = projects.filter(CBUs__id=ltmp)
 
         ltmp = request.GET.get('pri', '')
         if ltmp:

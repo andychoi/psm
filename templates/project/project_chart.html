@@ -27,7 +27,7 @@
                             <select class="form-select"  id='sel_{{ filterItem.qId }}' onchange="updateData()">
                                 <option value=''>ALL</option>
                                 {% for pItem in filterItem.items %}
-                                <option value={{ pItem.id }}>{{ pItem.name }}</option>
+                                <option value="{{ pItem.id }}">{{ pItem.name }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -83,39 +83,41 @@
     ]
     // var tasks ={{project_list|safe}};
     
-    var gantt = new Gantt("#gantt", tasks, {
-        header_height: 50,
-        column_width: 40,
-        step: 720,
-        // view_modes: ['Day', 'Week', 'Month', 'Year'],
-        bar_height: 20,
-        bar_corner_radius: 3,
-        arrow_curve: 5,
-        padding: 18,
-        // view_mode: 'Month',
-        view_mode: 'Custom',
-        date_format: 'YYYY-MM-DD',
-        custom_popup_html: null            
-    });
-    // https://github.com/frappe/gantt/issues/223
-    // gantt.change_view_mode('Month')
-
-    var btnGroups = document.getElementsByClassName('btn-group');
-    if (btnGroups) {
-        btnGroups[0].addEventListener("click", function(e) {
-            e.preventDefault();
-            var target = e.target || e.srcElement, text = target.textContent || target.innerText;
-            for (let i = 0; i < this.children.length; i++) {
-                this.children[i].classList.remove('active');
-            }
-            target.classList.add('active');
-            
-            if (text === 'Custom') {
-                gantt.options.column_width = 32;
-                gantt.options.step = 720;
-            }
-            gantt.change_view_mode(text);
-        }, false);
+    if (tasks.length > 0) {
+        var gantt = new Gantt("#gantt", tasks, {
+            header_height: 50,
+            column_width: 40,
+            step: 720,
+            // view_modes: ['Day', 'Week', 'Month', 'Year'],
+            bar_height: 20,
+            bar_corner_radius: 3,
+            arrow_curve: 5,
+            padding: 18,
+            // view_mode: 'Month',
+            view_mode: 'Custom',
+            date_format: 'YYYY-MM-DD',
+            custom_popup_html: null            
+        });
+        // https://github.com/frappe/gantt/issues/223
+        // gantt.change_view_mode('Month')
+    
+        var btnGroups = document.getElementsByClassName('btn-group');
+        if (btnGroups) {
+            btnGroups[0].addEventListener("click", function(e) {
+                e.preventDefault();
+                var target = e.target || e.srcElement, text = target.textContent || target.innerText;
+                for (let i = 0; i < this.children.length; i++) {
+                    this.children[i].classList.remove('active');
+                }
+                target.classList.add('active');
+                
+                if (text === 'Custom') {
+                    gantt.options.column_width = 32;
+                    gantt.options.step = 720;
+                }
+                gantt.change_view_mode(text);
+            }, false);
+        }
     }
 
 </script>

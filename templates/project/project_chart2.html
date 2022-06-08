@@ -22,7 +22,7 @@
             <select class="form-select"  id='sel_{{ filterItem.qId }}' onchange="updateData()">
                 <option value=''>ALL</option>
                 {% for pItem in filterItem.items %}
-                <option value={{ pItem.id }}>{{ pItem.name }}</option>
+                <option value="{{ pItem.id }}">{{ pItem.name }}</option>
                 {% endfor %}
             </select>
         </div>

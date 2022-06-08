@@ -57,6 +57,7 @@
         },
 
         yAxis: {
+            staticScale: 20,
             uniqueNames: true
         },
 
@@ -121,16 +122,22 @@
         series: []
     };
 
-    function updateData() {
-        var tUrl = '/api/1.0/projects';
+    function getParams() {
         var tParams = {};
         {% for filterItem in filterItems %}
             var tmp = $('#sel_{{filterItem.qId}}').val();
             if (tmp != '') tParams['{{filterItem.qId}}'] = tmp;
         {% endfor %}
+        return tParams;
+    }
+
+    function updateData() {
+        var tUrl = '/api/1.0/projects';
+        var tParams = getParams();        
         if (Object.keys(tParams).length > 0) {
             tUrl += '?' + new URLSearchParams(tParams).toString(); 
         }
+
         fetch(tUrl)
         .then(response => response.json())
         .then((res)=>{
@@ -156,6 +163,16 @@
             }
         });
     }
+
+    function setDefaultYear() {
+        var tParams = getParams();
+        if (Object.keys(tParams).length === 0) {
+            var tDate = new Date();
+            $('#sel_year').val(tDate.getFullYear());
+        }
+    }
+
+    setDefaultYear();
     updateData();
 
 </script>

@@ -18,9 +18,9 @@ def project_list(request):
     if ltmp:
         projects = projects.filter(year=ltmp)
 
-    ltmp = request.GET.get('div', '')
-    if ltmp:
-        projects = projects.filter(div__id=ltmp)
+    # ltmp = request.GET.get('div', '')
+    # if ltmp:
+    #     projects = projects.filter(div__id=ltmp)
 
     ltmp = request.GET.get('dep', '')
     if ltmp:
@@ -30,9 +30,9 @@ def project_list(request):
     if ltmp:
         projects = projects.filter(phase=PHASE[int(ltmp)][0])
 
-    ltmp = request.GET.get('cbu', '')
-    if ltmp:
-        projects = projects.filter(CBU__id=ltmp)
+    # ltmp = request.GET.get('cbu', '')
+    # if ltmp:
+    #     projects = projects.filter(CBU__id=ltmp)
 
     ltmp = request.GET.get('pri', '')
     if ltmp:

@@ -139,7 +139,11 @@
             // var tList = res.map((pItem) => { return {start: convertDate(pItem.p_plan_b), end: convertDate(pItem.p_close), completed: pItem.progress / 100, name: pItem.title}; });
             var tMinTime = Date.now(), tMaxTime = Date.now();
             res.forEach((pItem) => {
+<<<<<<< HEAD
                 var tStart = convertDate(pItem.p_plan_b);
+=======
+                var tStart = convertDate(pItem.p_ideation);
+>>>>>>> 62b344f430115a02aa9b41cbfdd49ab940c433c7
                 var tEnd = convertDate(pItem.p_close);
                 tMinTime = Math.min(tMinTime, new Date(tStart).getTime());
                 tMaxTime = Math.max(tMaxTime, new Date(tEnd).getTime());

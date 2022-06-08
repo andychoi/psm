@@ -73,8 +73,7 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display = ('pjcode', 'title', 'pm', 'dept', 'phase', 'state', 'cbu_list', )    #CBU many to many
     list_display_links = ('pjcode', 'title')
     list_editable = ("phase", 'state',)
-    search_fields = ('id', 'title', 'description', 'resolution', 'code',
-        'wbs__wbs', 'es', 'ref', 'pm__username', 'CBUpm__username', 'CBUs__name')     #FIXME many to many
+    search_fields = ('id', 'title', 'description', 'resolution', 'code', 'wbs__wbs', 'es', 'ref', 'pm__name', 'CBUpm__name', 'CBUs__name')     #FIXME many to many
     list_filter = (
         ('status_o', UnionFieldListFilter),
         ('year', DropdownFilter),

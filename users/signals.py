@@ -26,7 +26,7 @@ def create_profile(sender, instance, created, **kwargs):
         except:
             pass
         if not found:    
-            Profile.objects.create(user=instance, username=instance.username)
+            Profile.objects.create(user=instance, name=instance.username)
 
 # try to create profile double time: by signal and by form.
 # use get_or_create instead of create
@@ -41,7 +41,7 @@ def save_profile(sender, instance, **kwargs):
         try:
             found = Profile.objects.get(email=instance.email) if not instance.email is None else None
         except:
-            Profile.objects.create(user=instance, username=instance.username)
+            Profile.objects.create(user=instance, name=instance.username)
             print("profile created")
 
     # if profile_exist: #to avoid cyclic, check create_profile
@@ -52,9 +52,9 @@ def save_profile(sender, instance, **kwargs):
         if ( instance.profile.is_active != instance.is_active ) : 
             instance.profile.is_active = instance.is_active
             instance.profile.save(update_fields=['is_active'])
-        if not instance.profile.username:
-            instance.profile.username = instance.username   #first+last
-            instance.profile.save(update_fields=['username']) 
+        if not instance.profile.name:
+            instance.profile.name = instance.username   #first+last
+            instance.profile.save(update_fields=['name']) 
 
 
 @receiver(post_save, sender=Profile)

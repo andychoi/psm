@@ -27,6 +27,8 @@ from mtasks.serializers import TaskViewSet
 # auth, user
 from django.contrib.auth import views as auth_views
 from users import views as user_views
+from users.forms import MyAuthenticationForm
+
 # private media
 # import private_storage.urls
 
@@ -47,7 +49,7 @@ urlpatterns = [
     # Authentication Urls
     path('register/', user_views.register, name='register'),
     path('profile/', user_views.profile, name='profile'),
-    path('login/', auth_views.LoginView.as_view(template_name='users/login.html'), name='login'),
+    path('login/', auth_views.LoginView.as_view(template_name='users/login.html', form_class=MyAuthenticationForm), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name='logout'),
     # Resete Password Urls
     path('password-reset/', auth_views.PasswordResetView.as_view(

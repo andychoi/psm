@@ -161,9 +161,9 @@ class projectList1View(generic.ListView):
             if ltmp:
                 queryset = queryset.filter(year=ltmp)
 
-            # ltmp = self.request.GET.get('div', '')
-            # if ltmp:
-            #     queryset = queryset.filter(div__id=ltmp)
+            ltmp = self.request.GET.get('div', '')
+            if ltmp:
+                queryset = queryset.filter(dept__div__id=ltmp)
 
             ltmp = self.request.GET.get('dep', '')
             if ltmp:

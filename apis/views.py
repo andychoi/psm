@@ -21,9 +21,9 @@ def project_list(request):
         if ltmp:
             projects = projects.filter(year=ltmp)
 
-        # ltmp = request.GET.get('div', '')
-        # if ltmp:
-        #     projects = projects.filter(div__id=ltmp)
+        ltmp = request.GET.get('div', '')
+        if ltmp:
+            projects = projects.filter(dept__div__id=ltmp)
 
         ltmp = request.GET.get('dep', '')
         if ltmp:

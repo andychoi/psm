@@ -14,8 +14,9 @@ import datetime
 from django.urls import reverse
 from django.utils.html import mark_safe
 
-from django.forms import formsets
+from django.forms import formsets, formset_factory
 from django.forms.models import BaseInlineFormSet
+
 
 # README issue with import/export https://github.com/crccheck/django-object-actions/issues/67
 from django_object_actions import DjangoObjectActions
@@ -38,6 +39,7 @@ from django.db.models.fields.related import ForeignKey
 #     list_display_links = ('id', 'project')
 #     pass
 
+# class MilestoneFormSet(forms.models.BaseInlineFormSet):
 class MilestoneFormSet(forms.models.BaseInlineFormSet):
     model = Milestone
 
@@ -47,21 +49,22 @@ class MilestoneFormSet(forms.models.BaseInlineFormSet):
         if not self.instance.pk: 
             self.initial = [
             # {'no': 1,  'stage': 'Overall', 'description': 'Overall project status', },
-            {'no': 2,  'stage': '1.Plan & Define', 'description': 'Requirements gathering', },
-            {'no': 3,  'stage': '1.Plan & Define', 'description': 'Validate requirement expectations', },
-            {'no': 4,  'stage': '1.Plan & Define', 'description': 'Architectural,Technical and Security Design', },
-            {'no': 5,  'stage': '1.Plan & Define', 'description': 'Project Planning', },
-            {'no': 6,  'stage': '1.Plan & Define', 'description': 'SOW / Contract', },
-            {'no': 7,  'stage': '1.Plan & Define', 'description': 'Project Kickoff', },
-            {'no': 8,  'stage': '2.Implement', 'description': 'Detail design', },
-            {'no': 9,  'stage': '2.Implement', 'description': 'Development', },
-            {'no': 10, 'stage': '2.Implement', 'description': 'Integration', },
-            {'no': 11, 'stage': '2.Implement', 'description': 'User acceptance testing', },
-            {'no': 12, 'stage': '3.Deployment', 'description': 'Go-live preparation', },
-            {'no': 13, 'stage': '3.Deployment', 'description': 'Deployment', },
-            {'no': 14, 'stage': '4.Post Support', 'description': 'Hyper care', },
-            {'no': 15, 'stage': '4.Post Support', 'description': 'Signoff,closure', },
+            {'no': 2,  'stage': '1.Plan & Define',  'description': 'Requirements gathering', },
+            {'no': 3,  'stage': '1.Plan & Define',  'description': 'Validate requirement expectations', },
+            {'no': 4,  'stage': '1.Plan & Define',  'description': 'Architectural,Technical and Security Design', },
+            {'no': 5,  'stage': '1.Plan & Define',  'description': 'Project Planning', },
+            {'no': 6,  'stage': '1.Plan & Define',  'description': 'SOW / Contract', },
+            {'no': 7,  'stage': '1.Plan & Define',  'description': 'Project Kickoff', },
+            {'no': 8,  'stage': '2.Implement',      'description': 'Detail design', },
+            {'no': 9,  'stage': '2.Implement',      'description': 'Development', },
+            {'no': 10, 'stage': '2.Implement',      'description': 'Integration', },
+            {'no': 11, 'stage': '2.Implement',      'description': 'User acceptance testing', },
+            {'no': 12, 'stage': '3.Deployment',     'description': 'Go-live preparation', },
+            {'no': 13, 'stage': '3.Deployment',     'description': 'Deployment', },
+            {'no': 14, 'stage': '4.Post Support',   'description': 'Hyper care', },
+            {'no': 15, 'stage': '4.Post Support',   'description': 'Signoff,closure', },
             ]
+
 
 class MilestoneInline(admin.TabularInline):
     model = Milestone
@@ -77,9 +80,13 @@ class MilestoneInline(admin.TabularInline):
     def get_extra(self, request, obj=None, **kwargs):
         extra = 0  #super(MilestoneInline, self).get_extra(request, obj, **kwargs)
         if not obj: #new create only
-            extra = 15 #defined in __init__
+            extra = 14 #defined in __init__
         return extra
 
+    def has_changed(self):
+        """ Should returns True if data differs from initial. 
+        By always returning true even unchanged inlines will get validated and saved."""
+        return True
 
 #https://docs.djangoproject.com/en/4.0/ref/contrib/admin/#django.contrib.admin.ModelAdmin.autocomplete_fields
 @admin.register(Report)
@@ -89,12 +96,12 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
 
     # form = ReportAdminForm  
 
-    list_display = ('project_link', 'title', 'CBU', 'is_monthly','formatted_updated', 'status','preview_link')
+    list_display = ('project_link', 'title', 'cbu_list', 'is_monthly','formatted_updated', 'status','preview_link')
     list_display_links = ('title', 'formatted_updated')
     list_editable = ('status',)
     ordering = ('-id',)
     autocomplete_fields = [ 'project' ]
-    readonly_fields = ('project_link', 'CBU', 'created_on', 'updated_on', 'created_by', 'updated_by')
+    readonly_fields = ('project_link', 'CBUs', 'dept', 'created_on', 'updated_on', 'created_by', 'updated_by')
 
     search_fields = ('title', 'project__title', 'content_a', 'content_p', 'issue', 'created_by__profile__name', 'updated_by__profile__name',
                     )
@@ -112,7 +119,7 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
         (None, {'fields': (('project', 'title', 'status', 'is_monthly'), 
                             ('status_o', 'status_t', 'status_b', 'status_s', 'progress' ), 
                             ('content_a', 'content_p', 'issue'), ),  "classes": ("stack_labels",)}),
-            (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by'),('CBU','dept','div')), 'classes': ('collapse',)}),
+            (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by'),('CBUs','dept',)), 'classes': ('collapse',)}),
     )
 
     def get_fieldsets(self, request, obj=None):
@@ -127,14 +134,40 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
 
     list_filter = (
         ('project', RelatedDropdownFilter),
-        ('CBU', RelatedDropdownFilter),
-        ('div', RelatedDropdownFilter),
-        ('dept', RelatedDropdownFilter),
+        ('project__CBUs', RelatedDropdownFilter),
+        ('project__dept', RelatedDropdownFilter),
+        # ('div', RelatedDropdownFilter),
+        # ('dept', RelatedDropdownFilter),
         ('status', UnionFieldListFilter),
         'updated_on'
     )
 
     inlines = [MilestoneInline]
+
+    # inline initial force to save -> FIXME... 
+    #https://stackoverflow.com/questions/50175561/initial-data-for-django-admin-inline-formset-is-not-saved
+    #     # def save_related(self, request, form, formsets, change):
+    #     for formset in formsets:
+    #         if formset.model == Milestone:
+    #             instances = formset.save(commit=False)
+    #             report = form.instance
+    #             # for added_milestone in formset.new_objects:
+    #             # for deleted_milestone in formset.deleted_objects:
+    #     super(ReportAdmin, self).save_related(request, form, formsets, change)
+    # def save_formset(self, request, form, formset, change):
+    #     if formset == formset_factory(MilestoneFormSet):
+    #         instances = formset.save(commit=False)
+    #         for idx, instance in instances:
+    #             if instance.pk == None: # add
+    #                 instance.no = idx
+    #             else:
+    #                 # check `change` for is changed or deleted
+    #                 pass
+    #         formset.save_m2m()
+
+        # for idx, inline_form in formset.forms:
+        #     # if inline_form.has_changed():
+        # super().save_formset(request, form, formset, change)
 
     #https://stackoverflow.com/questions/910169/resize-fields-in-django-admin
     def get_form(self, request, obj=None, change=False, **kwargs):
@@ -165,6 +198,10 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
     def formatted_updated(self, obj):
         return obj.updated_on.strftime("%m/%d/%y")
     formatted_updated.short_description = 'Updated'
+
+    def cbu_list(self, obj):
+        return " ,".join(p.name for p in obj.CBUs.all())
+    cbu_list.short_description = 'CBUs'
 
     # object-function
     def send_report(self, request, obj):
@@ -228,7 +265,10 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
         new.title = '<new report>' 
         new._state.adding = True           
         new.save()  #adding
-        # breakpoint()
+        # update many-to-many after save
+        new.CBUs.set(obj.project.CBUs.all())
+        new.save()
+        # clone milestones
         old_ms = Milestone.objects.filter(report=old_id)
         for m in old_ms:
             m.report = new
@@ -247,14 +287,18 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
             obj.updated_by = request.user
         else:
             obj.updated_by = request.user
-        if not obj.CBU and obj.project.CBU:  #copy from project
-            obj.CBU = obj.project.CBU
-        if not obj.dept and obj.project.dept:  #copy from project
-            obj.dept = obj.project.dept
-        if not obj.div and not obj.project.div:  #copy from project
-            obj.div = obj.project.div
+
+        #redundant, but need for filtering in admin list
+        obj.dept = obj.project.dept
 
         super().save_model(request, obj, form, change)
+
+        #FIXME manytomany : queryset list(q1) == list(q2)
+        #needs to have "id" before many-to-many relations can be used
+        if (not obj.CBUs.exists()): 
+            obj.CBUs.set(obj.project.CBUs.all())
+            obj.save()
+
 
         if obj.status == 1:  #if published, update project master info
             obj.project.status_o = obj.status_o
@@ -306,11 +350,11 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
 class ReportRiskAdmin(ImportExportMixin, admin.ModelAdmin):
 
     # list_display = ('project_link', 'title', 'CBU', 'dept','formatted_reporton', 'state', 'status')
-    list_display = ('project_link', 'title', 'get_CBU', 'get_dept','formatted_reporton', 'state', 'status')
+    list_display = ('project_link', 'title', 'cbu_list', 'get_dept','formatted_reporton', 'state', 'status')
     list_display_links = ('title', 'formatted_reporton')
     list_editable = ("state", 'status',)
     ordering = ('-id',)
-    readonly_fields = ('project_link', 'updated_on', 'updated_by', 'created_on', 'created_by', 'get_CBU', 'get_dept')
+    readonly_fields = ('project_link', 'updated_on', 'updated_by', 'created_on', 'created_by', 'cbu_list', 'get_dept')
     search_fields = ('title', 'project__title', 'risk', 'plan', 'owner')
 
     def project_link(self, obj):
@@ -321,7 +365,7 @@ class ReportRiskAdmin(ImportExportMixin, admin.ModelAdmin):
     fieldsets = (               # Edition form
         (None, {'fields': (('project', 'status'), ('report_on', 'title', ), 
                                 ('risk', 'plan', ), ('deadline', 'owner', 'state', ) ),  "classes": ("stack_labels",)}),
-            (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by'),('get_CBU', 'get_dept',)), 'classes': ('collapse',)}),
+            (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by'),('cbu_list', 'get_dept',)), 'classes': ('collapse',)}),
             # (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by'),('CBU','dept','div')), 'classes': ('collapse',)}),
     )
 
@@ -336,7 +380,7 @@ class ReportRiskAdmin(ImportExportMixin, admin.ModelAdmin):
 
     list_filter = (
         ('project', RelatedDropdownFilter),
-        ('project__CBU', RelatedDropdownFilter),
+        ('project__CBUs', RelatedDropdownFilter),  #FIXME many to many OK
         ('project__div', RelatedDropdownFilter),
         ('project__dept', RelatedDropdownFilter),
         ('state', UnionFieldListFilter),
@@ -364,9 +408,9 @@ class ReportRiskAdmin(ImportExportMixin, admin.ModelAdmin):
         return obj.report_on.strftime("%b %Y")
     formatted_reporton.short_description = 'Report On'
 
-    def get_CBU(self, obj):
-        return obj.project.CBU.name
-    get_CBU.short_description = 'CBU'
+    def cbu_list(self, obj):
+        return " ,".join(p.name for p in obj.project.CBUs.all())
+    cbu_list.short_description = 'CBUs'
 
     def get_dept(self, obj):
         return obj.project.dept

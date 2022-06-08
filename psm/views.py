@@ -174,7 +174,7 @@ class projectList1View(generic.ListView):
 
         ltmp = self.request.GET.get('cbu', '')
         if ltmp:
-            queryset = queryset.filter(CBU__id=ltmp)
+            queryset = queryset.filter(CBUs__id=ltmp)
 
         ltmp = self.request.GET.get('pri', '')
         if ltmp:

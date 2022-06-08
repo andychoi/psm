@@ -34,10 +34,6 @@ def max_value_current_year(value):
 def max_value_program_year(value):
     return MaxValueValidator(current_year()+5)(value)
 
-# Fields used to create an index in the DB and sort the Projects in the Admin
-Project_PRIORITY_FIELDS = ('state', 'CBU', '-priority', '-lstrpt')
-
-
 
 class Strategy(models.Model):
     class Meta:
@@ -89,7 +85,17 @@ class ProjectManager(models.Manager):
 #  Sub-project? 정도로 해서 서로 연동이 되게 해서 부서별로 PM 및 일정 등을 관리 할수 있으면 좋을 것 같습니다. 
 # # 나중에 팀 실적이나 담당자 실적에도 중요한 사항들이구요.
 # TODO : GMDM, SSG
+
+# Fields used to create an index in the DB and sort the Projects in the Admin
+Project_PRIORITY_FIELDS = ('state', '-priority', '-lstrpt')
+
 class Project(models.Model):
+    class Meta:
+        verbose_name = _("Project")
+        verbose_name_plural = _("Projects")
+        indexes = [
+            models.Index(fields=Project_PRIORITY_FIELDS, name='mProjects_Project_priority_idx'),
+        ]
 
     code = models.CharField(_("Code"), max_length=10, null=True, blank=True) 
 
@@ -102,7 +108,7 @@ class Project(models.Model):
     is_agile = models.BooleanField(_("Agile project"), default=False)
     is_unplanned = models.BooleanField(_("Unplanned project"), default=True)
 
-    CBU = models.ForeignKey(CBU, blank=True, null=True, on_delete=models.PROTECT)
+    CBUs  = models.ManyToManyField(CBU, blank=True, null=True, related_name="projects")
     CBUpm = models.ForeignKey(Profile, related_name='cbu_pm', verbose_name=_('CBU PM'), on_delete=models.SET_NULL, null=True, blank=True)
     # team = models.ForeignKey(Team, blank=True, null=True, on_delete=models.PROTECT)
     dept = models.ForeignKey(Dept, blank=True, null=True, on_delete=models.PROTECT)
@@ -173,13 +179,6 @@ class Project(models.Model):
     # what is this for??
     objects = ProjectManager()
 
-    class Meta:
-        verbose_name = _("Project")
-        verbose_name_plural = _("Projects")
-        indexes = [
-            models.Index(fields=Project_PRIORITY_FIELDS, name='mProjects_Project_priority_idx'),
-        ]
-
     def __str__(self):
 #        return "[%s] %s" % (self.number, self.title)
 #        return "[%s] %s" % (f'{self.created_at.strftime("%y")}-{"{:04d}".format(self.pk)}', self.title)    
@@ -205,6 +204,11 @@ class Project(models.Model):
             return self.code    #migrated records
 
     @property
+    def CBU_str(self):
+        # this is not working... FIXME 
+        return " ,".join(p.name for p in self.CBUs.all())
+
+    @property
     def emails_to(self):
         return split_combined_addresses(self.recipients_to)
 
@@ -222,19 +226,22 @@ class Project(models.Model):
 
     def save(self, *args, **kwargs):
         send_email = self.pk is None
-        if not send_email and self.CBU:
+        if not send_email and self.CBUs.exists():   #FIXME many-to-many
             old_Project_data = Project.objects.get(pk=self.pk)
-            if old_Project_data.CBU != self.CBU:
+            # many-to-many compare FIXME
+            if list(old_Project_data.CBUs.all()) != list(self.CBUs.all()):
                 send_email = True
 
         #FIXME
-        self.div = self.dept.div    
+        if self.dept:
+            self.div = self.dept.div    
         # if self.code is None:
         #     self.code = f'{self.year % 100}-{"{:04d}".format(self.pk)}'
 
         super().save(*args, **kwargs)
+
         if send_email:
-            # Emails are sent if the order is new
+            # Emails are sent to manager/HOD if the order is new
             # or the CBU has changed
             self.send_new_Project_email()
     
@@ -242,18 +249,20 @@ class Project(models.Model):
     def clean(self):
         validation_errors = {}
         title = self.title.strip() if self.title else self.title
-        if self.CBU:
-            if Project.objects \
-                    .others(self.pk, title=title, CBU=self.CBU) \
-                    .exclude(state__in=(State.DONE.value, State.CANCEL.value)) \
-                    .exists():
-                validation_errors['title'] = _('Open Project with this title and CBU already exists.')
-        else:
-            if Project.objects \
-                    .others(self.pk, title=title, CBU=None) \
-                    .exclude(state__in=(State.DONE.value, State.CANCEL.value)) \
-                    .exists():
-                validation_errors['title'] = _('Open Project with this title and no CBU already exists.')
+
+        #FIXME manytomany CBU.all() returns Queryset
+        # if self.CBU.all():
+        #     if Project.objects \
+        #             .others(self.pk, title=title, CBU=self.CBU) \
+        #             .exclude(state__in=(State.DONE.value, State.CANCEL.value)) \
+        #             .exists():
+        #         validation_errors['title'] = _('Open Project with this title and CBU already exists.')
+        # else:
+        #     if Project.objects \
+        #             .others(self.pk, title=title, CBU=None) \
+        #             .exclude(state__in=(State.DONE.value, State.CANCEL.value)) \
+        #             .exists():
+        #         validation_errors['title'] = _('Open Project with this title and no CBU already exists.')
 
         if self.recipients_to and not self.emails_to:
             validation_errors['title'] = _('Email format is not acceptable in Recipients(to)')
@@ -270,10 +279,10 @@ class Project(models.Model):
         Override with a custom email
         """
         emails_to = []
-        if settings.PROJECT_SEND_EMAILS_TO_CBUS and self.CBU and self.CBU.email:
-            emails_to.append(self.CBU.email)
-        if settings.PROJECT_SEND_EMAILS_TO_ASSIGNED and self.user and self.user.email:
-            emails_to.append(self.user.email)
+        if settings.PROJECT_SEND_EMAILS_TO_CBUS and self.CBUpm and self.CBUpm.email:
+            emails_to.append(self.CBUpm.email)
+        if settings.PROJECT_SEND_EMAILS_TO_ASSIGNED and self.pm and self.pm.email:
+            emails_to.append(self.pm.email)
         if len(emails_to):
             logger.info("[Project #%s] Sending Project creation email to: %s", self.number, emails_to)
             vals = {
@@ -283,11 +292,11 @@ class Project(models.Model):
                 "description": self.description or '-',
                 "sign": settings.SITE_HEADER,
             }
-            if settings.ProjectS_VIEWER_ENABLED:
-                email_template = settings.MProjectS_EMAIL_WITH_URL
+            if settings.PSM_VIEWER_ENABLED:
+                email_template = settings.PSM_EMAIL_WITH_URL
                 vals["url"] = self.get_Projects_viewer_url()
             else:
-                email_template = settings.MProjectS_EMAIL_WITHOUT_URL
+                email_template = settings.PSM_EMAIL_WITHOUT_URL
             try:
                 send_mail(
                     '[{app}] [#{id}] New Project Created'.format(app=settings.APP_NAME, id=self.number),

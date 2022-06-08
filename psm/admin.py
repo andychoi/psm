@@ -70,17 +70,17 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
         css = {
         'all': ('psm/css/custom_admin.css',),
     }    
-    list_display = ('pjcode', 'title', 'pm', 'CBU',  'dept', 'phase', 'state', )
+    list_display = ('pjcode', 'title', 'pm', 'dept', 'phase', 'state', 'cbu_list', )    #CBU many to many
     list_display_links = ('pjcode', 'title')
     list_editable = ("phase", 'state',)
     search_fields = ('id', 'title', 'description', 'resolution', 'code',
-        'wbs__wbs', 'es', 'ref', 'pm__username', 'CBUpm__username', 'CBU__name')
+        'wbs__wbs', 'es', 'ref', 'pm__username', 'CBUpm__username', 'CBUs__name')     #FIXME many to many
     list_filter = (
         ('status_o', UnionFieldListFilter),
         ('year', DropdownFilter),
         ('div', RelatedDropdownFilter), #FIXME dept__div not working
         ('dept', RelatedDropdownFilter),
-        ('CBU', RelatedDropdownFilter),
+        ('CBUs', RelatedDropdownFilter),   #FIXME many to many
         ('state', UnionFieldListFilter),
         ('priority', UnionFieldListFilter),
         ('req_pro', DropdownFilter),
@@ -91,14 +91,14 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
     )
     ordering = ['-id']  #Project_PRIORITY_FIELDS
     readonly_fields = ('created_at', 'last_modified', 'created_by', 'lstrpt', 'link', )
-    autocomplete_fields = ['pm', 'CBU']
+    autocomplete_fields = ['pm', 'CBUs']
 
     fieldsets = (               # Edition form
         (None,  {'fields': (('title', 'type', 'year', ), 
                             ('state', 'phase', 'progress', 'priority'), 
                             ('status_o', 'status_t', 'status_b', 'status_s', 'lstrpt', 'resolution'), 
                             ), "classes": ("stack_labels",)}),
-        (_('Detail...'),  {'fields': (('strategy', 'program', 'is_agile'), ('CBU', 'CBUpm', 'ref'),('pm', 'dept', 'div'), 
+        (_('Detail...'),  {'fields': (('strategy', 'program', 'is_agile'), ('CBUs', 'CBUpm', 'ref'),('pm', 'dept', 'div'), 
                             ( 'est_cost', 'app_budg', 'wbs', 'es', 'is_unplanned', 'is_internal' ), ('description',), 
                                        ), 'classes': ('collapse',)}),
         (_('Schedule...'),  {'fields': (('p_pre_plan_b','p_pre_plan_e','p_kickoff','p_design_b','p_design_e','p_dev_b','p_dev_e','p_uat_b','p_uat_e','p_launch','p_close'),
@@ -140,6 +140,13 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
     # the following is necessary if 'link' method is also used in list_display
     # link.allow_tags = True
 
+    def formatted_updated(self, obj):
+        return obj.updated_on.strftime("%m/%d/%y")
+    formatted_updated.short_description = 'Updated'
+
+    def cbu_list(self, obj):
+        return " ,".join(p.name for p in obj.CBUs.all())
+    cbu_list.short_description = 'CBUs'
 
     #not working...https://stackoverflow.com/questions/46892851/django-simple-history-displaying-changed-fields-in-admin
 
@@ -150,6 +157,7 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
     # }
     def get_form(self, request, obj=None, change=False, **kwargs):
         form = super().get_form(request, obj, change, **kwargs)
+
         form.base_fields['description'].widget.attrs.update({'rows':5,'cols':80})
         if  obj:    #change
             form.base_fields['resolution'].widget.attrs.update({'rows':5,'cols':40})
@@ -217,7 +225,7 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
                 # read review record
                 theproc = Review.objects.filter(Q(project = obj.id) & Q(reviewtype = upd[0]))      #[:1].get()
                 if theproc: #already exist
-                    update_dic = { 'project' : obj, 'CBU' : obj.CBU, 'dept' : obj.dept, 'state' : upd[1] }
+                    update_dic = { 'project' : obj, 'CBUs' : obj.CBUs, 'dept' : obj.dept, 'state' : upd[1] }  #FIXME many to many
                     theproc.update(**update_dic)
                     messages.add_message(request, messages.INFO, '[' + upd[0][3:] + '] review type records are updated.')
 

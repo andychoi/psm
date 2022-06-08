@@ -43,9 +43,9 @@ class Report(models.Model):
     project = models.ForeignKey('psm.Project', on_delete=models.CASCADE, blank=True, null=True)
     # title field using charfield constraint with unique constraint
     title = models.CharField(max_length=200)
-    CBU = models.ForeignKey(CBU, blank=True, null=True, on_delete=models.PROTECT)
+    CBUs = models.ManyToManyField(CBU, blank=True, null=True)
+    # CBU = models.ForeignKey(CBU, blank=True, null=True, on_delete=models.PROTECT)
     dept = models.ForeignKey(Dept, blank=True, null=True, on_delete=models.PROTECT)
-    div = models.ForeignKey(Div, blank=True, null=True, on_delete=models.PROTECT)
 
     status_o = models.CharField(_("Overall"), max_length=20, choices=STATUS, default=Status.GREEN.value)
     status_t = models.CharField(_("Schedule"), max_length=20, choices=STATUS, default=Status.GREEN.value)

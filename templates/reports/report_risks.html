@@ -49,7 +49,7 @@
 
         {% for risk in report_risks %}
           <tr>
-            <td>{{ risk.project.CBU }}</td> 
+            <td>{{ risk.project.CBU_str }}</td> 
             <td class="risk-count-{{ forloop.counter }}">
             <a class="article-title" href="/admin/reports/reportrisk/{{ risk.pk }}" target="blank">{{ risk.title }}</a> </td> 
             <td>{{ risk.owner }}</td>               

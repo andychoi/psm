@@ -7,15 +7,24 @@ from .models import Profile
 def register(request):
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
-        if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get('username')
+        p_form = ProfileUpdateForm(request.POST)
+        if form.is_valid() and p_form.is_valid():
+            # always use lowercase
+            u = form.save()
+
+            #https://stackoverflow.com/questions/3063935/django-how-to-make-one-form-from-multiple-models-containing-foreignkeys
+            p = p_form.save(commit=False)
+            p.user = u
+            p.save()
+
             messages.success(
-                request, "Your account has been created! Your ar now able to login.")
+                request, "Your account has been created with %s!. You are now able to login." % username)
             return redirect('login')
     else:
         form = UserRegisterForm()
-    return render(request, 'users/register.html', {'form': form})
+        p_form = ProfileUpdateForm()
+        
+    return render(request, 'users/register.html', {'form': form, 'p_form': p_form} )
 
 
 @login_required

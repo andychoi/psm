@@ -17,14 +17,14 @@ from common.models import CBU, Div, Dept
 
 @admin.register(Profile)
 class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
-    # list_display = ('id', 'user', 'username', 'email', 'u_dept', 'manager', 'u_div', 'CBU', 'is_active')
-    list_display = ('id', 'user', 'username', 'email', 'u_dept', 'CBU', 'is_active')
-    list_display_links = ('id', 'user', 'username')
-    search_fields = ('id', 'username', 'email', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
-    ordering = ('CBU', 'u_dept', 'u_team', 'username',)
+    # list_display = ('id', 'user', 'name', 'email', 'u_dept', 'manager', 'u_div', 'CBU', 'is_active')
+    list_display = ('id', 'user', 'name', 'email', 'u_dept', 'CBU', 'is_active')
+    list_display_links = ('id', 'user', 'name')
+    search_fields = ('id', 'name', 'email', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
+    ordering = ('CBU', 'u_dept', 'u_team', 'name',)
     readonly_fields = ('created_on', 'created_by', 'updated_on', 'updated_by')
     fieldsets = (  # Edition form
-         (None, {'fields': (('user', 'username', 'email') , ('manager', 'is_psmadm', 'is_active'), 
+         (None, {'fields': (('user', 'name', 'email') , ('manager', 'is_psmadm', 'is_active'), 
                             # ('u_team','u_dept', 'u_div'), 
                             ('u_dept', 'u_team'), 
                             ('is_external', 'CBU',), 
@@ -44,7 +44,7 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
         fieldsets = super().get_fieldsets(request, obj)
         if obj is None:
             fieldsets = (      # Creation form
-                 (None, {'fields': ('user', ('username', 'email') , ('manager', 'is_psmadm', 'is_active'), 
+                 (None, {'fields': ('user', ('name', 'email') , ('manager', 'is_psmadm', 'is_active'), 
                             # ('u_team','u_dept', 'u_div'), 
                             ('u_dept', 'u_team' ), 
                             ('is_external', 'CBU' ), 
@@ -104,7 +104,7 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
                 # with connection.cursor() as cursor:                    #method 3
                 #     cursor.execute("UPDATE users_profile SET user_id = %s WHERE id = %s", ( found.id, obj.id ) )
                                 
-                messages.add_message(request, messages.INFO, obj.username + 'is linked with user using email')
+                messages.add_message(request, messages.INFO, obj.name + 'is linked with user using email')
 
             elif not found and obj.user is None:
                 user_with_email = False
@@ -116,39 +116,39 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
                 if found:
                     obj.user = found
                     obj.save(update_fields=['user'])    
-                    messages.add_message(request, messages.INFO, obj.username + ' already exists with email address as username: ' + obj.email)
+                    messages.add_message(request, messages.INFO, obj.name + ' already exists with email address as username: ' + obj.email)
                 else:
                     if obj.migrated:
-                        new_user = User.objects.create_user( username=obj.migrated, password='init1234', email=obj.email )
+                        new_user = User.objects.create_user( username=obj.migrated.lower(), password='init1234', email=obj.email )
                         if new_user:
                             obj.user = new_user
                             obj.save(update_fields=['user'])    
-                            messages.add_message(request, messages.INFO, obj.user + ' is created to user as username: ' + username)
+                            messages.add_message(request, messages.INFO, obj.user + ' is created to user as username: ' + obj.user.username)
                     #email as username, if not username from profile
                     elif obj.email:
                         new_user = User.objects.create_user( username=obj.email, password='init1234', email=obj.email )
                         if new_user:
                             obj.user = new_user
                             obj.save(update_fields=['user'])    
-                            messages.add_message(request, messages.INFO, obj.user + ' is created to user as username: ' + username)
+                            messages.add_message(request, messages.INFO, obj.user + ' is created to user as username: ' + obj.user.username)
                     else:
                         # causing duplicate key... signal User -> Profile (different username) -> don't create
                         # username = obj.username.lower().replace(" ", "").replace(",",".")
                         # user = User.objects.create_user( username=username, password='demo' )
                         try:
-                            found = User.objects.get( username=obj.username )
+                            found = User.objects.get( username=obj.name )
                         except:
                             found = None
                         if found:
                             obj.user = found
                             obj.save(update_fields=['user'])    
-                            messages.add_message(request, messages.INFO, obj.username + ' found in user, linked now')
+                            messages.add_message(request, messages.INFO, obj.name + ' found in user, linked now')
                         else:
-                            messages.add_message(request, messages.INFO, obj.username + ' not found in user, cannot create user without email')
+                            messages.add_message(request, messages.INFO, obj.name + ' not found in user, cannot create user without email')
 
 
     def __str__(self):
-        return self.id if self.username is None else self.username
+        return self.id if self.rname is None else self.rname
 
     class Meta:
         model = Profile

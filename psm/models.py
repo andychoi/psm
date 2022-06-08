@@ -106,7 +106,7 @@ class Project(models.Model):
     program = models.ForeignKey(Program, blank=True, null=True, on_delete=models.PROTECT)
     is_internal = models.BooleanField(_("Internal project"), default=False)
     is_agile = models.BooleanField(_("Agile project"), default=False)
-    is_unplanned = models.BooleanField(_("Unplanned project"), default=True)
+    is_unplanned = models.BooleanField(_("Unplanned project"), default=False)
 
     CBUs  = models.ManyToManyField(CBU, blank=True, null=True, related_name="projects")
     CBUpm = models.ForeignKey(Profile, related_name='cbu_pm', verbose_name=_('CBU PM'), on_delete=models.SET_NULL, null=True, blank=True)
@@ -199,7 +199,7 @@ class Project(models.Model):
 #        return "{:08d}".format(self.pk)
 #       yy-serial
 #        return f'{self.created_at.strftime("%y")}-{"{:04d}".format(self.pk)}'
-        if self.code is None:
+        if (self.code is None) and (not self.pk is None):
             return f'{self.year % 100}-{"{:04d}".format(self.pk)}'
         else:
             return self.code    #migrated records

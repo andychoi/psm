@@ -15,8 +15,11 @@
 {% block content %}
 
 <div class="container-lg">
-  <p class="text-muted m-3">Project code: {{ project.pjcode }} | Project year: {{ project.year }} </p>
-
+  <div class="row m-3">
+    <div class="col d-flex align-items-start">Project code: <b>{{ project.pjcode }}</b></div>
+    <div class="col d-flex justify-content-end">Project year: <b>{{ project.year }}</b></div>
+  </div>
+  
   <div class="row m-3 ">
     <!-- border-top border-bottom -->
     <div class="col-8"><div class="card w-100"><div class="card-body">

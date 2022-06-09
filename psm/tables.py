@@ -7,11 +7,11 @@ class ProjectPlanTable(tables.Table):
     class Meta:
         model = Project
         template_name = "django_tables2/bootstrap.html"
-        fields = ("pjcode", "code", "title", "description", "CBU_list" )
+        # fields = ("pjcode", "code", "title", "description", "CBU_list" )
 
-        CBU_list = tables.Column()
+        # CBU_list = tables.Column()
 
-        def render_CBU_list(self, value):
-            if value is not None:
-                return ', '.join([CBU.name for category in value.all()])
-            return '-'
+        # def render_CBU_list(self, value):
+        #     if value is not None:
+        #         return ', '.join([CBU.name for category in value.all()])
+        #     return '-'

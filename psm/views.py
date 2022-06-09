@@ -6,20 +6,23 @@ from django.db.models import Q
 from django.http import Http404
 # from django.core.paginator import Paginator
 from rest_framework import generics
+from django.urls import reverse_lazy
 
-from django.views import generic
+from django.views import generic, View
 from django.http import QueryDict
 from django.shortcuts import render
 from pyparsing import common
 
 # import logging   
-# Create your views here.
+from django.views.generic.edit import FormView
 
+# Create your views here.
 # importing models and libraries
 from common.models import Div, Dept, CBU
 from common.utils import PHASE, PRIORITIES, PRJTYPE
 from .models import Project, Program
 from .tables import ProjectPlanTable
+# from .forms import ProjectPlanForm
 
 # https://medium.com/@ksarthak4ever/django-class-based-views-vs-function-based-view-e74b47b2e41b
 # class based vs. function based views
@@ -241,13 +244,26 @@ class FilteredProjectPlanView(SingleTableMixin, FilterView):
 class projectDetail(generic.DetailView):
 	model = Project
 	template_name = "project/project_detail.html"
-	context_object_name = 'project_detail'
+	context_object_name = 'project'
 
-	# def get_context_data(self, **kwargs): --> SSG??
-	# 	context = super().get_context_data(**kwargs)    
-	# 	context['milestone'] = Milestone.objects.filter(Project=self.object).order_by('no')
-	# 	return context
+class projectCreateView(generic.UpdateView):
+	model = Project
+	template_name = "project/project_detail.html"
+	context_object_name = 'project'
+    # fields = ['title', 'description']
 
-# how to pass multiple object
-# -> https://stackoverflow.com/questions/42250375/django-passing-multiple-objects-to-templates-but-nothing-in-there
+class projectUpdateView(generic.UpdateView):
+	model = Project
+	template_name = "project/project_detail.html"
+	context_object_name = 'project'
+    # fields = ['title', 'description'] 
+
+
+class projectDeleteView(generic.DeleteView):
+	model = Project
+	template_name = "project/project_detail.html"
+	success_url = reverse_lazy('project_plan')
+    
+
+
 

@@ -11,7 +11,10 @@ urlpatterns = [
 	path('project-list1/', views.projectList1View.as_view(), name='project_list1'),
 	path('project-list2/', views.projectList2View.as_view(), name='project_list2'),
 	# path('project-list2/', views.project_list2, name='project_list2'),
-	path('project/<pk>/', views.projectDetail.as_view(), name='project_detail'),
+	
+	path('project/<int:pk>/', views.projectDetail.as_view(), name='project_detail'),
+	path('project/<int:pk>/update', views.projectUpdateView.as_view(), name='project_update'),
+
 	path('projectchart/', views.projectChartView.as_view(), name='project_chart_plan'),
 	# path('projectchartactual/', views.projectChartActualView.as_view(), name='project_chart_actual'),
 	path('projectchart2/', views.projectChartView2.as_view(), name='project_chart_plan2'),

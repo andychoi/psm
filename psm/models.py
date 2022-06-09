@@ -116,6 +116,17 @@ class Project(models.Model):
 
     description = models.TextField(_("description"), max_length=2000, null=True, blank=True)
 
+    asis        = models.TextField(_("As-Is"), max_length=2000, null=True, blank=True)
+    tobe        = models.TextField(_("To-Be"), max_length=2000, null=True, blank=True)
+    objective   = models.TextField(_("Objective"), max_length=2000, null=True, blank=True)
+    consider    = models.TextField(_("Consideration"), max_length=1000, null=True, blank=True)
+    quali       = models.TextField(_("Qualitative benefit"), max_length=1000, null=True, blank=True)
+    quant       = models.TextField(_("Quantitative benefit"), max_length=1000, null=True, blank=True)
+    resource    = models.TextField(_("Quantitative benefit"), max_length=500, null=True, blank=True)
+    img_asis    = models.ImageField(upload_to='project/%Y', null=True, blank=True)  #default='default.jpg', 
+    img_tobe    = models.ImageField(upload_to='project/%Y', null=True, blank=True)  #default='default.jpg', 
+
+
     status_o = models.CharField(_("status overall"), max_length=20, choices=STATUS, default=Status.GREEN.value)
     status_t = models.CharField(_("status schedule"), max_length=20, choices=STATUS, default=Status.GREEN.value)
     status_b = models.CharField(_("status budget"), max_length=20, choices=STATUS, default=Status.GREEN.value)

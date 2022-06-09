@@ -286,36 +286,45 @@ class Project(models.Model):
         Override with a custom email
         """
         emails_to = []
-        if settings.PROJECT_SEND_EMAILS_TO_CBUS and self.CBUpm and self.CBUpm.email:
-            emails_to.append(self.CBUpm.email)
-        if settings.PROJECT_SEND_EMAILS_TO_ASSIGNED and self.pm and self.pm.email:
-            emails_to.append(self.pm.email)
+
+        if settings.EMAIL_DEV:
+                emails_to.append(settings.EMAIL_TEST_RECEIVER)
+        else:
+            if settings.PROJECT_SEND_EMAILS_TO_CBUS and self.CBUpm and self.CBUpm.email:
+                emails_to.append(self.CBUpm.email)
+            if settings.PROJECT_SEND_EMAILS_TO_ASSIGNED and self.pm and self.pm.email:
+                emails_to.append(self.pm.email)
+        
         if len(emails_to):
-            logger.info("[Project #%s] Sending Project creation email to: %s", self.number, emails_to)
+            logger.info("[Project #%s] Sending Project creation email to: %s", self.code, emails_to)
             vals = {
-                "id": self.number,
-                "user": str(self.user) if self.user else '(Not assigned yet)',
+                "id": self.pjcode,
+                "PM": str(self.pm) if self.pm else '(Not assigned yet)',
+                "CBU": self.CBU_str,
+                "CBU_PM": self.CBUpm if self.CBUpm else '(Not assigned yet)',
                 "title": self.title,
                 "description": self.description or '-',
                 "sign": settings.SITE_HEADER,
             }
-            if settings.PSM_VIEWER_ENABLED:
-                email_template = settings.PSM_EMAIL_WITH_URL
-                vals["url"] = self.get_Projects_viewer_url()
-            else:
-                email_template = settings.PSM_EMAIL_WITHOUT_URL
+
+            # if settings.PSM_VIEWER_ENABLED:
+            #     email_template = settings.PSM_EMAIL_WITH_URL
+            #     vals["url"] = self.get_project_viewer_url()
+            # else:
+                # email_template = settings.PSM_EMAIL_WITHOUT_URL
+            email_template = settings.PSM_EMAIL_WITHOUT_URL
             try:
                 send_mail(
-                    '[{app}] [#{id}] New Project Created'.format(app=settings.APP_NAME, id=self.number),
+                    '[{app}] [#{id}] New Project Created'.format(app=settings.EMAIL_SUBJECT_PREFIX, id=self.pjcode),
                     email_template.format(**vals),
                     settings.APP_EMAIL,
                     emails_to,
                 )
             except Exception as e:
                 logger.warning("[Project #%s] Error trying to send the Project creation email - %s: %s",
-                               self.number, e.__class__.__name__, str(e))
+                               self.pk, e.__class__.__name__, str(e))
 
-    def get_Projects_viewer_url(self):
+    def get_project_viewer_url(self):
         """
         Verification token added to the Projects Viewer URL so each one
         sent through email cannot be used to change the order number and
@@ -333,7 +342,7 @@ class Project(models.Model):
                                                                                 # used by the REST serializer
         token = "{}-{}".format(salt, self.pk)                                   # SHA-1 is enough secure for
         token = sha1(token.encode('utf-8')).hexdigest()                         # this purpose (SHA-2 is too long)
-        return settings.ProjectS_VIEWER_ENDPOINT.format(number=self.number, token=token)
+        return settings.PSM_VIEWER_ENDPOINT.format(number=self.number, token=token)
 
 # checklist
 class ProjectDeliverableType(models.Model):

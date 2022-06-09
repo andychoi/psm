@@ -2,7 +2,7 @@
 # Emails configuration and templates used when a task order is created, CUSTOMIZE...
 #
 # django_project/settings_emails.py
-
+import os
 from . import env
 
 # Use 'django.core.mail.backends.console.EmailBackend'
@@ -12,20 +12,27 @@ from . import env
 EMAIL_ENV = env("EMAIL_ENV", "file")
 if EMAIL_ENV == "smtp":
     EMAIL_BACKEND = env('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
-    EMAIL_SUBJECT_PREFIX="[PSM] "
 else:
     EMAIL_BACKEND = env('EMAIL_BACKEND', 'django.core.mail.backends.filebased.EmailBackend')
     EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
-    EMAIL_SUBJECT_PREFIX="[PSM-DEV] "
     
 EMAIL_TIMEOUT = 3      # seconds
 EMAIL_HOST = env('EMAIL_HOST', 'smtp.gmail.com')
 EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', True)
 EMAIL_PORT = env.int('EMAIL_PORT', 587)
-EMAIL_HOST_USER = env('EMAIL_HOST_USER', 'YOUREMAIL@gmail.com')
+EMAIL_HOST_USER = env('EMAIL_HOST_USER', 'YOUREMAIL@localhost')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', 'PASS')
 
+DEFAULT_FROM_EMAIL=env('DEFAULT_FROM_EMAIL', 'no-reply-psm@localhost')
+EMAIL_TEST_RECEIVER=env('EMAIL_TEST_RECEIVER', 'system-sender@localhost')
+
 # Project App related settings and templates
+EMAIL_DEV = env.bool('EMAIL_DEV', True)
+if EMAIL_DEV:
+    EMAIL_SUBJECT_PREFIX="[PSM-Testing] "
+else:
+    EMAIL_SUBJECT_PREFIX="[PSM] "
+
 PROJECT_SEND_EMAILS_TO_ASSIGNED = env.bool('PROJECT_SEND_EMAILS_TO_ASSIGNED', True)
 PROJECT_SEND_EMAILS_TO_CBUS = env.bool('PROJECT_SEND_EMAILS_TO_CBUS', False)
 
@@ -36,7 +43,13 @@ Title:
 {title}
 
 Assigned:
-{user}
+{PM}
+
+CBU:
+{CBU}
+
+CBU PM:
+{CBU_PM}
 
 Description:
 {description}

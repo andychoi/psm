@@ -120,24 +120,24 @@
 <script>
     // set preselected values
     {% for filterItem in filterItems %}
-        $('#sel_{{filterItem.qId}}').val("{{ filterItem.selected }}");
-    {% endfor %}
-
-    function updateData() {
-        var q = "";
-        var qs = [];
-        var tmp = '';
-
-        {% for filterItem in filterItems %}
-            tmp = $('#sel_{{filterItem.qId}}').val();
-            if (tmp != '') qs.push('{{filterItem.qId}}=' + tmp);
+            $('#sel_{{filterItem.qId}}').val("{{ filterItem.selected }}");
         {% endfor %}
 
-        if (qs.length > 0) {
-            q = "?" + qs.join("&");
-        }            
-        window.location.href = window.location.pathname + q;
-    }
+        function updateData() {
+            var q = "";
+            var qs = [];
+            var tmp = '';
+
+            {% for filterItem in filterItems %}
+                tmp = $('#sel_{{filterItem.qId}}').val();
+                if (tmp != '') qs.push('{{filterItem.qId}}=' + tmp);
+            {% endfor %}
+
+            if (qs.length > 0) {
+                q = "?" + qs.join("&");
+            }            
+            window.location.href = window.location.pathname + q;
+        }
 </script>    
 
 {% endblock %}

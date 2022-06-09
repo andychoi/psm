@@ -365,7 +365,7 @@ class ReportRiskAdmin(ImportExportMixin, admin.ModelAdmin):
         (None, {'fields': (('project', 'status'), ('report_on', 'title', ), 
                                 ('risk', 'plan', ), ('deadline', 'owner', 'state', ) ),  "classes": ("stack_labels",)}),
             (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by'),('cbu_list', 'get_dept',)), 'classes': ('collapse',)}),
-            # (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by'),('CBU','dept','div')), 'classes': ('collapse',)}),
+            # (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by'),('CBU','dept',)), 'classes': ('collapse',)}),
     )
 
     def get_fieldsets(self, request, obj=None):
@@ -380,7 +380,7 @@ class ReportRiskAdmin(ImportExportMixin, admin.ModelAdmin):
     list_filter = (
         ('project', RelatedDropdownFilter),
         ('project__CBUs', RelatedDropdownFilter),  #FIXME many to many OK
-        ('project__div', RelatedDropdownFilter),
+        ('project__dept__div', RelatedDropdownFilter),
         ('project__dept', RelatedDropdownFilter),
         ('state', UnionFieldListFilter),
         'report_on'

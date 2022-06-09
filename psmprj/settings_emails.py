@@ -8,6 +8,7 @@ from . import env
 # Use 'django.core.mail.backends.console.EmailBackend'
 # to use a fake backend that prints out the email
 # in the standard output instead of sending the emails
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 EMAIL_ENV = env("EMAIL_ENV", "file")
 if EMAIL_ENV == "smtp":

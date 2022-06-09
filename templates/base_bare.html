@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">  
+  <link rel="shortcut icon" type="image/png" href="{% static '/img/favicon.ico' %}"/>
+  
+  <!-- Bootstrap CSS -->
+  {% block bootstrap_head %}
+  {% endblock %}
+
+  <!-- Custom Style, start-template -->
+  <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}?1.0">
+  
+  {% if title %}<title>PSM System - {{ title }}</title>{% else %}<title>PSM System</title>{% endif %}
+
+  {% block child_css %}
+  {% endblock %}
+
+  <link rel="stylesheet" type="text/css" href="{% static 'css/markdown2.css' %}?1.0">
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="container fixed-top">
+        {% include "includes/nav.html" %}
+        </div>
+    </header>
+
+  {% block base_body %}   {% endblock %}    
+    
+  {% block bootstrap_footer %}
+  {% endblock %}
+    
+  {% include "includes/footer.html" %}
+</body>
+</html>

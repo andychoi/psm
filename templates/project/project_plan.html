@@ -1,0 +1,33 @@
+{% extends "base_wide.html" %}
+
+{% load render_table from django_tables2 %}
+
+
+{% block content %}
+<div class="container-fluid mt-1">  <!-- container-float margin top 3 -->
+    <div class="row">
+        <div class="col-2">
+            <h4 class="font-weight-bold"><button class="btn btn-primary" type="button"  data-bs-toggle="collapse"  href="#collapseFilter" 
+                role="button" aria-expanded="false" aria-controls="collapseFilter">Project List</button></h4>                        
+          </div>
+        <div class="col-10">
+            <div class="collapse show float-end" id="collapseFilter">
+
+                <form action="" method="get" class="form form-inline">
+                    {{ filter.form }}
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </form>
+
+            </div>
+        </div>
+    </div><!-- filters -->
+    
+    <div class="row">
+
+    {% render_table table 'django_tables2/bootstrap.html' %}
+
+    </div><!-- project_list -->
+
+{% endblock %}
+
+

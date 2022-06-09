@@ -7,18 +7,19 @@ from django.http import Http404
 # from django.core.paginator import Paginator
 from rest_framework import generics
 
+from django.views import generic
+from django.http import QueryDict
+from django.shortcuts import render
+from pyparsing import common
+
 # import logging   
 # Create your views here.
 
-
 # importing models and libraries
-from django.shortcuts import render
-from pyparsing import common
-from .models import Project, Program
 from common.models import Div, Dept, CBU
 from common.utils import PHASE, PRIORITIES, PRJTYPE
-from django.views import generic
-from django.http import QueryDict
+from .models import Project, Program
+from .tables import ProjectPlanTable
 
 # https://medium.com/@ksarthak4ever/django-class-based-views-vs-function-based-view-e74b47b2e41b
 # class based vs. function based views
@@ -220,6 +221,22 @@ class projectChartView2(projectList1View):
 class projectChartPlanView(projectList1View):
     template_name = 'project/project_chart.html'
 
+from django_filters.views import FilterView
+from django_tables2 import SingleTableView, SingleTableMixin
+
+class projectPlanView(SingleTableView):
+    model = Project
+    table_class = ProjectPlanTable
+    template_name = 'project/project_plan.html'
+    table_pagination = {"per_page": 10}
+
+class FilteredProjectPlanView(SingleTableMixin, FilterView):
+    model = Project
+    table_class = ProjectPlanTable
+    template_name = 'project/project_plan.html'
+    filterset_class = ProjectFilter
+    table_pagination = {"per_page": 10}
+    
 # class based view for each Project
 class projectDetail(generic.DetailView):
 	model = Project

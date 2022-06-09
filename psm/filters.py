@@ -5,6 +5,8 @@ from django import forms
 
 import django_filters
 class ProjectFilter(django_filters.FilterSet):
+    # client__name = django_filters.CharFilter(lookup_expr='icontains')
+    # client__surname = django_filters.CharFilter(lookup_expr='icontains')
 
     class Meta:
         model = Project
@@ -12,7 +14,10 @@ class ProjectFilter(django_filters.FilterSet):
         fields = {
             'title'         : ['icontains'],
             'description'   : ['icontains'],
+            # 'CBUs'          : ['in'],
         }
+
+# https://stackoverflow.com/questions/65565093/styling-django-filter-form-in-html
 
 
 # class TutorialFilter(django_filters.FilterSet):

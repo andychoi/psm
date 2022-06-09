@@ -174,23 +174,8 @@ if AUTH_PASSWORD_VALIDATORS_ENABLED:
         },
     ]
 
-
-TIME_ZONE = env('TIME_ZONE', 'America/Los_Angeles')
-USE_TZ = True
-
-# Internationalization
-# https://docs.djangoproject.com/en/3.2/topics/i18n/
-LANGUAGE_CODE = env('LANGUAGE_CODE', 'en-us')
-USE_I18N = True
-USE_L10N = True
-# from django.conf.locale.es import formats as es_formats
-# es_formats.DATETIME_FORMAT = 'd M Y, H:i'
-# es_formats.DATE_FORMAT = 'd M, Y'
-from django.conf.locale.en import formats as en_formats
-#en_formats.DATETIME_FORMAT = 'M d Y, H:i'
-en_formats.DATETIME_FORMAT = 'm/d/y g:i a'
-# en_formats.DATE_FORMAT = 'M d, Y'
-en_formats.DATE_FORMAT = 'Y-m-d'
+# Misc settings: timezone, format, ...
+from .settings_extra import *
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
@@ -199,15 +184,6 @@ en_formats.DATE_FORMAT = 'Y-m-d'
 STATIC_URL = '/static/'
 STATIC_ROOT = env('STATIC_ROOT', BASE_DIR + '/static/')
 STATICFILES_DIRS = [BASE_DIR + '/psmprj/static',]    
-# if ENV == "PROD":
-#     # python manage.py collectstatic - how to include project level static files?
-#     STATIC_ROOT = env('STATIC_ROOT', BASE_DIR + '/static/')
-#     STATICFILES_DIRS = [os.path.join('psmprj', 'static'),]    
-
-# else:
-#     STATIC_ROOT = env('STATIC_ROOT', BASE_DIR + '/static/')
-#     STATICFILES_DIRS = [os.path.join('psmprj', 'static'),]    
-
 
 # Whether to enable or not the StaticFilesHandler
 # to serve the static resources from the WSGI
@@ -217,6 +193,7 @@ STATICFILES_DIRS = [BASE_DIR + '/psmprj/static',]
 # proxy like Nginx, unless little workloads
 STATIC_ENABLE_WSGI_HANDLER = env.bool('STATIC_ENABLE_WSGI_HANDLER', DEBUG)
 
+# Import settings for logging --------------------------------------------------
 from .settings_logging import *
 
 REST_FRAMEWORK = {
@@ -230,9 +207,6 @@ REST_FRAMEWORK = {
 # Fileupload
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
-
-#form templates
-CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 #https://github.com/edoburu/django-private-storage -> not working
 # PRIVATE_STORAGE_ROOT = BASE_DIR + '/media-private/'
@@ -250,30 +224,8 @@ AUTHENTICATION_BACKENDS = [
     'guardian.backends.ObjectPermissionBackend',
 ]
 
-# from decouple import config
-# # values you got from step 2 from your Mirosoft app
-# MICROSOFT_AUTH_CLIENT_ID = config("MICROSOFT_AUTH_CLIENT_ID")
-# MICROSOFT_AUTH_CLIENT_SECRET = config("MICROSOFT_AUTH_CLIENT_SECRET")
-# # Tenant ID is also needed for single tenant applications
-# MICROSOFT_AUTH_TENANT_ID = config("MICROSOFT_AUTH_TENANT_ID")
-# MICROSOFT_AUTH_LOGIN_TYPE = 'ma'
-
-# client_id = config("MICROSOFT_AUTH_CLIENT_ID")
-# client_secret = config("MICROSOFT_AUTH_CLIENT_SECRET")
-# tenant_id = config("MICROSOFT_AUTH_TENANT_ID")
-# AUTH_ADFS = {
-#     'AUDIENCE': client_id,
-#     'CLIENT_ID': client_id,
-#     'CLIENT_SECRET': client_secret,
-#     'CLAIM_MAPPING': {'first_name': 'given_name',
-#                       'last_name': 'family_name',
-#                       'email': 'upn'},
-#     'GROUPS_CLAIM': 'roles',
-#     'MIRROR_GROUPS': True,
-#     'USERNAME_CLAIM': 'upn',
-#     'TENANT_ID': tenant_id,
-#     'RELYING_PARTY_ID': client_id,
-# }
+# IMPORT Auth related settings ---------------------------------------
+from .settings_auth import *
 
 #
 # Custom configurations
@@ -288,6 +240,7 @@ ADMINS = (
     (APP_NAME, APP_EMAIL)
 )
 
+# IMPORT EMAIL related settings ------------------------------------
 from .settings_emails import *
 
 # Default login https://docs.djangoproject.com/en/4.0/ref/settings/#login-url
@@ -295,47 +248,6 @@ LOGIN_URL = "/login"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
-# django_project/settings.py
-EMAIL_ENV = env("EMAIL_ENV", "file")
-if EMAIL_ENV == "smtp":
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-else:
-    EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
-    EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
-    EMAIL_SUBJECT_PREFIX="[PSM-DEV] "
 
-#ckeditor 
-# CKEDITOR_BASEPATH = "/static/ckeditor/ckeditor/"
-# CKEDITOR_CONFIGS = {
-#     'default': {
-#         'toolbar': 'Custom',
-#         'toolbar_Custom': [
-#             ['Bold', 'Italic', 'Underline', 'NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'RemoveFormat', 'Source']
-#         ],
-#         'removePlugins': 'toolbar',
-#         'toolbarCanCollapse' : True,     
-#         'width': 700,
-#     },
-# }
-# django-richtextfield
-#         'toolbar': 'undo redo | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | bullist numlist | link'
-# DJRICHTEXTFIELD_CONFIG = {
-#     'js': ['//cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js'],
-#     'init_template': 'djrichtextfield/init/tinymce.js',
-#     # 'settings': {  #TinyMCE
-#     #     'menubar': False,
-#     #     'plugins': 'link image',
-#     #     'toolbar': 'bold italic | link image | removeformat',
-#     #     'width': 700
-#     # },
-#     'settings': {  # CKEditor
-#         'toolbar': [
-#             {'items': ['Format', '-', 'Bold', 'Italic', '-',
-#                     'RemoveFormat']},
-#             {'items': ['Link', 'Unlink', 'Image', 'Table']},
-#             {'items': ['Source']}
-#         ],
-#         'format_tags': 'p;h1;h2;h3',
-#         'width': 700
-#     }    
-# }
+# IMPORT Editor related settings ------------------------------------
+from .settings_editor import *

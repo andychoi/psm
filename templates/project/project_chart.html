@@ -130,6 +130,7 @@
     };
 
     function updateChart() {
+        $("#gantt").empty();
         if (tChartData.length > 0) {
             var tList = [];
             var tCounter = 0;
@@ -138,12 +139,10 @@
                     tList.push({id: pItem.id, name: pItem.title, start: pItem.p_plan_b, end: pItem.p_close, progress: pItem.progress, custom_class: 'bar-milestoe'});
                 }
             });
-            tChart = new Gantt("#gantt", tList, tDefaultOptions);
-        } else {
-            $("#gantt").val('');
-            tChart = null;
+            if (tList.length > 0) {
+                new Gantt("#gantt", tList, tDefaultOptions);
+            }
         }
-        // console.log(tChart);
     }
 
     function updateData() {

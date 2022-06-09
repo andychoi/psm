@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'blog.apps.BlogConfig',
     'crispy_forms',
     'django_tables2',
+    'sorl.thumbnail',
     # 'django_filters'  ,   #bug with pagination
 
     # 'multi_email_field',  #not compatible with django 4.x

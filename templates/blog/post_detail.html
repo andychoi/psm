@@ -17,19 +17,16 @@
 
 <div class="content-section">
 
-    <!-- Author information -->
-    <!-- div class="media">
-        <img class="d-flex mr-3 rounded-circle article-img" src="{ object.author.profile.image.url }" alt="">
-        <div class="media-body">
-            <h4 class="mt-0"><a href="{% url 'user_posts' object.author.username %}">{{ object.author }}</a></h4>
-            <h6 class="mt-0">{{ object.author.email }}</h6>
-        </div>
+    <!-- Featured Image -->
+    {% if object.image %}
+    <div class="row ms-2 media featured-image-list">
+        <img src="{{ post.image.url }}" class="rounded featured-image-list" alt="{{post.title}}">
     </div>
-    <hr-->
-    <!-- https://getbootstrap.com/docs/5.0/utilities/spacing/ -->
+    {% endif %}
+    
     <!-- Post information -->
     <div class="row ms-2 ">
-        <h1 class=""  class="blockquote">{{object.title}}</h1>
+        <h3 class=""  class="blockquote">{{object.title}}</h3>
         <div class="col-6 text-start">Posted on {{ object.date_posted|date:"F d, Y" }}</div>
         <div class="col-6 text-end">
             {% if object.author == user or user.is_superuser  %}
@@ -42,8 +39,6 @@
 
     <div class="row ms-2 pt-2">
         <!-- Post Content -->
-        <!-- <image src="/media/{{ object.image }}"></image> -->
-        <!-- {{ object.content|markdown|safe }} -->
         {{ object.content_md2|safe }} 
     </div>
 

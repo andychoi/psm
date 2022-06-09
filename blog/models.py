@@ -38,7 +38,7 @@ class Post(models.Model):
     date_posted = models.DateTimeField(default=timezone.now)
     private =  models.BooleanField(default=False)
     featured = models.BooleanField(default=False)
-    image = models.ImageField(null=True, blank=True, upload_to='posts') #default='posts/default.jpg'
+    image = models.ImageField(null=True, blank=True, upload_to='posts//%Y/%m') #default='posts/default.jpg'
     # excerpt = models.TextField(blank=True, null=True)
 
     # liked = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name='liked')

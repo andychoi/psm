@@ -49,20 +49,20 @@ class MilestoneFormSet(forms.models.BaseInlineFormSet):
         if not self.instance.pk: 
             self.initial = [
             # {'no': 1,  'stage': 'Overall', 'description': 'Overall project status', },
-            {'no': 2,  'stage': '1.Plan & Define',  'description': 'Requirements gathering', },
-            {'no': 3,  'stage': '1.Plan & Define',  'description': 'Validate requirement expectations', },
-            {'no': 4,  'stage': '1.Plan & Define',  'description': 'Architectural,Technical and Security Design', },
-            {'no': 5,  'stage': '1.Plan & Define',  'description': 'Project Planning', },
-            {'no': 6,  'stage': '1.Plan & Define',  'description': 'SOW / Contract', },
-            {'no': 7,  'stage': '1.Plan & Define',  'description': 'Project Kickoff', },
-            {'no': 8,  'stage': '2.Implement',      'description': 'Detail design', },
-            {'no': 9,  'stage': '2.Implement',      'description': 'Development', },
-            {'no': 10, 'stage': '2.Implement',      'description': 'Integration', },
-            {'no': 11, 'stage': '2.Implement',      'description': 'User acceptance testing', },
-            {'no': 12, 'stage': '3.Deployment',     'description': 'Go-live preparation', },
-            {'no': 13, 'stage': '3.Deployment',     'description': 'Deployment', },
-            {'no': 14, 'stage': '4.Post Support',   'description': 'Hyper care', },
-            {'no': 15, 'stage': '4.Post Support',   'description': 'Signoff,closure', },
+            {'no': 1,  'stage': '1.Plan & Define',  'description': 'Requirements gathering', },
+            {'no': 2,  'stage': '1.Plan & Define',  'description': 'Validate requirement expectations', },
+            {'no': 3,  'stage': '1.Plan & Define',  'description': 'Architectural,Technical and Security Design', },
+            {'no': 4,  'stage': '1.Plan & Define',  'description': 'Project Planning', },
+            {'no': 5,  'stage': '1.Plan & Define',  'description': 'SOW / Contract', },
+            {'no': 6,  'stage': '1.Plan & Define',  'description': 'Project Kickoff', },
+            {'no': 7,  'stage': '2.Implement',      'description': 'Detail design', },
+            {'no': 8,  'stage': '2.Implement',      'description': 'Development', },
+            {'no': 9, 'stage': '2.Implement',      'description': 'Integration', },
+            {'no': 10, 'stage': '2.Implement',      'description': 'User acceptance testing', },
+            {'no': 11, 'stage': '3.Deployment',     'description': 'Go-live preparation', },
+            {'no': 12, 'stage': '3.Deployment',     'description': 'Deployment', },
+            {'no': 13, 'stage': '4.Post Support',   'description': 'Hyper care', },
+            {'no': 14, 'stage': '4.Post Support',   'description': 'Signoff,closure', },
             ]
 
 
@@ -83,10 +83,10 @@ class MilestoneInline(admin.TabularInline):
             extra = 14 #defined in __init__
         return extra
 
-    def has_changed(self):
-        """ Should returns True if data differs from initial. 
-        By always returning true even unchanged inlines will get validated and saved."""
-        return True
+    # def has_changed(self):
+    #     """ Should returns True if data differs from initial. 
+    #     By always returning true even unchanged inlines will get validated and saved."""
+    #     return True
 
 #https://docs.djangoproject.com/en/4.0/ref/contrib/admin/#django.contrib.admin.ModelAdmin.autocomplete_fields
 @admin.register(Report)
@@ -147,30 +147,6 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
 
     inlines = [MilestoneInline]
 
-    # inline initial force to save -> FIXME... 
-    #https://stackoverflow.com/questions/50175561/initial-data-for-django-admin-inline-formset-is-not-saved
-    #     # def save_related(self, request, form, formsets, change):
-    #     for formset in formsets:
-    #         if formset.model == Milestone:
-    #             instances = formset.save(commit=False)
-    #             report = form.instance
-    #             # for added_milestone in formset.new_objects:
-    #             # for deleted_milestone in formset.deleted_objects:
-    #     super(ReportAdmin, self).save_related(request, form, formsets, change)
-    # def save_formset(self, request, form, formset, change):
-    #     if formset == formset_factory(MilestoneFormSet):
-    #         instances = formset.save(commit=False)
-    #         for idx, instance in instances:
-    #             if instance.pk == None: # add
-    #                 instance.no = idx
-    #             else:
-    #                 # check `change` for is changed or deleted
-    #                 pass
-    #         formset.save_m2m()
-
-        # for idx, inline_form in formset.forms:
-        #     # if inline_form.has_changed():
-        # super().save_formset(request, form, formset, change)
 
     #https://stackoverflow.com/questions/910169/resize-fields-in-django-admin
     def get_form(self, request, obj=None, change=False, **kwargs):
@@ -316,6 +292,21 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
             obj.project.progress = obj.progress
             obj.project.lstrpt = obj.updated_on   #update to project last report date
             obj.project.save()
+
+    # inline initial force to save -> FIXME... 
+    #https://stackoverflow.com/questions/50175561/initial-data-for-django-admin-inline-formset-is-not-saved
+    # rewly inserted lineitem data is empty value..
+    # def save_related(self, request, form, formsets, change):
+    #     super().save_related(request, form, formsets, change)
+    #     obj = form.instance
+    #     for formset in formsets:
+    #         for form in formset.forms:
+                # obj = parent model instance
+                # form.has_changed = false, no changes in pre-populated fields
+                # form.instance = child model instance
+                # if not form.has_changed():
+                #     form.instance.report = obj
+                    # form.save()
 
     actions = ['make_published', 'duplicate_report']
 

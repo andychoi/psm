@@ -90,7 +90,8 @@ class Report(models.Model):
     def issue_md2(self):
         return "<div class='psm-md2'>" + markdown2.markdown(self.issue) + "</div>"
 
-
+# https://docs.djangoproject.com/en/4.0/topics/db/examples/many_to_one/
+# report.milestone_set.all()
 class Milestone(models.Model):
     class Meta:
         verbose_name = _("Milestone")

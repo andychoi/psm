@@ -64,13 +64,15 @@ class reportDetail(generic.DetailView):
 	context_object_name = 'report_detail'
 
 	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)    
+		context = super().get_context_data(**kwargs) 
+		context['remainder'] = 100 - self.object.progress
 		context['milestone'] = Milestone.objects.filter(report=self.object).order_by('no')
 		# breakpoint()
 		return context
 
 class reportEmail(reportDetail):
 	template_name = "reports/report_email.html"
+
 
 # how to pass multiple object
 # -> https://stackoverflow.com/questions/42250375/django-passing-multiple-objects-to-templates-but-nothing-in-there

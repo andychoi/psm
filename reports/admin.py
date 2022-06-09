@@ -258,9 +258,9 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
         return HttpResponseRedirect(reverse('report_detail', args=[obj.pk]))
     preview.attrs = {'target': '_blank'}
 
-    def preview_e(self, request, obj):
+    def email(self, request, obj):
         return HttpResponseRedirect(reverse('report-email', args=[obj.pk]))
-    preview_e.attrs = {'target': '_blank'}
+    email.attrs = {'target': '_blank'}
 
     def past_reports(self, request, obj):
         return HttpResponseRedirect(f'/admin/reports/report/?project__id__exact={obj.project.id}')

@@ -5,18 +5,22 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.6.1/frappe-gantt.min.js" integrity="sha512-HyGTvFEibBWxuZkDsE2wmy0VQ0JRirYgGieHp0pUmmwyrcFkAbn55kZrSXzCgKga04SIti5jZQVjbTSzFpzMlg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
 <link rel="stylesheet" href="/static/libs/frappe-gantt/frappe-gantt.css" />
 <script src="/static/libs/frappe-gantt/frappe-gantt.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-1">  <!-- container-float margin top 3 -->
-    <div class="row">
-        <div class="col-2">
-            <h4 class="font-weight-bold"><button class="btn btn-primary" type="button"  data-bs-toggle="collapse"  href="#collapseFilter" 
-                role="button" aria-expanded="false" aria-controls="collapseFilter">PROJECT GANTT</button></h4>                        
-          </div>
-          <!-- div class="col-4 text-nowrap float-end" >
-        <p class="text-end m-0 small"></p>
-        </div-->
+<div id="container">
+    <!-- filter area -->
+    <div style="display: flex; justify-content: space-between;">
+        <div>
+            <h3>Projects</h3>
+        </div>
+        <div id="chart_filter_ctrl" style="height: 2rem; display: flex;">
+            <label>Max Display Item:</label>
+            <input type="number" min="1" max="200" id="input_max_item" style="width: 100px; text-align: end; margin: 0 3px;"></input>
+            <button onclick="applyMaxItem()" id="btn_set_max_item" class="btn btn-sm btn-secondary">Apply</button>
+            <button onclick="toggleFilter()" id="btn_toggle_filter" class="btn btn-sm btn-link"></button>
+        </div>
     </div>
     <div id="chart_fiter" class="row p-3">
         {% for filterItem in filterItems %}
@@ -31,70 +35,143 @@
         </div>
         {% endfor %}
     </div>
+    <!-- chart area -->
     <div class="row">
-
-    {% if project_list %}
-
-        <div class='container-fluid align-items-center justify-content-center'>
-            <div class="card" >
-                <svg id="gantt" ></svg>
-                </div>
+        {% if project_list %}
+            <div class='container-fluid align-items-center justify-content-center'>
                 <div class="mx-auto mt-3 btn-group" role="group">
                     <button type="button" class="btn btn-sm btn-light">Day</button>
                     <button type="button" class="btn btn-sm btn-light active">Week</button>
                     <button type="button" class="btn btn-sm btn-light">Month</button>
                     <button type="button" class="btn btn-sm btn-light">Custom</button>
                 </div>
+                <div class="card" >
+                    <svg id="gantt" ></svg>
+                </div>
             </div>
-        </div>
-
-    {% else %}
-        <p>No records found!!! :(</p>
-    {% endif %}
-
-    </div>		
+        {% else %}
+            <p>No records found!!! :(</p>
+        {% endif %}
+    </div>
+</div>
 
 {% endblock content %}
 
-
 {% block child_js_above_files %} 
+<script>
+    var tChart = null;
 
-<script type="text/javascript">
+    var tChartData = [];
+    var tMaxItem = 200;
 
+    document.getElementById("input_max_item").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            document.getElementById("btn_set_max_item").click();
+        }
+    });
 
-    var tasks = [
-        {% for item in project_list %}
-        {
-            id: '{{item.id}}',
-            name: '{{item.title}}',
-            start: '{{item.p_plan_b}}',
-            end: '{{item.p_close}}',
-            progress: {{item.progress}},
-            dependencies: '',
-            custom_class: 'bar-milestone' // optional
-        },
+    $('#input_max_item').val(tMaxItem);
+    function applyMaxItem() {
+        var tInputVal = $('#input_max_item').val();
+        tMaxItem = tInputVal;
+        if (tInputVal < 1) tMaxItem = 1;
+        else if (tInputVal > 200) tMaxItem = 200;
+        if (tInputVal !== tMaxItem) {
+            $('#input_max_item').val(tMaxItem);
+        }
+        updateChart();
+    }
+    
+    var tShowFilter = false;
+    function toggleFilter() {
+        tShowFilter = !tShowFilter;
+        $('#btn_toggle_filter').text( tShowFilter ? 'Hide Filter' : 'Show Filter');
+        if (tShowFilter) {
+            $('#chart_fiter').show();
+        } else {
+            $('#chart_fiter').hide();
+        }
+    }
+    toggleFilter();
+
+    // set preselected values
+    {% for filterItem in filterItems %}
+        $('#sel_{{filterItem.qId}}').val("{{ filterItem.selected }}");
+    {% endfor %}
+    
+    function convertDate(pYYYYMMDD) {
+        let tData = pYYYYMMDD.split("-");
+        return Date.UTC(Number.parseInt(tData[0]), Number.parseInt(tData[1]) - 1, Number.parseInt(tData[2]));
+    }
+
+    function getParams() {
+        var tParams = {};
+        {% for filterItem in filterItems %}
+            var tmp = $('#sel_{{filterItem.qId}}').val();
+            if (tmp != '') tParams['{{filterItem.qId}}'] = tmp;
         {% endfor %}
-    ]
-    // var tasks ={{project_list|safe}};
-    
-    if (tasks.length > 0) {
-        var gantt = new Gantt("#gantt", tasks, {
-            header_height: 50,
-            column_width: 40,
-            step: 720,
-            // view_modes: ['Day', 'Week', 'Month', 'Year'],
-            bar_height: 20,
-            bar_corner_radius: 3,
-            arrow_curve: 5,
-            padding: 18,
-            // view_mode: 'Month',
-            view_mode: 'Custom',
-            date_format: 'YYYY-MM-DD',
-            custom_popup_html: null            
+        return tParams;
+    }    
+
+    var tDefaultOptions = {
+        header_height: 50,
+        column_width: 40,
+        step: 720,
+        // view_modes: ['Day', 'Week', 'Month', 'Year'],
+        bar_height: 20,
+        bar_corner_radius: 3,
+        arrow_curve: 5,
+        padding: 18,
+        // view_mode: 'Month',
+        view_mode: 'Custom',
+        date_format: 'YYYY-MM-DD',
+        custom_popup_html: null            
+    };
+
+    function updateChart() {
+        $("#gantt").empty();
+        if (tChartData.length > 0) {
+            var tList = [];
+            var tCounter = 0;
+            tChartData.forEach((pItem) => {
+                if (tCounter++ < tMaxItem) {
+                    tList.push({id: pItem.id, name: pItem.title, start: pItem.p_plan_b, end: pItem.p_close, progress: pItem.progress, custom_class: 'bar-milestoe'});
+                }
+            });
+            if (tList.length > 0) {
+                new Gantt("#gantt", tList, tDefaultOptions);
+            }
+        }
+    }
+
+    function updateData() {
+        var tUrl = '/api/1.0/projects';
+        var tParams = getParams();        
+        if (Object.keys(tParams).length > 0) {
+            tUrl += '?' + new URLSearchParams(tParams).toString(); 
+        }
+        fetch(tUrl)
+        .then(response => response.json())
+        .then((res)=>{
+            // console.log(res);
+            tChartData = res;
+            updateChart();
         });
-        // https://github.com/frappe/gantt/issues/223
-        // gantt.change_view_mode('Month')
-    
+    }
+
+    function setDefaultYear() {
+        var tParams = getParams();
+        if (Object.keys(tParams).length === 0) {
+            var tDate = new Date();
+            $('#sel_year').val(tDate.getFullYear());
+        }
+    }
+
+    setDefaultYear();
+    updateData();
+
+    (function() {
         var btnGroups = document.getElementsByClassName('btn-group');
         if (btnGroups) {
             btnGroups[0].addEventListener("click", function(e) {
@@ -104,40 +181,17 @@
                     this.children[i].classList.remove('active');
                 }
                 target.classList.add('active');
-                
-                if (text === 'Custom') {
-                    gantt.options.column_width = 32;
-                    gantt.options.step = 720;
-                }
-                gantt.change_view_mode(text);
+
+                if (tChart) {
+                    if (text === 'Custom') {
+                        tChart.options.column_width = 32;
+                        tChart.options.step = 720;
+                    }
+                    tChart.change_view_mode(text);
+                }            
             }, false);
         }
-    }
-
+    })();
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
-<script>
-    // set preselected values
-    {% for filterItem in filterItems %}
-            $('#sel_{{filterItem.qId}}').val("{{ filterItem.selected }}");
-        {% endfor %}
-
-        function updateData() {
-            var q = "";
-            var qs = [];
-            var tmp = '';
-
-            {% for filterItem in filterItems %}
-                tmp = $('#sel_{{filterItem.qId}}').val();
-                if (tmp != '') qs.push('{{filterItem.qId}}=' + tmp);
-            {% endfor %}
-
-            if (qs.length > 0) {
-                q = "?" + qs.join("&");
-            }            
-            window.location.href = window.location.pathname + q;
-        }
-</script>    
 
 {% endblock %}

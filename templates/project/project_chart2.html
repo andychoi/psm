@@ -216,6 +216,7 @@
         .then(response => response.json())
         .then((res)=>{
             console.log(res);
+            res.sort((pA, pB) => { return pA.id - pB.id; });
             tChartData = res;
             updateChart();
         });

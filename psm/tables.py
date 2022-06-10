@@ -7,7 +7,8 @@ class ProjectPlanTable(tables.Table):
     class Meta:
         model = Project
         template_name = "django_tables2/bootstrap.html"
-        # fields = ("pjcode", "code", "title", "description", "CBU_list" )
+
+        fields = ("code", "title", "description" )
 
         # CBU_list = tables.Column()
 

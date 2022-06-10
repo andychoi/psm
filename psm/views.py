@@ -269,6 +269,7 @@ def project_update(request, id):
 
     if request.method == 'POST':
         form = ProjectPlanForm(instance=project)  # prepopulate the form with an existing project
+        print(form.errors)
         if form.is_valid():
             # update the existing `project` in the database
             form.save()

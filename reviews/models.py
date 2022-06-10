@@ -8,6 +8,7 @@ from common.utils import STATE3, STATUS, Status, PRIORITIES, Priority, REVIEWTYP
 
 
 # Create your models here.
+# https://stackoverflow.com/questions/241250/single-table-inheritance-in-django
 
 # creating an django model class
 class Review(models.Model):

@@ -6,6 +6,7 @@
   .card-main { min-height: 400px; }
   .card-obj  { min-height: 250px; }
   .card-sub  { min-height: 150px; }
+  .card-time { height: 120px;  }
 </style>  
 
 <link href="{% static 'css/timeline.css' %}" rel="stylesheet">
@@ -131,17 +132,17 @@
 
   </div>  
 
-  <div class="row mt-3 mb-3" style="padding-right:12px">
-    <div class="card w-100 card-sub" style="margin-left:12px;"" >
+  <div class="row mt-3 mb-0" style="padding-right:12px">
+    <div class="card w-100 card-time" style="margin-left:12px;"" >
       <div class="card-body">
-        <div clas="container"><div class="row">
-        <div class="col-1"><h5 class="mb-0">Schedule</h5></div>
-        <div class="col-11">
+        <div clas="container">
+        <h5 class="mb-0">Schedule</h5>
+        
 <!-- timeline -->
   <!-- https://www.bootdey.com/snippets/view/bs4-Horizontal-timeline#preview -->
   <!-- https://freefrontend.com/bootstrap-timelines/ -->
 
-          <div class="cd-horizontal-timeline loaded">
+          <div class="cd-horizontal-timeline loaded" style="margin-top:-24px;">
               <div class="timeline">
                   <div class="events-wrapper">
                       <div class="events" style="width: 1800px;">
@@ -166,7 +167,7 @@
           </div>
 
 <!-- timeline -->
-      </div></div></div>
+      </div>
       </div>
     </div>
   </div>

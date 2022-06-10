@@ -97,6 +97,7 @@
                     <th data-sortable="true" scope="col">Budget</th>
                     <th data-sortable="false" scope="col">Resolution</th>
                     <th data-sortable="true" scope="col">HOD</th>
+                    <th scope="col">E</th>
                     <!-- <th class="text-center" scope="col">Progress</th> -->
                 </tr>
                 </thead>
@@ -105,8 +106,8 @@
                     {% for p in project_list %}
                 <tr> <!-- https://getbootstrap.com/docs/4.1/components/badge/ https://icons.getbootstrap.com/ <i class="bi-class-name"></i> -->
                      <!-- p.status_t|slice:"0:1" -->
-                     <td>{{ p.pm }}</td>
-                    <td class="text-center" scope="row"><a href="/admin/psm/project/{{ p.id }}">{{ p.pjcode }}</a></td>
+                    <td>{{ p.pm }}</td>
+                    <td class="text-center" scope="row"><a href="{% url 'project_detail' p.id %}">{{ p.pjcode }}</a></td>
                     <td class="text-center">{{ p.CBU_str }}</td>
                     <td class="text-left">{{ p.title }}</td>
                     <td class="text-end">{% if p.est_cost %}{{ p.est_cost|intcomma }}{% else %}0{% endif %}</td>
@@ -137,6 +138,7 @@
                         {% endif %}</td>
                     <td class="text-begin">{{ p.resolution }}</td>
                     <td class="text-begin">{{ p.dept.head }}</td>
+                    <td class="text-center"><a href="/admin/psm/project/{{ p.id }}">E</a></td>
                     <!-- <td class="text-center">
                         <div class="progress">
                             <div class="progress-bar" role="progressbar" style="width: {{ p.progress }}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{{ p.progress }}%</div>

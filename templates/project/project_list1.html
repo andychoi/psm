@@ -105,7 +105,7 @@
                 <tr> <!-- https://getbootstrap.com/docs/4.1/components/badge/ https://icons.getbootstrap.com/ <i class="bi-class-name"></i> -->
                      <!-- p.status_t|slice:"0:1" -->
                     <td class="text-center">{{ p.CBU_str }}</td>
-                    <td class="text-center" scope="row"><a href="/admin/psm/project/{{ p.id }}">{{ p.pjcode }}</a></td>
+                    <td class="text-center" scope="row"><a href="{% url 'project_detail' p.id %}">{{ p.pjcode }}</a></td>
                     <td class="text-left">{{ p.title }}</td>
                     <td class="text-center">
                         <div class="progress">

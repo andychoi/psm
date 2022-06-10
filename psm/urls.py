@@ -1,6 +1,6 @@
 # importing django routing libraries
 from . import views
-from django.urls import path, include
+from django.urls import path,  re_path,  include
 from .views import *
 
 # app_name="psm"
@@ -12,14 +12,15 @@ urlpatterns = [
 	path('project-list2/', views.projectList2View.as_view(), name='project_list2'),
 	# path('project-list2/', views.project_list2, name='project_list2'),
 	
-	path('project/<int:pk>/', views.projectDetail.as_view(), name='project_detail'),
-	path('project/<int:pk>/update', views.projectUpdateView.as_view(), name='project_update'),
+	re_path(r'^project/(?P<pk>\d+)/$', views.projectDetail.as_view(), name='project_detail'),
+	path('project/<int:id>/update', views.project_update, name='project-update'),
+	path('project/<int:id>/delete', views.projectDeleteView.as_view(), name='project-delete'),
 
 	path('projectchart/', views.projectChartView.as_view(), name='project_chart_plan'),
 	# path('projectchartactual/', views.projectChartActualView.as_view(), name='project_chart_actual'),
 	path('projectchart2/', views.projectChartView2.as_view(), name='project_chart_plan2'),
 
-	path('project-plan/', views.FilteredProjectPlanView.as_view(), name='project_plan'),
+	# path('project-plan/', views.FilteredProjectPlanView.as_view(), name='project_plan'),
 
 	path('api/1.0/', include('apis.urls')),
 ]

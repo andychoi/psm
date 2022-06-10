@@ -122,7 +122,7 @@ class Project(models.Model):
     consider    = models.TextField(_("Consideration"), max_length=1000, null=True, blank=True)
     quali       = models.TextField(_("Qualitative benefit"), max_length=1000, null=True, blank=True)
     quant       = models.TextField(_("Quantitative benefit"), max_length=1000, null=True, blank=True)
-    resource    = models.TextField(_("Quantitative benefit"), max_length=500, null=True, blank=True)
+    resource    = models.TextField(_("Resources"), max_length=500, null=True, blank=True)
     img_asis    = models.ImageField(upload_to='project/%Y', null=True, blank=True)  #default='default.jpg', 
     img_tobe    = models.ImageField(upload_to='project/%Y', null=True, blank=True)  #default='default.jpg', 
 

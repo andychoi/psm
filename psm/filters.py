@@ -27,7 +27,7 @@ class ProjectFilter(django_filters.FilterSet):
 #     )
 #     date_sort           = django_filters.ChoiceFilter(
 #                             label     ='Sort by Date ',
-#                             choices   =DATE_CHOICES,
+#                             choices   =DATE_CHOICES,  
 #                             method    ='filter_by_date',
 #                             # widget  =forms.Select(attrs={'size': 4})
 #     )

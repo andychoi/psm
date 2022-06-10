@@ -250,7 +250,7 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
         new.save()  #adding
         # update many-to-many after save
         # new.CBUs.set(obj.project.CBUs.all())
-        new.save()
+        # new.save()
         # clone milestones
         old_ms = Milestone.objects.filter(report=old_id)
         for m in old_ms:

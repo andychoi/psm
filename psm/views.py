@@ -1,12 +1,14 @@
 from urllib.request import Request
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.db.models import Q
 from django.http import Http404
+from django.contrib.auth.decorators import login_required
 # from django.core.paginator import Paginator
 from rest_framework import generics
 from django.urls import reverse_lazy
+from django.urls import reverse
 
 from django.views import generic, View
 from django.http import QueryDict
@@ -15,6 +17,7 @@ from pyparsing import common
 
 # import logging   
 from django.views.generic.edit import FormView
+from django_filters.views import FilterView
 
 # Create your views here.
 # importing models and libraries
@@ -22,7 +25,10 @@ from common.models import Div, Dept, CBU
 from common.utils import PHASE, PRIORITIES, PRJTYPE
 from .models import Project, Program
 from .tables import ProjectPlanTable
-# from .forms import ProjectPlanForm
+from .forms import ProjectPlanForm
+
+
+# from django_tables2 import SingleTableView, SingleTableMixin
 
 # https://medium.com/@ksarthak4ever/django-class-based-views-vs-function-based-view-e74b47b2e41b
 # class based vs. function based views
@@ -224,21 +230,19 @@ class projectChartView2(projectList1View):
 class projectChartPlanView(projectList1View):
     template_name = 'project/project_chart.html'
 
-from django_filters.views import FilterView
-from django_tables2 import SingleTableView, SingleTableMixin
+# django-tables2
+# class projectPlanView(SingleTableView):
+#     model = Project
+#     table_class = ProjectPlanTable
+#     template_name = 'project/project_plan.html'
+#     table_pagination = {"per_page": 10}
 
-class projectPlanView(SingleTableView):
-    model = Project
-    table_class = ProjectPlanTable
-    template_name = 'project/project_plan.html'
-    table_pagination = {"per_page": 10}
-
-class FilteredProjectPlanView(SingleTableMixin, FilterView):
-    model = Project
-    table_class = ProjectPlanTable
-    template_name = 'project/project_plan.html'
-    filterset_class = ProjectFilter
-    table_pagination = {"per_page": 10}
+# class FilteredProjectPlanView(SingleTableMixin, FilterView):
+#     model = Project
+#     table_class = ProjectPlanTable
+#     template_name = 'project/project_plan.html'
+#     filterset_class = ProjectFilter
+#     table_pagination = {"per_page": 10}
     
 # class based view for each Project
 class projectDetail(generic.DetailView):
@@ -246,17 +250,38 @@ class projectDetail(generic.DetailView):
 	template_name = "project/project_detail.html"
 	context_object_name = 'project'
 
-class projectCreateView(generic.UpdateView):
+class projectCreateView(generic.CreateView):
 	model = Project
 	template_name = "project/project_detail.html"
 	context_object_name = 'project'
     # fields = ['title', 'description']
 
-class projectUpdateView(generic.UpdateView):
-	model = Project
-	template_name = "project/project_detail.html"
-	context_object_name = 'project'
-    # fields = ['title', 'description'] 
+# class projectUpdateView(generic.UpdateView):
+# 	model = Project
+# 	template_name = "project/project_detail.html"
+# 	context_object_name = 'project'
+#     # fields = ['title', 'description'] 
+
+#https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Forms
+@login_required
+def project_update(request, id):
+    project = Project.objects.get(id=id)
+
+    if request.method == 'POST':
+        form = ProjectPlanForm(instance=project)  # prepopulate the form with an existing project
+        if form.is_valid():
+            # update the existing `project` in the database
+            form.save()
+            # redirect to the detail page of the `project` we just updated
+            return redirect('project_detail', pk=project.id)
+    else:
+        form = ProjectPlanForm(instance=project)
+    
+    context = {
+        "form":form
+    }
+    return render(request, "project/project_update.html", context)
+    
 
 
 class projectDeleteView(generic.DeleteView):
@@ -264,6 +289,12 @@ class projectDeleteView(generic.DeleteView):
 	template_name = "project/project_detail.html"
 	success_url = reverse_lazy('project_plan')
     
+    # def test_func(self):
+    #     post=self.get_object()
+    #     if self.request.user == post.Author:
+    #         return True
+    #     else:
+    #         return False    
 
 
 

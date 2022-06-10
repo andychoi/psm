@@ -131,6 +131,29 @@ file and the `<README.rst>`_ guides of how to use
 it with *Honcho*.
 
 
+##Linux Service
+
+/etc/systemd/system/psm.service
+-------------------------------
+[Unit]
+Description=psm
+
+[Service]
+PermissionsStartOnly = true
+User=psm
+Group=psm
+ExecStart=/bin/sh /opt/app/.psm_daemon/run.sh
+
+/opt/app/.psm_daemon/run.sh
+---------------------------
+cd psm
+PIDFILE=psmapp.pid
+.venv/bin/gunicorn psmprj.wsgi:application --bind 0.0.0.0:8000 --workers 3 --pid $PIDFILE
+
+Reference
+------------
+https://bartsimons.me/gunicorn-as-a-systemd-service/
+
 Static files
 ------------
 

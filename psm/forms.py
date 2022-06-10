@@ -1,33 +1,75 @@
 from django import forms
+from django.forms import ModelForm
 from django.utils.translation import gettext_lazy as _
+
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Submit, Row, Column
+
+from psm.models import Project
  
-# creating a form
-# class ProjectPlanForm(forms.Form):
-#     # specify fields for model
+class ProjectPlanForm(ModelForm):
+    class Meta:
+        model = Project
+        fields = [  'title', 'pm', 'year',
+                    'asis', 'img_asis', 'tobe', 'img_tobe',
+                    'description', 'consider', 
+                    'quali', 'quant', 'est_cost', 'resource',
+                    'p_ideation', 'p_plan_b', 'p_kickoff', 'p_design_b', 'p_uat_b', 'p_launch', 'p_close',
+                ]
+        widgets = {
+            'asis':         forms.Textarea(attrs={'rows':7, 'cols':80}),
+            'tobe':         forms.Textarea(attrs={'rows':7, 'cols':80}),
+            'description':  forms.Textarea(attrs={'rows':5, 'cols':80}),
+            'consider':     forms.Textarea(attrs={'rows':5, 'cols':80}),
+            'quali':        forms.Textarea(attrs={'rows':3, 'cols':80}),
+            'quant':        forms.Textarea(attrs={'rows':3, 'cols':80}),
+            'resource':     forms.Textarea(attrs={'rows':2, 'cols':80}),
+            }
 
-#     title = forms.CharField(_("title"), max_length=200)
-#     # type = forms.CharField(_("type"), max_length=20, choices=PRJTYPE, default=PrjType.UNC.value)
-#     # year = forms.PositiveIntegerField(_("Year"), default=current_year(), validators=[MinValueValidator(2014), max_value_current_year])
-#     # strategy = forms.ManyToManyField(Strategy, blank=True, related_name="projects")
-#     # program = forms.ForeignKey(Program, blank=True, null=True, on_delete=forms.PROTECT)
-#     # is_internal = forms.BooleanField(_("Internal project"), default=False)
-#     # is_agile = forms.BooleanField(_("Agile project"), default=False)
-#     # is_unplanned = forms.BooleanField(_("Unplanned project"), default=False)
-
-#     # CBUs  = forms.ManyToManyField(CBU, blank=True, related_name="projects")
-#     # CBUpm = forms.ForeignKey(Profile, related_name='cbu_pm', verbose_name=_('CBU PM'), on_delete=forms.SET_NULL, null=True, blank=True)
-#     # team = forms.ForeignKey(Team, blank=True, null=True, on_delete=forms.PROTECT)
-#     # dept = forms.ForeignKey(Dept, blank=True, null=True, on_delete=forms.PROTECT)
-#     # div = forms.ForeignKey(Div, blank=True, null=True, on_delete=forms.PROTECT)
-
-#     description = forms.TextField(_("description"), max_length=2000, null=True, blank=True)
-
-#     asis        = forms.TextField(_("As-Is"), max_length=2000, null=True, blank=True)
-#     tobe        = forms.TextField(_("To-Be"), max_length=2000, null=True, blank=True)
-#     objective   = forms.TextField(_("Objective"), max_length=2000, null=True, blank=True)
-#     consider    = forms.TextField(_("Consideration"), max_length=1000, null=True, blank=True)
-#     quali       = forms.TextField(_("Qualitative benefit"), max_length=1000, null=True, blank=True)
-#     quant       = forms.TextField(_("Quantitative benefit"), max_length=1000, null=True, blank=True)
-#     resource    = forms.TextField(_("Quantitative benefit"), max_length=500, null=True, blank=True)
-#     img_asis    = forms.ImageField(upload_to='project/%Y', null=True, blank=True)   
-#     img_tobe    = forms.ImageField(upload_to='project/%Y', null=True, blank=True)  
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Submit('submit', 'Submit', css_class='form-group float-end'),
+            Row(
+                Column('title',    css_class='form-group col-md-6 mb-0'),
+                Column('year',     css_class='form-group col-md-2 mb-0'),
+                Column('pm',       css_class='form-group col-md-4 mb-0'),
+            ),
+            Row(
+                Column('asis',     css_class='form-group col-md-6 mb-0 prj-main'),
+                Column('tobe',     css_class='form-group col-md-6 mb-0 prj-main'),
+                css_class='form-row'
+            ),
+            Row(
+                Column('img_asis',    css_class='form-group col-md-6 mb-0'),
+                Column('img_tobe',    css_class='form-group col-md-6 mb-0'),
+                css_class='form-row'
+            ),
+            Row(
+                Column('description', css_class='form-group col-md-6 mb-0 prj-sub1'),
+                Column('consider',    css_class='form-group col-md-6 mb-0 prj-sub1'),
+                css_class='form-row'
+            ),
+            Row(
+                Column('quali',     css_class='form-group col-md-6 mb-0 prj-sub2'),
+                Column('quant',     css_class='form-group col-md-6 mb-0 prj-sub2'),
+                css_class='form-row'
+            ),
+            Row(
+                Column('est_cost',    css_class='form-group col-md-6 mb-0 prj-sub3'),
+                Column('resource',    css_class='form-group col-md-6 mb-0 prj-sub3'),
+                css_class='form-row'
+            ),
+            Row(
+                Column('p_ideation',  id='p_ideation', css_class='form-group mb-0'),
+                Column('p_plan_b',    id='p_plan_b', css_class='form-group mb-0'),
+                Column('p_kickoff',   id='p_kickoff', css_class='form-group mb-0'),
+                Column('p_design_b',  id='p_design_b', css_class='form-group mb-0'),
+                Column('p_uat_b',     id='p_uat_b', css_class='form-group mb-0'),
+                Column('p_launch',    id='p_launch', css_class='form-group mb-0'),
+                Column('p_close',     id='p_close', css_class='form-group mb-0'),
+                css_class='form-row'
+            ),
+        
+        )

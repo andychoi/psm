@@ -39,11 +39,17 @@
     <div class="row">
         {% if project_list %}
             <div class='container-fluid align-items-center justify-content-center'>
-                <div class="mx-auto mt-3 btn-group" role="group">
-                    <button type="button" class="btn btn-sm btn-light">Day</button>
-                    <button type="button" class="btn btn-sm btn-light active">Week</button>
-                    <button type="button" class="btn btn-sm btn-light">Month</button>
-                    <button type="button" class="btn btn-sm btn-light">Custom</button>
+                <div style="width: 100%; display: flex; justify-content: space-between;">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-sm btn-light">Day</button>
+                        <button type="button" class="btn btn-sm btn-light active">Week</button>
+                        <button type="button" class="btn btn-sm btn-light">Month</button>
+                        <button type="button" class="btn btn-sm btn-light">Custom</button>
+                    </div>
+                    <div style="margin-right: 5px;">
+                        <button id="btn_reset" type="button" class="btn btn-sm btn-primary" onclick="resetChange()">Reset</button>
+                        <button id="btn_save" type="button" class="btn btn-sm btn-danger" onclick="saveChange()">Save</button>
+                    </div>
                 </div>
                 <div class="card" >
                     <svg id="gantt" ></svg>
@@ -63,6 +69,8 @@
 
     var tChartData = [];
     var tMaxItem = 200;
+
+    var tModifiedItemMap = {};
 
     document.getElementById("input_max_item").addEventListener("keypress", function(event) {
         if (event.key === "Enter") {
@@ -114,6 +122,10 @@
         return tParams;
     }    
 
+    function getDateStr(pDate) {
+        return pDate.toISOString().split("T")[0];
+    }
+
     var tDefaultOptions = {
         header_height: 50,
         column_width: 40,
@@ -126,26 +138,44 @@
         // view_mode: 'Month',
         view_mode: 'Custom',
         date_format: 'YYYY-MM-DD',
-        custom_popup_html: null            
+        custom_popup_html: null,
+        on_click: function (task) {
+            console.log(task);
+        },
+        on_date_change: function(task, start, end) {
+            console.log(task, start, end);
+            $('#btn_reset').removeAttr('disabled');
+            $('#btn_save').removeAttr('disabled');
+            tModifiedItemMap[task.id] = {id: task.id, p_close: getDateStr(task._end), p_plan_b: getDateStr(task._start)};
+        },
+        on_progress_change: function(task, progress) {
+            console.log(task, progress);
+        },
+        on_view_change: function(mode) {
+            console.log(mode);
+        }        
     };
 
     function updateChart() {
+        $('#btn_reset').attr('disabled','disabled');
+        $('#btn_save').attr('disabled','disabled');
+
         $("#gantt").empty();
         if (tChartData.length > 0) {
             var tList = [];
             var tCounter = 0;
             tChartData.forEach((pItem) => {
                 if (tCounter++ < tMaxItem) {
-                    tList.push({id: pItem.id, name: pItem.title, start: pItem.p_plan_b, end: pItem.p_close, progress: pItem.progress, custom_class: 'bar-milestoe'});
+                    tList.push({id: String(pItem.id), name: pItem.title, start: pItem.p_plan_b, end: pItem.p_close, progress: pItem.progress, custom_class: 'bar-milestoe'});
                 }
             });
             if (tList.length > 0) {
-                new Gantt("#gantt", tList, tDefaultOptions);
+                tChart = new Gantt("#gantt", tList, tDefaultOptions);
             }
         }
     }
 
-    function updateData() {
+    function updateData() {    
         var tUrl = '/api/1.0/projects';
         var tParams = getParams();        
         if (Object.keys(tParams).length > 0) {
@@ -155,6 +185,7 @@
         .then(response => response.json())
         .then((res)=>{
             // console.log(res);
+            res.sort((pA, pB) => { return pA.id - pB.id; });
             tChartData = res;
             updateChart();
         });
@@ -192,6 +223,27 @@
             }, false);
         }
     })();
+
+    function resetChange() {
+        tModifiedItemMap = {};
+        updateChart();        
+    }
+
+    function saveChange() {
+        // console.log(Object.values(tModifiedItemMap));
+        var tUrl = '/api/1.0/projects/update/period';
+        var tParams = getParams();        
+        if (Object.keys(tParams).length > 0) {
+            tUrl += '?' + new URLSearchParams(tParams).toString(); 
+        }
+        fetch(tUrl, { header: {'Content-Type': 'application/json'}, method: "POST", body: JSON.stringify( Object.values(tModifiedItemMap) ) })
+        .then(response => response.json())
+        .then((res)=>{
+            // console.log(res);
+            tModifiedItemMap = {};
+            updateData();
+        });
+    }
 </script>
 
 {% endblock %}

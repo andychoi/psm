@@ -20,21 +20,27 @@ from common.models import State3, ReviewTypes, Versions
 from .models import Project, ProjectPlan, ProjectRequest, ProjectDeliverable, ProjectDeliverableType, Project_PRIORITY_FIELDS, Strategy, Program
 from reviews.models import  Review
 from django.contrib.admin import AdminSite
+from django.urls import reverse
 from django.http import HttpResponse
+from django.http import HttpResponseRedirect
 
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, get_permission_codename
 from django.contrib.auth.models import User, Permission
 from django.contrib.contenttypes.models import ContentType
 
+
+# README issue with import/export https://github.com/crccheck/django-object-actions/issues/67
+from django_object_actions import DjangoObjectActions
 
 # https://stackoverflow.com/questions/54514324/how-to-register-inherited-sub-class-in-admin-py-file-in-django
 # GOOD: https://stackoverflow.com/questions/241250/single-table-inheritance-in-django
 # READ: https://chelseatroy.com/2018/08/26/proxy-models-in-django-an-example-and-a-use-case/
 
 @admin.register(Strategy)
-class StrategyAdmin(ImportExportMixin, admin.ModelAdmin):
+class StrategyAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     list_display = ('name', 'updated_on','is_active')
     list_display_links = ('name',)
+    list_filter = ('is_active',)
     search_fields = ('name', 'description')
     ordering = ('name',)
     readonly_fields = ('created_at', 'updated_on', 'created_by')
@@ -43,8 +49,12 @@ class StrategyAdmin(ImportExportMixin, admin.ModelAdmin):
         model = Strategy
         import_id_fields = ('id',)
 
+    change_actions = ('goto_project', )
+    def goto_project(self, request, obj):
+        return HttpResponseRedirect(f'/admin/psm/project/?strategy__id__exact={obj.id}')
+
 @admin.register(Program)
-class ProgramAdmin(ImportExportMixin, admin.ModelAdmin):
+class ProgramAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     list_display = ('name', 'lead', 'startyr', 'is_active')
     list_display_links = ('name', 'lead')
     search_fields = ('name',)
@@ -53,6 +63,20 @@ class ProgramAdmin(ImportExportMixin, admin.ModelAdmin):
     class Meta:
         model = Program
         import_id_fields = ('id',)
+
+    # object-function in object admin page
+    change_actions = ('goto_project', )
+    # object-function
+    def goto_project(self, request, obj):
+        return HttpResponseRedirect(f'/admin/psm/project/?program__id__exact={obj.id}')
+
+    # changelist_actions
+    # def redirect_to_export(self, request, obj):
+    #     return HttpResponseRedirect(reverse('admin:%s_%s_export' % self.get_model_info()))
+    # redirect_to_export.label = "Export"
+    # def redirect_to_import(self, request, obj):
+    #     return HttpResponseRedirect(reverse('admin:%s_%s_import' % self.get_model_info()))
+    # redirect_to_export.label = "Import"
 
 # to make textarea format
 class ProjectDeliverableModelForm( forms.ModelForm ):
@@ -82,10 +106,10 @@ class ProjectPlanAdmin(ImportExportMixin, admin.ModelAdmin):
     class Media:
         css = { 'all': ('psm/css/custom_admin.css',), }
 
+    search_fields = ('id', 'title', 'asis', 'tobe', 'objective', 'consider', 'code', 'pm__name', 'CBUpm__name', 'CBUs__name')
     list_display = ('version', 'pjcode',  'title', 'pm', 'dept', 'CBU_str', 'est_cost' )    #CBU many to many
     list_display_links = ('pjcode', 'title')
     list_editable = ("version", )
-    search_fields = ('id', 'title', 'asis', 'tobe', 'objective', 'consider', 'code', 'pm__name', 'CBUpm__name', 'CBUs__name')
     list_filter = (
         ('version',     DropdownFilter),
         ('year',        DropdownFilter),
@@ -160,7 +184,7 @@ class ProjectPlanAdmin(ImportExportMixin, admin.ModelAdmin):
             object.save()
             messages.add_message(request, messages.INFO, ' is moved to version 12')
 
-    @admin.action(description="Transfer to Actual Project", permissions=['change'])
+    @admin.action(description="Transfer to Actual Project", permissions=['transfer'])
     def transfer_to_actual(self, request, queryset):
         for object in queryset:
 
@@ -175,6 +199,10 @@ class ProjectPlanAdmin(ImportExportMixin, admin.ModelAdmin):
                 new_proj.save()
                 messages.add_message(request, messages.INFO, mark_safe("transfered to actual project to <a href='/admin/psm/project/%s'>%s</a>" % (new_proj.id, new_proj.code) ))
 
+    def has_transfer_permission(self, request):
+        opts = self.opts
+        codename = get_permission_codename('transfer', opts)
+        return request.user.has_perm('%s.%s' % (opts.app_label, codename))
 
 # --------------------------------------------------------------------------------------------------
 @admin.register(ProjectRequest)
@@ -185,10 +213,10 @@ class ProjectRequestAdmin(ImportExportMixin, admin.ModelAdmin):
     class Media:
         css = { 'all': ('psm/css/custom_admin.css',), }
 
+    search_fields = ('id', 'title', 'asis', 'tobe', 'objective', 'consider', 'code', 'pm__name', 'CBUpm__name', 'CBUs__name')
     list_display = ('pjcode',  'title', 'pm', 'dept', 'CBU_str', 'est_cost' )    #CBU many to many
     list_display_links = ('pjcode', 'title')
     # list_editable = ("wf_state", )
-    search_fields = ('id', 'title', 'asis', 'tobe', 'objective', 'consider', 'code', 'pm__name', 'CBUpm__name', 'CBUs__name')
     list_filter = (
         ('year',        DropdownFilter),
         ('CBUs',        RelatedDropdownFilter),   
@@ -256,10 +284,10 @@ class ProjectRequestAdmin(ImportExportMixin, admin.ModelAdmin):
             new_proj.save()
             messages.add_message(request, messages.INFO, mark_safe("transfered to actual project to <a href='/admin/psm/project/%s'>%s</a>" % (new_proj.id, new_proj.code) ))
 
-    def has_approve_permission(self):
-        user = User.objects.get(username="testuser1")
-        user.has_perm('psm.approve')
-        return True
+    def has_approve_permission(self, request):
+        opts = self.opts
+        codename = get_permission_codename('approve', opts)
+        return request.user.has_perm('%s.%s' % (opts.app_label, codename))
 
     # def f_est_cost(self, instance):
     #     return '{0:,}'.format(self.est_cost)
@@ -273,10 +301,11 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
         css = {
         'all': ('psm/css/custom_admin.css',),
     }    
+    search_fields = ('id', 'title', 'description', 'objective', 'resolution', 'code', 'wbs__wbs', 'es', 'ref', 'program__name', 'strategy__name', 'pm__name', 'CBUpm__name', 'CBUs__name')     #FIXME many to many
     list_display = ('pjcode', 'title', 'pm', 'dept', 'phase', 'state', 'CBU_str', )    #CBU many to many
     list_display_links = ('pjcode', 'title')
     list_editable = ("phase", 'state',)
-    search_fields = ('id', 'title', 'description', 'objective', 'resolution', 'code', 'wbs__wbs', 'es', 'ref', 'pm__name', 'CBUpm__name', 'CBUs__name')     #FIXME many to many
+    list_filter = ('pm', 'dept', 'phase', 'state', 'CBU_str', )    #CBU many to many
     list_filter = (
         ('status_o', UnionFieldListFilter),
         ('year', DropdownFilter),
@@ -285,6 +314,7 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
         ('CBUs', RelatedDropdownFilter),   #FIXME many to many
         ('dept', RelatedDropdownFilter),
         ('dept__div', RelatedDropdownFilter), #FIXME dept__div not working
+        # ('program', RelatedDropdownFilter),
         ('priority', UnionFieldListFilter),
         ('req_pro', DropdownFilter),
         # ('req_sec', DropdownFilter),

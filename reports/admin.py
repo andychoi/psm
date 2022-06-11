@@ -186,6 +186,9 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
         return obj.project.dept
     get_dept.short_description = 'Dept'
 
+    # object-function in object admin page
+    change_actions = ('preview', 'send_report', 'email', 'clone', 'past_reports', 'goto_project')
+    
     # object-function
     def send_report(self, request, obj):
         from psmprj.utils.mail import send_mail_async as send_mail, split_combined_addresses, combine_to_addresses
@@ -230,17 +233,21 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
         # from django.shortcuts import redirect
         # redirect('/admin/psm/project/%s' % obj.project.pk)
 
+    # object-function
     def preview(self, request, obj):
         return HttpResponseRedirect(reverse('report_detail', args=[obj.pk]))
     preview.attrs = {'target': '_blank'}
 
+    # object-function
     def email(self, request, obj):
         return HttpResponseRedirect(reverse('report-email', args=[obj.pk]))
     email.attrs = {'target': '_blank'}
 
+    # object-function
     def past_reports(self, request, obj):
         return HttpResponseRedirect(f'/admin/reports/report/?project__id__exact={obj.project.id}')
 
+    # object-function
     def clone(self, request, obj):
         old_id = obj.id     #obj.id = new.id
         new = obj
@@ -261,9 +268,6 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
         return HttpResponseRedirect(f'/admin/reports/report/{new.id}')
     clone.label = "Clone+"  
 
-
-    change_actions = ('preview', 'send_report', 'email', 'clone', 'past_reports', 'goto_project')
-    
     def save_model(self, request, obj, form, change):
         if change is False:
             obj.created_by = request.user

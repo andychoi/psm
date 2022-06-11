@@ -154,6 +154,23 @@ Reference
 ------------
 https://bartsimons.me/gunicorn-as-a-systemd-service/
 
+
+
+Steps to clear out the history of a git/github repository
+---------------------------------------------------------
+-- Remove the history from 
+rm -rf .git
+
+-- recreate the repos from the current content only
+git init
+git add .
+git commit -m "Initial commit"
+
+-- push to the github remote repos ensuring you overwrite history
+git remote add origin git@github.com:<YOUR ACCOUNT>/<YOUR REPOS>.git
+git push -u --force origin master
+
+
 Static files
 ------------
 
@@ -164,3 +181,8 @@ https://stackoverflow.com/questions/54566491/why-does-django-not-load-static-fil
 Or you may run in DEBUG=False using middleware
 
     $ pip install whitenoise
+
+
+Backup & restore plan
+---------------------
+https://stackoverflow.com/questions/34822002/django-backup-strategy-with-dumpdata-and-migrations

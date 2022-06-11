@@ -121,7 +121,7 @@ class WBSAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
     # from pyrfc import Connection, ABAPApplicationError, ABAPRuntimeError, LogonError, CommunicationError
     # from ConfigParser import ConfigParser
 
-    # Table: PROJ
+    # Table: ZSUSPSV0020
     # FIELDS: PSPID, POST1, STSPD, ...
 
     def import_func(modeladmin, request, queryset):

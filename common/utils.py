@@ -142,6 +142,19 @@ REVIEWTYPES = (
     (ReviewTypes.MGT.value, _('90-Management'))
 )
 
+class Versions(enum.Enum):
+    V00 = '00'
+    V10 = '10'
+    V11 = '11'
+    V12 = '12'
+    V20 = '20-Final'
+VERSIONS = (
+    (Versions.V10.value, _('10')),
+    (Versions.V11.value, _('11')),
+    (Versions.V12.value, _('12')),
+    (Versions.V20.value, _('Final version')),
+)
+
 PUBLISH = (
 	(0, "Draft"),
 	(1, "Publish"),

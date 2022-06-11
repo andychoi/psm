@@ -24,3 +24,11 @@
 .ui-datepicker .ui-datepicker-buttonpane button.ui-datepicker-current {
     display: none
 }
+
+/* textarea size */
+.vLargeTextField {
+    width: 300px;
+}
+
+textarea {
+  }

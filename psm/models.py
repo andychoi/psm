@@ -1,4 +1,5 @@
 import ast
+import sys
 import logging
 import datetime
 from django.core.validators import validate_email, MaxValueValidator, MinValueValidator
@@ -7,7 +8,8 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 
-from common.models import CBU, Div, Dept, Team, Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, State3, STATE3, WBS
+from common.models import CBU, Div, Dept, Team
+from common.models import Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, State3, STATE3, WBS, VERSIONS, Versions
 from users.models import Profile
 
 from psmprj.utils.mail import send_mail_async as send_mail, split_combined_addresses
@@ -48,7 +50,7 @@ class Strategy(models.Model):
 
     created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="strategy_created", null=True, on_delete=models.SET_NULL)
-    last_modified = models.DateTimeField(_("last modified"), auto_now=True, editable=False)
+    updated_on = models.DateTimeField(_("last modified"), auto_now=True, editable=False)
 
 class Program(models.Model):
     class Meta:
@@ -89,7 +91,42 @@ class ProjectManager(models.Manager):
 # Fields used to create an index in the DB and sort the Projects in the Admin
 Project_PRIORITY_FIELDS = ('state', '-priority', '-lstrpt')
 
-class Project(models.Model):
+# https://stackoverflow.com/questions/241250/single-table-inheritance-in-django
+#   proxy model -> this is choice here 
+#   unmanaged is like a view in database
+#   https://stackoverflow.com/questions/7625674/utility-of-managed-false-option-in-django-models
+class ProxySuper(models.Model):
+    class Meta:
+        abstract = True
+
+    proxy_name = models.CharField(max_length=20, default="Project")
+
+    def save(self, *args, **kwargs):
+        """ automatically store the proxy class name in the database """
+        self.proxy_name = type(self).__name__
+        super().save(*args, **kwargs)
+
+    def __new__(cls, *args, **kwargs):
+        """ create an instance corresponding to the proxy_name """
+        proxy_class = cls
+        try:
+            field_name = ProxySuper._meta.get_fields()[0].name
+            proxy_name = kwargs.get(field_name)
+            if proxy_name is None:
+                proxy_name_field_index = cls._meta.fields.index(
+                    cls._meta.get_field(field_name))
+                proxy_name = args[proxy_name_field_index]
+            proxy_class = getattr(sys.modules[cls.__module__], proxy_name)
+        finally:
+            return super().__new__(proxy_class)
+
+
+class ProxyManager(models.Manager):
+    def get_queryset(self):
+        """ only include objects in queryset matching current proxy class """
+        return super().get_queryset().filter(proxy_name=self.model.__name__)
+
+class ProjectSet(ProxySuper):
     class Meta:
         verbose_name = _("Project")
         verbose_name_plural = _("Projects")
@@ -97,18 +134,18 @@ class Project(models.Model):
             models.Index(fields=Project_PRIORITY_FIELDS, name='mProjects_Project_priority_idx'),
         ]
 
-    code = models.CharField(_("Code"), max_length=10, null=True, blank=True) 
+    code = models.CharField(_("Code"), max_length=18, null=True, blank=True) 
 
     title = models.CharField(_("title"), max_length=200)
     type = models.CharField(_("type"), max_length=20, choices=PRJTYPE, default=PrjType.UNC.value)
     year = models.PositiveIntegerField(_("Year"), default=current_year(), validators=[MinValueValidator(2014), max_value_current_year])
-    strategy = models.ManyToManyField(Strategy, blank=True, related_name="projects")
+    strategy = models.ManyToManyField(Strategy, blank=True)
     program = models.ForeignKey(Program, blank=True, null=True, on_delete=models.PROTECT)
     is_internal = models.BooleanField(_("Internal project"), default=False)
     is_agile = models.BooleanField(_("Agile project"), default=False)
     is_unplanned = models.BooleanField(_("Unplanned project"), default=False)
 
-    CBUs  = models.ManyToManyField(CBU, blank=True, related_name="projects")
+    CBUs  = models.ManyToManyField(CBU, blank=True)
     CBUpm = models.ForeignKey(Profile, related_name='cbu_pm', verbose_name=_('CBU PM'), on_delete=models.SET_NULL, null=True, blank=True)
     team = models.ForeignKey(Team, blank=True, null=True, on_delete=models.PROTECT)
     dept = models.ForeignKey(Dept, blank=True, null=True, on_delete=models.PROTECT)
@@ -116,6 +153,7 @@ class Project(models.Model):
 
     description = models.TextField(_("description"), max_length=2000, null=True, blank=True)
 
+    version     = models.CharField(max_length=20, choices=VERSIONS, null=True, blank=True)
     asis        = models.TextField(_("As-Is"), max_length=2000, null=True, blank=True)
     tobe        = models.TextField(_("To-Be"), max_length=2000, null=True, blank=True)
     objective   = models.TextField(_("Objective"), max_length=2000, null=True, blank=True)
@@ -184,9 +222,9 @@ class Project(models.Model):
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='prj_created_by', verbose_name=_('created by'),
                                    on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False)
-    last_modified = models.DateTimeField(_("last modified"), auto_now=True, editable=False)
+    updated_on = models.DateTimeField(_("last modified"), auto_now=True, editable=False)
 
-    attachment=models.FileField(_("attachment"), upload_to='projects', null=True, blank=True)
+    attachment=models.FileField(_("attachment"), upload_to='projects/%Y', null=True, blank=True)
 
     # what is this for??
     objects = ProjectManager()
@@ -194,7 +232,10 @@ class Project(models.Model):
     def __str__(self):
 #        return "[%s] %s" % (self.number, self.title)
 #        return "[%s] %s" % (f'{self.created_at.strftime("%y")}-{"{:04d}".format(self.pk)}', self.title)    
-        return "[%s] %s" % (self.pjcode, self.title)
+        if self.pk:
+            return self.title
+        else:
+            return "[%s] %s" % (self.pjcode, self.title)
         # return f'{self.year % 100}-{"{:04d}".format(self.pk)}'
 
     # @property
@@ -213,7 +254,7 @@ class Project(models.Model):
         if (self.code is None) and (not self.pk is None):
             return f'{self.year % 100}-{"{:04d}".format(self.pk)}'
         else:
-            return self.code    #migrated records
+            return self.code    
 
     @property
     def CBU_str(self):
@@ -242,7 +283,7 @@ class Project(models.Model):
 
 
     def save(self, *args, **kwargs):
-        send_email = self.pk is None
+        send_email = (self.pk is None) and (not self.proxy_name == 'ProjectPlan')
         if not send_email and self.CBUs.exists():   #FIXME many-to-many
             old_Project_data = Project.objects.get(pk=self.pk)
             # many-to-many compare FIXME
@@ -255,32 +296,37 @@ class Project(models.Model):
         super().save(*args, **kwargs)
         
         if self.code is None:
-            self.code = f'{self.year % 100}-{"{:04d}".format(self.pk+2000)}'    #migration upto 1999
+            prefix = 'BAP-' if self.proxy_name == 'ProjectPlan' else ('PR-' if self.proxy_name == 'ProjectRequest' else '')
+            self.code = prefix + f'{self.year % 100}-{"{:04d}".format(self.pk+2000)}'    #migration upto 1999
             self.save()
 
         if send_email:
-            # Emails are sent to manager/HOD if the order is new
+            # TODO Emails are sent to manager/HOD if the order is new
             # or the CBU has changed
             self.send_new_project_email()
     
     # validation logic
     def clean(self):
         validation_errors = {}
-        title = self.title.strip() if self.title else self.title
 
-        #FIXME manytomany CBU.all() returns Queryset
-        # if self.CBU.all():
-        #     if Project.objects \
-        #             .others(self.pk, title=title, CBU=self.CBU) \
-        #             .exclude(state__in=(State.DONE.value, State.CANCEL.value)) \
-        #             .exists():
-        #         validation_errors['title'] = _('Open Project with this title and CBU already exists.')
-        # else:
-        #     if Project.objects \
-        #             .others(self.pk, title=title, CBU=None) \
-        #             .exclude(state__in=(State.DONE.value, State.CANCEL.value)) \
-        #             .exists():
-        #         validation_errors['title'] = _('Open Project with this title and no CBU already exists.')
+        if self.proxy_name == 'Project':
+            title = self.title.strip() if self.title else self.title
+            # title = self.cleaned_data.get('title')
+
+            matching_projects = Project.objects.filter(title=title)
+            # if self.instance:
+            #     matching_projects = matching_projects.exclude(pk=self.instance.pk)
+            if matching_projects.exists():
+                validation_errors['title'] = u"Project name: %s has already exist." % title
+            # else:
+            # return self.cleaned_data
+
+            # others -> error in proxy manager - FIXME
+            # if Project.objects \
+            #         .others(self.pk, title=title) \
+            #         .exclude(state__in=(State.DONE.value, State.CANCEL.value)) \
+            #         .exists():
+            #     validation_errors['title'] = _('Open Project with this title and no CBU already exists.')
 
         if self.recipients_to and not self.emails_to:
             validation_errors['title'] = _('Email format is not acceptable in Recipients(to)')
@@ -309,7 +355,7 @@ class Project(models.Model):
         if len(emails_to):
             logger.info("[Project #%s] Sending Project creation email to: %s", self.code, emails_to)
             vals = {
-                "id": self.pjcode,
+                "id": self.code,
                 "PM": str(self.pm) if self.pm else '(Not assigned yet)',
                 "CBU": self.CBU_str,
                 "CBU_PM": self.CBUpm if self.CBUpm else '(Not assigned yet)',
@@ -326,7 +372,7 @@ class Project(models.Model):
             email_template = settings.PSM_EMAIL_WITHOUT_URL
             try:
                 send_mail(
-                    '[{app}] [#{id}] New Project Created'.format(app=settings.EMAIL_SUBJECT_PREFIX, id=self.pjcode),
+                    '[{app}] [#{id}] New Project Created'.format(app=settings.EMAIL_SUBJECT_PREFIX, id=self.code),
                     email_template.format(**vals),
                     settings.APP_EMAIL,
                     emails_to,
@@ -354,6 +400,42 @@ class Project(models.Model):
         token = "{}-{}".format(salt, self.pk)                                   # SHA-1 is enough secure for
         token = sha1(token.encode('utf-8')).hexdigest()                         # this purpose (SHA-2 is too long)
         return settings.PSM_VIEWER_ENDPOINT.format(number=self.number, token=token)
+
+# 
+# https://stackoverflow.com/questions/3920909/using-django-how-do-i-construct-a-proxy-object-instance-from-a-superclass-objec
+# ----------------------------------------------------------------------------------------------------
+class Project(ProjectSet):
+    class Meta:
+        proxy = True
+    objects = ProxyManager()
+    
+
+class ProjectPlan(ProjectSet):
+    class Meta:
+        proxy = True
+
+    objects = ProxyManager()
+
+    def pjcode(self) -> str:
+        return self.code if self.code else f'BAP-{self.year % 100}-{"{:04d}".format(self.pk)}'
+
+class ProjectRequest(ProjectSet):
+    class Meta:
+        proxy = True
+        default_permissions = ('add', 'change', 'delete', 'view', 'approve')
+        # user.has_perm('appname.view_pizza')  # returns True if user 'Can view pizza'
+        #https://docs.djangoproject.com/en/2.1/topics/auth/customizing/#custom-permissions
+        # permissions = (
+        #     ("can_approve_prj_request", "Can approve Project Request"),
+        #     )
+
+    objects = ProxyManager()
+
+    def pjcode(self) -> str:
+        return self.code if self.code else f'PR-{self.year % 100}-{"{:04d}".format(self.pk)}'
+
+
+# ----------------------------------------------------------------------------------------------------
 
 # checklist
 class ProjectDeliverableType(models.Model):

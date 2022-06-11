@@ -22,8 +22,8 @@ from django_filters.views import FilterView
 # Create your views here.
 # importing models and libraries
 from common.models import Div, Dept, CBU
-from common.utils import PHASE, PRIORITIES, PRJTYPE
-from .models import Project, Program
+from common.utils import PHASE, PRIORITIES, PRJTYPE, VERSIONS
+from .models import Project, Program, ProjectPlan
 from .tables import ProjectPlanTable
 from .forms import ProjectPlanForm
 
@@ -39,7 +39,7 @@ class IndexView(generic.ListView):
 
     def get_queryset(self):
         """Return the last five project."""
-        return Project.objects.order_by('-last_modified')[:5]
+        return Project.objects.order_by('-updated_on')[:5]
 
 # https://django-filter.readthedocs.io/ -> error, don't use
 # https://django-tables2.readthedocs.io/ -> this is better, but...
@@ -89,52 +89,43 @@ class projectList1View(generic.ListView):
         context['filterItems'] = []
 
         context['filterItems'].append( {
-            "key": "YEAR", "text": "Year", "qId": "year"
-            , "selected": self.request.GET.get('year', '')
+            "key": "YEAR", "text": "Year", "qId": "year", "selected": self.request.GET.get('year', '')
             , "items": map( lambda x: {"id": x['year'], "name": x['year']}, Project.objects.values('year').distinct().order_by('-year') )
         } )
 
         context['filterItems'].append( {
-            "key": "DIV", "text": "Div", "qId": "div"
-            , "selected": self.request.GET.get('div', '')
+            "key": "DIV", "text": "Div", "qId": "div", "selected": self.request.GET.get('div', '')
             , "items": Div.objects.all()
         } )
 
         context['filterItems'].append( {
-            "key": "DEP", "text": "Dept.", "qId": "dep"
-            , "selected": self.request.GET.get('dep', '')
+            "key": "DEP", "text": "Dept.", "qId": "dep", "selected": self.request.GET.get('dep', '')
             , "items": Dept.objects.all()
         } )
     
         context['filterItems'].append( {
-            "key": "PHASE", "text": "Phase", "qId": "phase"
-            , "selected": self.request.GET.get('phase', '')
+            "key": "PHASE", "text": "Phase", "qId": "phase", "selected": self.request.GET.get('phase', '')
             , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PHASE)]
         } )
 
         context['filterItems'].append( {
-            "key": "CBU", "text": "CBU", "qId": "cbu"
-            , "selected": self.request.GET.get('cbu', '')
+            "key": "CBU", "text": "CBU", "qId": "cbu", "selected": self.request.GET.get('cbu', '')
             , "items": CBU.objects.all()
         } )
 
         context['filterItems'].append( {
-            "key": "TYP", "text": "Type", "qId": "type"
-            , "selected": self.request.GET.get('type', '')
+            "key": "TYP", "text": "Type", "qId": "type", "selected": self.request.GET.get('type', '')
             , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRJTYPE)]
         } )
-
-        context['filterItems'].append( {
-            "key": "PRI", "text": "Priority", "qId": "pri"
-            , "selected": self.request.GET.get('pri', '')
-            , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRIORITIES)]
-        } )
+        # context['filterItems'].append( {
+        #     "key": "PRI", "text": "Priority", "qId": "pri", "selected": self.request.GET.get('pri', '')
+        #     , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRIORITIES)]
+        # } )
         
         context['filterItems'].append( {
-            "key": "PRG", "text": "Program", "qId": "prg"
-            , "selected": self.request.GET.get('prg', '')
+            "key": "PRG", "text": "Program", "qId": "prg", "selected": self.request.GET.get('prg', '')
             # , "items": Project.objects.values('program').distinct()
-            , "items": Program.objects.all()
+            , "items": Program.objects.filter(is_active=True)  # all()
         } )
 
         #https://stackoverflow.com/questions/59972694/django-pagination-maintaining-filter-and-order-by
@@ -183,9 +174,9 @@ class projectList1View(generic.ListView):
             if ltmp:
                 queryset = queryset.filter(phase=PHASE[int(ltmp)][0])
 
-            # ltmp = self.request.GET.get('cbu', '')
-            # if ltmp:
-            #     queryset = queryset.filter(CBUs__id=ltmp)
+            ltmp = self.request.GET.get('cbu', '')
+            if ltmp:
+                queryset = queryset.filter(CBUs__id=ltmp)
 
             ltmp = self.request.GET.get('pri', '')
             if ltmp:
@@ -298,4 +289,99 @@ class projectDeleteView(generic.DeleteView):
     #         return False    
 
 
+class projectPlanListView(generic.ListView):
+    template_name = 'project/project_plan.html'
+    model = ProjectPlan
+    paginate_by = 500    #FIXME
+    context_object_name = 'project_list'    
+    
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['filterItems'] = []
+
+        context['filterItems'].append( {
+            "key": "YEAR", "text": "Year", "qId": "year", "selected": self.request.GET.get('year', '')
+            , "items": map( lambda x: {"id": x['year'], "name": x['year']}, Project.objects.values('year').distinct().order_by('-year') )
+        } )
+
+        context['filterItems'].append( {
+            "key": "DIV", "text": "Div", "qId": "div", "selected": self.request.GET.get('div', '')
+            , "items": Div.objects.all()
+        } )
+
+        context['filterItems'].append( {
+            "key": "DEP", "text": "Dept.", "qId": "dep", "selected": self.request.GET.get('dep', '')
+            , "items": Dept.objects.all()
+        } )
+    
+        context['filterItems'].append( {
+            "key": "VERSION", "text": "Version", "qId": "version", "selected": self.request.GET.get('version', '')
+            , "items": [{"id": i, "name": x[1]} for i, x in enumerate(VERSIONS)]
+        } )
+
+        context['filterItems'].append( {
+            "key": "CBU", "text": "CBU", "qId": "cbu", "selected": self.request.GET.get('cbu', '')
+            , "items": CBU.objects.all()
+        } )
+
+        context['filterItems'].append( {
+            "key": "TYP", "text": "Type", "qId": "type", "selected": self.request.GET.get('type', '')
+            , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRJTYPE)]
+        } )
+
+        # context['filterItems'].append( {
+        #     "key": "PRI", "text": "Priority", "qId": "pri", "selected": self.request.GET.get('pri', '')
+        #     , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRIORITIES)]
+        # } )
+
+        context['filterItems'].append( {
+            "key": "PRG", "text": "Program", "qId": "prg", "selected": self.request.GET.get('prg', '')
+            , "items": Program.objects.filter(is_active=True)  # all()
+        } )
+
+        #https://stackoverflow.com/questions/59972694/django-pagination-maintaining-filter-and-order-by
+        get_copy = self.request.GET.copy()
+        if get_copy.get('page'):
+            get_copy.pop('page')
+        context['get_copy'] = get_copy
+        
+        return context
+
+    def get_queryset(self):
+        queryset = []
+        if (ProjectPlan.objects.count() > 0):
+            queryset = ProjectPlan.objects.all()
+            ltmp = self.request.GET.get('year', '')
+            if ltmp:
+                queryset = queryset.filter(year=ltmp)
+
+            ltmp = self.request.GET.get('div', '')
+            if ltmp:
+                queryset = queryset.filter(dept__div__id=ltmp)
+
+            ltmp = self.request.GET.get('dep', '')
+            if ltmp:
+                queryset = queryset.filter(dept__id=ltmp)
+
+            ltmp = self.request.GET.get('version', '')
+            if ltmp:
+                queryset = queryset.filter(version=VERSIONS[int(ltmp)][0])
+
+            ltmp = self.request.GET.get('cbu', '')
+            if ltmp:
+                queryset = queryset.filter(CBUs__id=ltmp)
+
+            ltmp = self.request.GET.get('pri', '')
+            if ltmp:
+                queryset = queryset.filter(priority=PRIORITIES[int(ltmp)][0])
+
+            ltmp = self.request.GET.get('prg', '')
+            if ltmp:
+                queryset = queryset.filter(program__id=ltmp)
+
+            ltmp = self.request.GET.get('type', '')
+            if ltmp:
+                queryset = queryset.filter(type=PRJTYPE[int(ltmp)][0])
+        
+        return queryset
 

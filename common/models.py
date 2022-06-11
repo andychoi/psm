@@ -69,7 +69,7 @@ class CBU(models.Model):
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='CBU_created', verbose_name=_('created by'),
                                    on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False)
-    last_modified = models.DateTimeField(_("last modified"), auto_now=True, editable=False)
+    updated_on = models.DateTimeField(_("last modified"), auto_now=True, editable=False)
 
     def __str__(self):
         return self.name
@@ -92,7 +92,7 @@ class WBS(models.Model):
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
     created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False, blank=True)
-    last_modified = models.DateTimeField(_("last modified"), auto_now=True, editable=False)
+    updated_on = models.DateTimeField(_("last modified"), auto_now=True, editable=False)
 
     def __str__(self):
         return self.wbs

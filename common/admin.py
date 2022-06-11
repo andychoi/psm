@@ -40,11 +40,11 @@ class CBUAdmin(ImportExportMixin, admin.ModelAdmin):
 
     ordering = ('name',)
     list_filter = ('is_company',)
-    readonly_fields = ('created_at', 'last_modified', 'created_by')
+    readonly_fields = ('created_at', 'updated_on', 'created_by')
     fieldsets = (  # Edition form
 #        (None, {'fields': (('name', 'is_company'), ('email', 'website'), ('phone', 'mobile'), ('address',), ('comment',))}),
          (None, {'fields': (('name', 'is_tier1', 'is_company'), ('fullname', 'group') , ('email', 'website'), ('comment',))}),
-        (_('More...'), {'fields': (('created_at', 'last_modified'), 'created_by'), 'classes': ('collapse',)}),
+        (_('More...'), {'fields': (('created_at', 'updated_on'), 'created_by'), 'classes': ('collapse',)}),
     )
 
     def get_fieldsets(self, request, obj=None):
@@ -76,10 +76,10 @@ class WBSAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
 
     ordering = ('wbs',)
 
-    readonly_fields = ('created_at', 'last_modified', 'created_by')
+    readonly_fields = ('created_at', 'updated_on', 'created_by')
     fieldsets = (  # Edition form
          (None, {'fields': (('wbs', 'name', 'cbu') , ('status', 'budget'))}),
-        (_('More...'), {'fields': (('created_at', 'last_modified'), 'created_by'), 'classes': ('collapse',)}),
+        (_('More...'), {'fields': (('created_at', 'updated_on'), 'created_by'), 'classes': ('collapse',)}),
     )
 
     def get_fieldsets(self, request, obj=None):

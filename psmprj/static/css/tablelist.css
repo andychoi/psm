@@ -1,0 +1,22 @@
+.fixed-panel {
+    min-height: 140px;
+    max-height: 300px;
+}
+/*		.panel-body {background:#f8f9fa;;} */
+.panel-heading {background-color: #dee2e6; font-weight: 600;}
+.panel-body-border { 
+    border: 1px solid #dee2e6 !important;
+}
+/*text area to keep new line */
+label {
+    white-space: pre-wrap;
+}
+#myleft > .panel.mypadding-top {
+    padding-top: 10px;
+}
+#toolbar {
+    margin: 0;
+}
+.form-group label {
+   font-size: 1.2em;
+}

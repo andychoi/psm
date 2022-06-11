@@ -20,9 +20,10 @@
             Administration
           </a>
           <ul class="dropdown-menu my-menu-2" aria-labelledby="navbarDropdownMenuLink2">
+            <li><a class="dropdown-item" href="/admin/psm/program">Admin - Program</a></li>
             <li><a class="dropdown-item" href="/admin/psm/project">Admin - Project</a></li>
             <li><a class="dropdown-item" href="/admin/reports/report">Admin - Report</a></li>
-            <li><a class="dropdown-item" href="/admin/reports/reportrisk">Admin - Project Risk</a></li>
+            <li><a class="dropdown-item" href="/admin/reports/reportrisk">Admin - Risk</a></li>
             <li><hr></li>
             <li><a class="dropdown-item" href="/admin">Admin - Home</a></li>
           </ul>
@@ -44,6 +45,16 @@
             <li><a class="dropdown-item" href="/projectchart">Gantt chart demo1</a></li>
             <li><a class="dropdown-item" href="/projectchart2">Gantt chart demo2</a></li>
             <li><a class="dropdown-item" href="{% url 'project_list2' %}">Key project summary</a></li>
+          </ul>
+        </li>
+                
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Business Planning
+          </a>
+          <ul class="dropdown-menu my-menu-1" aria-labelledby="navbarDropdownMenuLink1">
+            <li><a class="dropdown-item" href="/admin/psm/projectplan">Business Plan Admin</a></li>
+            <li><a class="dropdown-item" href="{% url 'project_plan' %}">Business Plan List</a></li>
           </ul>
         </li>
                 

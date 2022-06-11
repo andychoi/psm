@@ -40,13 +40,13 @@ class TaskAdmin(admin.ModelAdmin):
         'deadline'
     )
     ordering = TASK_PRIORITY_FIELDS
-    readonly_fields = ('created_at', 'last_modified', 'created_by')
+    readonly_fields = ('created_at', 'updated_on', 'created_by')
     autocomplete_fields = ['user', 'CBU']
 
     # fieldsets = (               # Edition form
     #     (None,                   {'fields': (('title','project' ), ('user', 'CBU'), 'deadline',
     #                                          ('state', 'priority'), ('description', 'resolution'))}),
-    #     (_('More...'), {'fields': (('created_at', 'last_modified'), 'created_by'), 'classes': ('collapse',)}),
+    #     (_('More...'), {'fields': (('created_at', 'updated_on'), 'created_by'), 'classes': ('collapse',)}),
     # )
     inlines = [TaskItemInline]
 
@@ -66,7 +66,7 @@ class TaskAdmin(admin.ModelAdmin):
             fieldsets = (       # Edition form
                 (None,                   {'fields': (('title', 'ttype', 'project' ), ('user', 'CBU'), 'deadline',
                                                     ('state', 'priority'), ('description', 'resolution'))}),
-                (_('More...'), {'fields': (('created_at', 'last_modified'), 'created_by'), 'classes': ('collapse',)}),
+                (_('More...'), {'fields': (('created_at', 'updated_on'), 'created_by'), 'classes': ('collapse',)}),
             )            
         return fieldsets
 

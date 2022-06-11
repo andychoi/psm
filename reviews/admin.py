@@ -17,7 +17,8 @@ from psm.models import Project, STATE3, State3
 from common.models import ReviewTypes, REVIEWTYPES
 
 # permission https://django-guardian.readthedocs.io/en/stable/userguide/admin-integration.html
-from guardian.admin import GuardedModelAdmin
+# TODO
+# from guardian.admin import GuardedModelAdmin
 
 # TIP: for easier custom permission change, need to change it in both places (models.py and your DB) 
 # from django.contrib.auth.models import Permission

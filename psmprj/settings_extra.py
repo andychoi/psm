@@ -18,3 +18,5 @@ from django.conf.locale.en import formats as en_formats
 en_formats.DATETIME_FORMAT = 'm/d/y g:i a'
 # en_formats.DATE_FORMAT = 'M d, Y'
 en_formats.DATE_FORMAT = 'Y-m-d'
+
+USE_THOUSAND_SEPARATOR = True

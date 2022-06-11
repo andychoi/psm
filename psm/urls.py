@@ -20,7 +20,7 @@ urlpatterns = [
 	# path('projectchartactual/', views.projectChartActualView.as_view(), name='project_chart_actual'),
 	path('projectchart2/', views.projectChartView2.as_view(), name='project_chart_plan2'),
 
-	# path('project-plan/', views.FilteredProjectPlanView.as_view(), name='project_plan'),
+	path('project-plan/', views.projectPlanListView.as_view(), name='project_plan'),
 
 	path('api/1.0/', include('apis.urls')),
 ]

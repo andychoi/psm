@@ -314,8 +314,8 @@ class ProjectSet(ProxySuper):
             # title = self.cleaned_data.get('title')
 
             matching_projects = Project.objects.filter(title=title)
-            # if self.instance:
-            #     matching_projects = matching_projects.exclude(pk=self.instance.pk)
+            if self.id:
+                matching_projects = matching_projects.exclude(pk=self.pk)
             if matching_projects.exists():
                 validation_errors['title'] = u"Project name: %s has already exist." % title
             # else:

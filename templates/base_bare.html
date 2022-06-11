@@ -16,10 +16,10 @@
   
   {% if title %}<title>PSM System - {{ title }}</title>{% else %}<title>PSM System</title>{% endif %}
 
-  {% block child_css %}
+  {% block head %}
   {% endblock %}
 
-  <link rel="stylesheet" type="text/css" href="{% static 'css/markdown2.css' %}?1.0">
+  <!-- <link rel="stylesheet" type="text/css" href="{% static 'css/markdown2.css' %}?1.0"> -->
 </head>
 
 <body>
@@ -29,9 +29,9 @@
         </div>
     </header>
 
-  {% block base_body %}   {% endblock %}    
+  {% block content %}   {% endblock %}    
     
-  {% block bootstrap_footer %}
+  {% block footer %}
   {% endblock %}
     
   {% include "includes/footer.html" %}

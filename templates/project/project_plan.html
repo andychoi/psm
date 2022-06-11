@@ -1,5 +1,6 @@
 {% extends "base_wide.html" %}
 {% load static %}
+{% load psm_filters %}
 
 {% block child_css %}
     <link href="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.css" rel="stylesheet">
@@ -22,8 +23,8 @@
 	<div class="container-fluid mt-1">  <!-- container-float margin top 3 -->
 		<div class="row">
 			<div class="col-2">
-				<h4 class="font-weight-bold"><button class="btn btn-primary" type="button"  data-bs-toggle="collapse"  href="#collapseFilter" 
-                    role="button" aria-expanded="false" aria-controls="collapseFilter">PROJECT DASHBOARD</button></h4>                        
+				<h4 class="font-weight-bold"><button class="btn btn-success" type="button"  data-bs-toggle="collapse"  href="#collapseFilter" 
+                    role="button" aria-expanded="false" aria-controls="collapseFilter">PROJECT PLAN</button></h4>                        
 		  	</div>
 		  	<!-- div class="col-4 text-nowrap float-end" >
 			<p class="text-end m-0 small"></p>
@@ -53,32 +54,37 @@
                 <input id="filter" type="text" class="form-control" placeholder="Type here...">
             </div -->
             <!-- https://examples.bootstrap-table.com/#extensions/export.html#view-source -->
-            <!-- <div id="toolbar" class="select">
+            <div id="toolbar" class="select">
                 <select class="form-control">
                   <option value="">Export Basic</option>
                   <option value="all">Export All</option>
                   <option value="selected">Export Selected</option>
                 </select>
-              </div -->
-              
-            {% if project_list %}
-            <table data-toggle="table" data-pagination="true" data-page-size="25" data-page-list="[10, 25, 50, 100, all]"
-                data-search="true" data-filter-control="true" data-show-search-clear-button="false" data-show-refresh="false"
-                data-show-export="true" data-toolbar="#toolbar" data-show-toggle="true" data-show-columns="true"
-                data-export-data-type="all" 
-                id="table" class="table table-striped table-bordered table-sm small">
+            </div>
+            <table class="table table-striped table-bordered table-sm small" id="table"
+                    data-toggle="table"
+                    data-toolbar="#toolbar"
+                    data-show-export="true"
+                    data-pagination="true"
+                    data-search="true"
+                    data-side-pagination="server"
+                    data-click-to-select="true"
+                    data-toolbar="#toolbar"
+                    data-show-toggle="true"
+                    data-show-columns="true">
                 <thead class="table-light">
                 <tr>
-                    <th data-sortable="true" class="text-center" scope="col">Version</th>
-                    <th data-sortable="true" class="text-center" scope="col">Id</th>
-                    <th data-sortable="true" class="text-center" scope="col">CBU</th>
-                    <th data-sortable="true" scope="col">Program</th>
-                    <th data-sortable="true" scope="col">Project-Name</th>
-                    <th data-sortable="true" scope="col">HAEA PM</th>
-                    <th data-sortable="true" scope="col">HAEA Dept</th>
-                    <th data-sortable="true" scope="col">P-Kickoff</th>
-                    <th data-sortable="true" scope="col">P-Launch</th>
-                    <th data-sortable="true" scope="col">Budget</th>
+                    <th data-sortable="true" data-field="version" class="text-center" >Version</th>
+                    <th data-sortable="true" data-field="id" class="text-center" >Id</th>
+                    <th data-sortable="true" data-field="CBU" class="text-center" >CBU</th>
+                    <th data-sortable="true" data-field="program">Program</th>
+                    <th data-sortable="true" data-field="project">Project-Name</th>
+                    <th data-sortable="true" data-field="pm">HAEA PM</th>
+                    <th data-sortable="true" data-field="dept">HAEA Dept</th>
+                    <th data-sortable="true" data-field="kickoff">P-Kickoff</th>
+                    <th data-sortable="true" data-field="launch">P-Launch</th>
+                    <th data-sortable="true" data-field="est_cost">Budget</th>
+                    <th data-sortable="false" >E</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -86,15 +92,16 @@
                 <tr> <!-- https://getbootstrap.com/docs/4.1/components/badge/ https://icons.getbootstrap.com/ <i class="bi-class-name"></i> -->
                      <!-- p.status_t|slice:"0:1" -->
                     <td class="text-center">{{ p.version }}</td>
-                    <td class="text-center" scope="row"><a href="{% url 'project_detail' p.id %}">{{ p.pjcode }}</a></td>
+                    <td class="text-center" scope="row"><a href="{% url 'project_plan_detail' p.id %}">{{ p.pjcode }}</a></td>
                     <td class="text-center">{{ p.CBU_str }}</td>
                     <td class="text-left">{{ p.program }}</td>
                     <td class="text-left">{{ p.title }}</td>
                     <td>{{ p.pm }}</td>
                     <td>{{ p.dept }}</td>
-                    <td>{{ p.p_kickoff }}</td>
-                    <td>{{ p.p_launch }}</td>
-                    <td>{{ p.est_cost }}</td>
+                    <td class="text-center">{{ p.p_kickoff }}</td>
+                    <td class="text-center">{{ p.p_launch }}</td>
+                    <td class="text-end">{{ p.est_cost|currency:"k" }}</td>
+                    <td class="text-center"><a href="/admin/psm/projectplan/{{ p.id }}"><i class="bi bi-pencil"></i></a></td>
                 </tr>						
                 {% endfor %}	
                 </tbody>
@@ -105,14 +112,12 @@
                     {% include "includes/pagination.html" %}
                 </div></div>
 
-                <div class="col float-end"><p class="text-end text-muted small m-0 "><i class="text-success bi-check-circle-fill"></i>Good | <i class="text-warning bi-exclamation-circle"></i>Issue | <i class="text-danger  bi-exclamation-circle-fill"></i>Roadblocks | <i class="text-primary bi-circle-fill"></i>Complete | <i class="text-secondary  bi-dash-circle-dotted"></i>Not started</p>
-                </div>
+                <!-- <div class="col float-end"><p class="text-end">total: <div id="totalamt"></div></p>
+                </div> -->
             </div>
 
             </div>
-        {% else %}
-            <p>No records found!!! :(</p>
-        {% endif %}
+
         {# .... **More content, footer, etc.** .... #}
 
 		</div>		
@@ -127,6 +132,14 @@
     <script src="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.js"></script>
 
     <script>
+        // Total budget
+        var totalamt = 0;
+
+        $(data).each(function(i){
+            totalamt = totalamt+ parseInt(data[i].est_cost);
+        });
+        $('#totalamt').html(totalamt);  
+
         // set preselected values
         {% for filterItem in filterItems %}
             $('#sel_{{filterItem.qId}}').val("{{ filterItem.selected }}");
@@ -149,32 +162,32 @@
         }
 
         // https://examples.bootstrap-table.com/#extensions/export.html#view-source
-        var $table = $('#table')
+        // var $table = $('#table')
 
-        $(function() {
-        $('#toolbar').find('select').change(function () {
-            $table.bootstrapTable('destroy').bootstrapTable({
-            exportDataType: $(this).val(),
-            exportTypes: ['json', 'xml', 'csv', 'txt', 'sql', 'excel', 'pdf'],
-            columns: [
-                {
-                field: 'state',
-                checkbox: true,
-                visible: $(this).val() === 'selected'
-                },
-                {
-                field: 'id',
-                title: 'ID'
-                }, {
-                field: 'name',
-                title: 'Item Name'
-                }, {
-                field: 'price',
-                title: 'Item Price'
-                }
-            ]
-            })
-        }).trigger('change')
-        })        
+        // $(function() {
+        // $('#toolbar').find('select').change(function () {
+        //     $table.bootstrapTable('destroy').bootstrapTable({
+        //     exportDataType: $(this).val(),
+        //     exportTypes: ['json', 'xml', 'csv', 'txt', 'sql', 'excel', 'pdf'],
+        //     columns: [
+        //         {
+        //         field: 'state',
+        //         checkbox: true,
+        //         visible: $(this).val() === 'selected'
+        //         },
+        //         {
+        //         field: 'id',
+        //         title: 'ID'
+        //         }, {
+        //         field: 'name',
+        //         title: 'Item Name'
+        //         }, {
+        //         field: 'price',
+        //         title: 'Item Price'
+        //         }
+        //     ]
+        //     })
+        // }).trigger('change')
+        // })        
     </script>    
 {% endblock %}

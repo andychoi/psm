@@ -385,3 +385,7 @@ class projectPlanListView(generic.ListView):
         
         return queryset
 
+class projectPlanDetailView(generic.DetailView):
+	model = ProjectPlan
+	template_name = "project/project_plan_detail.html"
+	context_object_name = 'project'

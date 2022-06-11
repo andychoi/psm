@@ -11,8 +11,8 @@
 	<div class="container-fluid mt-1">  <!-- container-float margin top 3 -->
 		<div class="row">
 			<div class="col-2">
-				<h4 class="font-weight-bold"><button class="btn btn-primary" type="button"  data-bs-toggle="collapse"  href="#collapseFilter" 
-                    role="button" aria-expanded="false" aria-controls="collapseFilter">PROJECT DASHBOARD</button></h4>                        
+				<h4 class="font-weight-bold"><button class="btn btn-outline-primary" type="button"  data-bs-toggle="collapse"  href="#collapseFilter" 
+                    role="button" aria-expanded="false" aria-controls="collapseFilter">PROJECT LIST</button></h4>                        
 		  	</div>
 		  	<!-- div class="col-4 text-nowrap float-end" >
 			<p class="text-end m-0 small"></p>
@@ -113,7 +113,7 @@
                         {% endif %}</td>
                     <td class="text-begin">{{ p.resolution }}</td>
                     <td class="text-begin">{{ p.dept.head }}</td>
-                    <td class="text-center"><a href="/admin/psm/project/{{ p.id }}">E</a></td>
+                    <td class="text-center"><a href="/admin/psm/project/{{ p.id }}"><i class="bi bi-pencil"></i></a></td>
                     <!-- <td class="text-center">
                         <div class="progress">
                             <div class="progress-bar" role="progressbar" style="width: {{ p.progress }}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{{ p.progress }}%</div>

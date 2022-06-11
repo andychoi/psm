@@ -21,6 +21,7 @@ urlpatterns = [
 	path('projectchart2/', views.projectChartView2.as_view(), name='project_chart_plan2'),
 
 	path('project-plan/', views.projectPlanListView.as_view(), name='project_plan'),
+	re_path(r'^project-plan/(?P<pk>\d+)/$', views.projectPlanDetailView.as_view(), name='project_plan_detail'),
 
 	path('api/1.0/', include('apis.urls')),
 ]

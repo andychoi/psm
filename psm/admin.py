@@ -392,6 +392,7 @@ class ProjectAdmin(ImportExportMixin, admin.ModelAdmin):
         form = super().get_form(request, obj, change, **kwargs)
 
         form.base_fields['description'].widget.attrs.update({'rows':5,'cols':80})
+        form.base_fields['objective'].widget.attrs.update({'rows':5,'cols':80})
         if  obj:    #change
             form.base_fields['resolution'].widget.attrs.update({'rows':5,'cols':40})
             form.base_fields['recipients_to'].widget.attrs.update({'rows':6,'cols':800})

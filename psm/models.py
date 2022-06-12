@@ -13,7 +13,7 @@ from common.models import Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase
 from users.models import Profile
 
 from psmprj.utils.mail import send_mail_async as send_mail, split_combined_addresses
-
+from common.utils import md2
 
 from hashlib import sha1
 
@@ -253,7 +253,7 @@ class ProjectSet(ProxySuper):
 
     @property
     def description_md2(self):
-        return "<div class='psm-md2'>" + markdown2.markdown(self.description) + "</div>"
+        return md2(self.description) 
 
     @property
     def pjcode(self) -> str:

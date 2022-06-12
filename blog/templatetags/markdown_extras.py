@@ -2,12 +2,18 @@
 from django import template
 from django.template.defaultfilters import stringfilter
 
-import markdown as md
+# markdown -> markdown2
+# import markdown as md
+import markdown2 
 
 register = template.Library()
 
+# @register.filter()
+# @stringfilter
+# def markdown(content):
+#     return md.markdown(content, extensions=['markdown.extensions.fenced_code'])
 
 @register.filter()
 @stringfilter
-def markdown(value):
-    return md.markdown(value, extensions=['markdown.extensions.fenced_code'])
+def md2(content):
+    return "<div class='psm-md2'>" + markdown2.markdown(content, extras=["cuddled-lists", "break-on-newline", "tables"]) + "</div><!--psm-md2-->"

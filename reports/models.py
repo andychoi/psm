@@ -11,8 +11,7 @@ from datetime import datetime
 # not yet compatible with django 4.x
 # from multi_email_field.fields import MultiEmailField
 
-import markdown2    #https://github.com/trentm/python-markdown2
-
+from common.utils import md2 
 from common.models import CBU, Dept, Div, PUBLISH, STATUS, STATES
 from psm.models import Status, State, Project
 
@@ -83,13 +82,13 @@ class Report(models.Model):
     # https://github.com/trentm/python-markdown2/wiki/Extras
     @property
     def content_p_md2(self):
-        return "<div class='psm-md2'>" + markdown2.markdown(self.content_p, extras=["cuddled-lists", "break-on-newline"]) + "</div>"
+        return md2(self.content_p)
     @property
     def content_a_md2(self):
-        return "<div class='psm-md2'>" + markdown2.markdown(self.content_a, extras=["cuddled-lists"]) + "</div>"
+        return md2(self.content_a)
     @property
     def issue_md2(self):
-        return "<div class='psm-md2'>" + markdown2.markdown(self.issue, extras=["cuddled-lists"]) + "</div>"
+        return md2(self.issue)
 
 # https://docs.djangoproject.com/en/4.0/topics/db/examples/many_to_one/
 # report.milestone_set.all()
@@ -148,7 +147,8 @@ class ReportRisk(models.Model):
 
     @property
     def risk_md2(self):
-        return "<div class='psm-md2'>" + markdown2.markdown(self.risk, extras=["cuddled-lists", "break-on-newline", "tables"]) + "</div>"
+        return md2(self.risk)
     @property
     def plan_md2(self):
-        return "<div class='psm-md2'>" + markdown2.markdown(self.plan, extras=["cuddled-lists", "break-on-newline", "tables"]) + "</div>"
+        return md2(self.plan)
+        

@@ -182,7 +182,15 @@ Or you may run in DEBUG=False using middleware
 
     $ pip install whitenoise
 
+Remove old custom permissions
+-----------------------------
+    $ python manage.py remove_stale_contenttypes --include-stale-apps
+
 
 Backup & restore plan
 ---------------------
 https://stackoverflow.com/questions/34822002/django-backup-strategy-with-dumpdata-and-migrations
+
+Django permission 
+-----------------
+https://testdriven.io/static/images/blog/django/drf-permissions/permissions_execution.png

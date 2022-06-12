@@ -1,5 +1,6 @@
 {% extends "base_wide.html" %}
 {% load static %}
+{% load thumbnail %}
 
 {% block child_css %}
 <style>
@@ -17,8 +18,8 @@
 
 <div class="container-lg">
   <div class="row m-3">
-    <div class="col d-flex align-items-start">Project code: <b>{{ project.pjcode }}</b></div>
-    <div class="col d-flex justify-content-end">Project year: <b>{{ project.year }}</b></div>
+    <div class="col d-flex align-items-start">Project code : <b>{{ project.pjcode }}</b> <a href="/admin/psm/project/{{ project.id }}"><i class="bi bi-pencil"></i></a></div>
+    <div class="col d-flex justify-content-end">Project year : <b>{{ project.year }}</b></div>
   </div>
   
   <div class="row m-3 ">
@@ -41,15 +42,12 @@
             <h5 class="card-title">As-Is</h5>
             <div class="row ms-2 media">
                 
-                {% if project.img_asis %}
-                <!-- { thumbnail post.image "100x100" crop="center" as im }
-                <img src="{ im.url }" width="{ im.width }" height="{ im.height }" alt="...">
-                { endthumbnail } -->
-
-                  <img src="{{ project.img_asis.url }}" alt="As-Is Image">
+                  {% if project.img_asis %}
+                  {% thumbnail project.img_asis "x300" crop="center" as asis %}
+                  <img src="{{ asis.url }}" width="{ asis.width }" height="{ asis.height }" alt="asis" class="mb-3">
+                  {% endthumbnail %} 
                   </div><div class="row">
-                {% endif %}
-
+                  {% endif %}
                 <p class="card-text">{{ project.asis }}</p>
             </div>
           </div>
@@ -61,10 +59,12 @@
           <div class="card-body">
             <h5 class="card-title">To-be</h5>
             <div class="row ms-2 media">
-              {% if project.img_asis %}
-                <img src="{{ project.img_tobe.url }}" alt="To-be Image">
-                </div><div class="row">
-              {% endif %}
+              {% if project.img_tobe %}
+              {% thumbnail project.img_tobe "x300" crop="center" as tobe %}
+              <img src="{{ tobe.url }}" width="{ tobe.width }" height="{ tobe.height }" alt="tobe" class="mb-3">
+              {% endthumbnail %} 
+              </div><div class="row">
+            {% endif %}
               <p class="card-text">{{ project.tobe }}</p>
             </div>
           </div>

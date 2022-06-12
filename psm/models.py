@@ -13,8 +13,12 @@ from common.models import Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase
 from users.models import Profile
 
 from psmprj.utils.mail import send_mail_async as send_mail, split_combined_addresses
+
+
 from hashlib import sha1
 
+#https://docs.djangoproject.com/en/4.0/ref/contrib/postgres/search/
+from django.contrib.postgres.search import SearchQuery
 
 import markdown2
 
@@ -50,7 +54,7 @@ class Strategy(models.Model):
 
     created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="strategy_created", null=True, on_delete=models.SET_NULL)
-    updated_on = models.DateTimeField(_("last modified"), auto_now=True, editable=False)
+    updated_on = models.DateTimeField(_("updated_on"), auto_now=True, editable=False)
 
 class Program(models.Model):
     class Meta:
@@ -128,8 +132,8 @@ class ProxyManager(models.Manager):
 
 class ProjectSet(ProxySuper):
     class Meta:
-        verbose_name = _("Project")
-        verbose_name_plural = _("Projects")
+        verbose_name = _("Project set(for admin)")
+        verbose_name_plural = _("Project set(for admin)")
         indexes = [
             models.Index(fields=Project_PRIORITY_FIELDS, name='mProjects_Project_priority_idx'),
         ]
@@ -143,7 +147,7 @@ class ProjectSet(ProxySuper):
     program = models.ForeignKey(Program, blank=True, null=True, on_delete=models.PROTECT)
     is_internal = models.BooleanField(_("Internal project"), default=False)
     is_agile = models.BooleanField(_("Agile project"), default=False)
-    is_unplanned = models.BooleanField(_("Unplanned project"), default=False)
+    # is_unplanned = models.BooleanField(_("Unplanned project"), default=False)
 
     CBUs  = models.ManyToManyField(CBU, blank=True)
     CBUpm = models.ForeignKey(Profile, related_name='cbu_pm', verbose_name=_('CBU PM'), on_delete=models.SET_NULL, null=True, blank=True)
@@ -153,6 +157,7 @@ class ProjectSet(ProxySuper):
 
     description = models.TextField(_("description"), max_length=2000, null=True, blank=True)
 
+    ref_plan    = models.ForeignKey("ProjectPlan", on_delete=models.SET_NULL, null=True, blank=True)
     version     = models.CharField(max_length=20, choices=VERSIONS, null=True, blank=True)
     asis        = models.TextField(_("As-Is"), max_length=2000, null=True, blank=True)
     tobe        = models.TextField(_("To-Be"), max_length=2000, null=True, blank=True)
@@ -161,9 +166,8 @@ class ProjectSet(ProxySuper):
     quali       = models.TextField(_("Qualitative benefit"), max_length=1000, null=True, blank=True)
     quant       = models.TextField(_("Quantitative benefit"), max_length=1000, null=True, blank=True)
     resource    = models.TextField(_("Resources"), max_length=500, null=True, blank=True)
-    img_asis    = models.ImageField(upload_to='project/%Y', null=True, blank=True)  #default='default.jpg', 
-    img_tobe    = models.ImageField(upload_to='project/%Y', null=True, blank=True)  #default='default.jpg', 
-
+    img_asis    = models.ImageField(_("As-Is Image"), upload_to='project/%Y', null=True, blank=True)  #default='default.jpg', 
+    img_tobe    = models.ImageField(_("To-Be Image"), upload_to='project/%Y', null=True, blank=True)  #default='default.jpg', 
 
     status_o = models.CharField(_("status overall"), max_length=20, choices=STATUS, default=Status.GREEN.value)
     status_t = models.CharField(_("status schedule"), max_length=20, choices=STATUS, default=Status.GREEN.value)
@@ -182,10 +186,11 @@ class ProjectSet(ProxySuper):
     app_budg = models.DecimalField(_("Approved budget"), decimal_places=0, max_digits=12, blank=True, null=True)
     wbs = models.ForeignKey(WBS, blank=True, null=True, on_delete=models.PROTECT, verbose_name=_('WBS (SAP)'))
     es = models.CharField(_("ES#"), blank=True, null=True, max_length=30)
-    ref = models.CharField(_("Reference"), blank=True, null=True, max_length=30)
+    ref = models.CharField(_("Reference"), blank=True, null=True, max_length=100)
     lstrpt = models.DateField(_("last report"), null=True, blank=True)
 
     p_ideation   = models.DateField(_("Planned Ideation start"), null=True, blank=True, default=date.today)
+
     p_plan_b = models.DateField(_("planned planning start"), null=True, blank=False, default=date.today)
     p_plan_e = models.DateField(_("planned planning end"), null=True, blank=True)
     p_kickoff = models.DateField(_("planned kick-off date"), null=True, blank=False, default=date.today)
@@ -197,6 +202,10 @@ class ProjectSet(ProxySuper):
     p_uat_e = models.DateField(_("planned UAT end"), null=True, blank=True)
     p_launch = models.DateField(_("planned launch"), null=True, blank=False, default=date.today)
     p_close = models.DateField(_("planned closing"), null=True, blank=False, default=date.today)
+
+    cbu_req    = models.BooleanField(_("CBU ITSC/EAD/..."), default=False)
+    cbu_sow     = models.BooleanField(_("SOW signed"), default=False)
+    cbu_po      = models.BooleanField(_("PO received"), default=False)
 
     a_plan_b = models.DateField(_("actual planning start"), null=True, blank=True)
     a_plan_e = models.DateField(_("actual planning end"), null=True, blank=True)
@@ -221,10 +230,10 @@ class ProjectSet(ProxySuper):
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='prj_created_by', verbose_name=_('created by'),
                                    on_delete=models.SET_NULL, null=True)
-    created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False)
-    updated_on = models.DateTimeField(_("last modified"), auto_now=True, editable=False)
+    created_at = models.DateTimeField(_("created at"), auto_now_add=True,   editable=False)
+    updated_on = models.DateTimeField(_("updated_on"), auto_now=True,       editable=False)
 
-    attachment=models.FileField(_("attachment"), upload_to='projects/%Y', null=True, blank=True)
+    attachment=models.FileField(_("attachment"), upload_to='project/%Y', null=True, blank=True)
 
     # what is this for??
     objects = ProjectManager()
@@ -232,10 +241,10 @@ class ProjectSet(ProxySuper):
     def __str__(self):
 #        return "[%s] %s" % (self.number, self.title)
 #        return "[%s] %s" % (f'{self.created_at.strftime("%y")}-{"{:04d}".format(self.pk)}', self.title)    
-        if self.pk:
+        if not self.pk:
             return self.title
         else:
-            return "[%s] %s" % (self.pjcode, self.title)
+            return "[%s] %s" % (self.code, self.title)
         # return f'{self.year % 100}-{"{:04d}".format(self.pk)}'
 
     # @property
@@ -296,7 +305,7 @@ class ProjectSet(ProxySuper):
         super().save(*args, **kwargs)
         
         if self.code is None:
-            prefix = 'BAP-' if self.proxy_name == 'ProjectPlan' else ('PR-' if self.proxy_name == 'ProjectRequest' else '')
+            prefix = '' if self.proxy_name == 'Project'  else ('BAP-' if self.version == Versions.V20.value else ('UP-' if self.version == Versions.V21.value else 'PR-'))
             self.code = prefix + f'{self.year % 100}-{"{:04d}".format(self.pk+2000)}'    #migration upto 1999
             self.save()
 
@@ -309,15 +318,20 @@ class ProjectSet(ProxySuper):
     def clean(self):
         validation_errors = {}
 
-        if self.proxy_name == 'Project':
-            title = self.title.strip() if self.title else self.title
-            # title = self.cleaned_data.get('title')
+        title = self.title.strip() if self.title else self.title
 
+        # TODO future https://testdriven.io/blog/django-search/
+        if self.proxy_name == 'Project':
             matching_projects = Project.objects.filter(title=title)
-            if self.id:
-                matching_projects = matching_projects.exclude(pk=self.pk)
-            if matching_projects.exists():
-                validation_errors['title'] = u"Project name: %s has already exist." % title
+        elif self.proxy_name == 'ProjectPlan':
+            matching_projects = ProjectPlan.objects.filter(title=title, version=self.version)
+        else:
+            pass
+
+        if self.id:
+            matching_projects = matching_projects.exclude(pk=self.pk)
+        if matching_projects.exists():
+            validation_errors['title'] = u"Project name: %s has already exist." % title
             # else:
             # return self.cleaned_data
 
@@ -413,27 +427,18 @@ class Project(ProjectSet):
 class ProjectPlan(ProjectSet):
     class Meta:
         proxy = True
+        permissions = [ ("approve", "Can approve project plan"),
+                        # ("transfer", "Can transfer project plan to actual project"),
+        ]
 
     objects = ProxyManager()
 
     def pjcode(self) -> str:
-        return self.code if self.code else f'BAP-{self.year % 100}-{"{:04d}".format(self.pk)}'
-
-class ProjectRequest(ProjectSet):
-    class Meta:
-        proxy = True
-        default_permissions = ('add', 'change', 'delete', 'view', 'approve')
-        # user.has_perm('appname.view_pizza')  # returns True if user 'Can view pizza'
-        #https://docs.djangoproject.com/en/2.1/topics/auth/customizing/#custom-permissions
-        # permissions = (
-        #     ("can_approve_prj_request", "Can approve Project Request"),
-        #     )
-
-    objects = ProxyManager()
-
-    def pjcode(self) -> str:
-        return self.code if self.code else f'PR-{self.year % 100}-{"{:04d}".format(self.pk)}'
-
+        if self.code:
+            return self.code
+        else:
+            prefix = '' if self.proxy_name == 'Project'  else ('BAP-' if self.version == Versions.V20.value else ('UP-' if self.version == Versions.V21.value else 'PR-'))
+            return prefix + f'{self.year % 100}-{"{:04d}".format(self.pk+2000)}'    
 
 # ----------------------------------------------------------------------------------------------------
 

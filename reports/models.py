@@ -145,4 +145,9 @@ class ReportRisk(models.Model):
     def __str__(self):
         return self.project.title
 
-
+    @property
+    def risk_md2(self):
+        return "<div class='psm-md2'>" + markdown2.markdown(self.risk) + "</div>"
+    @property
+    def plan_md2(self):
+        return "<div class='psm-md2'>" + markdown2.markdown(self.plan) + "</div>"

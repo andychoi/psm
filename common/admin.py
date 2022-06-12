@@ -4,6 +4,15 @@ from import_export.admin import ImportExportMixin
 
 from .models import CBU, Div, Dept, Team, WBS
 
+from django.contrib.auth.models import Permission
+from django.contrib import admin
+@admin.register(Permission) 
+class PermissionAdmin(admin.ModelAdmin):
+    model = Permission
+    fields = ['name', 'codename']
+    search_fields = ('name','codename')    
+    list_display = ('name','codename')    
+
 # Register your models here.
 @admin.register(Div)
 class DivAdmin(ImportExportMixin, admin.ModelAdmin):
@@ -39,11 +48,11 @@ class CBUAdmin(ImportExportMixin, admin.ModelAdmin):
     search_fields = ('id', 'name', 'full_name')
 
     ordering = ('name',)
-    list_filter = ('is_company',)
+    list_filter = ('is_active',)
     readonly_fields = ('created_at', 'updated_on', 'created_by')
     fieldsets = (  # Edition form
 #        (None, {'fields': (('name', 'is_company'), ('email', 'website'), ('phone', 'mobile'), ('address',), ('comment',))}),
-         (None, {'fields': (('name', 'is_tier1', 'is_company'), ('fullname', 'group') , ('email', 'website'), ('comment',))}),
+         (None, {'fields': (('name', 'is_tier1', 'is_active'), ('fullname', 'group') , ('email', 'website'), ('comment',))}),
         (_('More...'), {'fields': (('created_at', 'updated_on'), 'created_by'), 'classes': ('collapse',)}),
     )
 
@@ -51,7 +60,7 @@ class CBUAdmin(ImportExportMixin, admin.ModelAdmin):
         fieldsets = super().get_fieldsets(request, obj)
         if obj is None:
             fieldsets = (      # Creation form
-                (None, {'fields': (('name', 'is_tier1', 'is_company'), ('fullname', 'group'), ('email', 'website'), ('comment',))}),
+                (None, {'fields': (('name', 'is_tier1', 'is_active'), ('fullname', 'group'), ('email', 'website'), ('comment',))}),
 #                (None, {'fields': (('name', 'is_company'), ('email', 'website'), ('phone', 'mobile'), ('address',), ('comment',))}),
             )
         return fieldsets

@@ -14,7 +14,7 @@ urlpatterns = [
 	
 	re_path(r'^project/(?P<pk>\d+)/$', views.projectDetail.as_view(), name='project_detail'),
 	path('project/<int:id>/update', views.project_update, name='project-update'),
-	path('project/<int:id>/delete', views.projectDeleteView.as_view(), name='project-delete'),
+	# path('project/<int:id>/delete', views.projectDeleteView.as_view(), name='project-delete'),
 
 	path('projectchart/', views.projectChartView.as_view(), name='project_chart_plan'),
 	# path('projectchartactual/', views.projectChartActualView.as_view(), name='project_chart_actual'),

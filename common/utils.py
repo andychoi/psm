@@ -144,15 +144,17 @@ REVIEWTYPES = (
 
 class Versions(enum.Enum):
     V00 = '00'
-    V10 = '10'
+    V10 = '10-Initial'
     V11 = '11'
     V12 = '12'
-    V20 = '20-Final'
+    V20 = '20-BAP_final'
+    V21 = '21-Unplanned'
 VERSIONS = (
-    (Versions.V10.value, _('10')),
+    (Versions.V10.value, _('10-Initial')),
     (Versions.V11.value, _('11')),
     (Versions.V12.value, _('12')),
-    (Versions.V20.value, _('Final version')),
+    (Versions.V20.value, _('BAP_final')),
+    (Versions.V21.value, _('Unplanned')),
 )
 
 PUBLISH = (

@@ -75,6 +75,7 @@
                     <th data-sortable="true" scope="col">Schedule</th>
                     <th data-sortable="true" scope="col">Scope</th>
                     <th data-sortable="true" scope="col">Budget</th>
+                    <th data-sortable="false">E</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -89,7 +90,7 @@
                             <div class="progress-bar" role="progressbar" style="width: {{ p.progress }}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{{ p.progress }}%</div>
                         </div>
                     </td>
-                    <td>{{ p.phase|slice:'2:' }}</td>
+                    <td>{{ p.phase|slice:'3:' }}</td>
                     <td>{{ p.pm }}</td>
                     <td>{{ p.dept }}</td>
                     <td>{{ p.p_launch }}</td>
@@ -128,6 +129,7 @@
                         {% elif p.status_b|slice:'0:1' == '9' %}<i class="text-primary bi-circle-fill"></i>
                         {% else %}<i class="text-secondary  bi-dash-circle-dotted"></i>
                         {% endif %}</td>
+                    <td class="text-center"><a href="/admin/psm/project/{{ p.id }}"><i class="bi bi-pencil"></i></a></td>
                 </tr>						
                 {% endfor %}	
                 </tbody>

@@ -25,7 +25,7 @@
 
       <table data-toggle="table" data-pagination="true" data-page-size="25" data-page-list="[10, 25, 50, 100, all]"
       data-search="true" data-filter-control="true" data-show-search-clear-button="false" data-show-refresh="false"
-      data-toolbar="#toolbar" data-show-toggle="true" data-show-columns="true"
+      data-toolbar="#toolbar" data-show-toggle="true" data-show-columns="true" data-escape="false"
       id="table" class="col table table-striped table-bordered table-sm small">
       <thead class="table-light">
       <tr>
@@ -34,8 +34,8 @@
           <th data-sortable="true" scope="col">Owner</th>
           <th data-sortable="true" scope="col">Status</th>
           <th data-sortable="true" scope="col">State</th>
-          <th data-sortable="true" scope="col">Risk Detail</th>
-          <th data-sortable="true" scope="col">Mitigations</th>
+          <th scope="col">Risk Detail</th>
+          <th scope="col">Mitigation Plan & Status</th>
           <th data-sortable="true" scope="col">Project</th>
           <th data-sortable="true" scope="col" class="text-center">Health</th>
           <th data-sortable="true" scope="col">Progress</th>
@@ -51,7 +51,7 @@
           <tr>
             <td>{{ risk.project.CBU_str }}</td> 
             <td class="risk-count-{{ forloop.counter }}">
-            <a class="article-title" href="/admin/reports/reportrisk/{{ risk.pk }}" target="blank">{{ risk.title }}</a> </td> 
+              {{ risk.title }} <a class="article-title" href="/admin/reports/reportrisk/{{ risk.pk }}" target="blank"><i class="bi bi-pencil"></i></a> </td> 
             <td>{{ risk.owner }}</td>               
             <td class="text-center"> 
               {%   if risk.status|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
@@ -63,8 +63,8 @@
   
             <td>{{ risk.state|slice:"3:" }}</td> 
 
-            <td>{{ risk.risk|linebreaks }}</td> 
-            <td>{{ risk.plan|linebreaks }}</td> 
+            <td>{{ risk.risk_md2|safe }}</td> 
+            <td>{{ risk.plan_md2|safe }}<!--|linebreaks--></td> 
             
             <td><a href="/admin/psm/project/{{ risk.project.pk }}">{{ risk.project }}</a></td> 
 
@@ -80,7 +80,7 @@
                   <div class="progress-bar" role="progressbar" style="width: {{ risk.project.progress }}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{{ risk.project.progress }}%</div>
               </div>
             </td>
-            <td>{{ risk.project.phase|slice:"2:" }}</td> 
+            <td>{{ risk.project.phase|slice:":" }}</td> 
             <td>{{ risk.project.dept }}</td> 
             <td>{{ risk.project.pm }}</td> 
           </tr>

@@ -1,39 +1,27 @@
 /* -------------------------------------- */
-
-.psm-md2  p { margin-top: 0.5rem; margin-bottom: 0.2rem; }
-.psm-md2  dl, .psm-md2 ol, .psm-md2 ul { padding-left: 1rem; line-height:50%; }
-.psm-md2  li { line-height: 1.5rem; } 
-.dropdown-menu  ul   { line-height:100%; }
-/* 
-.psm-md2  dl, ol, ul { margin-top: 0.3rem; margin-bottom: 0.1rem; padding-left: 0.5rem; }
-.psm-md2  li { line-height: 1.2rem; } 
-*/
-
-/* -------------------------------------- */
-
-.psm-md2 {
-   /* border:1px solid #d9e3ea; */
+#markdown-reference {
+   border:1px solid #d9e3ea;
    box-shadow:none;
    text-shadow:none;
    -webkit-box-shadow:none;
    -moz-box-shadow:none;
-   /* background:0 0; */
+   background:0 0;
    border-spacing:0;
-   /* margin-right:18px; */
+   margin-right:18px;
    margin-left:0;
-   /* font-size:14px; */
-   /* color:#2e4453 */
+   font-size:14px;
+   color:#2e4453
 }
-.psm-md2 thead th {
+#markdown-reference thead th {
    font-size:16px;
    padding-bottom:10px !important
 }
-.psm-md2 th {
+#markdown-reference th {
    font-size:14px;
    font-weight:700
 }
-.psm-md2 th,
-.psm-md2 td {
+#markdown-reference th,
+#markdown-reference td {
    /* padding:10px 10px 32px; */
    padding:10px 10px 6px;
    margin:0 !important;
@@ -43,52 +31,52 @@
    background:0 0;
    border-bottom:1px solid #d9e3ea
 }
-.psm-md2 p {
+#markdown-reference p {
    margin-left:0 !important;
    font-size:14px
 }
-.psm-md2 pre {
+#markdown-reference pre {
    margin-bottom: 0.5em; /* 1.4em; */
    color:#2e4453;
    font-size:13px
 }
-.psm-md2 ul,
-.psm-md2 ol {
+#markdown-reference ul,
+#markdown-reference ol {
    /* margin-left:23px !important; */
    margin-bottom:0
 }
-.psm-md2 th:nth-child(2),
-.psm-md2 td:nth-child(2) {
+#markdown-reference th:nth-child(2),
+#markdown-reference td:nth-child(2) {
    background-color:#fafafa;
    border-bottom:1px solid #e9eff3
 }
-.psm-md2 tbody tr:last-child th,
-.psm-md2 tbody tr:last-child td {
+#markdown-reference tbody tr:last-child th,
+#markdown-reference tbody tr:last-child td {
    border-bottom:none !important
 }
-.psm-md2 td:nth-child(3) a {
+#markdown-reference td:nth-child(3) a {
    color:#1e8cbe
 }
-.psm-md2 .markdown-h1,
-.psm-md2 .markdown-h2,
-.psm-md2 .markdown-h3,
-.psm-md2 .markdown-h4 {
+#markdown-reference .markdown-h1,
+#markdown-reference .markdown-h2,
+#markdown-reference .markdown-h3,
+#markdown-reference .markdown-h4 {
    font-weight:700;
    margin-bottom:4px
 }
-.psm-md2 .markdown-h1 {
+#markdown-reference .markdown-h1 {
    font-size:22px
 }
-.psm-md2 .markdown-h2 {
+#markdown-reference .markdown-h2 {
    font-size:20px
 }
-.psm-md2 .markdown-h3 {
+#markdown-reference .markdown-h3 {
    font-size:18px
 }
-.psm-md2 .markdown-h4 {
+#markdown-reference .markdown-h4 {
    font-size:16px
 }
-.psm-md2 dd {
+#markdown-reference dd {
    margin-left:24px;
    margin-bottom:1.4em;
    font-size:15px
@@ -100,16 +88,16 @@ dt {
    line-height:1.6em;
    margin-bottom:1.4em
 }
-.psm-md2 abbr {
+#markdown-reference abbr {
    border-bottom:1px dotted #444
 }
-.psm-md2 hr {
+#markdown-reference hr {
    height:1px;
    color:#aaa;
    background:#aaa;
    border:0
 }
-.psm-md2 .markdown-comment {
+#markdown-reference .markdown-comment {
    font-size:12px;
    padding:0;
    margin:-5px 0 0;

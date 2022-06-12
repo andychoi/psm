@@ -281,8 +281,21 @@ the tests coverage: ``honcho start --no-prefix test``.
 
 Development
 -----------
-
 Some tips if you are improving this application.
+
+If vscode having problem with indent on Ubuntu, please check tabsize and source file in vi 
+https://stackoverflow.com/questions/49167053/how-do-i-change-vscode-to-indent-4-spaces-instead-of-default-2
+
+https://stackoverflow.com/questions/49865751/vscode-extension-to-fix-inconsistent-tab-issue-of-python
+
+You can fix the tab inconsistency by converting all indentation to tab or spaces. 
+If you open the "Show All Commands" tab, ( by pressing Ctrl+Shift+P or F1 ) and search for "convert indentation", two options will by available:
+
+    convert indentation to tabs
+    convert indentation to spaces
+
+Just choose tabs if you use tabs or spaces if use spaces as your indentation method.
+
 
 Translations
 ^^^^^^^^^^^^

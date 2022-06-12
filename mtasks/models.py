@@ -100,7 +100,7 @@ class Task(models.Model):
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='users_created', verbose_name=_('created by'),
                                    on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False)
-    updated_on = models.DateTimeField(_("last modified"), auto_now=True, editable=False)
+    updated_on = models.DateTimeField(_("updated_on"), auto_now=True, editable=False)
 
     # not compatible with django 4.x
     # wf_state = StateField() #https://django-river.readthedocs.io/en/latest/getting_started.html

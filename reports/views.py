@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.db.models import Q
 # from django_filters import FilterSet
 from django.views import generic
+from django.contrib.auth.mixins import PermissionRequiredMixin
 
 from common.utils import Status
 from .models import Report, Milestone, ReportRisk
@@ -31,7 +32,8 @@ from .models import Report, Milestone, ReportRisk
 
 # @login_required(login_url='/example url you want redirect/') #redirect when user is not logged in
 # for function based view
-class reportList(generic.ListView):
+class reportList(PermissionRequiredMixin, generic.ListView):
+	permission_required = 'reports.view_report'
 	queryset = Report.objects.filter(status=1).order_by('-id')
 	template_name = 'reports/report_list.html'
 	paginate_by = 200
@@ -58,7 +60,8 @@ class reportList(generic.ListView):
 
 
 # class based view for each report
-class reportDetail(generic.DetailView):
+class reportDetail(PermissionRequiredMixin, generic.DetailView):
+	permission_required = 'reports.view_report'	
 	model = Report
 	template_name = "reports/report_detail.html"
 	context_object_name = 'report_detail'
@@ -78,7 +81,8 @@ class reportEmail(reportDetail):
 # -> https://stackoverflow.com/questions/42250375/django-passing-multiple-objects-to-templates-but-nothing-in-there
 
 
-class reportRisks(generic.ListView):
+class reportRisks(PermissionRequiredMixin, generic.ListView):
+	permission_required = 'reports.view_reportrisk'
 	queryset = ReportRisk.objects.filter(~Q(status=Status.COMPLETED.value)).order_by('-id')
 	template_name = 'reports/report_risks.html'
 	paginate_by = 10

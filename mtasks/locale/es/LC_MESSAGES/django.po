@@ -109,7 +109,7 @@ msgid "created at"
 msgstr "creado en"
 
 #: models.py:87
-msgid "last modified"
+msgid "updated_on"
 msgstr "última vez modificado"
 
 #: models.py:123

@@ -17,13 +17,13 @@
 
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Administration
+            Project Administration
           </a>
           <ul class="dropdown-menu my-menu-2" aria-labelledby="navbarDropdownMenuLink2">
-            <li><a class="dropdown-item" href="/admin/psm/program">Admin - Program</a></li>
             <li><a class="dropdown-item" href="/admin/psm/project">Admin - Project</a></li>
             <li><a class="dropdown-item" href="/admin/reports/report">Admin - Report</a></li>
             <li><a class="dropdown-item" href="/admin/reports/reportrisk">Admin - Risk</a></li>
+            <li><a class="dropdown-item" href="/admin/psm/program">Admin - Program</a></li>
             <li><hr></li>
             <li><a class="dropdown-item" href="/admin">Admin - Home</a></li>
           </ul>
@@ -50,14 +50,15 @@
                 
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Business Planning
+            Project Demand
           </a>
           <ul class="dropdown-menu my-menu-1" aria-labelledby="navbarDropdownMenuLink1">
-            <li><a class="dropdown-item" href="/admin/psm/projectplan">Business Plan Admin</a></li>
-            <li><a class="dropdown-item" href="{% url 'project_plan' %}">Business Plan List</a></li>
+            <li><a class="dropdown-item" href="/admin/psm/projectplan">Project Demand Admin</a></li>
+            <li><hr></li>
+            <li><a class="dropdown-item" href="{% url 'project_plan' %}">Project Demand List</a></li>
           </ul>
         </li>
-                
+
       </div>
       <!-- Navbar Right Side -->
       <div class="navbar-nav">

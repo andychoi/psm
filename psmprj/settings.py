@@ -54,6 +54,8 @@ INSTALLED_APPS = [
     # 'multi_email_field',  #not compatible with django 4.x
     'django_object_actions', 
 
+    "django.contrib.postgres",  # new for fulltext search
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -201,6 +203,7 @@ REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
+        # 'rest_framework.permissions.DjangoModelPermissions',
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ]
 }

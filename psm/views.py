@@ -5,6 +5,13 @@ from django.shortcuts import render, redirect
 from django.db.models import Q
 from django.http import Http404
 from django.contrib.auth.decorators import login_required
+
+# how to permission?? https://docs.djangoproject.com/en/4.0/topics/auth/default/#permission-caching
+# https://docs.djangoproject.com/en/4.0/topics/auth/default/#the-permission-required-decorator
+from django.contrib.auth.decorators import permission_required
+# permission check to class-based views
+from django.contrib.auth.mixins import PermissionRequiredMixin
+
 # from django.core.paginator import Paginator
 from rest_framework import generics
 from django.urls import reverse_lazy
@@ -33,7 +40,8 @@ from .forms import ProjectPlanForm
 # https://medium.com/@ksarthak4ever/django-class-based-views-vs-function-based-view-e74b47b2e41b
 # class based vs. function based views
 
-class IndexView(generic.ListView):
+class IndexView(PermissionRequiredMixin, generic.ListView):
+    permission_required = 'psm.view_project'
     template_name = 'project/index.html'
     context_object_name = 'latest_project_list'
 
@@ -59,6 +67,11 @@ class IndexView(generic.ListView):
 # https://stackoverflow.com/questions/59480402/how-to-use-django-filter-with-a-listview-class-view-for-search
 # https://velog.io/@daylee/Django-filter-function-based-views
 
+# While DjangoModelPermissions limits the user's permission for interacting with a model (all the instances), 
+# DjangoObjectPermissions limits the interaction to a single instance of the model (an object). 
+# To use DjangoObjectPermissions you'll need a permission backend that supports object-level permissions. We'll look at django-guardian.
+
+
 from django_filters.views import FilterView
 from .filters import ProjectFilter
 # class projectList2View(FilterView):
@@ -74,7 +87,9 @@ from .filters import ProjectFilter
 #         project_filtered_list = ProjectFilter(self.request.GET, queryset=qs)
 #         return project_filtered_list.qs
 
-class projectList1View(generic.ListView):
+class projectList1View(PermissionRequiredMixin, generic.ListView):
+    permission_required = 'psm.view_project'
+
     template_name = 'project/project_list1.html'
     model = Project
     paginate_by = 500    #FIXME
@@ -87,41 +102,39 @@ class projectList1View(generic.ListView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context['filterItems'] = []
-
         context['filterItems'].append( {
-            "key": "YEAR", "text": "Year", "qId": "year", "selected": self.request.GET.get('year', '')
-            , "items": map( lambda x: {"id": x['year'], "name": x['year']}, Project.objects.values('year').distinct().order_by('-year') )
+		"key": "YEAR", "text": "Year", "qId": "year", "selected": self.request.GET.get('year', '')
+		, "items": map( lambda x: {"id": x['year'], "name": x['year']}, Project.objects.values('year').distinct().order_by('-year') )
         } )
-
         context['filterItems'].append( {
-            "key": "DIV", "text": "Div", "qId": "div", "selected": self.request.GET.get('div', '')
-            , "items": Div.objects.all()
+		"key": "DIV", "text": "Div", "qId": "div", "selected": self.request.GET.get('div', '')
+		, "items": Div.objects.all()
         } )
 
         context['filterItems'].append( {
             "key": "DEP", "text": "Dept.", "qId": "dep", "selected": self.request.GET.get('dep', '')
-            , "items": Dept.objects.all()
+        	, "items": Dept.objects.all()
         } )
-    
+		
         context['filterItems'].append( {
             "key": "PHASE", "text": "Phase", "qId": "phase", "selected": self.request.GET.get('phase', '')
             , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PHASE)]
         } )
-
+	
         context['filterItems'].append( {
             "key": "CBU", "text": "CBU", "qId": "cbu", "selected": self.request.GET.get('cbu', '')
-            , "items": CBU.objects.all()
+            , "items": CBU.objects.filter(is_active=True)
         } )
 
         context['filterItems'].append( {
             "key": "TYP", "text": "Type", "qId": "type", "selected": self.request.GET.get('type', '')
             , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRJTYPE)]
         } )
-        # context['filterItems'].append( {
-        #     "key": "PRI", "text": "Priority", "qId": "pri", "selected": self.request.GET.get('pri', '')
-        #     , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRIORITIES)]
-        # } )
-        
+	# context['filterItems'].append( {
+	#     "key": "PRI", "text": "Priority", "qId": "pri", "selected": self.request.GET.get('pri', '')
+	#     , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRIORITIES)]
+	# } )
+		
         context['filterItems'].append( {
             "key": "PRG", "text": "Program", "qId": "prg", "selected": self.request.GET.get('prg', '')
             # , "items": Project.objects.values('program').distinct()
@@ -132,32 +145,33 @@ class projectList1View(generic.ListView):
         get_copy = self.request.GET.copy()
         if get_copy.get('page'):
             get_copy.pop('page')
-        context['get_copy'] = get_copy
-        
+            context['get_copy'] = get_copy
+	
         return context
 
 
-        # queryset = self.get_queryset().annotate(
-        #     first_name_len=Length('user__first_name'),
-        #     last_name_len=Length('user__last_name')
-        # ).filter(
-        #     first_name_len__gt=0,
-        #     last_name_len__gt=0,
-        # ).filter(
-        #     **parameters
-        # ).order_by(
-        #     '-created'
-        # )
+	# queryset = self.get_queryset().annotate(
+	#     first_name_len=Length('user__first_name'),
+	#     last_name_len=Length('user__last_name')
+	# ).filter(
+	#     first_name_len__gt=0,
+	#     last_name_len__gt=0,
+	# ).filter(
+	#     **parameters
+	# ).order_by(
+	#     '-created'
+	# )
 
 
     def get_queryset(self):
-        # self.request has GET parameter
-        # # self.year = get_object_or_404(self.year, name=self.kwargs['year'])
-        # # return Project.objects.filter(year=self.year).order_by('dept')
-        # queryset = Project.objects.filter(year=self.kwargs['year'])
+	# self.request has GET parameter
+	# # self.year = get_object_or_404(self.year, name=self.kwargs['year'])
+	# # return Project.objects.filter(year=self.year).order_by('dept')
+	# queryset = Project.objects.filter(year=self.kwargs['year'])
         queryset = []
         if (Project.objects.count() > 0):
-            queryset = Project.objects.all()
+            # queryset = Project.objects.all()
+            queryset = Project.objects.filter(is_internal=False)    #exclude internal
             ltmp = self.request.GET.get('year', '')
             if ltmp:
                 queryset = queryset.filter(year=ltmp)
@@ -190,15 +204,15 @@ class projectList1View(generic.ListView):
             if ltmp:
                 queryset = queryset.filter(type=PRJTYPE[int(ltmp)][0])
 
-            # pagenation http://localhost:8000/project/?page=3
-            # https://stackoverflow.com/questions/43544701/django-pagination-from-page-to-page
-            # https://stackoverflow.com/questions/29071312/pagination-in-django-rest-framework-using-api-view
-            # req_page = self.request.GET.get('page', '')
-            # page = self.paginate_queryset(queryset, req_page)
-            # if req_page:
-            #     return self.paginate_queryset(queryset, req_page)
-        
-        return queryset
+	    # pagenation http://localhost:8000/project/?page=3
+	    # https://stackoverflow.com/questions/43544701/django-pagination-from-page-to-page
+	    # https://stackoverflow.com/questions/29071312/pagination-in-django-rest-framework-using-api-view
+	    # req_page = self.request.GET.get('page', '')
+	    # page = self.paginate_queryset(queryset, req_page)
+	    # if req_page:
+	    #     return self.paginate_queryset(queryset, req_page)
+	
+            return queryset
 
     # def paginator(self):
     # def paginate_queryset(self, queryset, page_size):
@@ -221,30 +235,28 @@ class projectChartView2(projectList1View):
 class projectChartPlanView(projectList1View):
     template_name = 'project/project_chart.html'
 
-# django-tables2
-# class projectPlanView(SingleTableView):
-#     model = Project
-#     table_class = ProjectPlanTable
-#     template_name = 'project/project_plan.html'
-#     table_pagination = {"per_page": 10}
-
-# class FilteredProjectPlanView(SingleTableMixin, FilterView):
-#     model = Project
-#     table_class = ProjectPlanTable
-#     template_name = 'project/project_plan.html'
-#     filterset_class = ProjectFilter
-#     table_pagination = {"per_page": 10}
+    # django-tables2
+    # class FilteredProjectPlanView(SingleTableMixin, FilterView):
+    #     model = Project
+    #     table_class = ProjectPlanTable
+    #     template_name = 'project/project_plan.html'
+    #     filterset_class = ProjectFilter
+    #     table_pagination = {"per_page": 10}
     
 # class based view for each Project
-class projectDetail(generic.DetailView):
-	model = Project
-	template_name = "project/project_detail.html"
-	context_object_name = 'project'
+class projectDetail(PermissionRequiredMixin, generic.DetailView):
+    permission_required = 'psm.view_projectplan'
 
-class projectCreateView(generic.CreateView):
-	model = Project
-	template_name = "project/project_detail.html"
-	context_object_name = 'project'
+    model = Project
+    template_name = "project/project_detail.html"
+    context_object_name = 'project'
+
+
+class projectCreateView(PermissionRequiredMixin, generic.CreateView):
+    permission_required = 'psm.add_projectplan'
+    model = Project
+    template_name = "project/project_detail.html"
+    context_object_name = 'project'
     # fields = ['title', 'description']
 
 # class projectUpdateView(generic.UpdateView):
@@ -255,6 +267,7 @@ class projectCreateView(generic.CreateView):
 
 #https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Forms
 @login_required
+@permission_required('psm.change_project', raise_exception=True)
 def project_update(request, id):
     project = Project.objects.get(id=id)
 
@@ -264,32 +277,20 @@ def project_update(request, id):
         if form.is_valid():
             # update the existing `project` in the database
             form.save()
-            # redirect to the detail page of the `project` we just updated
+	    # redirect to the detail page of the `project` we just updated
             return redirect('project_detail', pk=project.id)
-    else:
-        form = ProjectPlanForm(instance=project)
+        else:
+            form = ProjectPlanForm(instance=project)
     
     context = {
-        "form":form
+	"form":form
     }
     return render(request, "project/project_update.html", context)
     
 
+class projectPlanListView(PermissionRequiredMixin, generic.ListView):
+    permission_required = 'psm.view_projectplan'
 
-class projectDeleteView(generic.DeleteView):
-	model = Project
-	template_name = "project/project_detail.html"
-	success_url = reverse_lazy('project_plan')
-    
-    # def test_func(self):
-    #     post=self.get_object()
-    #     if self.request.user == post.Author:
-    #         return True
-    #     else:
-    #         return False    
-
-
-class projectPlanListView(generic.ListView):
     template_name = 'project/project_plan.html'
     model = ProjectPlan
     paginate_by = 500    #FIXME
@@ -301,32 +302,32 @@ class projectPlanListView(generic.ListView):
 
         context['filterItems'].append( {
             "key": "YEAR", "text": "Year", "qId": "year", "selected": self.request.GET.get('year', '')
-            , "items": map( lambda x: {"id": x['year'], "name": x['year']}, Project.objects.values('year').distinct().order_by('-year') )
+             , "items": map( lambda x: {"id": x['year'], "name": x['year']}, Project.objects.values('year').distinct().order_by('-year') )
         } )
 
         context['filterItems'].append( {
-            "key": "DIV", "text": "Div", "qId": "div", "selected": self.request.GET.get('div', '')
-            , "items": Div.objects.all()
+        	"key": "DIV", "text": "Div", "qId": "div", "selected": self.request.GET.get('div', '')
+	    , "items": Div.objects.all()
         } )
 
         context['filterItems'].append( {
-            "key": "DEP", "text": "Dept.", "qId": "dep", "selected": self.request.GET.get('dep', '')
-            , "items": Dept.objects.all()
+		"key": "DEP", "text": "Dept.", "qId": "dep", "selected": self.request.GET.get('dep', '')
+		, "items": Dept.objects.all()
         } )
-    
+			
         context['filterItems'].append( {
-            "key": "VERSION", "text": "Version", "qId": "version", "selected": self.request.GET.get('version', '')
-            , "items": [{"id": i, "name": x[1]} for i, x in enumerate(VERSIONS)]
-        } )
-
-        context['filterItems'].append( {
-            "key": "CBU", "text": "CBU", "qId": "cbu", "selected": self.request.GET.get('cbu', '')
-            , "items": CBU.objects.all()
+		"key": "VERSION", "text": "Version", "qId": "version", "selected": self.request.GET.get('version', '')
+		, "items": [{"id": i, "name": x[1]} for i, x in enumerate(VERSIONS)]
         } )
 
         context['filterItems'].append( {
-            "key": "TYP", "text": "Type", "qId": "type", "selected": self.request.GET.get('type', '')
-            , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRJTYPE)]
+		"key": "CBU", "text": "CBU", "qId": "cbu", "selected": self.request.GET.get('cbu', '')
+		, "items": CBU.objects.filter(is_active=True)
+        } )
+
+        context['filterItems'].append( {
+		"key": "TYP", "text": "Type", "qId": "type", "selected": self.request.GET.get('type', '')
+		, "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRJTYPE)]
         } )
 
         # context['filterItems'].append( {
@@ -335,8 +336,8 @@ class projectPlanListView(generic.ListView):
         # } )
 
         context['filterItems'].append( {
-            "key": "PRG", "text": "Program", "qId": "prg", "selected": self.request.GET.get('prg', '')
-            , "items": Program.objects.filter(is_active=True)  # all()
+        	"key": "PRG", "text": "Program", "qId": "prg", "selected": self.request.GET.get('prg', '')
+        	, "items": Program.objects.filter(is_active=True)  # all()
         } )
 
         #https://stackoverflow.com/questions/59972694/django-pagination-maintaining-filter-and-order-by
@@ -344,48 +345,50 @@ class projectPlanListView(generic.ListView):
         if get_copy.get('page'):
             get_copy.pop('page')
         context['get_copy'] = get_copy
-        
+			
         return context
 
     def get_queryset(self):
         queryset = []
         if (ProjectPlan.objects.count() > 0):
             queryset = ProjectPlan.objects.all()
-            ltmp = self.request.GET.get('year', '')
-            if ltmp:
-                queryset = queryset.filter(year=ltmp)
+        ltmp = self.request.GET.get('year', '')
+        if ltmp:
+            queryset = queryset.filter(year=ltmp)
 
-            ltmp = self.request.GET.get('div', '')
-            if ltmp:
-                queryset = queryset.filter(dept__div__id=ltmp)
+        ltmp = self.request.GET.get('div', '')
+        if ltmp:
+            queryset = queryset.filter(dept__div__id=ltmp)
 
-            ltmp = self.request.GET.get('dep', '')
-            if ltmp:
-                queryset = queryset.filter(dept__id=ltmp)
+        ltmp = self.request.GET.get('dep', '')
+        if ltmp:
+            queryset = queryset.filter(dept__id=ltmp)
 
-            ltmp = self.request.GET.get('version', '')
-            if ltmp:
-                queryset = queryset.filter(version=VERSIONS[int(ltmp)][0])
+        ltmp = self.request.GET.get('version', '')
+        if ltmp:
+            queryset = queryset.filter(version=VERSIONS[int(ltmp)][0])
 
-            ltmp = self.request.GET.get('cbu', '')
-            if ltmp:
-                queryset = queryset.filter(CBUs__id=ltmp)
+        ltmp = self.request.GET.get('cbu', '')
+        if ltmp:
+            queryset = queryset.filter(CBUs__id=ltmp)
 
-            ltmp = self.request.GET.get('pri', '')
-            if ltmp:
-                queryset = queryset.filter(priority=PRIORITIES[int(ltmp)][0])
+        ltmp = self.request.GET.get('pri', '')
+        if ltmp:
+            queryset = queryset.filter(priority=PRIORITIES[int(ltmp)][0])
 
-            ltmp = self.request.GET.get('prg', '')
-            if ltmp:
-                queryset = queryset.filter(program__id=ltmp)
+        ltmp = self.request.GET.get('prg', '')
+        if ltmp:
+            queryset = queryset.filter(program__id=ltmp)
 
-            ltmp = self.request.GET.get('type', '')
-            if ltmp:
-                queryset = queryset.filter(type=PRJTYPE[int(ltmp)][0])
-        
+        ltmp = self.request.GET.get('type', '')
+        if ltmp:
+            queryset = queryset.filter(type=PRJTYPE[int(ltmp)][0])
+	
         return queryset
 
-class projectPlanDetailView(generic.DetailView):
-	model = ProjectPlan
-	template_name = "project/project_plan_detail.html"
-	context_object_name = 'project'
+class projectPlanDetailView(PermissionRequiredMixin, generic.DetailView):
+    permission_required = 'psm.view_projectplan'
+    model = ProjectPlan
+    template_name = "project/project_plan_detail.html"
+    context_object_name = 'project'
+

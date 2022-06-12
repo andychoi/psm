@@ -13,7 +13,7 @@ def error_500(request, exception=None):
 
 def error_403(request, exception=None):
         data = { 'permission_denied' }
-        return render(request,'errors/404.html', status=403)
+        return render(request,'errors/403.html', status=403)
 
 def error_400(request, exception=None):
         data = { 'bad_request' }

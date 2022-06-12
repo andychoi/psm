@@ -50,7 +50,7 @@ class CBU(models.Model):
     CBU's relationship
     """
     class Meta:
-        ordering = ["name"]
+        ordering = ["id"]  # "group", "name"]
         verbose_name = _("CBU")
         verbose_name_plural = _("CBU")
 
@@ -59,8 +59,8 @@ class CBU(models.Model):
     group = models.CharField(_("group name"), max_length=100, blank=True, null=True)
     email = models.EmailField(_("email"), blank=True, null=True)
     website = models.URLField(_("website"), blank=True, null=True)
+    is_active = models.BooleanField(_("is active"), default=True)
     is_tier1 = models.BooleanField(_("is Tier-1"), default=False)
-    is_company = models.BooleanField(_("is company"), default=True)
 #    phone = models.CharField(_("phone"), max_length=40, null=True, blank=True)
 #    mobile = models.CharField(_("mobile"), max_length=40, null=True, blank=True)
 #    address = models.CharField(_("address"), max_length=128, null=True, blank=True)
@@ -69,7 +69,7 @@ class CBU(models.Model):
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='CBU_created', verbose_name=_('created by'),
                                    on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False)
-    updated_on = models.DateTimeField(_("last modified"), auto_now=True, editable=False)
+    updated_on = models.DateTimeField(_("updated_on"), auto_now=True, editable=False)
 
     def __str__(self):
         return self.name
@@ -92,7 +92,7 @@ class WBS(models.Model):
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
     created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False, blank=True)
-    updated_on = models.DateTimeField(_("last modified"), auto_now=True, editable=False)
+    updated_on = models.DateTimeField(_("updated_on"), auto_now=True, editable=False)
 
     def __str__(self):
         return self.wbs

@@ -67,6 +67,10 @@ Then run in development mode with::
 
     $ python manage.py runserver 0.0.0.0:8000
 
+Or with oneline debug 
+    $ pip install Werkzeug
+    $ python  manage.py runserver_plus 0.0.0.0:8000  --keep-meta-shutdown
+
 Or you can run with gunicorn::
 
     $ python -m gunicorn psmprj.wsgi:application --bind 0.0.0.0:8000 --workers 3

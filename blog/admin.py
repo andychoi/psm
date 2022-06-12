@@ -2,7 +2,10 @@ from django.contrib import admin
 from django.contrib import messages
 from .models import Post    #, Comment
 from django.utils.translation import ngettext
+from django.shortcuts import redirect
+from django.contrib.admin import helpers
 
+@admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     list_display = ('id', 'title', 'author', 'status', 'featured', 'private', 'date_posted')
     list_display_links = ('id', 'title')
@@ -40,9 +43,6 @@ class PostAdmin(admin.ModelAdmin):
 
 
 
-admin.site.register(Post, PostAdmin)
-
-
 
 
 # class CommentAdmin(admin.ModelAdmin):
@@ -55,4 +55,114 @@ admin.site.register(Post, PostAdmin)
 #     list_per_page = 20
 
 
-# admin.site.register(Comment, CommentAdmin)
+#TIP conditional read-only
+    # def get_readonly_fields(self, request, obj=None):
+    #     if obj is not None:  # You may have to check some other attrs as well
+    #         # Editing an object
+    #         return ('comment', 'created_by')
+    #     else:
+    #         # Creating a new object
+    #         return ('created_by',)
+
+
+from .models import Ticket, TicketComment
+from django.db import models
+
+# refer this technique: https://stackoverflow.com/questions/5619120/readonly-for-existing-items-only-in-django-admin-inline
+# class TicketCommentHistInline(admin.TabularInline):
+#     model = TicketComment
+#     extra = 0
+#     readonly_fields = ['comment', 'created_by', ]
+
+#     def has_add_permission(self, request, obj=None):
+#         return False
+        
+class TicketCommentInline(admin.TabularInline):
+    model = TicketComment
+    readonly_fields=('created_by',)
+    fields = [ "comment", "created_by"] 
+    extra = 0
+    class Media:
+        css = {"all": ("blog/css/custom_admin.css",)}
+
+@admin.register(Ticket)
+class TicketAdmin(admin.ModelAdmin):
+    model = Ticket
+
+    inlines = [
+        # TicketCommentHistInline, TicketCommentInline,
+        TicketCommentInline,
+    ]    
+
+    search_fields = ('id', 'title', 'description', )
+    list_display = ('title', 'short_desc', 'ticket_type', 'priority', 'state', 'updated_on'  )
+    list_display_links = ('title',)
+    # list_editable = ("state", )
+    list_filter = ('ticket_type', 'priority', 'state',)
+    
+    # readonly_fields = ('created_at', 'updated_on', 'created_by', )
+    custom_fields = [ ('ticket_type', 'priority',  ), 
+                    ('title',), ('description', ), 
+                    ('state',), ]
+    fieldsets = (               # Edition form
+        (None,  {'fields': custom_fields 
+                , "classes": ("stack_labels",)}),
+        ('More...', {'fields': ( ('created_at', 'updated_on'), ('created_by', 'updated_by') ), 'classes': ('collapse',)}),
+    )
+
+    def short_desc(self, obj):
+        return obj.description[:100]
+
+
+    def get_fieldsets(self, request, obj=None): # Creation form
+        return ( (None, { 'fields': self.custom_fields  }), )
+
+    def save_model(self, request, obj, form, change):
+        if change is False:
+            obj.created_by = request.user
+            obj.updated_by = request.user
+        else:
+            obj.updated_by = request.user
+        super().save_model(request, obj, form, change)
+
+    # update on related object - comment
+    def save_related(self, request, form, formsets, change):
+        for formset in formsets:
+            if formset.model == TicketComment:
+                for formline in formset.forms:
+                    comment = formline.instance
+                    if comment.id is None: # formline["id"] is None:     #create
+                        comment.created_by = request.user            
+                
+                instances = formset.save(commit=False)
+
+        super(TicketAdmin, self).save_related(request, form, formsets, change)
+
+    # default filter to exclude closed ticket
+    def changelist_view(self, request, extra_context=None):
+        if len(request.GET) == 0:
+            get_param = "state__exact=UN"
+            return redirect("{url}?{get_parms}".format(url=request.path, get_parms=get_param))
+        return super(TicketAdmin, self).changelist_view(request, extra_context=extra_context)
+
+    # If you wanted to manipulate the inline forms, to make one of the fields read-only:
+    def get_inline_formsets(self, request, formsets, inline_instances, obj=None):
+        inline_admin_formsets = []
+        for inline, formset in zip(inline_instances, formsets):
+            fieldsets = list(inline.get_fieldsets(request, obj))
+            readonly = list(inline.get_readonly_fields(request, obj))
+            prepopulated = dict(inline.get_prepopulated_fields(request, obj))
+            inline_admin_formset = helpers.InlineAdminFormSet(
+                inline, formset, fieldsets, prepopulated, readonly,
+                model_admin=self,
+            )
+
+            if isinstance(inline, TicketCommentInline):
+                for form in inline_admin_formset.forms:
+                #Here we change the fields read only.  widget.attrs - class
+                    if not form.instance.id is None:
+                        # form.fields['comment'].widget.attrs['readonly'] = True
+                        form.fields['comment'].disabled = True
+            inline_admin_formsets.append(inline_admin_formset)
+        return inline_admin_formsets
+

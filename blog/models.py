@@ -3,9 +3,11 @@ from django.utils import timezone
 from django.urls import reverse
 from django.conf import settings
 from common.utils import PUBLISH
+from common.utils import md2
 import enum
 from django.utils.translation import gettext_lazy as _
 import markdown2    #https://github.com/trentm/python-markdown2
+# from common.proxy import ProxyManager, ProxySuper
 
 class Category(enum.Enum):
     DEFAULT = '00-Default'
@@ -51,9 +53,9 @@ class Post(models.Model):
 
     @property
     def content_md2(self):
-        return "<div class='psm-md2'>" + markdown2.markdown(self.content, extras=["cuddled-lists", "break-on-newline", "tables"]) + "</div><!--psm-md2-->"
+        return md2(self.content)
     def content_short_md2(self):
-        return "<div class='psm-md2'>" + markdown2.markdown(self.content[:300] + '...', extras=["cuddled-lists", "break-on-newline", "tables"]) + "</div><!--psm-md2-->"
+        return md2(self.content[:300] + '...')
 
     def __str__(self):
         return self.title
@@ -84,3 +86,45 @@ class Post(models.Model):
 
 #     def __str__(self):
 #         return self.author
+
+BUG_PRIORITY = (('critical', 'Critical'),
+                    ('major', 'Major'),
+                    ('medium', 'Medium'),
+                    ('minor', 'Minor'),
+                    ('trivial', 'Trivial'))
+BUG_TYPE = (('bug', 'Bug'),
+                ('feature', 'Feature'))
+STATE_CHOICES = [
+    ('RE','Resolved'),
+    ('UN', 'Unresolved')
+]
+
+class Ticket(models.Model):
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+
+    title = models.CharField(max_length=64, default=' ', blank=False)
+    description = models.TextField(blank=False)
+    priority = models.CharField(max_length=8, choices=BUG_PRIORITY, default='trivial')
+    ticket_type = models.CharField(max_length=7, choices=BUG_TYPE, default='bug')
+    state = models.CharField(max_length=2, choices = STATE_CHOICES, default='UN', blank=True, null=True)
+    # state = models.CharField(max_length=2, choices = STATE_CHOICES, default=0, blank=True, null=True)
+
+    created_on = models.DateField(_("created at"), auto_now_add=True, editable=False)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="ticket_created_by", editable=False, null=True, on_delete=models.SET_NULL)
+    updated_on = models.DateTimeField(_("last updated"), auto_now=True, editable=False)
+    updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="ticket_updated_by", editable=False, null=True, on_delete=models.SET_NULL)
+
+
+    def __str__(self):
+        return self.title
+
+class TicketComment(models.Model):
+    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
+    comment = models.CharField(max_length=512, null=True, blank=True)
+
+    created_on = models.DateField(_("created at"), auto_now_add=True, editable=False)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="ticket_comment_created_by", editable=False, null=True, on_delete=models.SET_NULL)
+
+    def __str__(self):
+        return self.comment

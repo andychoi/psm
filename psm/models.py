@@ -14,7 +14,7 @@ from users.models import Profile
 
 from psmprj.utils.mail import send_mail_async as send_mail, split_combined_addresses
 from common.utils import md2
-
+from common.proxy import ProxySuper, ProxyManager
 from hashlib import sha1
 
 #https://docs.djangoproject.com/en/4.0/ref/contrib/postgres/search/
@@ -74,9 +74,7 @@ class Program(models.Model):
     def __str__(self):
         return self.name
 
-
 class ProjectManager(models.Manager):
-
     def others(self, pk, **kwargs):
         """
         Return queryset with all objects
@@ -85,50 +83,9 @@ class ProjectManager(models.Manager):
         """
         return self.exclude(pk=pk).filter(**kwargs)
 
-
-# -	간혹 프로젝트 주관하는 부서와 달리 협조하는 부서가 Budget 을 받아서 독립된 Schedule 로 진행하는
-#  “Collaboration project”있습니다. 이런 경우도 관리가 되면 좋은데..
-#  Sub-project? 정도로 해서 서로 연동이 되게 해서 부서별로 PM 및 일정 등을 관리 할수 있으면 좋을 것 같습니다. 
-# # 나중에 팀 실적이나 담당자 실적에도 중요한 사항들이구요.
-# TODO : GMDM, SSG
-
 # Fields used to create an index in the DB and sort the Projects in the Admin
 Project_PRIORITY_FIELDS = ('state', '-priority', '-lstrpt')
 
-# https://stackoverflow.com/questions/241250/single-table-inheritance-in-django
-#   proxy model -> this is choice here 
-#   unmanaged is like a view in database
-#   https://stackoverflow.com/questions/7625674/utility-of-managed-false-option-in-django-models
-class ProxySuper(models.Model):
-    class Meta:
-        abstract = True
-
-    proxy_name = models.CharField(max_length=20, default="Project")
-
-    def save(self, *args, **kwargs):
-        """ automatically store the proxy class name in the database """
-        self.proxy_name = type(self).__name__
-        super().save(*args, **kwargs)
-
-    def __new__(cls, *args, **kwargs):
-        """ create an instance corresponding to the proxy_name """
-        proxy_class = cls
-        try:
-            field_name = ProxySuper._meta.get_fields()[0].name
-            proxy_name = kwargs.get(field_name)
-            if proxy_name is None:
-                proxy_name_field_index = cls._meta.fields.index(
-                    cls._meta.get_field(field_name))
-                proxy_name = args[proxy_name_field_index]
-            proxy_class = getattr(sys.modules[cls.__module__], proxy_name)
-        finally:
-            return super().__new__(proxy_class)
-
-
-class ProxyManager(models.Manager):
-    def get_queryset(self):
-        """ only include objects in queryset matching current proxy class """
-        return super().get_queryset().filter(proxy_name=self.model.__name__)
 
 class ProjectSet(ProxySuper):
     class Meta:

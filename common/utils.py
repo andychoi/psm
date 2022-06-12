@@ -154,11 +154,11 @@ class Versions(enum.Enum):
     V20 = '20-BAP_final'
     V21 = '21-Unplanned'
 VERSIONS = (
-    (Versions.V10.value, _('10-Initial')),
-    (Versions.V11.value, _('11')),
-    (Versions.V12.value, _('12')),
-    (Versions.V20.value, _('BAP_final')),
-    (Versions.V21.value, _('Unplanned')),
+    (Versions.V10.value, _('10-Request')),
+    (Versions.V11.value, _('11-Review 1')),
+    (Versions.V12.value, _('12-Review 2')),
+    (Versions.V20.value, _('20-BAP_final')),
+    (Versions.V21.value, _('21-Unplanned')),
 )
 
 PUBLISH = (

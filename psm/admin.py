@@ -304,7 +304,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         if obj is None:
             fieldsets = (      # Creation form
                 (None, {'fields': (('title', 'type', 'year'), ('strategy', 'program','is_agile'), 
-                            ('CBUs', 'CBUpm', 'ref', 'is_unplanned', ), ('pm', 'dept', ), 
+                            ('CBUs', 'CBUpm', 'ref', ), ('pm', 'dept', ), 
                             ( 'est_cost', 'app_budg', 'wbs', 'es',  ),
                             ('state', 'phase', 'progress', 'priority'), ('description', 'objective'),  ('ref_plan',),
                             ('p_ideation', 'p_plan_b','p_plan_e','p_kickoff','p_design_b','p_design_e','p_dev_b','p_dev_e','p_uat_b','p_uat_e','p_launch','p_close'),
@@ -339,12 +339,10 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     cbu_list.short_description = 'CBUs'
 
     #not working...https://stackoverflow.com/questions/46892851/django-simple-history-displaying-changed-fields-in-admin
-
     # formfield_overrides = {
     #     models.TextField: {
     #         'widget': Textarea(attrs={'rows': 4, 'cols': 80})
-    #     }
-    # }
+    # 'get_form' is working 
     def get_form(self, request, obj=None, change=False, **kwargs):
         form = super().get_form(request, obj, change, **kwargs)
 

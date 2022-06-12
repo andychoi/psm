@@ -214,14 +214,20 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
     # object action FIXME
     change_actions = ('transfer_to_actual_action',)
     def transfer_to_actual_action(self, request, obj):
-        if request.user.has_perm('psm.approve_projectplan'):
-            new_proj = Project.objects.create()
-            for field in ProjectPlan._meta.fields:
-                if (not field.name == 'id') and (not field.name == 'proxy_name') and (not field.name == 'code'):
-                    setattr(new_proj, field.name, getattr(obj, field.name))
-            new_proj.ref_plan = obj
-            new_proj.save()
-            messages.add_message(request, messages.INFO, mark_safe("transfered to actual project to <a href='/admin/psm/project/%s'>%s</a>" % (new_proj.id, new_proj.code) ))
+        # check if actual prj is created
+        prj = Project.objects.filter(ref_plan=obj)
+        if prj.exists():
+            messages.add_message(request, messages.ERROR, mark_safe("Project already existo <a href='/admin/psm/project/%s'>%s</a>" % (prj[0].id, prj[0].code) ))
+        else:
+            if request.user.has_perm('psm.approve_projectplan'):
+                new_proj = Project.objects.create()
+                for field in ProjectPlan._meta.fields:
+                    if (not field.name == 'id') and (not field.name == 'proxy_name') and (not field.name == 'code'):
+                        setattr(new_proj, field.name, getattr(obj, field.name))
+                new_proj.ref_plan = obj
+                new_proj.save()
+                messages.add_message(request, messages.INFO, mark_safe("transfered to actual project to <a href='/admin/psm/project/%s'>%s</a>" % (new_proj.id, new_proj.code) ))
+
     transfer_to_actual_action.label = "Transfer to Actual Project"  
 
     # fix conflict issue with two package: import/export, obj-action

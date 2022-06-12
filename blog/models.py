@@ -51,9 +51,9 @@ class Post(models.Model):
 
     @property
     def content_md2(self):
-        return "<div class='psm-md2'>" + markdown2.markdown(self.content) + "</div><!--psm-md2-->"
+        return "<div class='psm-md2'>" + markdown2.markdown(self.content, extras=["cuddled-lists", "break-on-newline", "tables"]) + "</div><!--psm-md2-->"
     def content_short_md2(self):
-        return "<div class='psm-md2'>" + markdown2.markdown(self.content[:300] + '...') + "</div><!--psm-md2-->"
+        return "<div class='psm-md2'>" + markdown2.markdown(self.content[:300] + '...', extras=["cuddled-lists", "break-on-newline", "tables"]) + "</div><!--psm-md2-->"
 
     def __str__(self):
         return self.title

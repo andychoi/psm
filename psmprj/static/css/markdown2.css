@@ -1,9 +1,13 @@
 /* -------------------------------------- */
 
 .psm-md2  p { margin-top: 0.5rem; margin-bottom: 0.2rem; }
-.psm-md2  dl, .psm-md2 ol, .psm-md2 ul { padding-left: 1rem; line-height:50%; }
-.psm-md2  li { line-height: 1.5rem; } 
-.dropdown-menu  ul   { line-height:100%; }
+.psm-md2  dl, .psm-md2 ol, .psm-md2 ul { padding-left: 1rem; }
+.psm-md2  li { line-height: 1.4rem; } 
+/* .dropdown-menu  ul   { line-height:100%; } */
+
+ol > li {
+   display: table-row;
+}
 /* 
 .psm-md2  dl, ol, ul { margin-top: 0.3rem; margin-bottom: 0.1rem; padding-left: 0.5rem; }
 .psm-md2  li { line-height: 1.2rem; } 
@@ -24,6 +28,15 @@
    /* font-size:14px; */
    /* color:#2e4453 */
 }
+.psm-md2 table {
+   border:1px solid #333 !important;
+   width: 100%;
+}
+table {
+   border:1px solid #333 !important;
+   width: 100%;
+}
+
 .psm-md2 thead th {
    font-size:16px;
    padding-bottom:10px !important

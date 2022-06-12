@@ -80,15 +80,16 @@ class Report(models.Model):
     def __str__(self):
         return self.title
 
+    # https://github.com/trentm/python-markdown2/wiki/Extras
     @property
     def content_p_md2(self):
-        return "<div class='psm-md2'>" + markdown2.markdown(self.content_p) + "</div>"
+        return "<div class='psm-md2'>" + markdown2.markdown(self.content_p, extras=["cuddled-lists", "break-on-newline"]) + "</div>"
     @property
     def content_a_md2(self):
-        return "<div class='psm-md2'>" + markdown2.markdown(self.content_a) + "</div>"
+        return "<div class='psm-md2'>" + markdown2.markdown(self.content_a, extras=["cuddled-lists"]) + "</div>"
     @property
     def issue_md2(self):
-        return "<div class='psm-md2'>" + markdown2.markdown(self.issue) + "</div>"
+        return "<div class='psm-md2'>" + markdown2.markdown(self.issue, extras=["cuddled-lists"]) + "</div>"
 
 # https://docs.djangoproject.com/en/4.0/topics/db/examples/many_to_one/
 # report.milestone_set.all()
@@ -147,7 +148,7 @@ class ReportRisk(models.Model):
 
     @property
     def risk_md2(self):
-        return "<div class='psm-md2'>" + markdown2.markdown(self.risk) + "</div>"
+        return "<div class='psm-md2'>" + markdown2.markdown(self.risk, extras=["cuddled-lists", "break-on-newline", "tables"]) + "</div>"
     @property
     def plan_md2(self):
-        return "<div class='psm-md2'>" + markdown2.markdown(self.plan) + "</div>"
+        return "<div class='psm-md2'>" + markdown2.markdown(self.plan, extras=["cuddled-lists", "break-on-newline", "tables"]) + "</div>"

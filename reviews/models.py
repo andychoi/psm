@@ -32,7 +32,8 @@ class Review(models.Model):
 
     attachment=models.FileField(_("attachment"), upload_to='reviews', null=True, blank=True)
 
-    CBU = models.ForeignKey(CBU, blank=True, null=True, on_delete=models.PROTECT)
+    # CBUs = models.ForeignKey(CBU, blank=True, null=True, on_delete=models.PROTECT)
+    CBUs  = models.ManyToManyField(CBU, blank=True)
     dept = models.ForeignKey(Dept, blank=True, null=True, on_delete=models.PROTECT)
     div = models.ForeignKey(Div, blank=True, null=True, on_delete=models.PROTECT)
 
@@ -55,6 +56,10 @@ class Review(models.Model):
 	# used while managing models from terminal
     def __str__(self):
         return self.title
+
+    @property
+    def CBU_str(self):
+        return " ,".join(p.name for p in self.CBUs.all())
 
 class ReviewLog(models.Model):
     class Meta:

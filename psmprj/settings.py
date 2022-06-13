@@ -205,7 +205,10 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         # 'rest_framework.permissions.DjangoModelPermissions',
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+    ),
 }
 
 # Fileupload
@@ -223,9 +226,11 @@ MEDIA_URL = '/media/'
 AUTHENTICATION_BACKENDS = [
 #    'django_auth_adfs.backend.AdfsAuthCodeBackend',
 #    'microsoft_auth.backends.MicrosoftAuthenticationBackend',
+    'django_auth_ldap.backend.LDAPBackend',
     'django.contrib.auth.backends.ModelBackend', # if you also want to use Django's authentication
+
     # I recommend keeping this with at least one database superuser in case of unable to use others
-    'guardian.backends.ObjectPermissionBackend',
+    # 'guardian.backends.ObjectPermissionBackend',
 ]
 
 # IMPORT Auth related settings ---------------------------------------

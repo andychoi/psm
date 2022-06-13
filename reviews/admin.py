@@ -37,12 +37,13 @@ class ReviewInline(admin.TabularInline):
 @admin.register(Review)
 class ReviewAdmin(ImportExportMixin, admin.ModelAdmin):
 
-    list_display = ('formatted_rtype', 'project_link', 'title', 'formatted_updated', 'is_escalated', 'CBU', 'dept', 'state')
+    list_display = ('formatted_rtype', 'project_link', 'title', 'formatted_updated', 'is_escalated', 'CBU_str', 'dept', 'state', 'status')
     list_display_links = ('title', 'formatted_updated')
     ordering = ('-id',)
     readonly_fields = ('created_on', 'created_by', 'updated_on', 'updated_by')
     Custom_fields = ('project_link', 'created_on', 'updated_on', 'created_by', 'updated_by')
     search_fields = ('title', 'project__title', 'req_content', 'res_content', 'reviewer__profile__name' )
+    list_editable = ("status", "is_escalated", "state")
 
     fieldsets = (               # Edition form
                 (None, {'fields':   (('project', 'title', 'reviewtype', ),('req_content',), ('proc_start', 'onboaddt', 'state', ), ('status', 'is_escalated', 'priority'), ( 'res_content','reviewer',),  ('attachment'),  
@@ -62,8 +63,8 @@ class ReviewAdmin(ImportExportMixin, admin.ModelAdmin):
     list_filter = (
         ('reviewtype', DropdownFilter),
         ('priority', DropdownFilter),
-        ('CBU', RelatedDropdownFilter),
-        ('div', RelatedDropdownFilter),
+        ('CBUs', RelatedDropdownFilter),
+        ('dept__div', RelatedDropdownFilter),
         ('dept', RelatedDropdownFilter),
         ('status', DropdownFilter),
         'updated_on',

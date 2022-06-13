@@ -128,6 +128,7 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
     plan_fields = [ ('title', 'year', 'version' ), 
                     ('type', 'priority'), 
                     ('strategy', 'program', 'is_agile'),
+                    ('pm', 'team'),
                     ('CBUs', 'CBUpm'),
                     ('asis', 'img_asis', 'image_tag_asis'),
                     ('tobe', 'img_tobe', 'image_tag_tobe'),

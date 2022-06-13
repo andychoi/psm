@@ -414,22 +414,31 @@ class ProjectPlan(models.Model):
 
     @property
     def image_tag_asis(self):
-        # url = "{0}{1}".format(settings.MEDIA_URL, self.img_asis.url)
         im = get_thumbnail(self.img_asis.file, 'x300', crop='center', quality=99)
         return mark_safe('<img src="%s" width="%s" height="%s" />' % (im.url, im.width, im.height))
 
     @property
     def image_tag_tobe(self):
-        # url = "{0}{1}".format(settings.MEDIA_URL, self.img_tobe.url)
         im = get_thumbnail(self.img_tobe.file, 'x300', crop='center', quality=99)
         return mark_safe('<img src="%s" width="%s" height="%s" />' % (im.url, im.width, im.height))
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)        
+
+        to_save = False
         if self.code is None:
             prefix = 'BAP-' if self.version == Versions.V20.value else ('UNP-' if self.version == Versions.V21.value else 'REQ-')
             self.code = prefix + f'{self.year % 100}-{"{:04d}".format(self.pk)}'    
+            to_save = True
+        if self.team is None and not self.pm is None:
+            self.team = self.pm.team
+            to_save = True
+        if self.dept is None and not self.team is None:
+            self.dept = self.team.dept
+            to_save = True
+        if to_save:
             self.save()
+
 
     def clean(self):
         validation_errors = {}

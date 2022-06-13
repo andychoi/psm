@@ -17,8 +17,8 @@ class Profile(models.Model):
     manager = models.ForeignKey(User, verbose_name=_('manager'), related_name='report_to', on_delete=models.CASCADE, null=True, blank=True)
 
 #FIXME circular dependency...??
-    u_team = models.ForeignKey('common.Team', verbose_name=_('Team'), on_delete=models.SET_NULL, blank=True, null=True)
-    u_dept = models.ForeignKey('common.Dept', verbose_name=_('Dept'), on_delete=models.SET_NULL, blank=True, null=True)
+    team = models.ForeignKey('common.Team', verbose_name=_('Team'), on_delete=models.SET_NULL, blank=True, null=True)
+    dept = models.ForeignKey('common.Dept', verbose_name=_('Dept'), on_delete=models.SET_NULL, blank=True, null=True)
     # u_div  = models.ForeignKey('common.Div',  verbose_name=_('Div'),  on_delete=models.SET_NULL, blank=True, null=True)
     CBU    = models.ForeignKey('common.CBU',  verbose_name=_('CBU'),  on_delete=models.SET_NULL, blank=True, null=True)
 
@@ -54,7 +54,7 @@ class Profile(models.Model):
 
     @property
     def u_div(self):
-        return self.u_dept.div if (self.u_dept.div) else None
+        return self.dept.div if (self.dept.div) else None
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user

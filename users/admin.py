@@ -17,16 +17,16 @@ from common.models import CBU, Div, Dept
 
 @admin.register(Profile)
 class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
-    # list_display = ('id', 'user', 'name', 'email', 'u_dept', 'manager', 'u_div', 'CBU', 'is_active')
-    list_display = ('id', 'user', 'name', 'email', 'u_dept', 'CBU', 'is_active')
+    # list_display = ('id', 'user', 'name', 'email', 'dept', 'manager', 'u_div', 'CBU', 'is_active')
+    list_display = ('id', 'user', 'name', 'email', 'dept', 'CBU', 'is_active')
     list_display_links = ('id', 'user', 'name')
     search_fields = ('id', 'name', 'email', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
-    ordering = ('CBU', 'u_dept', 'u_team', 'name',)
+    ordering = ('CBU', 'dept', 'team', 'name',)
     readonly_fields = ('created_on', 'created_by', 'updated_on', 'updated_by')
     fieldsets = (  # Edition form
          (None, {'fields': (('user', 'name', 'email') , ('manager', 'is_psmadm', 'is_active'), 
-                            # ('u_team','u_dept', 'u_div'), 
-                            ('u_dept', 'u_team'), 
+                            # ('team','dept', 'u_div'), 
+                            ('dept', 'team'), 
                             ('is_external', 'CBU',), 
                             # ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',),
                             ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', ),
@@ -36,8 +36,8 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
     )
     list_filter = (
         ('CBU', RelatedDropdownFilter),
-        ('u_dept', RelatedDropdownFilter),
-        ('u_team', RelatedDropdownFilter),
+        ('dept', RelatedDropdownFilter),
+        ('team', RelatedDropdownFilter),
         'is_active'
     )
     def get_fieldsets(self, request, obj=None):
@@ -45,8 +45,8 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
         if obj is None:
             fieldsets = (      # Creation form
                  (None, {'fields': ('user', ('name', 'email') , ('manager', 'is_psmadm', 'is_active'), 
-                            # ('u_team','u_dept', 'u_div'), 
-                            ('u_dept', 'u_team' ), 
+                            # ('team','dept', 'u_div'), 
+                            ('dept', 'team' ), 
                             ('is_external', 'CBU' ), 
                             ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', ), 
                             # ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',), 

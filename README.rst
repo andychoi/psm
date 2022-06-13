@@ -318,4 +318,9 @@ execute the following to compile the locales::
 
     $ django-admin compilemessages
 
+LDAP Authentication
+-------------------
+For Redhat/CentOS
+    $sudo yum install openldap-devel
+    $pip install django-auth-ldap
 

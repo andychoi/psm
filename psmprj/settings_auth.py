@@ -1,6 +1,34 @@
 # Auth related settings
 
 from . import env
+import ldap
+from django_auth_ldap.config import LDAPSearch
+
+AUTH_LDAP_SERVER_URI = env('AUTH_LDAP_SERVER_URI', "ldap://ldap.example.com")
+AUTH_LDAP_BIND_DN = env('AUTH_LDAP_BIND_DN', "cn=admin,dc=example,dc=com")
+AUTH_LDAP_BIND_PASSWORD = env('AUTH_LDAP_BIND_PASSWORD', "test@1234")
+
+AUTH_LDAP_USER_SEARCH = LDAPSearch(
+            "dc=tech,dc=local", ldap.SCOPE_SUBTREE, "sAMAccountName=%(user)s"
+            )
+AUTH_LDAP_USER_ATTR_MAP = {
+            "username": "sAMAccountName",
+                "first_name": "givenName",
+                    "last_name": "sn",
+                        "email": "mail",
+}
+# from django_auth_ldap.config import ActiveDirectoryGroupType
+# AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
+#             "dc=tech,dc=local", ldap.SCOPE_SUBTREE, "(objectCategory=Group)"
+#             )
+# AUTH_LDAP_GROUP_TYPE = ActiveDirectoryGroupType(name_attr="cn")
+# AUTH_LDAP_USER_FLAGS_BY_GROUP = {
+#             "is_superuser": "CN=django-admins,CN=Users,DC=TECH,DC=LOCAL",
+#             "is_staff": "CN=django-admins,CN=Users,DC=TECH,DC=LOCAL",
+#             }
+AUTH_LDAP_FIND_GROUP_PERMS = False
+AUTH_LDAP_CACHE_GROUPS = False
+AUTH_LDAP_GROUP_CACHE_TIMEOUT = 1  # 1 hour cache
 
 
 # from decouple import config

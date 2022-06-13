@@ -434,7 +434,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         if new_reviews:
             # breakpoint()
             for new in new_reviews:
-                Review.objects.create(reviewtype = new, project = obj, CBU = obj.CBU, dept = obj.dept, onboaddt = obj.p_kickoff, 
+                Review.objects.create(reviewtype = new, project = obj, CBUs = obj.CBUs, dept = obj.dept, onboaddt = obj.p_kickoff, 
                                       state = obj.req_pro, priority = obj.priority, title = obj.title)
                 messages.add_message(request, messages.INFO, '[' + new[3:] + '] review type - New review request is created' )
 

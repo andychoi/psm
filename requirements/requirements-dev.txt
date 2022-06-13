@@ -77,3 +77,4 @@ django_tables2==2.4.1
 holidays 
 markdown2
 sorl-thumbnail
+django-auth-ldap

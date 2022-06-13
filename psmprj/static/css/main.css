@@ -10,22 +10,11 @@ body {
 } */
 /* .navbar { padding-left: 1.5rem; } */
 
-.starter-template-headline { padding: 3rem 1.5rem; }
-.starter-template { padding: 3rem 1.5rem; }
+/* .starter-template-headline { padding: 3rem 1.5rem; }
+.starter-template { padding: 3rem 1.5rem; } */
 
 #main-content { margin-top: 0.5em; background-color: #fafafa; }
 
-/* for markdown.. line spacing */
-ul {   margin: 0; }
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  color: #444444;
-}
 
 .bg-steel {   background-color: #5f788a; }
 

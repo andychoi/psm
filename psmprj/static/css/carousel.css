@@ -8,8 +8,6 @@ body {
     color: #5a5a5a;
   }
   
-  .myheadline { padding-left: 0; padding-right: 0; }
-  
   /* CUSTOMIZE THE CAROUSEL
   -------------------------------------------------- */
   
@@ -136,8 +134,14 @@ body {
   height: 100vh;
 }
 
-#myCarousel h1 { color: #fff; }
-#myCarousel myheadline-content { color: #bbbaba ; }
+#myCarousel .caption-title { color: #ececec;}
+#myCarousel .caption-content { color: #d9d9d9 ; }
+#myCarousel .carousel-caption { color: #b4b4b4 !important; }
+/* .myheadline-content { color: #b4b4b4; } */
 /* .myheadline { background-color: #c0bdbd ;} */
-.myheadline { background-color: #000 ;}
-.myheadline-content { color: #EAE9E9; }
+.myheadline { background-color: #000 ;
+  padding-left: 0; padding-right: 0; 
+} 
+
+
+  

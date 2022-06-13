@@ -8,43 +8,33 @@
 {% block content %}
 <div class="container">
 <div id="content-markdown" style="display:none">
-## About Project System
+## About PSM
 ---
-
+PSM is single source respository for project information
 #### Features
-
-+ Support Markdown tag
 + Project Registration
 + Project Dashboard 
 + Project Weekly Status Report
 + Project Risk Report
 + Gantt chart with filters 
++ Support Markdown tag
 
-#### Incomplete
+#### Upcoming
++ Project request/review/approve,release
++ Support BAP project planning 
 + Import WBS data from SAP system
-+ Review request from project master (incomplete)
++ Review request from project master (TBD)
     + Procurement review
-    + Security review
-    + Infrastructure review
     + ...
-+ Reviewer to provide update (accept/reject)
-+ ...
 
 #### Future roadmap
-+ Project request/review/acceptance 
-+ Improve Gantt chart formatting
-+ Support BAP 
-    + schedule adjust from gantt chart
-    + ideation
-    + entry in table format
 + Link with SSG
 + Enhance authorization  
-+ Markdown editing and enhance display
++ Markdown editor 
 + ...
 
 `
 #### Markdown tip
-
 </div>
 <div id="content-markdown-result"></div>
 </div>
@@ -250,8 +240,37 @@ Markdown
     </tr>
 </tbody>
 </table>
-Official Markdown project: https://daringfireball.net/projects/markdown/
 </div>    
+
+<div class='mb-3'>
+
+    <h3 class="mb-3">Special escaping for hash (#)</h3>
+
+    <p>You can usually escape a <code>#</code> with the <code>\</code> character like others in the above list, but if your hash appears on the same line as an h1/h2/h3 which themselves start with <code>#</code>, <code>##</code>, or <code>###</code> then you need extra escaping for the inline <code>#</code>. In this case, add another <code>#</code> at the end of the line to trick the markdown compiler into closing matching hashes. This behavior may vary between markdown implementations.</p>
+    
+    <h3 class="mb-3">Special escaping for backtick (`)</h3>
+    
+    <p>The simple way to escape a backtick is with the <code>\</code> character before it. If you just write a ` by itself, then any text between it and the next matching ` MAY be treated as quoted code and the actual backticks won't be seen (sometimes it still works).</p>
+    
+    <p>You can escape a backtick by putting it in a code block, any block of text which is preprended by 4 spaces on each line.</p>
+    
+    <p>Multiple consecutive ` will print out, e.g. `` or ```.</p>
+    
+    <p>You can also use HTML entities to print any special characters and in this case it would be <code>&amp;#96;</code></p>
+    
+    <h3 class="mb-3">Handling underscores</h3>
+    
+    <p>In Markdown, a word or string which begins and ends with the underscrore (<em>) will appear _emphasized</em>. But in other cases, using an underscore should be fine:</p>
+    
+    <p>Examples:</p>
+    
+    <ul><li>_test</li>
+    <li>test_</li>
+    <li>te_st</li>
+    <li>`_test</li>    
+
+</div>
+
 {% endblock content %}
 
 

@@ -80,12 +80,12 @@ class Program(models.Model):
 Project_PRIORITY_FIELDS = ('state', '-priority', '-lstrpt')
 
 
-class ProjectSet(ProxySuper):
+class Project(models.Model):
     class Meta:
-        verbose_name = _("Project set(for admin)")
-        verbose_name_plural = _("Project set(for admin)")
+        verbose_name = _("Project")
+        verbose_name_plural = _("Project")
         indexes = [
-            models.Index(fields=Project_PRIORITY_FIELDS, name='mProjects_Project_priority_idx'),
+            # models.Index(fields=Project_PRIORITY_FIELDS, name='mProjects_Project_priority_idx'),
         ]
 
     code = models.CharField(_("Code"), max_length=18, null=True, blank=True) 
@@ -228,8 +228,7 @@ class ProjectSet(ProxySuper):
         super().save(*args, **kwargs)
         
         if self.code is None:
-            prefix = '' if self.proxy_name == 'Project'  else ('BAP-' if self.version == Versions.V20.value else ('UP-' if self.version == Versions.V21.value else 'PR-'))
-            self.code = prefix + f'{self.year % 100}-{"{:04d}".format(self.pk+2000)}'    #migration upto 1999
+            self.code = f'{self.year % 100}-{"{:04d}".format(self.pk+2000)}'    #migration upto 1999
             self.save()
 
         if send_email:
@@ -326,12 +325,7 @@ class ProjectSet(ProxySuper):
 # 
 # https://stackoverflow.com/questions/3920909/using-django-how-do-i-construct-a-proxy-object-instance-from-a-superclass-objec
 # ----------------------------------------------------------------------------------------------------
-class Project(ProjectSet):
-    class Meta:
-        proxy = True
-    objects = ProxyManager()
-    
-
+# project unplanned request, annual planning : version 10, 11, 12, 20, 21
 # ----------------------------------------------------------------------------------------------------
 class ProjectPlan(models.Model):
     code = models.CharField(_("Code"), max_length=18, null=True, blank=True) 
@@ -350,7 +344,7 @@ class ProjectPlan(models.Model):
     team = models.ForeignKey(Team, blank=True, null=True, on_delete=models.PROTECT)
     dept = models.ForeignKey(Dept, blank=True, null=True, on_delete=models.PROTECT)
 
-    ref_plan    = models.ForeignKey("ProjectPlan", on_delete=models.SET_NULL, null=True, blank=True)
+    released    = models.ForeignKey("Project", related_name='released_prj', on_delete=models.SET_NULL, null=True, blank=True)
     version     = models.CharField(max_length=20, choices=VERSIONS, null=True, blank=True)
     asis        = models.TextField(_("As-Is"), max_length=2000, null=True, blank=True)
     tobe        = models.TextField(_("To-Be"), max_length=2000, null=True, blank=True)
@@ -376,6 +370,7 @@ class ProjectPlan(models.Model):
     p_launch = models.DateField(_("planned launch"), null=True, blank=False, default=date.today)
     p_close = models.DateField(_("planned closing"), null=True, blank=False, default=date.today)
 
+    rel_proj = models.ForeignKey(Project, blank=True, null=True, on_delete=models.SET_NULL)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='prj_req_created_by', verbose_name=_('created by'),
                                    on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(_("created at"), auto_now_add=True,   editable=False)

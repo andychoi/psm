@@ -4,6 +4,10 @@ body {
   margin-top: 5rem;
 }
 
+/* https://stackoverflow.com/questions/43233421/changing-dropdown-icon-on-bootstrap-4 */
+/* .dropdown-toggle::after {
+  display: none;
+} */
 /* .navbar { padding-left: 1.5rem; } */
 
 .starter-template-headline { padding: 3rem 1.5rem; }

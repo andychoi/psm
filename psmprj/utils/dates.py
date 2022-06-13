@@ -4,7 +4,7 @@ from datetime import timedelta, date
 # TODO - need holiday calendar (country=US)
 #  - https://github.com/zurichat/zc_plugin_company_holiday_calendar
 
-def add_business_days(from_date, number_of_days):
+def add_business_days(from_date, number_of_days=1):
     to_date = from_date
     while number_of_days:
        to_date += timedelta(1)
@@ -12,12 +12,15 @@ def add_business_days(from_date, number_of_days):
            number_of_days -= 1
     return to_date
 
-def previous_working_day(to_date, number_of_days):
+def previous_working_day(to_date, number_of_days=1):
+    if to_date is None:
+        return None
     from_date = to_date
     while number_of_days:
-       from_date -= timedelta(1)
-       if from_date.weekday() > 4: # i.e. is saturday or sunday
-           number_of_days += 1
+       from_date = to_date - timedelta(number_of_days)
+       if from_date.weekday() < 5: # i.e. is saturday or sunday
+            break
+       number_of_days += 1
     return from_date
 
 # TODO - module not found error in Django

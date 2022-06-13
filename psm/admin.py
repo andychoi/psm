@@ -19,7 +19,7 @@ from django.utils.html import mark_safe
 from psmprj.utils.dates import previous_working_day
 
 from common.models import State3, ReviewTypes, Versions
-from .models import Project, ProjectPlan, ProjectSet, ProjectDeliverable, ProjectDeliverableType, Project_PRIORITY_FIELDS, Strategy, Program
+from .models import Project, ProjectPlan,  ProjectDeliverable, ProjectDeliverableType, Strategy, Program
 from reviews.models import  Review
 from django.contrib.admin import AdminSite
 from django.urls import reverse
@@ -188,48 +188,53 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
     def move_to_12_version(self, request, queryset):
         self.queryset_update_version(self, request, queryset, Versions.V12.value)
 
-    @admin.action(description="Transfer to Actual Project", permissions=['approve'])
-    def transfer_to_actual(self, request, queryset):
-        for object in queryset:
-            if object.version == Versions.V20.value:
-                if Project.objects.filter(title=object.title).exists():
-                    messages.add_message(request, messages.ERROR, mark_safe(u"Project name: %s has already exist." % object.title))
-                else:
-                    new_proj = Project.objects.create()
-                    for field in ProjectPlan._meta.fields:
-                        if (not field.name == 'id') and (not field.name == 'proxy_name') and (not field.name == 'code'):
-                            setattr(new_proj, field.name, getattr(object, field.name))
-                    new_proj.p_plan_e = previous_working_day(new_proj.p_design_b)
-                    new_proj.p_design_e = previous_working_day(new_proj.p_dev_b)
-                    new_proj.p_dev_e = previous_working_day(new_proj.p_uat_b)
-                    new_proj.p_uat_e = previous_working_day(new_proj.p_launch)
-                    new_proj.ref_plan = object
-                    new_proj.save()
-                    messages.add_message(request, messages.INFO, mark_safe("transfered to actual project to <a href='/admin/psm/project/%s'>%s</a>" % (new_proj.id, new_proj.code) ))
-
     def has_approve_permission(self, request):
         opts = self.opts
         codename = get_permission_codename('approve', opts)
         return request.user.has_perm('%s.%s' % (opts.app_label, codename))
 
+    @admin.action(description="Release to Actual Project", permissions=['approve'])
+    def release_to_actual_batch(self, request, queryset):
+        for obj in queryset:
+            if obj.version in [ Versions.V20.value, Versions.V21.value ]:
+                self.copy_to_project(request, obj)
+
     # object action FIXME
-    change_actions = ('transfer_to_actual_action',)
-    def transfer_to_actual_action(self, request, obj):
-        # check if actual prj is created
-        prj = Project.objects.filter(ref_plan=obj)
-        if prj.exists():
-            messages.add_message(request, messages.ERROR, mark_safe("Project already existo <a href='/admin/psm/project/%s'>%s</a>" % (prj[0].id, prj[0].code) ))
+    change_actions = ('release_to_actual',)
+    def release_to_actual(self, request, obj):
+        if not request.user.has_perm('psm.approve_projectplan'):
+            messages.add_message(request, messages.ERROR, "You don't have permission to release project" )
         else:
-            if request.user.has_perm('psm.approve_projectplan'):
+            # allow only source verion from 20,21
+            if not obj.version in [ Versions.V20.value, Versions.V21.value ]:
+                messages.add_message(request, messages.ERROR, "You cannot release project from this version" )
+            else: 
+                self.copy_to_project(request, obj)
+    release_to_actual.label = "Release to Actual"  
+
+    # 
+    def copy_to_project(self, request, obj):
+        if Project.objects.filter(title=obj.title).exists():
+            messages.add_message(request, messages.ERROR, mark_safe(u"Project name: %s has already exist." % obj.title))
+        else:
+            # check if actual prj is created
+            prj = Project.objects.filter(ref_plan=obj)
+            if prj.exists():
+                messages.add_message(request, messages.ERROR, mark_safe("Project already exist <a href='/admin/psm/project/%s'>%s</a>" % (prj[0].id, prj[0].code) ))
+            else:
                 new_proj = Project.objects.create()
                 for field in ProjectPlan._meta.fields:
-                    if (not field.name == 'id') and (not field.name == 'proxy_name') and (not field.name == 'code'):
+                    if (not field.name == 'id') and (not field.name == 'code'): 
                         setattr(new_proj, field.name, getattr(obj, field.name))
-                new_proj.ref_plan = obj
+                new_proj.description = "##As-Is\n%s \n##To-Be\n%s" % (obj.asis, obj.tobe) 
+                new_proj.p_plan_e   = obj.p_plan_e
+                new_proj.p_design_e = obj.p_design_e
+                new_proj.p_dev_e    = obj.p_dev_e
+                new_proj.p_uat_e    = obj.p_uat_e
+                new_proj.ref_plan   = obj
                 new_proj.save()
-                messages.add_message(request, messages.INFO, mark_safe("transfered to actual project to <a href='/admin/psm/project/%s'>%s</a>" % (new_proj.id, new_proj.code) ))
+                messages.add_message(request, messages.INFO, mark_safe("released to actual project to <a href='/admin/psm/project/%s'>%s</a>" % (new_proj.id, new_proj.code) ))
 
-    transfer_to_actual_action.label = "Transfer to Actual Project"  
 
     # fix conflict issue with two package: import/export, obj-action
     changelist_actions = ['redirect_to_export', 'redirect_to_import']

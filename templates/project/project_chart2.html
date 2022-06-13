@@ -102,13 +102,37 @@
         },
 
         yAxis: {
+            type: 'category',
             scrollbar: {
                 enabled: true,
                 showFull: false
             },
             max: 24,
             staticScale: 20,
-            uniqueNames: true
+            uniqueNames: true,
+            grid: {
+                enabled: true,
+                borderColor: 'rgba(0,0,0,0.3)',
+                borderWidth: 1,
+                columns: [
+                    {
+                        title: {
+                            text: 'CBU'
+                        },
+                        labels: {
+                            format: '{point.CBU}'
+                        }
+                    },
+                    {
+                        title: {
+                            text: 'Project'
+                        },
+                        labels: {
+                            format: '{point.name}'
+                        }
+                    }
+                ]
+            }
         },
 
         navigator: {
@@ -186,13 +210,13 @@
         // var tList = res.map((pItem) => { return {start: convertDate(pItem.p_plan_b), end: convertDate(pItem.p_close), completed: pItem.progress / 100, name: pItem.title}; });
         var tMinTime = Date.now(), tMaxTime = Date.now();
         var tCounter = 0;
-        tChartData.forEach((pItem) => {
+        tChartData.forEach((pItem, pIdx) => {
             if (tCounter++ < tMaxItem) {
                 var tStart = convertDate(pItem.p_plan_b);
                 var tEnd = convertDate(pItem.p_close);
                 tMinTime = Math.min(tMinTime, new Date(tStart).getTime());
                 tMaxTime = Math.max(tMaxTime, new Date(tEnd).getTime());
-                tList.push({start: tStart, end: tEnd, completed: (pItem.progress / 100), name: pItem.title});
+                tList.push({start: tStart, end: tEnd, completed: (pItem.progress / 100), name: pItem.title, CBU: pItem.CBU_str, y: pIdx});
             }
         });
 
@@ -201,9 +225,9 @@
 
         var tChart = Highcharts.ganttChart('chart_area', tChartOptions);
         tChart.xAxis[0].setExtremes(tMinTime, tMaxTime);
-        if (tCounter >= tMaxItem) {
+        // if (tCounter >= tMaxItem) {
             // alert("Too many projects - limit to display 200 items, please use filter.")
-        }
+        // }
     }
 
     function updateData() {

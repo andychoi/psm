@@ -7,9 +7,9 @@ from django_auth_ldap.config import LDAPSearch
 AUTH_LDAP_SERVER_URI = env('AUTH_LDAP_SERVER_URI', "ldap://ldap.example.com")
 AUTH_LDAP_BIND_DN = env('AUTH_LDAP_BIND_DN', "cn=admin,dc=example,dc=com")
 AUTH_LDAP_BIND_PASSWORD = env('AUTH_LDAP_BIND_PASSWORD', "test@1234")
-
+AUTH_LDAP_STRING = env('AUTH_LDAP_STRING', "OU=,DC=,DC=" )
 AUTH_LDAP_USER_SEARCH = LDAPSearch(
-            "dc=tech,dc=local", ldap.SCOPE_SUBTREE, "sAMAccountName=%(user)s"
+            AUTH_LDAP_STRING, ldap.SCOPE_SUBTREE, "sAMAccountName=%(user)s"
             )
 AUTH_LDAP_USER_ATTR_MAP = {
             "username": "sAMAccountName",

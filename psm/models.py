@@ -13,12 +13,13 @@ from common.models import Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase
 from users.models import Profile
 
 from psmprj.utils.mail import send_mail_async as send_mail, split_combined_addresses
+from psmprj.utils.dates import previous_working_day
 from common.utils import md2
 from common.proxy import ProxySuper, ProxyManager
 from hashlib import sha1
 
-#https://docs.djangoproject.com/en/4.0/ref/contrib/postgres/search/
-from django.contrib.postgres.search import SearchQuery
+#TODO https://docs.djangoproject.com/en/4.0/ref/contrib/postgres/search/
+#from django.contrib.postgres.search import SearchQuery
 
 import markdown2
 
@@ -225,15 +226,12 @@ class ProjectSet(ProxySuper):
 
 
     def save(self, *args, **kwargs):
-        send_email = (self.pk is None) and (not self.proxy_name == 'ProjectPlan')
+        send_email = (self.pk is None)          #and (not self.proxy_name == 'ProjectPlan')
         if not send_email and self.CBUs.exists():   #FIXME many-to-many
             old_Project_data = Project.objects.get(pk=self.pk)
             # many-to-many compare FIXME
             if list(old_Project_data.CBUs.all()) != list(self.CBUs.all()):
                 send_email = True
-
-        # if self.dept:
-        #     self.div = self.dept.div    
 
         super().save(*args, **kwargs)
         
@@ -252,28 +250,16 @@ class ProjectSet(ProxySuper):
         validation_errors = {}
 
         title = self.title.strip() if self.title else self.title
-
-        # TODO future https://testdriven.io/blog/django-search/
-        if self.proxy_name == 'Project':
-            matching_projects = Project.objects.filter(title=title)
-        elif self.proxy_name == 'ProjectPlan':
-            matching_projects = ProjectPlan.objects.filter(title=title, version=self.version)
-        else:
-            pass
-
-        if self.id:
-            matching_projects = matching_projects.exclude(pk=self.pk)
-        if matching_projects.exists():
-            validation_errors['title'] = u"Project name: %s has already exist." % title
-            # else:
-            # return self.cleaned_data
-
-            # others -> error in proxy manager - FIXME
-            # if Project.objects \
-            #         .others(self.pk, title=title) \
-            #         .exclude(state__in=(State.DONE.value, State.CANCEL.value)) \
-            #         .exists():
-            #     validation_errors['title'] = _('Open Project with this title and no CBU already exists.')
+        # matching_projects = Project.objects.filter(title=title)
+        # if self.id:
+        #     matching_projects = matching_projects.exclude(pk=self.pk)
+        # if matching_projects.exists():
+        #     validation_errors['title'] = u"Project name: %s has already exist." % title
+        if Project.objects \
+                .others(self.pk, title=title) \
+                .exclude(state__in=(State.DONE.value, State.CANCEL.value)) \
+                .exists():
+            validation_errors['title'] = _('Open Project with this title already exists.')
 
         if self.recipients_to and not self.emails_to:
             validation_errors['title'] = _('Email format is not acceptable in Recipients(to)')
@@ -330,14 +316,11 @@ class ProjectSet(ProxySuper):
 
     def get_project_viewer_url(self):
         """
-        Verification token added to the Projects Viewer URL so each one
-        sent through email cannot be used to change the order number and
-        access to other orders.
-
+        Verification token added to the Projects Viewer URL so each one sent through email
+        cannot be used to change the order number and access to other orders.
         It uses as input a salt code configured and the ID number.
 
         See: psmprj/settings_emails.py
-             https://github.com/FIXME/tornado-dpsmprj-mProjects-viewer
         """
         salt = settings.PSM_VIEWER_HASH_SALT
         if not settings.DEBUG and salt == '1two3':
@@ -427,6 +410,18 @@ class ProjectPlan(models.Model):
     def strategy_str(self):
         # this is not working... FIXME 
         return " ,".join(p.name for p in self.strategy.all())
+    @property
+    def p_plan_e(self):
+        return previous_working_day(self.p_design_b, 1)
+    @property
+    def p_design_e(self):
+        return previous_working_day(self.p_dev_b, 1)
+    @property
+    def p_dev_e(self):
+        return previous_working_day(self.p_uat_b, 1)
+    @property
+    def p_uat_e(self):
+        return previous_working_day(self.p_kickoff, 1)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)        
@@ -434,6 +429,24 @@ class ProjectPlan(models.Model):
             prefix = 'BAP-' if self.version == Versions.V20.value else ('UNP-' if self.version == Versions.V21.value else 'REQ-')
             self.code = prefix + f'{self.year % 100}-{"{:04d}".format(self.pk)}'    
             self.save()
+
+    def clean(self):
+        validation_errors = {}
+
+        title = self.title.strip() if self.title else self.title
+        # matching_projects = ProjectPlan.objects.filter(title=title) # search all version , version=self.version)
+        # if self.id:
+        #     matching_projects = matching_projects.exclude(pk=self.pk)
+        # if matching_projects.exists():
+        #     validation_errors['title'] = u"Project name: %s has already exist." % title
+        
+        if ProjectPlan.objects \
+                .others(self.pk, title=title) \
+                .exists():
+            validation_errors['title'] = _('Project with this title already exists.')
+
+        if len(validation_errors):
+            raise ValidationError(validation_errors)
 
 # ----------------------------------------------------------------------------------------------------
 

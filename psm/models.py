@@ -14,9 +14,11 @@ from users.models import Profile
 
 from psmprj.utils.mail import send_mail_async as send_mail, split_combined_addresses
 from psmprj.utils.dates import previous_working_day
+from django.utils.html import mark_safe, escape
 from common.utils import md2
 from common.proxy import ObjectManager, ProxySuper, ProxyManager
 from hashlib import sha1
+from sorl.thumbnail import get_thumbnail
 
 #TODO https://docs.djangoproject.com/en/4.0/ref/contrib/postgres/search/
 #from django.contrib.postgres.search import SearchQuery
@@ -409,6 +411,18 @@ class ProjectPlan(models.Model):
     @property
     def p_uat_e(self):
         return previous_working_day(self.p_kickoff, 1)
+
+    @property
+    def image_tag_asis(self):
+        # url = "{0}{1}".format(settings.MEDIA_URL, self.img_asis.url)
+        im = get_thumbnail(self.img_asis.file, 'x300', crop='center', quality=99)
+        return mark_safe('<img src="%s" width="%s" height="%s" />' % (im.url, im.width, im.height))
+
+    @property
+    def image_tag_tobe(self):
+        # url = "{0}{1}".format(settings.MEDIA_URL, self.img_tobe.url)
+        im = get_thumbnail(self.img_tobe.file, 'x300', crop='center', quality=99)
+        return mark_safe('<img src="%s" width="%s" height="%s" />' % (im.url, im.width, im.height))
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)        

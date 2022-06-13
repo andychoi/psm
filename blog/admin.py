@@ -42,8 +42,9 @@ class PostAdmin(admin.ModelAdmin):
             messages.add_message(request, messages.INFO, ' is copied/saved')
 
 
-
-
+# Image copy & paste
+# https://stackoverflow.com/questions/43481931/how-to-upload-an-image-through-copy-paste-using-django-modelform
+# https://stackoverflow.com/questions/66846390/django-admin-save-image-like-base64
 
 # class CommentAdmin(admin.ModelAdmin):
 #     list_display = ('id', 'author', 'post',

@@ -10,13 +10,16 @@ register = template.Library()
 
 @register.filter
 def currency(dollars, arg):
-    if arg == "m":
-        dollars = round(float(dollars/1000000), 2)
-        return "$%s%sM" % (intcomma(int(dollars)), ("%0.2f" % dollars)[-3:])
-    elif arg == "k":
-        dollars = round(float(dollars/1000), 0)
-        return "$%s k" % intcomma(int(dollars))
+    if dollars is None:
+        return None
     else:
-        dollars = round(float(dollars), 2)
-        return "$%s%s" % (intcomma(int(dollars)), ("%0.2f" % dollars)[-3:])
+        if arg == "m":
+            dollars = round(float(dollars/1000000), 2)
+            return "$%s%sM" % (intcomma(int(dollars)), ("%0.2f" % dollars)[-3:])
+        elif arg == "k":
+            dollars = round(float(dollars/1000), 0)
+            return "$%s k" % intcomma(int(dollars))
+        else:
+            dollars = round(float(dollars), 2)
+            return "$%s%s" % (intcomma(int(dollars)), ("%0.2f" % dollars)[-3:])
 

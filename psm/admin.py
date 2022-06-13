@@ -123,14 +123,14 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
         ('priority',    UnionFieldListFilter),
     )
     ordering = ['version', '-id']  #Project_PRIORITY_FIELDS
-    readonly_fields = ('created_at', 'updated_on', 'created_by', )
+    readonly_fields = ('created_at', 'updated_on', 'created_by', 'image_tag_asis', 'image_tag_tobe' )
     autocomplete_fields = ['pm', 'CBUs', 'strategy', 'CBUpm', 'program']
     plan_fields = [ ('title', 'year', 'version' ), 
                     ('type', 'priority'), 
                     ('strategy', 'program', 'is_agile'),
                     ('CBUs', 'CBUpm'),
-                    ('asis', 'img_asis'),
-                    ('tobe', 'img_tobe'),
+                    ('asis', 'img_asis', 'image_tag_asis'),
+                    ('tobe', 'img_tobe', 'image_tag_tobe'),
                     ('objective', 'consider'),
                     ('quali', 'quant'),
                     ('est_cost', 'resource'),
@@ -187,6 +187,7 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
     @admin.action(description="Move to working version 12", permissions=['change'])
     def move_to_12_version(self, request, queryset):
         self.queryset_update_version(self, request, queryset, Versions.V12.value)
+
 
     def has_approve_permission(self, request):
         opts = self.opts

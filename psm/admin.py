@@ -100,7 +100,7 @@ class ProjectDeliverableInline(admin.TabularInline):
     class Media:
         css = {"all": ("psm/css/custom_admin.css",)}
 
-
+# ----------------------------------------------------------------------------------------------------------------
 @admin.register(ProjectPlan)
 class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     class Meta:
@@ -118,7 +118,8 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
         ('year',        DropdownFilter),
         ('CBUs',        RelatedDropdownFilter),   
         ('dept',        RelatedDropdownFilter),
-        ('dept__div',   RelatedDropdownFilter), #FIXME dept__div not working
+        ('dept__div',   RelatedDropdownFilter),
+        ('team',        RelatedDropdownFilter),
         ('priority',    UnionFieldListFilter),
     )
     ordering = ['version', '-id']  #Project_PRIORITY_FIELDS
@@ -241,11 +242,11 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
 
 
 # ===================================================================================================
-@admin.register(ProjectSet)
-class ProjectSetAdmin(admin.ModelAdmin):
-    search_fields = ('id', 'title', 'code')     
-    list_display = ('id', 'proxy_name', 'year', 'version', 'code', 'title', 'ref_plan') 
-    list_display_links = ('title',)
+# @admin.register(ProjectSet)
+# class ProjectSetAdmin(admin.ModelAdmin):
+#     search_fields = ('id', 'title', 'code')     
+#     list_display = ('id', 'proxy_name', 'year', 'version', 'code', 'title', 'ref_plan') 
+#     list_display_links = ('title',)
 
 @admin.register(Project)
 class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):

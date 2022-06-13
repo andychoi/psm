@@ -74,7 +74,7 @@ class Program(models.Model):
     def __str__(self):
         return self.name
 
-class ProjectManager(models.Manager):
+class ObjectManager(models.Manager):
     def others(self, pk, **kwargs):
         """
         Return queryset with all objects
@@ -192,50 +192,26 @@ class ProjectSet(ProxySuper):
 
     attachment=models.FileField(_("attachment"), upload_to='project/%Y', null=True, blank=True)
 
-    # what is this for??
-    objects = ProjectManager()
+    objects = ObjectManager()
 
     def __str__(self):
-#        return "[%s] %s" % (self.number, self.title)
-#        return "[%s] %s" % (f'{self.created_at.strftime("%y")}-{"{:04d}".format(self.pk)}', self.title)    
-        if not self.pk:
-            return self.title
-        else:
-            return "[%s] %s" % (self.code, self.title)
-        # return f'{self.year % 100}-{"{:04d}".format(self.pk)}'
-
-    # @property
-    # def div(self):
-    #     return self.u_dept.div if (self.u_dept.div) else None
-
-    @property
-    def description_md2(self):
-        return md2(self.description) 
+        return "[%s] %s" % (self.code, self.title) if self.pk else self.title
 
     @property
     def pjcode(self) -> str:
-#        return "{:08d}".format(self.pk)
-#       yy-serial
-#        return f'{self.created_at.strftime("%y")}-{"{:04d}".format(self.pk)}'
-        if (self.code is None) and (not self.pk is None):
-            return f'{self.year % 100}-{"{:04d}".format(self.pk)}'
-        else:
-            return self.code    
-
+        return f'{self.year % 100}-{"{:04d}".format(self.pk)}' if (self.code is None) and (not self.pk is None) else self.code    
     @property
     def CBU_str(self):
-        # this is not working... FIXME 
         return " ,".join(p.name for p in self.CBUs.all())
-
     @property
     def strategy_str(self):
-        # this is not working... FIXME 
         return " ,".join(p.name for p in self.strategy.all())
-
+    @property
+    def description_md2(self):
+        return md2(self.description) 
     @property
     def emails_to(self):
         return split_combined_addresses(self.recipients_to)
-
     @property
     def emails_cc(self):
         return split_combined_addresses(self.recipients_cc)
@@ -381,21 +357,83 @@ class Project(ProjectSet):
     objects = ProxyManager()
     
 
-class ProjectPlan(ProjectSet):
+# ----------------------------------------------------------------------------------------------------
+class ProjectPlan(models.Model):
+    code = models.CharField(_("Code"), max_length=18, null=True, blank=True) 
+
+    title = models.CharField(_("title"), max_length=200)
+    type = models.CharField(_("type"), max_length=20, choices=PRJTYPE, default=PrjType.UNC.value)
+    year = models.PositiveIntegerField(_("Year"), default=current_year(), validators=[MinValueValidator(2014), max_value_current_year])
+    strategy = models.ManyToManyField(Strategy, blank=True)
+    program = models.ForeignKey(Program, blank=True, null=True, on_delete=models.PROTECT)
+    is_internal = models.BooleanField(_("Internal project"), default=False)
+    is_agile = models.BooleanField(_("Agile project"), default=False)
+    # is_unplanned = models.BooleanField(_("Unplanned project"), default=False)
+
+    CBUs  = models.ManyToManyField(CBU, blank=True)
+    CBUpm = models.ForeignKey(Profile, related_name='req_cbu_pm', verbose_name=_('CBU PM'), on_delete=models.SET_NULL, null=True, blank=True)
+    team = models.ForeignKey(Team, blank=True, null=True, on_delete=models.PROTECT)
+    dept = models.ForeignKey(Dept, blank=True, null=True, on_delete=models.PROTECT)
+
+    ref_plan    = models.ForeignKey("ProjectPlan", on_delete=models.SET_NULL, null=True, blank=True)
+    version     = models.CharField(max_length=20, choices=VERSIONS, null=True, blank=True)
+    asis        = models.TextField(_("As-Is"), max_length=2000, null=True, blank=True)
+    tobe        = models.TextField(_("To-Be"), max_length=2000, null=True, blank=True)
+    objective   = models.TextField(_("Objective"), max_length=2000, null=True, blank=True)
+    consider    = models.TextField(_("Consideration"), max_length=1000, null=True, blank=True)
+    quali       = models.TextField(_("Qualitative benefit"), max_length=1000, null=True, blank=True)
+    quant       = models.TextField(_("Quantitative benefit"), max_length=1000, null=True, blank=True)
+    resource    = models.TextField(_("Resources"), max_length=500, null=True, blank=True)
+    img_asis    = models.ImageField(_("As-Is Image"), upload_to='project/%Y', null=True, blank=True)  #default='default.jpg', 
+    img_tobe    = models.ImageField(_("To-Be Image"), upload_to='project/%Y', null=True, blank=True)  #default='default.jpg', 
+
+    pm = models.ForeignKey(Profile, related_name='req_pm', verbose_name=_('HAEA PM'),
+                           on_delete=models.SET_NULL, null=True, blank=True)
+    priority = models.CharField(_("priority"), max_length=20, choices=PRIORITIES, default=Priority.NORMAL.value)
+    est_cost = models.DecimalField(_("Est. cost"), decimal_places=0, max_digits=12, blank=True, null=True)
+
+    p_ideation   = models.DateField(_("Planned Ideation start"), null=True, blank=True, default=date.today)
+    p_plan_b = models.DateField(_("planned planning start"), null=True, blank=False, default=date.today)
+    p_kickoff = models.DateField(_("planned kick-off date"), null=True, blank=False, default=date.today)
+    p_design_b = models.DateField(_("planned design start"), null=True, blank=True)
+    p_dev_b = models.DateField(_("planned develop start"), null=True, blank=True)
+    p_uat_b = models.DateField(_("planned UAT start"), null=True, blank=True)
+    p_launch = models.DateField(_("planned launch"), null=True, blank=False, default=date.today)
+    p_close = models.DateField(_("planned closing"), null=True, blank=False, default=date.today)
+
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='prj_req_created_by', verbose_name=_('created by'),
+                                   on_delete=models.SET_NULL, null=True)
+    created_at = models.DateTimeField(_("created at"), auto_now_add=True,   editable=False)
+    updated_on = models.DateTimeField(_("updated_on"), auto_now=True,       editable=False)
+
+    def __str__(self):
+        return self.title if not self.pk is None else "[%s] %s" % (self.code, self.title)            
+
     class Meta:
-        proxy = True
         permissions = [ ("approve", "Can approve project plan"),
                         # ("transfer", "Can transfer project plan to actual project"),
         ]
 
-    objects = ProxyManager()
+    objects = ObjectManager()
 
+    @property
     def pjcode(self) -> str:
-        if self.code:
-            return self.code
-        else:
-            prefix = '' if self.proxy_name == 'Project'  else ('BAP-' if self.version == Versions.V20.value else ('UP-' if self.version == Versions.V21.value else 'PR-'))
-            return prefix + f'{self.year % 100}-{"{:04d}".format(self.pk+2000)}'    
+        prefix = 'BAP-' if self.version == Versions.V20.value else ('UNP-' if self.version == Versions.V21.value else 'REQ-')
+        return self.code if not self.code is None else prefix + f'{self.year % 100}-{"{:04d}".format(self.pk)}'    
+    @property
+    def CBU_str(self):
+        return " ,".join(p.name for p in self.CBUs.all())
+    @property
+    def strategy_str(self):
+        # this is not working... FIXME 
+        return " ,".join(p.name for p in self.strategy.all())
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)        
+        if self.code is None:
+            prefix = 'BAP-' if self.version == Versions.V20.value else ('UNP-' if self.version == Versions.V21.value else 'REQ-')
+            self.code = prefix + f'{self.year % 100}-{"{:04d}".format(self.pk)}'    
+            self.save()
 
 # ----------------------------------------------------------------------------------------------------
 

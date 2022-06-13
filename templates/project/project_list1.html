@@ -91,10 +91,10 @@
                         </div>
                     </td>
                     <td>{{ p.phase|slice:'3:' }}</td>
-                    <td>{{ p.pm }}</td>
+                    <td>{{ p.pm.name }}</td>
                     <td>{{ p.dept }}</td>
                     <td>{{ p.p_launch }}</td>
-                    <!--td>{{ p.CBUpm }}</td-->
+                    <!--td>{{ p.CBUpm.name }}</td-->
                     <td class="text-center">{% if p.a_plan_e %} <i class="text-success bi-check-square-fill"> {% else %} <i class="text-success bi-dash-square-dotted"> </i> {% endif %}</td>
                     <td class="text-center">{% if p.a_design_e %}   <i class="text-success bi-check-square-fill"> {% else %} <i class="text-success bi-dash-square-dotted"> </i> {% endif %}</td>
                     <td class="text-center">{% if p.a_dev_e %}      <i class="text-success bi-check-square-fill"> {% else %} <i class="text-success bi-dash-square-dotted"> </i> {% endif %}</td>

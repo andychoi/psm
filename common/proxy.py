@@ -1,3 +1,4 @@
+import sys
 from django.db import models
 
 # https://stackoverflow.com/questions/241250/single-table-inheritance-in-django

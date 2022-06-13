@@ -20,7 +20,7 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
     # list_display = ('id', 'user', 'name', 'email', 'dept', 'manager', 'u_div', 'CBU', 'is_active')
     list_display = ('id', 'user', 'name', 'email', 'dept', 'CBU', 'is_active')
     list_display_links = ('id', 'user', 'name')
-    search_fields = ('id', 'name', 'email', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
+    search_fields = ('id', 'name', 'email', 'CBU__name', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
     ordering = ('CBU', 'dept', 'team', 'name',)
     readonly_fields = ('created_on', 'created_by', 'updated_on', 'updated_by')
     autocomplete_fields = ( 'user', 'team')
@@ -57,20 +57,21 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
         return fieldsets
 
     # object-function
-    def email_test(self, request, obj):
-        from psmprj.utils.mail import send_mail_async as send_mail
-        no_mails = send_mail(
-            subject='Subject here',
-            message='Here is the message.',
-            html_message="<h1>Here is title</h1>",
-            from_email='postmaster@sandbox8d3a1fef491c445da7a28136096d4050.mailgun.org',
-            recipient_list=['choibc9@gmail.com'],
-            fail_silently=False,
-        )
-        messages.add_message(request, messages.INFO, '%s emails sent!' % no_mails)
+    # def email_test(self, request, obj):
+    #     from psmprj.utils.mail import send_mail_async as send_mail
+    #     no_mails = send_mail(
+    #         subject='Subject here',
+    #         message='Here is the message.',
+    #         html_message="<h1>Here is title</h1>",
+    #         from_email='postmaster@sandbox8d3a1fef491c445da7a28136096d4050.mailgun.org',
+    #         recipient_list=['choibc9@gmail.com'],
+    #         fail_silently=False,
+    #     )
+    #     messages.add_message(request, messages.INFO, '%s emails sent!' % no_mails)
 
-    email_test.label = "Email Test"  
-    change_actions = ('email_test', )
+    # email_test.label = "Email Test"  
+    # change_actions = ('email_test', )
+
     # conflict import/export: changelist_actions = ('email_test', )    
 
     # validation check
@@ -148,8 +149,6 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
                             messages.add_message(request, messages.INFO, obj.name + ' not found in user, cannot create user without email')
 
 
-    def __str__(self):
-        return self.id if self.rname is None else self.rname
 
     class Meta:
         model = Profile

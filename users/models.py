@@ -2,13 +2,15 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from common.utils import *
-
+# from common.proxy import ProxySuper,  ProxyManager
 # https://pillow.readthedocs.io
 # from PIL import Image  #performance issue https://placeholder.com/900x300
 
 #avoid circular import, use full name in model with ''. example='common.Team'
 
 class Profile(models.Model):
+    # proxy_name = models.CharField(max_length=20, default='Profile', blank=True, null=True)#FIXME
+
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
     name = models.CharField(max_length=100, blank=True, null=True) #FIXME - dump during User creation, unique=True)
     email = models.EmailField(max_length=150, blank=True, null=True, unique=False)
@@ -43,14 +45,14 @@ class Profile(models.Model):
     migrated   = models.TextField(_("notes"), max_length=10, null=True, blank=True)
 
     def __str__(self):
-        if getattr(self, 'user') and not self.username :
-            return self.user.username 
+        if getattr(self, 'user') and not self.name :
+            return "%s [%s]" % ("%s %s" % (self.user.first_name, self.user.last_name), self.CBU) 
         else:
-            return self.username    #preferred
+            return "%s [%s]" % (self.name, self.CBU)    #preferred
 
-    @property
-    def username(self):
-        return self.name
+    # @property
+    # def username(self):
+    #     return self.name
 
     @property
     def u_div(self):
@@ -78,6 +80,14 @@ class Profile(models.Model):
         #     img.thumbnail(output_size)
         #     img.save(self.image.path)
 
-    # def __str__(self):
-    #     # FIXME
-    #     return getattr(self.user, 'username', self.name)
+# class ProfileCBU(Profile):
+#     class Meta:
+#         proxy = True
+
+#     objects = ProxyManager()
+
+# class ProfileEmp(Profile):
+#     class Meta:
+#         proxy = True
+
+#     objects = ProxyManager()

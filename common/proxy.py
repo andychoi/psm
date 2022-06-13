@@ -34,3 +34,26 @@ class ProxyManager(models.Manager):
     def get_queryset(self):
         """ only include objects in queryset matching current proxy class """
         return super().get_queryset().filter(proxy_name=self.model.__name__)
+
+    def others(self, pk, **kwargs):
+        """
+        Return queryset with all objects
+        excluding the one with the "pk" passed, but
+        applying the filters passed in "kwargs".
+        """
+        return self.exclude(pk=pk).filter(**kwargs)
+
+"""
+    General purpose object manager
+    
+    class object_model(models.Model)
+        objects = ObjectManager
+"""
+class ObjectManager(models.Manager):
+    def others(self, pk, **kwargs):
+        """
+        Return queryset with all objects
+        excluding the one with the "pk" passed, but
+        applying the filters passed in "kwargs".
+        """
+        return self.exclude(pk=pk).filter(**kwargs)

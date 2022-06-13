@@ -15,7 +15,7 @@ from users.models import Profile
 from psmprj.utils.mail import send_mail_async as send_mail, split_combined_addresses
 from psmprj.utils.dates import previous_working_day
 from common.utils import md2
-from common.proxy import ProxySuper, ProxyManager
+from common.proxy import ObjectManager, ProxySuper, ProxyManager
 from hashlib import sha1
 
 #TODO https://docs.djangoproject.com/en/4.0/ref/contrib/postgres/search/
@@ -75,14 +75,6 @@ class Program(models.Model):
     def __str__(self):
         return self.name
 
-class ObjectManager(models.Manager):
-    def others(self, pk, **kwargs):
-        """
-        Return queryset with all objects
-        excluding the one with the "pk" passed, but
-        applying the filters passed in "kwargs".
-        """
-        return self.exclude(pk=pk).filter(**kwargs)
 
 # Fields used to create an index in the DB and sort the Projects in the Admin
 Project_PRIORITY_FIELDS = ('state', '-priority', '-lstrpt')

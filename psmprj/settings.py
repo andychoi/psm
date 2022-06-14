@@ -222,7 +222,7 @@ MEDIA_URL = '/media/'
 # export/import
 #IMPORT_EXPORT_EXPORT_PERMISSION_CODE = 'import '
 
-if (env('USE_LDAP', None) == 'true'):
+if (env('USE_LDAP', None) == 'True'):
     # AzureAD SSO
     AUTHENTICATION_BACKENDS = [
     #    'django_auth_adfs.backend.AdfsAuthCodeBackend',

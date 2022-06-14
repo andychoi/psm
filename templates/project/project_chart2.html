@@ -5,11 +5,15 @@
 <script src="https://code.highcharts.com/gantt/highcharts-gantt.js"></script>
 <script src="https://code.highcharts.com/gantt/modules/exporting.js"></script>
 <script src="https://code.highcharts.com/gantt/modules/accessibility.js"></script>
+<script src="https://blacklabel.github.io/custom_events/js/customEvents.js"></script>
 <!-- <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script> -->
 <!-- <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script> -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<style>
+    .testclass {font-size: 10rem;}
+</style>
 {% endblock %}
 
 {% block content %}
@@ -96,19 +100,56 @@
         // title: {
         //     text: 'Projects'
         // },
-
+        colors: [],
         xAxis: {
             currentDateIndicator: true,
         },
 
         yAxis: {
+            // type: 'category',
             scrollbar: {
                 enabled: true,
                 showFull: false
             },
             max: 24,
             staticScale: 20,
-            uniqueNames: true
+            uniqueNames: true,
+
+            labels: {
+                useHTML: true,
+                style: {
+                    paddingLeft: "3px"
+                },
+                align: 'left',
+                events: {
+                    click: function() {
+                        onClickLabel(this.pos);
+                    } 
+                } 
+            }            
+            // grid: {
+            //     enabled: true,
+            //     borderColor: 'rgba(0,0,0,0.3)',
+            //     borderWidth: 1,
+            //     columns: [
+            //         {
+            //             title: {
+            //                 text: 'CBU'
+            //             },
+            //             labels: {
+            //                 format: '{point.CBU}'
+            //             }
+            //         },
+            //         {
+            //             title: {
+            //                 text: 'Project'
+            //             },
+            //             labels: {
+            //                 format: '{point.name}'
+            //             }
+            //         }
+            //     ]
+            // }
         },
 
         navigator: {
@@ -169,6 +210,14 @@
             }
         },
 
+        plotOptions: {
+            line: {
+                marker: {
+                    enabled: false
+                }
+            }
+        },
+
         series: []
     };
 
@@ -181,29 +230,88 @@
         return tParams;
     }
 
+    function getColor(pStateStr) {
+        // if (pStateStr === '00-Ideation') return '#fff100';
+        // if (pStateStr === '10-Pre-Planning') return '#009e49';
+        // if (pStateStr === '20-Planning') return '#00b294';
+        // if (pStateStr === '30-Design') return '#ff8c00';
+        // if (pStateStr === '40-Develop') return '#00188f';
+        // if (pStateStr === '50-Testing') return '#68217a';
+        // if (pStateStr === '60-Launch') return '#e81123';
+        // if (pStateStr === '70-Completed') return '#0f52ba';
+        // if (pStateStr === '80-Closed') return '#202928';
+        switch(pStateStr.split('-')[0]) {
+            case '00': return '#fff100';
+            case '10': return '#009e49';
+            case '20': return '#00b294';
+            case '30': return '#ff8c00';
+            case '40': return '#00188f';
+            case '50': return '#68217a';
+            case '60': return '#e81123';
+            case '70': return '#0f52ba';
+            case '80': return '#202928';
+        }
+        return '#000';
+    }
+
+    function onClickLabel(pItemIdx) {
+        // console.log(tChartData[pItemIdx].id);
+        window.location = "/project/" + tChartData[pItemIdx].id;
+    }
+
     function updateChart() {
         var tList = [];
         // var tList = res.map((pItem) => { return {start: convertDate(pItem.p_plan_b), end: convertDate(pItem.p_close), completed: pItem.progress / 100, name: pItem.title}; });
         var tMinTime = Date.now(), tMaxTime = Date.now();
         var tCounter = 0;
-        tChartData.forEach((pItem) => {
-            if (tCounter++ < tMaxItem) {
+        var tCategories = [];
+        var tColors = [];
+        tChartData.forEach((pItem, pIdx) => {
+            if (tCounter++ < tMaxItem) {                
+                tColors.push(getColor(pItem.state));
+
+                var tCategory = "[" + pItem.CBU_str + "] " + pItem.title;
+                tCategories.push(tCategory);
+
                 var tStart = convertDate(pItem.p_plan_b);
                 var tEnd = convertDate(pItem.p_close);
+                var tProgres = (tEnd - tStart) * (pItem.progress / 100) + tStart;
                 tMinTime = Math.min(tMinTime, new Date(tStart).getTime());
                 tMaxTime = Math.max(tMaxTime, new Date(tEnd).getTime());
-                tList.push({start: tStart, end: tEnd, completed: (pItem.progress / 100), name: pItem.title});
+                tList.push({
+                    // start: tStart, end: tEnd, 
+                    type: 'line',
+                    zoneAxis: 'x',
+                    zones: [{
+                        value: tProgres
+                    }, {
+                        dashStyle: 'dot',
+                        value: tEnd
+                    }],
+                    data: [{
+                        x: tStart,
+                        y: pIdx
+                    }, {
+                        x: tEnd,
+                        y: pIdx
+                    }],                    
+                    completed: (pItem.progress / 100), 
+                    name: pItem.title, CBU: pItem.CBU_str, y: pIdx
+                });
             }
         });
 
-        var tChartOptions = Object.assign({}, tDefaultOptions, {series: [{ name: '', data: tList }]});
+        // var tChartOptions = Object.assign({}, tDefaultOptions, {series: [{ name: '', data: tList }]});
+        var tChartOptions = Object.assign({}, tDefaultOptions, {series: tList });
+        tChartOptions.yAxis.categories = tCategories;
         tChartOptions.yAxis.max = Math.min(25, Math.min(tCounter, tMaxItem)) - 1;
+        tChartOptions.colors = tColors;
 
         var tChart = Highcharts.ganttChart('chart_area', tChartOptions);
         tChart.xAxis[0].setExtremes(tMinTime, tMaxTime);
-        if (tCounter >= tMaxItem) {
+        // if (tCounter >= tMaxItem) {
             // alert("Too many projects - limit to display 200 items, please use filter.")
-        }
+        // }
     }
 
     function updateData() {

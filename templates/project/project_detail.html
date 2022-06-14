@@ -11,7 +11,7 @@
 
   .text-small { font-size: 0.75rem !important; }
   .timelinepatch { height: 150px !important; }
-  .timeline-item-up { }
+  .timeline-item-up { position: absolute; bottom: 10px; width: 200px; margin-left: -100px; }
   .timeline-item-down { position: absolute; top: 20px; width: 200px; margin-left: -100px; }
 </style>  
 
@@ -180,27 +180,38 @@
     , {text: "Launching", dateStr: "{{ project.p_launch }}"}
     , {text: "Closing", dateStr: "{{ project.p_closing }}"}
   ]; 
+  // merge date
+  var tLen = tItems.length;
+  for(var i = 0; i < tLen; i++) {
+    if (tItems[i].dateStr === '') continue;
+    for(var j = i + 1; j < tLen; j++) {
+      if (tItems[i].dateStr === tItems[j].dateStr) {
+        tItems[i].text += ", " + tItems[j].text;
+        tItems[j].dateStr = '';        
+      } else {
+        break;
+      }
+    }
+  }
+
+  // console.log(tItems);
   var tDateBegin = Date.parse("3000-01-01");
   var tDateEnd = Date.parse("1900-01-01");
   tItems.forEach((pItem)=>{ 
-    pItem.date = Date.parse(pItem.dateStr); 
+    pItem.date = Date.parse(pItem.dateStr) + 17 * 3600 * 1000;    // GMT -0700
     if (pItem.date) {
       tDateBegin = Math.min(tDateBegin, pItem.date); 
       tDateEnd = Math.max(tDateEnd, pItem.date); 
     }
   });
   var tDelta = tDateEnd - tDateBegin;
-  tDateBegin -= tDelta * 0.05;
+  tDateBegin -= tDelta * 0.10;
   tDateEnd += tDelta * 0.10;
-  tDelta *= (1 + 0.15);
+  tDelta *= (1 + 0.20);
   var tDateTmp = new Date();
   var tCurrentDate = new Date(tDateTmp.getFullYear(), tDateTmp.getMonth(), tDateTmp.getDate());
   var tProgress = Math.min(1.0 * (tCurrentDate - tDateBegin) / tDelta, 1); 
   var mMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-  function addListItem(pPos, pText, pClass, pDateStr, pFlag) {
-    $('#disp_list').append( '<li><a href="#" class="' + pClass + '" data-date="' + pDateStr + '" style="left: ' + pPos + '%;"><span class="' + ((pFlag) ? "timeline-item-up" : "timeline-item-down") + '">' + pText + '</span></a></li>' );
-  }
 
   $(document).ready(function(){
     var tFlag = true;
@@ -215,6 +226,12 @@
       }
       return tDateStr;
     };
+    var getISODateStr = (pDate) => {
+      return new Date(pDate).toISOString().split("T")[0];
+    };
+    var addListItem = (pPos, pText, pClass, pDateStr, pFlag) => {
+      $('#disp_list').append( '<li><a href="#" class="' + pClass + '" data-date="' + pDateStr + '" style="left: ' + pPos + '%;"><span class="' + ((pFlag) ? "timeline-item-up" : "timeline-item-down") + '">' + pText + '</span></a></li>' );
+    }
 
     tItems.forEach((pItem)=>{ 
       if (pItem.date) {
@@ -236,7 +253,7 @@
             tFlag = !tFlag;
           }
         }
-        addListItem(tLeft, tContentStr, tClass, tDateStr, tFlag);
+        addListItem(tLeft, tContentStr, tClass, getISODateStr(pItem.date), tFlag);
         tFlag = !tFlag;
       }
     });

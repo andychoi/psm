@@ -222,19 +222,20 @@ MEDIA_URL = '/media/'
 # export/import
 #IMPORT_EXPORT_EXPORT_PERMISSION_CODE = 'import '
 
-# AzureAD SSO
-AUTHENTICATION_BACKENDS = [
-#    'django_auth_adfs.backend.AdfsAuthCodeBackend',
-#    'microsoft_auth.backends.MicrosoftAuthenticationBackend',
-    'django_auth_ldap.backend.LDAPBackend',
-    'django.contrib.auth.backends.ModelBackend', # if you also want to use Django's authentication
+if (env('USE_LDAP', None) == 'true'):
+    # AzureAD SSO
+    AUTHENTICATION_BACKENDS = [
+    #    'django_auth_adfs.backend.AdfsAuthCodeBackend',
+    #    'microsoft_auth.backends.MicrosoftAuthenticationBackend',
+        'django_auth_ldap.backend.LDAPBackend',
+        'django.contrib.auth.backends.ModelBackend', # if you also want to use Django's authentication
 
-    # I recommend keeping this with at least one database superuser in case of unable to use others
-    # 'guardian.backends.ObjectPermissionBackend',
-]
+        # I recommend keeping this with at least one database superuser in case of unable to use others
+        # 'guardian.backends.ObjectPermissionBackend',
+    ]
 
-# IMPORT Auth related settings ---------------------------------------
-from .settings_auth import *
+    # IMPORT Auth related settings ---------------------------------------
+    from .settings_auth import *
 
 #
 # Custom configurations

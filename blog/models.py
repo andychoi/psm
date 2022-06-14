@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.urls import reverse
+from django.template.defaultfilters import slugify  # new
 from django.conf import settings
 from common.utils import PUBLISH
 from common.utils import md2
@@ -27,12 +28,21 @@ class PostManager(models.Manager):
     #         post_obj.liked.add(user)
     #     return is_liked
 
+class Tag(models.Model):
+    tag = models.CharField(_("Category"), max_length=20, blank=True, unique=True)
+    slug = models.SlugField(null=False, unique=True)
+
+    def __str__(self):
+        return self.tag.upper()
+
 
 class Post(models.Model):
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
 
     category = models.CharField(_("Category"), max_length=50, choices=CATEGORIES, default=Category.DEFAULT.value)
+    tags  = models.ManyToManyField(Tag, blank=True, null=True)
+    slug = models.SlugField(null=False, unique=True)
 
     title = models.CharField(max_length=100)
     content = models.TextField()
@@ -52,6 +62,10 @@ class Post(models.Model):
         ordering = ('-date_posted', )
 
     @property
+    def tags_(self):
+        return " ,".join(p.tag for p in self.tags.all())
+
+    @property
     def content_md2(self):
         return md2(self.content)
     def content_short_md2(self):
@@ -65,7 +79,13 @@ class Post(models.Model):
 
     def save(self, *args, **kwargs):
         self.updated_on = timezone.now()
+        if not self.slug:
+            self.slug = slugify(self.title)
         super(Post, self).save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse("post_slug_detail", kwargs={"slug": self.slug})
+
 
 
 # class Comment(models.Model):

@@ -27,7 +27,11 @@
     <!-- Post information -->
     <div class="row ms-2 ">
         <h3 class=""  class="blockquote">{{object.title}}</h3>
-        <div class="col-6 text-start">Posted on {{ object.date_posted|date:"F d, Y" }}</div>
+        <div class="col-6 text-start">Posted on {{ object.date_posted|date:"F d, Y" }} | 
+            {% for tag in post.tags.all %}
+            <button type="button" class="btn btn-outline-success btn-sm" disabled>{{ tag }}</button>
+             {% endfor %}
+        </div>
         <div class="col-6 text-end">
             {% if object.author == user or user.is_superuser  %}
             <a class="btn btn-info btn-sm mt-1 mb-1" href="{% url 'post_update' object.id %}">Update</a>

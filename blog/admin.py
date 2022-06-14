@@ -1,17 +1,25 @@
 from django.contrib import admin
 from django.contrib import messages
-from .models import Post    #, Comment
+from .models import Post, Tag     #, Comment
 from django.utils.translation import ngettext
 from django.shortcuts import redirect
 from django.contrib.admin import helpers
 
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    list_display = ('id', 'tag', 'slug' )
+    search_fields = ('id', 'tag', 'slug')    
+    prepopulated_fields = {"slug": ("tag",)}
+
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'author', 'status', 'featured', 'private', 'date_posted')
+    list_display = ('id', 'title', 'tags_', 'author', 'status', 'featured', 'private', )
     list_display_links = ('id', 'title')
     list_filter = ('featured', 'private', 'category', 'author', 'date_posted')
     search_fields = ('id', 'title', 'content', 'author__profile__name')    
     list_per_page = 20
+    autocomplete_fields = ('tags',)
+    prepopulated_fields = {"slug": ("title",)}  # as type in Title, slug is populated
 
     def save_model(self, request, obj, form, change):
         if change is False: #create

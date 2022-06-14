@@ -61,23 +61,32 @@
                 <!-- img class="rounded-circle article-img" src="{ post.author.profile.image.url }" -->
                 <!-- https://stackoverflow.com/questions/18672452/left-align-and-right-align-within-div-in-bootstrap -->
                 <div class="media-body">
-                  <h4 class="blog-post-title mb-1"><a class="article-title" href="{% url 'post_detail' post.pk %}">{{ post.title }}</a></h4>
-
-                  <div class="article-summary">
-                    <div class="col background-white">
-                      <div class="clearfix align-top">
-                        {% thumbnail post.image "100x100" crop="center" as im %}
-                        <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" class="rounded float-sm-start me-3" alt="...">
-                        {% endthumbnail %}
-                        <p class="">{{ post.content_short_md2|safe|truncatewords:"50" }}</p> 
-                      </div>
+                  
+                  <div class="row">
+                    <div class="col-6 text-start"><h4 class="blog-post-title mb-1"><a class="article-title" href="{% url 'post_detail' post.pk %}">{{ post.title }}</a></h4></div> 
+                    <div class="col-6 text-end mt-auto "> 
+                      {% for tag in post.tags.all %}
+                        <button type="button" class="btn btn-outline-success btn-sm" disabled>{{ tag }}</button>
+                      {% endfor %}
                     </div>
                   </div>
-                  <p class="text-end mb-0">
-                    <a type="button" class="btn btn-primary  btn-sm" href="{% url 'post_detail' post.pk %}"">read more...</a>
-                    <small class="text-muted">{{ post.date_posted|date:"F d, Y" }} by {{ post.author.profile.name }}</small>
-                  </p>
-                  
+
+                  <div class="row">
+                    <div class="article-summary">
+                      <div class="col background-white">
+                        <div class="clearfix align-top">
+                          {% thumbnail post.image "100x100" crop="center" as im %}
+                          <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" class="rounded float-sm-start me-3" alt="...">
+                          {% endthumbnail %}
+                          <p class=""> {{ post.content_short_md2|safe|truncatewords:"50" }}</p> 
+                        </div>
+                      </div>
+                    </div>
+                    <p class="text-end mb-0">
+                      <a type="button" class="btn btn-primary  btn-sm" href="{% url 'post_detail' post.pk %}"">read more...</a>
+                      <small class="text-muted">{{ post.date_posted|date:"F d, Y" }} by {{ post.author.profile.name }}</small>
+                    </p>
+                  </div><!--row -->                    
                 </div>
               </article>
             </div>

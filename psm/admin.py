@@ -151,7 +151,7 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
     def get_form(self, request, obj=None, **kwargs):
         form = super(ProjectPlanAdmin, self).get_form(request, obj, **kwargs)
         #FIXME if read-only due to permission
-        if form.base_fields:
+        if hasattr(form, 'base_fields'):
             form.base_fields['version'  ].initial = Versions.V10.value
             form.base_fields['asis'     ].widget.attrs.update({'rows':7,'cols':80})
             form.base_fields['tobe'     ].widget.attrs.update({'rows':7,'cols':80})
@@ -389,7 +389,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     # 'get_form' is working 
     def get_form(self, request, obj=None, change=False, **kwargs):
         form = super().get_form(request, obj, change, **kwargs)
-        if form.base_field:
+        if hasattr(form, 'base_fields'):
             form.base_fields['description'].widget.attrs.update({'rows':5,'cols':80})
             form.base_fields['objective'].widget.attrs.update({'rows':5,'cols':80})
             form.base_fields['ref_plan'].widget.attrs['style'] = 'width: 550px'
@@ -399,6 +399,10 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
                 # form.base_fields['recipients_cc'].widget.attrs.update({'rows':5,'cols':120})      #not yet implemented
                 form.base_fields["recipients_to"].help_text = 'Use semi-colon to add multiple. Example: "Johnny Test" <johnny@test.com>; Jack <another@test.com>; "Scott Summers" <scotts@test.com>; noname@test.com'
                 # form.base_fields["is_agile"].help_text = 'Mark if the project requires multiple launches'
+
+                #TODO for conditional field change/display
+                # form.fields['comment'].disabled = True
+
         return form
 
     def formatted_created_at(self, obj):
@@ -408,10 +412,14 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
 
     #https://stackoverflow.com/questions/10179129/filter-foreignkey-field-in-django-admin
     #https://stackoverflow.com/questions/25972112/filter-modelchoicefield-by-user-in-django-admin-form
+    #select field - default selection filter
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         field = super(ProjectAdmin, self).formfield_for_dbfield(db_field, request, **kwargs)
         if db_field.name == 'strategy':
             field.queryset = field.queryset.filter(is_active=True)
+        # FIXME
+        # if db_field.name == 'pm':
+        #     field_queryset = field.queryset.filter(internal=True)
         return field
 
         # def get_form(self, request, obj=None, **kwargs):    

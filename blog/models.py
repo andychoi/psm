@@ -17,6 +17,12 @@ CATEGORIES = (
     (Category.DEFAULT.value, Category.DEFAULT.value[3:]),
 )
 
+FEATURED = (
+	(0, "Default"),
+	(1, "Sticky"),
+	(2, "Featured"),
+)
+
 class PostManager(models.Manager):
     pass
     # def like_toggle(self, user, post_obj):
@@ -49,7 +55,7 @@ class Post(models.Model):
     status = models.IntegerField(choices=PUBLISH, default=0) 
     date_posted = models.DateTimeField(default=timezone.now)
     private =  models.BooleanField(default=False)
-    featured = models.BooleanField(default=False)
+    featured = models.IntegerField(choices=FEATURED, default=0)
     image = models.ImageField(null=True, blank=True, upload_to='posts//%Y/%m') #default='posts/default.jpg'
     # excerpt = models.TextField(blank=True, null=True)
 
@@ -59,7 +65,7 @@ class Post(models.Model):
     updated_on = models.DateTimeField(default=timezone.now)
 
     class Meta:
-        ordering = ('-date_posted', )
+        ordering = ('-featured', '-date_posted', )
 
     @property
     def tags_(self):

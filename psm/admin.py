@@ -339,8 +339,8 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
                                         ('cbu_req','cbu_sow','cbu_po',),
                                        ), 'classes': ('collapse',)}),
         (_('Communication...'),  {'fields': (('email_active'), ('recipients_to',), ), 'classes': ('collapse',)}),
-        (_('More...'), {'fields': ( ('created_at', 'updated_on'), 'created_by', ('attachment'), ('req_pro','req_sec','req_inf'), ), 'classes': ('collapse',)}),
-        # (None, {'fields': (('link',),) })
+        (_('More...'), {'fields': ( ('created_at', 'updated_on'), 'created_by', ('attachment'), ('req_pro',), ), 'classes': ('collapse',)}),
+        # (None, {'fields': (('link',),) }) 'req_sec','req_inf'
     )
 
     def get_fieldsets(self, request, obj=None):
@@ -468,7 +468,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
                 # read review record
                 theproc = Review.objects.filter(Q(project = obj.id) & Q(reviewtype = upd[0]))      #[:1].get()
                 if theproc: #already exist
-                    update_dic = { 'project' : obj, 'CBUs' : obj.CBUs, 'dept' : obj.dept, 'state' : upd[1] }  #FIXME many to many
+                    update_dic = { 'project' : obj, 'dept' : obj.dept, 'state' : upd[1] }  #FIXME many to many 'CBUs' : obj.CBUs, 
                     theproc.update(**update_dic)
                     messages.add_message(request, messages.INFO, '[' + upd[0][3:] + '] review type records are updated.')
 
@@ -476,9 +476,9 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
                     new_reviews.append(upd[0]) 
 
         if new_reviews:
-            # breakpoint()
+            # breakpoint() CBUs = obj.CBUs,
             for new in new_reviews:
-                Review.objects.create(reviewtype = new, project = obj, CBUs = obj.CBUs, dept = obj.dept, onboaddt = obj.p_kickoff, 
+                Review.objects.create(reviewtype = new, project = obj,  dept = obj.dept, onboaddt = obj.p_kickoff,  
                                       state = obj.req_pro, priority = obj.priority, title = obj.title)
                 messages.add_message(request, messages.INFO, '[' + new[3:] + '] review type - New review request is created' )
 

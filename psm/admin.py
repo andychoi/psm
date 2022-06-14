@@ -417,10 +417,9 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         field = super(ProjectAdmin, self).formfield_for_dbfield(db_field, request, **kwargs)
         if db_field.name == 'strategy':
             field.queryset = field.queryset.filter(is_active=True)
-        # FIXME
-        if db_field.name == 'pm':
-            # l_cbu = CBU.objects.filter(cbu_type=2)
-            field.queryset = field.queryset.filter(CBU__cbu_type=2)
+        # FIXME not working...
+        # if db_field.name == 'pm':
+        #     field.queryset = field.queryset.filter(CBU__cbu_type=0)
         return field
 
         # def get_form(self, request, obj=None, **kwargs):    

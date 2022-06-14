@@ -231,11 +231,11 @@
 
     function saveChange() {
         // console.log(Object.values(tModifiedItemMap));
-        var tUrl = '/api/1.0/projects/update/period';
-        var tParams = getParams();        
-        if (Object.keys(tParams).length > 0) {
-            tUrl += '?' + new URLSearchParams(tParams).toString(); 
-        }
+        var tUrl = '/api/1.0/projects/update/period/';
+        // var tParams = getParams();        
+        // if (Object.keys(tParams).length > 0) {
+        //     tUrl += '?' + new URLSearchParams(tParams).toString(); 
+        // }
         fetch(tUrl, { header: {'Content-Type': 'application/json'}, method: "POST", body: JSON.stringify( Object.values(tModifiedItemMap) ) })
         .then(response => response.json())
         .then((res)=>{

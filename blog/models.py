@@ -19,8 +19,8 @@ CATEGORIES = (
 
 FEATURED = (
 	(0, "Default"),
-	(1, "Sticky"),
-	(2, "Featured"),
+	(1, "Featured"),
+	(2, "Sticky"),
 )
 
 class PostManager(models.Manager):

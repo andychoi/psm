@@ -30,7 +30,7 @@ class PostListView(ListView):
         context = super().get_context_data(*args, **kwargs) #dict
         # context = self.get_queryset().values()
         # add additional object list
-        context['featured'] = self.model.objects.all().filter(featured=True).filter(status=1).order_by('date_posted')[:5]
+        context['featured'] = self.model.objects.all().filter(featured=1).filter(status=1).order_by('date_posted')[:5]
 
         # https://stackoverflow.com/questions/59972694/django-pagination-maintaining-filter-and-order-by
         get_copy = self.request.GET.copy()
@@ -47,11 +47,11 @@ class PostListView(ListView):
             keyword = ''
         if (keyword != ''):
             object_list = self.model.objects.filter(
-                Q(status=1) & ~Q(featured=2) &                 #published only, exclude featured..
+                Q(status=1) & ~Q(featured=1) &                 #published only, exclude featured..
                 ( Q(content__icontains=keyword) | Q(title__icontains=keyword) ) )
         else:
             # object_list = self.model.objects.all()
-            object_list = self.model.objects.filter(status=1).filter(~Q(featured=2))   #published only
+            object_list = self.model.objects.filter(status=1).filter(~Q(featured=1))   #published only
         
         # breakpoint()
         if self.request.user.is_authenticated :   #not login

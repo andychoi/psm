@@ -19,7 +19,7 @@ from django.utils.html import format_html
 from django.utils.html import mark_safe
 from psmprj.utils.dates import previous_working_day
 
-from common.models import State3, ReviewTypes, Versions
+from common.models import State3, ReviewTypes, Versions, CBU
 from .models import Project, ProjectPlan,  ProjectDeliverable, ProjectDeliverableType, Strategy, Program
 from reviews.models import  Review
 from django.contrib.admin import AdminSite
@@ -418,8 +418,9 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         if db_field.name == 'strategy':
             field.queryset = field.queryset.filter(is_active=True)
         # FIXME
-        # if db_field.name == 'pm':
-        #     field_queryset = field.queryset.filter(internal=True)
+        if db_field.name == 'pm':
+            # l_cbu = CBU.objects.filter(cbu_type=2)
+            field.queryset = field.queryset.filter(CBU__cbu_type=2)
         return field
 
         # def get_form(self, request, obj=None, **kwargs):    

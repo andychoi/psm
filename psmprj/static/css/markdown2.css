@@ -1,9 +1,5 @@
 /* -------------------------------------- */
 
-.psm-md2  p { font-size: 1.2rem; margin-top: 0.5rem; margin-bottom: 0.2rem; }
-.psm-md2  dl, .psm-md2 ol, .psm-md2 ul { padding-left: 1rem; }
-.psm-md2  li { line-height: 1.4rem; } 
-/* .dropdown-menu  ul   { line-height:100%; } */
 
 ol > li {
    display: table-row;
@@ -25,7 +21,7 @@ ol > li {
    border-spacing:0;
    /* margin-right:18px; */
    margin-left:0;
-   /* font-size:14px; */
+   font-size: 1rem;
    /* color:#2e4453 */
 }
 .psm-md2 table {
@@ -58,18 +54,24 @@ table {
 }
 .psm-md2 p {
    margin-left:0 !important;
-   font-size:1.2rem; 
+   font-size:1rem; 
+   margin-top: 0.5rem; margin-bottom: 0.4rem;
 }
 .psm-md2 pre {
    margin-bottom: 0.5em; /* 1.4em; */
    color:#2e4453;
-   font-size:1.1rem; 
+   font-size:1rem; 
 }
-.psm-md2 ul,
-.psm-md2 ol {
-   /* margin-left:23px !important; */
-   margin-bottom:0
+.psm-md2 ul, .psm-md2 ol, .psm-md2 dl {
+   margin-left:10px !important;
+   margin-bottom:0; margin-top: 10px;
+   padding-left: 1rem;
 }
+
+.psm-md2  li { line-height: 1.4rem; } 
+/* .dropdown-menu  ul   { line-height:100%; } */
+
+
 .psm-md2 th:nth-child(2),
 .psm-md2 td:nth-child(2) {
    background-color:#fafafa;

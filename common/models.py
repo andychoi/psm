@@ -43,6 +43,11 @@ class Team(models.Model):
     def __str__(self):
         return self.name
 
+CBU_TYPE = (
+	(0, "Own"),
+	(1, "Customer"),
+	(2, "Vendor"),
+)
 class CBU(models.Model):
     """
     CBU: Client business unit, A CBU can be a customer, a provider, a contact, you should
@@ -57,13 +62,14 @@ class CBU(models.Model):
     name = models.CharField(_("name"), max_length=10, db_index=True, unique=True)
     fullname = models.CharField(_("full name"), max_length=100)
     group = models.CharField(_("group name"), max_length=100, blank=True, null=True)
-    email = models.EmailField(_("email"), blank=True, null=True)
-    website = models.URLField(_("website"), blank=True, null=True)
     is_active = models.BooleanField(_("is active"), default=True)
     is_tier1 = models.BooleanField(_("is Tier-1"), default=False)
+    cbu_type = models.IntegerField(choices=CBU_TYPE, default=0)
 #    phone = models.CharField(_("phone"), max_length=40, null=True, blank=True)
 #    mobile = models.CharField(_("mobile"), max_length=40, null=True, blank=True)
 #    address = models.CharField(_("address"), max_length=128, null=True, blank=True)
+    email = models.EmailField(_("email"), blank=True, null=True)
+    website = models.URLField(_("website"), blank=True, null=True)
     comment = models.TextField(_("notes"), max_length=2000, null=True, blank=True)
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='CBU_created', verbose_name=_('created by'),

@@ -7,9 +7,12 @@
   .card-main { min-height: 400px; }
   .card-obj  { min-height: 250px; }
   .card-sub  { min-height: 150px; }
-  .card-time { height: 120px; }
+  .card-time { height: 150px; }
 
   .text-small { font-size: 0.75rem !important; }
+  .timelinepatch { height: 150px !important; }
+  .timeline-item-up { }
+  .timeline-item-down { position: absolute; top: 20px; width: 200px; margin-left: -100px; }
 </style>  
 
 <link href="{% static 'css/timeline.css' %}" rel="stylesheet">
@@ -145,7 +148,7 @@
   <!-- https://freefrontend.com/bootstrap-timelines/ -->
 
           <div class="cd-horizontal-timeline loaded" style="margin-top:-24px;">
-              <div class="timeline">
+              <div class="timeline timelinepatch">
                   <div class="events-wrapper">
                       <div class="events" style="width: 100%; min-width: 800px;">
                           <ol id="disp_list"></ol>
@@ -195,15 +198,15 @@
   var tProgress = Math.min(1.0 * (tCurrentDate - tDateBegin) / tDelta, 1); 
   var mMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-  function addListItem(pPos, pText, pClass, pDateStr) {
-    $('#disp_list').append( '<li><a href="#" class="' + pClass + '" data-date="' + pDateStr + '" style="left: ' + pPos + '%;">' + pText + '</a></li>' );
+  function addListItem(pPos, pText, pClass, pDateStr, pFlag) {
+    $('#disp_list').append( '<li><a href="#" class="' + pClass + '" data-date="' + pDateStr + '" style="left: ' + pPos + '%;"><span class="' + ((pFlag) ? "timeline-item-up" : "timeline-item-down") + '">' + pText + '</span></a></li>' );
   }
 
   $(document).ready(function(){
     var tFlag = true;
     var tFlagCurrentDate = false;
     var tCurrentYear = "";    
-    var tGetDateStr = (pDate) => {
+    var getDateStr = (pDate) => {
       var tDate = new Date(pDate);
       var tDateStr = mMonths[tDate.getMonth()] + " " + tDate.getDate();
       if (tCurrentYear !== tDate.getFullYear()) {
@@ -216,22 +219,28 @@
     tItems.forEach((pItem)=>{ 
       if (pItem.date) {
         var tLeft = 100.0 * (pItem.date - tDateBegin) / tDelta;
-        var tDateStr = tGetDateStr(pItem.date);
+        var tDateStr = getDateStr(pItem.date);
         var tContentStr = (pItem.text + "<br>" + tDateStr);
         var tClass = "text-small";        
-        if (tCurrentDate > pItem.date) tClass += " older-event";
-        if (tCurrentDate === pItem.date) {
-            tClass += " selected";
-            tFlagCurrentDate = true;
+        if (tCurrentDate > pItem.date) {
+          tClass += " older-event";
+        } 
+        else if (tCurrentDate === pItem.date) {
+          tClass += " selected";
+          tFlagCurrentDate = true;
         }
-        addListItem(tLeft, tContentStr, tClass, tDateStr);
+        else {
+          if (!tFlagCurrentDate) {
+            addListItem((tProgress*100), getDateStr(tCurrentDate), "text-small selected", null, tFlag);
+            tFlagCurrentDate = true;
+            tFlag = !tFlag;
+          }
+        }
+        addListItem(tLeft, tContentStr, tClass, tDateStr, tFlag);
         tFlag = !tFlag;
       }
     });
 
-    if (!tFlagCurrentDate)
-      addListItem((tProgress*100), tGetDateStr(tCurrentDate), "text-small selected", null);
-    
     $('.filling-line').css({transform: "scaleX(" + tProgress + ")"});
     // console.log(tDateBegin, tDateEnd, tProgress, tItems);
   })  

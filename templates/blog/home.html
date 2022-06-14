@@ -63,8 +63,8 @@
                 <div class="media-body">
                   
                   <div class="row">
-                    <div class="col-6 text-start"><h4 class="blog-post-title mb-1"><a class="article-title" href="{% url 'post_detail' post.pk %}">{{ post.title }}</a></h4></div> 
-                    <div class="col-6 text-end mt-auto "> 
+                    <div class="col-9 text-start"><h4 class="blog-post-title mb-1"><a class="article-title" href="{% url 'post_detail' post.pk %}">{{ post.title }}</a></h4></div> 
+                    <div class="col-3 text-end mt-auto "> 
                       {% for tag in post.tags.all %}
                         <button type="button" class="btn btn-outline-success btn-sm" disabled>{{ tag }}</button>
                       {% endfor %}

@@ -16,7 +16,7 @@ register = template.Library()
 @register.filter()
 @stringfilter
 def md2(content, tag):
-    tag2 = tag if tag else 'psm-md'
+    tag2 = tag if tag else 'psm-md2'
     return "<div class='%s'>" + markdown2.markdown(content, extras=["cuddled-lists", "break-on-newline", "tables"]) + "</div><!--md2-->" % tag2
 
 

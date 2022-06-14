@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
+from django.contrib import messages
 
 from common.models import CBU, Div, Dept, Team
 from common.models import Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, State3, STATE3, WBS, VERSIONS, Versions
@@ -330,7 +331,7 @@ class Project(models.Model):
 # project unplanned request, annual planning : version 10, 11, 12, 20, 21
 # ----------------------------------------------------------------------------------------------------
 class ProjectPlan(models.Model):
-    code = models.CharField(_("Code"), max_length=18, null=True, blank=True) 
+    # code = models.CharField(_("Code"), max_length=18, null=True, blank=True) 
 
     title = models.CharField(_("title"), max_length=200)
     type = models.CharField(_("type"), max_length=20, choices=PRJTYPE, default=PrjType.UNC.value)
@@ -379,10 +380,12 @@ class ProjectPlan(models.Model):
     updated_on = models.DateTimeField(_("updated_on"), auto_now=True,       editable=False)
 
     def __str__(self):
-        return self.title if not self.pk is None else "[%s] %s" % (self.code, self.title)            
+        return self.title if self.pk is None else "[%s] %s" % (self.pjcode, self.title)            
 
     class Meta:
         permissions = [ ("approve", "Can approve project plan"),
+                        ("ver-20",  "Can access version 20 (BAP approved)"),
+                        ("ver-21",  "Can access version 21 (Unplanned approved)"),
                         # ("transfer", "Can transfer project plan to actual project"),
         ]
 
@@ -391,7 +394,8 @@ class ProjectPlan(models.Model):
     @property
     def pjcode(self) -> str:
         prefix = 'BAP-' if self.version == Versions.V20.value else ('UNP-' if self.version == Versions.V21.value else 'REQ-')
-        return self.code if not self.code is None else prefix + f'{self.year % 100}-{"{:04d}".format(self.pk)}'    
+        return prefix + f'{self.year % 100}-{"{:04d}".format(self.pk)}'    
+        # return self.code if not self.code is None else prefix + f'{self.year % 100}-{"{:04d}".format(self.pk)}'    
     @property
     def CBU_str(self):
         return " ,".join(p.name for p in self.CBUs.all())
@@ -422,6 +426,16 @@ class ProjectPlan(models.Model):
         im = get_thumbnail(self.img_tobe.file, 'x300', crop='center', quality=99)
         return mark_safe('<img src="%s" width="%s" height="%s" />' % (im.url, im.width, im.height))
 
+    #override 
+    # def check_object_permissions(request, obj) --> View
+        # if obj.version == Versions.V20.value and not request.user.has_perm('psm.v-20'):
+        #     messages.add_message(request, messages.ERROR, "You do not have access to version 20 (BAP approved') ")
+        #     return False
+        # if obj.version == Versions.V21.value and not request.user.has_perm('psm.v-21'):
+        #     messages.add_message(request, messages.ERROR, "You do not have access to version 21 (Unplanned approved') ")
+        #     return False
+        # return True    
+
     def save(self, *args, **kwargs):
         if self.team is None and not self.pm is None:
             self.team = self.pm.team
@@ -430,13 +444,14 @@ class ProjectPlan(models.Model):
 
         super().save(*args, **kwargs)        
 
-        if self.code is None:
-            prefix = 'BAP-' if self.version == Versions.V20.value else ('UNP-' if self.version == Versions.V21.value else 'REQ-')
-            self.code = prefix + f'{self.year % 100}-{"{:04d}".format(self.pk)}'    
-            self.save()
+        # if self.code is None:
+        #     prefix = 'BAP-' if self.version == Versions.V20.value else ('UNP-' if self.version == Versions.V21.value else 'REQ-')
+        #     self.code = prefix + f'{self.year % 100}-{"{:04d}".format(self.pk)}'    
+        #     self.save()
 
     def clean(self):
         validation_errors = {}
+
 
         title = self.title.strip() if self.title else self.title
         # matching_projects = ProjectPlan.objects.filter(title=title) # search all version , version=self.version)

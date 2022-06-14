@@ -2,7 +2,7 @@ import enum
 from django.utils.translation import gettext_lazy as _
 import markdown2
 
-def md2(content, tag='psm-md'):
+def md2(content, tag='psm-md2'):
     return "<div class='%s'>" % tag + markdown2.markdown(content, extras=["cuddled-lists", "break-on-newline", "tables"]) + "</div><!--md2-->"
 
 ROLES = (

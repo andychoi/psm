@@ -3,6 +3,7 @@ from .models import Profile
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from import_export.admin import ImportExportMixin
@@ -85,13 +86,43 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
         #     obj.created_by = request.user
         # super().save_model(request, obj, form, change)
 
-    actions = ['sync_user_master']
+    actions = ['sync_user_master', 'set_staff', 'remove_staff']
+
+    @admin.action(description='Set as staff', permissions=['change'])
+    def set_staff(self, request, queryset):
+        for obj in queryset:
+            if obj.user:
+                User.objects.filter(id=obj.user.id).update(is_staff=True)
+                try:
+                    user_group = Group.objects.get(name='staff')
+                    obj.user.groups.add(user_group) 
+                except:
+                    pass    
+
+    @admin.action(description='Remove from staff', permissions=['change'])
+    def remove_staff(self, request, queryset):
+        for obj in queryset:
+            if obj.user:
+                User.objects.filter(id=obj.user.id).update(is_staff=False)
+                try:
+                    user_group = Group.objects.get(name='staff')
+                    obj.user.groups.remove(user_group) 
+                except:
+                    pass    
 
     @admin.action(description='Migration - create User, link user with email', permissions=['change'])
     def sync_user_master(self, request, queryset):
         
         for obj in queryset:
+            if obj.email is None or obj.email == "":
+                messages.add_message(request, messages.ERROR, '%s - %s has no email address to create user' % (obj.id, obj.name))
+                break
+
             #check user with same email
+            if Profile.objects.filter(email = obj.email).count() > 1:
+                messages.add_message(request, messages.ERROR, '%s - %s has multiple profiles with same email' % (obj.id, obj.name))
+                break
+
             try:
                 found = User.objects.get(email=obj.email) if not obj.email is None else None
             except:
@@ -101,7 +132,7 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
                 # one-to-one save/update: https://stackoverflow.com/questions/70622890/how-to-assign-value-to-one-to-one-field-in-django
                 # 3 methods available
                 obj.user = found                  
-                obj.save(update_fields=['user'])    
+                obj.save(update_fields=['user'])    # duplicate update....
                 # Profile.objects.filter(pk=obj.id).update(user=found)   #method 2
                 # with connection.cursor() as cursor:                    #method 3
                 #     cursor.execute("UPDATE users_profile SET user_id = %s WHERE id = %s", ( found.id, obj.id ) )

@@ -7,6 +7,7 @@ from django.db import models
 from django.db.models import Q
 from django.forms import Textarea
 from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import ValidationError
 from import_export.admin import ImportExportMixin
 
 from adminfilters.multiselect import UnionFieldListFilter
@@ -30,6 +31,7 @@ from django.contrib.auth import get_user_model, get_permission_codename
 from django.contrib.auth.models import User, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ngettext
+from django.shortcuts import redirect
 
 
 # README issue with import/export https://github.com/crccheck/django-object-actions/issues/67
@@ -109,13 +111,13 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
     class Media:
         css = { 'all': ('psm/css/custom_admin.css',), }
 
-    search_fields = ('id', 'title', 'asis', 'tobe', 'objective', 'consider', 'code', 'pm__name', 'CBUpm__name', 'CBUs__name')
+    search_fields = ('id', 'title', 'asis', 'tobe', 'objective', 'consider', 'pm__name', 'CBUpm__name', 'CBUs__name')
     list_display = ('version', 'pjcode',  'title', 'pm', 'dept', 'CBU_str', 'est_cost' )    #CBU many to many
     list_display_links = ('pjcode', 'title')
     list_editable = ("version", )
     list_filter = (
-        ('version',     DropdownFilter),
         ('year',        DropdownFilter),
+        ('version',     UnionFieldListFilter),
         ('CBUs',        RelatedDropdownFilter),   
         ('dept',        RelatedDropdownFilter),
         ('dept__div',   RelatedDropdownFilter),
@@ -148,23 +150,25 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
     # default version set
     def get_form(self, request, obj=None, **kwargs):
         form = super(ProjectPlanAdmin, self).get_form(request, obj, **kwargs)
-        form.base_fields['version'  ].initial = Versions.V10.value
-        form.base_fields['asis'     ].widget.attrs.update({'rows':7,'cols':80})
-        form.base_fields['tobe'     ].widget.attrs.update({'rows':7,'cols':80})
-        form.base_fields['objective'].widget.attrs.update({'rows':5,'cols':30})
-        form.base_fields['consider' ].widget.attrs.update({'rows':5,'cols':30})
-        form.base_fields['quali'    ].widget.attrs.update({'rows':3,'cols':30})
-        form.base_fields['quant'    ].widget.attrs.update({'rows':3,'cols':30})
-        form.base_fields['resource' ].widget.attrs.update({'rows':2,'cols':30})
+        #FIXME if read-only due to permission
+        if form.base_fields:
+            form.base_fields['version'  ].initial = Versions.V10.value
+            form.base_fields['asis'     ].widget.attrs.update({'rows':7,'cols':80})
+            form.base_fields['tobe'     ].widget.attrs.update({'rows':7,'cols':80})
+            form.base_fields['objective'].widget.attrs.update({'rows':5,'cols':30})
+            form.base_fields['consider' ].widget.attrs.update({'rows':5,'cols':30})
+            form.base_fields['quali'    ].widget.attrs.update({'rows':3,'cols':30})
+            form.base_fields['quant'    ].widget.attrs.update({'rows':3,'cols':30})
+            form.base_fields['resource' ].widget.attrs.update({'rows':2,'cols':30})
 
-        # cols - not working
-        form.base_fields['asis'     ].widget.attrs['style'] = 'width: 35em;'
-        form.base_fields['tobe'     ].widget.attrs['style'] = 'width: 35em;'
-        form.base_fields['objective'].widget.attrs['style'] = 'width: 25em;'
-        form.base_fields['consider' ].widget.attrs['style'] = 'width: 25em;'
-        form.base_fields['quali'    ].widget.attrs['style'] = 'width: 25em;'
-        form.base_fields['quant'    ].widget.attrs['style'] = 'width: 25em;'
-        form.base_fields['resource' ].widget.attrs['style'] = 'width: 35em;'
+            # cols - not working
+            form.base_fields['asis'     ].widget.attrs['style'] = 'width: 35em;'
+            form.base_fields['tobe'     ].widget.attrs['style'] = 'width: 35em;'
+            form.base_fields['objective'].widget.attrs['style'] = 'width: 25em;'
+            form.base_fields['consider' ].widget.attrs['style'] = 'width: 25em;'
+            form.base_fields['quali'    ].widget.attrs['style'] = 'width: 25em;'
+            form.base_fields['quant'    ].widget.attrs['style'] = 'width: 25em;'
+            form.base_fields['resource' ].widget.attrs['style'] = 'width: 35em;'
         return form
 
 
@@ -189,7 +193,6 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
     def move_to_12_version(self, request, queryset):
         self.queryset_update_version(self, request, queryset, Versions.V12.value)
 
-
     def has_approve_permission(self, request):
         opts = self.opts
         codename = get_permission_codename('approve', opts)
@@ -204,25 +207,28 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
     # object action FIXME
     change_actions = ('release_to_actual',)
     def release_to_actual(self, request, obj):
-        if not request.user.has_perm('psm.approve_projectplan'):
-            messages.add_message(request, messages.ERROR, "You don't have permission to release project" )
-        else:
-            # allow only source verion from 20,21
-            if not obj.version in [ Versions.V20.value, Versions.V21.value ]:
-                messages.add_message(request, messages.ERROR, "You cannot release project from this version" )
-            else: 
-                self.copy_to_project(request, obj)
+        self.copy_to_project(request, obj)
     release_to_actual.label = "Release to Actual"  
 
     # 
     def copy_to_project(self, request, obj):
+        if not request.user.has_perm('psm.approve_projectplan'):
+            messages.add_message(request, messages.ERROR, "You don't have permission to release project" )
+            return
+        else:
+            # allow only source verion from 20,21
+            if not obj.version in [ Versions.V20.value, Versions.V21.value ]:
+                messages.add_message(request, messages.ERROR, "You cannot release project from this version" )
+                return
+
+        # check if project file exist
         if Project.objects.filter(title=obj.title).exists():
             messages.add_message(request, messages.ERROR, mark_safe(u"Project name: %s has already exist." % obj.title))
         else:
             # check if actual prj is created
             prj = Project.objects.filter(ref_plan=obj)
             if prj.exists():
-                messages.add_message(request, messages.ERROR, mark_safe("Project already exist <a href='/admin/psm/project/%s'>%s</a>" % (prj[0].id, prj[0].code) ))
+                messages.add_message(request, messages.ERROR, mark_safe("Project already exist <a href='/admin/psm/project/%s'>%s</a>" % (prj[0].id, prj[0].pjcode) ))
             else:
                 new_proj = Project.objects.create()
                 for field in ProjectPlan._meta.fields:
@@ -235,7 +241,7 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
                 new_proj.p_uat_e    = obj.p_uat_e
                 new_proj.ref_plan   = obj
                 new_proj.save()
-                messages.add_message(request, messages.INFO, mark_safe("released to actual project to <a href='/admin/psm/project/%s'>%s</a>" % (new_proj.id, new_proj.code) ))
+                messages.add_message(request, messages.INFO, mark_safe("released to actual project to <a href='/admin/psm/project/%s'>%s</a>" % (new_proj.id, new_proj.pjcode) ))
 
 
     # fix conflict issue with two package: import/export, obj-action
@@ -246,6 +252,36 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
     def redirect_to_import(self, request, obj):
         return HttpResponseRedirect(reverse('admin:%s_%s_import' % self.get_model_info()))
     redirect_to_export.label = "Import"
+
+    # TODO - permission override
+    def has_change_permission(self, request, obj=None):
+        if obj :
+            # return True
+            #check permission on version
+            if obj.version == Versions.V20.value and not request.user.has_perm('psm.v-20') or \
+               obj.version == Versions.V21.value and not request.user.has_perm('psm.v-21'):
+                return False    # You do not have access to version 21 (Unplanned approved') 
+            return True
+        else:
+            return super(ProjectPlanAdmin, self).has_change_permission(request, obj)
+
+    # TODO - limit access to list for specific user group?? like CBU
+    def get_queryset(self, request):
+        return ProjectPlan.objects.all()
+        # if request.user.is_superuser:
+        #     return ProjectPlan.objects.all()
+        
+        # try:
+        #     return ProjectPlan.objects.filter(pm = request.user.profile)
+        # except:
+        #     return ProjectPlan.objects.none()        
+
+    # list with default filter
+    def changelist_view(self, request, extra_context=None):
+        if len(request.GET) == 0:
+            get_param = "version_filter=10-Initial"
+            return redirect("{url}?{get_parms}".format(url=request.path, get_parms=get_param))
+        return super(ProjectPlanAdmin, self).changelist_view(request, extra_context=extra_context)
 
 
 # ===================================================================================================
@@ -353,16 +389,16 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     # 'get_form' is working 
     def get_form(self, request, obj=None, change=False, **kwargs):
         form = super().get_form(request, obj, change, **kwargs)
-
-        form.base_fields['description'].widget.attrs.update({'rows':5,'cols':80})
-        form.base_fields['objective'].widget.attrs.update({'rows':5,'cols':80})
-        form.base_fields['ref_plan'].widget.attrs['style'] = 'width: 550px'
-        if  obj:    #change
-            form.base_fields['resolution'].widget.attrs.update({'rows':5,'cols':40})
-            form.base_fields['recipients_to'].widget.attrs.update({'rows':6,'cols':800})
-            # form.base_fields['recipients_cc'].widget.attrs.update({'rows':5,'cols':120})      #not yet implemented
-            form.base_fields["recipients_to"].help_text = 'Use semi-colon to add multiple. Example: "Johnny Test" <johnny@test.com>; Jack <another@test.com>; "Scott Summers" <scotts@test.com>; noname@test.com'
-            # form.base_fields["is_agile"].help_text = 'Mark if the project requires multiple launches'
+        if form.base_field:
+            form.base_fields['description'].widget.attrs.update({'rows':5,'cols':80})
+            form.base_fields['objective'].widget.attrs.update({'rows':5,'cols':80})
+            form.base_fields['ref_plan'].widget.attrs['style'] = 'width: 550px'
+            if  obj:    #change
+                form.base_fields['resolution'].widget.attrs.update({'rows':5,'cols':40})
+                form.base_fields['recipients_to'].widget.attrs.update({'rows':6,'cols':800})
+                # form.base_fields['recipients_cc'].widget.attrs.update({'rows':5,'cols':120})      #not yet implemented
+                form.base_fields["recipients_to"].help_text = 'Use semi-colon to add multiple. Example: "Johnny Test" <johnny@test.com>; Jack <another@test.com>; "Scott Summers" <scotts@test.com>; noname@test.com'
+                # form.base_fields["is_agile"].help_text = 'Mark if the project requires multiple launches'
         return form
 
     def formatted_created_at(self, obj):
@@ -477,4 +513,11 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
 
     
 # https://adriennedomingus.medium.com/adding-custom-views-or-templates-to-django-admin-740640cc6d42
+
+    # default filter to exclude closed ticket
+    def changelist_view(self, request, extra_context=None):
+        if len(request.GET) == 0:
+            get_param = "state_filter=30-on_hold%2C20-doing%2C10-to-do%2C00-backlog"
+            return redirect("{url}?{get_parms}".format(url=request.path, get_parms=get_param))
+        return super(ProjectAdmin, self).changelist_view(request, extra_context=extra_context)
 

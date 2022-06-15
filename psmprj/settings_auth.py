@@ -4,31 +4,45 @@ from . import env
 import ldap
 from django_auth_ldap.config import LDAPSearch
 
+
 AUTH_LDAP_SERVER_URI = env('AUTH_LDAP_SERVER_URI', "ldap://ldap.example.com")
 AUTH_LDAP_BIND_DN = env('AUTH_LDAP_BIND_DN', "cn=admin,dc=example,dc=com")
 AUTH_LDAP_BIND_PASSWORD = env('AUTH_LDAP_BIND_PASSWORD', "test@1234")
+
 AUTH_LDAP_STRING = env('AUTH_LDAP_STRING', "OU=,DC=,DC=" )
+
 AUTH_LDAP_USER_SEARCH = LDAPSearch(
-            AUTH_LDAP_STRING, ldap.SCOPE_SUBTREE, "sAMAccountName=%(user)s"
-            )
+    AUTH_LDAP_STRING, 
+    ldap.SCOPE_SUBTREE, 
+    "sAMAccountName=%(user)s"
+    )
 AUTH_LDAP_USER_ATTR_MAP = {
-            "username": "sAMAccountName",
-                "first_name": "givenName",
-                    "last_name": "sn",
-                        "email": "mail",
+    "username": "sAMAccountName",
+    "first_name": "givenName",
+    "last_name": "sn",
+    "email": "mail",
 }
-AUTH_LDAP_CONNECTION_OPTIONS = {
-    ldap.OPT_REFERRALS: 0
+
+# https://stackoverflow.com/questions/43980247/django-auth-ldap-default-values-for-newly-created-user
+AUTH_LDAP_GROUP_TYPE = ActiveDirectoryGroupType()
+AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
+    AUTH_LDAP_STRING,
+    ldap.SCOPE_SUBTREE,
+    '(objectClass=group)'
+)
+AUTH_LDAP_GROUP_STAFF = env('AUTH_LDAP_GROUP_STAFF', "cn=groupname,OU=Groups,OU=example,DCcom")
+
+from django_auth_ldap.config import ActiveDirectoryGroupType
+AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
+            "dc=hke,dc=local", ldap.SCOPE_SUBTREE, "(objectCategory=Group)"
+            )
+AUTH_LDAP_GROUP_TYPE = ActiveDirectoryGroupType(name_attr="cn")
+AUTH_LDAP_USER_FLAGS_BY_GROUP = {
+    "is_staff": AUTH_LDAP_GROUP_STAFF
+    # "is_staff": "cn=staff,ou=django,ou=groups,dc=example,dc=com",
 }
-# from django_auth_ldap.config import ActiveDirectoryGroupType
-# AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
-#             "dc=tech,dc=local", ldap.SCOPE_SUBTREE, "(objectCategory=Group)"
-#             )
-# AUTH_LDAP_GROUP_TYPE = ActiveDirectoryGroupType(name_attr="cn")
-# AUTH_LDAP_USER_FLAGS_BY_GROUP = {
-#             "is_superuser": "CN=django-admins,CN=Users,DC=TECH,DC=LOCAL",
-#             "is_staff": "CN=django-admins,CN=Users,DC=TECH,DC=LOCAL",
-#             }
+
+
 AUTH_LDAP_FIND_GROUP_PERMS = False
 AUTH_LDAP_CACHE_GROUPS = False
 AUTH_LDAP_GROUP_CACHE_TIMEOUT = 1  # 1 hour cache

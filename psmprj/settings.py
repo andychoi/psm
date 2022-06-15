@@ -53,7 +53,7 @@ INSTALLED_APPS = [
 
     # 'multi_email_field',  #not compatible with django 4.x
     'django_object_actions', 
-
+    
     "django.contrib.postgres",  # new for fulltext search
 
     'django.contrib.admin',

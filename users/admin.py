@@ -156,14 +156,14 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
                         if new_user:
                             obj.user = new_user
                             obj.save(update_fields=['user'])    
-                            messages.add_message(request, messages.INFO, obj.user + ' is created to user as username: ' + obj.user.username)
+                            messages.add_message(request, messages.INFO, '%s is created to user as username: %s' % (obj.name, obj.user.username))
                     #email as username, if not username from profile
                     elif obj.email:
                         new_user = User.objects.create_user( username=obj.email, password='init1234', email=obj.email )
                         if new_user:
                             obj.user = new_user
                             obj.save(update_fields=['user'])    
-                            messages.add_message(request, messages.INFO, obj.user + ' is created to user as username: ' + obj.user.username)
+                            messages.add_message(request, messages.INFO, '%s is created to user as username: %s ' % (obj.name, obj.user.username))
                     else:
                         # causing duplicate key... signal User -> Profile (different username) -> don't create
                         # username = obj.username.lower().replace(" ", "").replace(",",".")
@@ -175,9 +175,9 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
                         if found:
                             obj.user = found
                             obj.save(update_fields=['user'])    
-                            messages.add_message(request, messages.INFO, obj.name + ' found in user, linked now')
+                            messages.add_message(request, messages.INFO, '%s found in user, linked now' % obj.name)
                         else:
-                            messages.add_message(request, messages.INFO, obj.name + ' not found in user, cannot create user without email')
+                            messages.add_message(request, messages.INFO, '%s not found in user, cannot create user without email' % obj.name)
 
     # permission check; 
     # def has_change_permission(self, request, obj=None):

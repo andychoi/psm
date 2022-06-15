@@ -24,23 +24,24 @@ AUTH_LDAP_USER_ATTR_MAP = {
 }
 
 # https://stackoverflow.com/questions/43980247/django-auth-ldap-default-values-for-newly-created-user
-AUTH_LDAP_GROUP_TYPE = ActiveDirectoryGroupType()
-AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
-    AUTH_LDAP_STRING,
-    ldap.SCOPE_SUBTREE,
-    '(objectClass=group)'
-)
-AUTH_LDAP_GROUP_STAFF = env('AUTH_LDAP_GROUP_STAFF', "cn=groupname,OU=Groups,OU=example,DCcom")
+#FIXME TODO
+# AUTH_LDAP_GROUP_TYPE = ActiveDirectoryGroupType()
+# AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
+#     AUTH_LDAP_STRING,
+#     ldap.SCOPE_SUBTREE,
+#     '(objectClass=group)'
+# )
+# AUTH_LDAP_GROUP_STAFF = env('AUTH_LDAP_GROUP_STAFF', "cn=groupname,OU=Groups,OU=example,DCcom")
 
-from django_auth_ldap.config import ActiveDirectoryGroupType
-AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
-            "dc=hke,dc=local", ldap.SCOPE_SUBTREE, "(objectCategory=Group)"
-            )
-AUTH_LDAP_GROUP_TYPE = ActiveDirectoryGroupType(name_attr="cn")
-AUTH_LDAP_USER_FLAGS_BY_GROUP = {
-    "is_staff": AUTH_LDAP_GROUP_STAFF
-    # "is_staff": "cn=staff,ou=django,ou=groups,dc=example,dc=com",
-}
+# from django_auth_ldap.config import ActiveDirectoryGroupType
+# AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
+#             "dc=hke,dc=local", ldap.SCOPE_SUBTREE, "(objectCategory=Group)"
+#             )
+# AUTH_LDAP_GROUP_TYPE = ActiveDirectoryGroupType(name_attr="cn")
+# AUTH_LDAP_USER_FLAGS_BY_GROUP = {
+#     "is_staff": AUTH_LDAP_GROUP_STAFF
+#     # "is_staff": "cn=staff,ou=django,ou=groups,dc=example,dc=com",
+# }
 
 
 AUTH_LDAP_FIND_GROUP_PERMS = False

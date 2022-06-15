@@ -14,8 +14,8 @@ from django.utils.html import mark_safe
 # Register your models here.
 from .models import Review, ReviewLog
 from psm.models import Project, STATE3, State3
-from common.models import ReviewTypes, REVIEWTYPES
-
+from common.models import CBU, ReqTypes, REQTYPES
+from users.models import Profile
 # permission https://django-guardian.readthedocs.io/en/stable/userguide/admin-integration.html
 # TODO
 # from guardian.admin import GuardedModelAdmin
@@ -24,6 +24,22 @@ from common.models import ReviewTypes, REVIEWTYPES
 # from django.contrib.auth.models import Permission
 # admin.site.register(Permission)
 
+from import_export import resources, fields
+from import_export.widgets import ManyToManyWidget, ForeignKeyWidget
+
+class ReviewResource(resources.ModelResource):
+    pm_name     = fields.Field(attribute='pm',     widget=ForeignKeyWidget(Profile, 'name'))
+    cbu_names       = fields.Field(attribute='CBUs',    widget=ManyToManyWidget(model=CBU, separator=',', field='name'), )
+
+    class Meta:
+        model = Review
+        fields = ('id', 'title', 'status', 'priority', 'reqtype', 
+            'project__code', 'project__title', 'project__phase', 'project__state', 'pm_name', 'project__dept__name', 'project__team__name',
+            'cbu_names',
+            'project__p_ideation','project__p_plan_b','project__p_kickoff',
+        )
+        export_order = fields
+
 
 class ReviewInline(admin.TabularInline):
     model = ReviewLog
@@ -31,13 +47,15 @@ class ReviewInline(admin.TabularInline):
     # class Media:
         # css = {"all": ("psm/css/custom_admin.css",)}
 
-
 #change base class admin.ModelAdmin into GuardedModelAdmin for object level perms.
 
 @admin.register(Review)
 class ReviewAdmin(ImportExportMixin, admin.ModelAdmin):
+    resource_class = ReviewResource
 
-    list_display = ('formatted_rtype', 'project_link', 'title', 'proc_start',  'priority', 'is_escalated', 'dept', 'state', 'status', 'formatted_updated',)
+    def project_dept(self, obj):
+        return obj.project.dept
+    list_display = ('formatted_rtype', 'project_link', 'title', 'proc_start',  'priority', 'is_escalated', 'project_dept', 'state', 'status', 'formatted_updated',)
     list_display_links = ('title', 'formatted_updated')
     ordering = ('-id',)
     readonly_fields = ('created_on', 'created_by', 'updated_on', 'updated_by')
@@ -46,26 +64,26 @@ class ReviewAdmin(ImportExportMixin, admin.ModelAdmin):
     list_editable = ("status", "is_escalated", "state")
     autocomplete_fields = ('reviewer', 'project')
     fieldsets = (               # Edition form
-                (None, {'fields':   (('project', 'title', 'reviewtype', ),('req_content',), ('proc_start', 'onboaddt', 'state', ), ('status', 'is_escalated', 'priority'), ( 'res_content','reviewer',),  ('attachment'),  
+                (None, {'fields':   (('project',),  ('title', 'reqtype', ),('req_content',), ('proc_start', 'onboaddt', 'state', ), ('status', 'is_escalated', 'priority'), ( 'res_content','reviewer',),   
                             ), "classes": ("stack_labels",)}),
-                (_('More...'), {'fields': (('dept'), ('created_on', 'created_by'), ('updated_on', 'updated_by')), 'classes': ('collapse',)}),
+                (_('More...'), {'fields': (('project__dept'), ('created_on', 'created_by'), ('updated_on', 'updated_by')), 'classes': ('collapse',)}),
     )
 
     def get_fieldsets(self, request, obj=None):
         fieldsets = super().get_fieldsets(request, obj)
         if obj is None:
             fieldsets = (      # Creation form
-                (None, {'fields':  (('project', 'title', 'reviewtype'), ('req_content',), ('proc_start', 'onboaddt', 'state', ), ('status', 'is_escalated', 'priority'), ('res_content','reviewer', ),  ('attachment'), 
+                (None, {'fields':  (('project',), ('title', 'reqtype'), ('req_content',), ('proc_start', 'onboaddt', 'state', ), ('status', 'is_escalated', 'priority'), ('res_content','reviewer', ), 
                             ), "classes": ("stack_labels",)}),
             )
         return fieldsets
 
     list_filter = (
-        ('reviewtype', DropdownFilter),
+        ('reqtype', DropdownFilter),
         ('priority', DropdownFilter),
         # ('CBUs', RelatedDropdownFilter),
-        ('dept__div', RelatedDropdownFilter),
-        ('dept', RelatedDropdownFilter),
+        ('project__dept__div', RelatedDropdownFilter),
+        ('project__dept', RelatedDropdownFilter),
         ('status', DropdownFilter),
         'updated_on',
     )
@@ -79,7 +97,7 @@ class ReviewAdmin(ImportExportMixin, admin.ModelAdmin):
     project_link.short_description = 'Project'
 
     def formatted_rtype(self, obj):
-        return obj.reviewtype[3:]
+        return obj.reqtype[3:]
     formatted_rtype.short_description = 'Review Type'
 
     def formatted_updated(self, obj):
@@ -88,24 +106,16 @@ class ReviewAdmin(ImportExportMixin, admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         #permission check per request type.... need better way
-        # breakpoint()
-        if (obj.reviewtype == ReviewTypes.PRO.value and not request.user.has_perm(ReviewTypes.PRO.value, obj)) or (obj.reviewtype == ReviewTypes.SEC.value and not request.user.has_perm(ReviewTypes.SEC.value, obj)) or (obj.reviewtype == ReviewTypes.INF.value and not request.user.has_perm(ReviewTypes.INF.value, obj)) or (obj.reviewtype == ReviewTypes.APP.value and not request.user.has_perm(ReviewTypes.APP.value, obj)) or (obj.reviewtype == ReviewTypes.MGT.value and not request.user.has_perm(ReviewTypes.MGT.value, obj)):
-            messages.set_level(request, messages.ERROR)
-            messages.error(request, "You don't have permission on " + obj.reviewtype)
-            return
+        # if (obj.reqtype == ReqTypes.PRO.value and not request.user.has_perm(ReqTypes.PRO.value, obj)) or (obj.reqtype == ReqTypes.SEC.value and not request.user.has_perm(ReqTypes.SEC.value, obj)) or (obj.reqtype == ReqTypes.INF.value and not request.user.has_perm(ReqTypes.INF.value, obj)) or (obj.reqtype == ReqTypes.APP.value and not request.user.has_perm(ReqTypes.APP.value, obj)) or (obj.reqtype == ReqTypes.MGT.value and not request.user.has_perm(ReqTypes.MGT.value, obj)):
+        #     messages.set_level(request, messages.ERROR)
+        #     messages.error(request, "You don't have permission on " + obj.reqtype)
+        #     return
 
         if change is False:
             obj.created_by = request.user
             obj.updated_by = request.user
         else:
             obj.updated_by = request.user
-
-        # if not obj.CBU and not obj.project.CBU:  #copy from project
-        #     obj.CBU = obj.project.CBU
-        # if not obj.div and not obj.project.div:  #copy from project
-        #     obj.div = obj.project.div
-        # if not obj.dept and obj.project.dept:  #copy from project
-        #     obj.dept = obj.project.dept
 
         super().save_model(request, obj, form, change)
 
@@ -116,18 +126,19 @@ class ReviewAdmin(ImportExportMixin, admin.ModelAdmin):
         is_superuser = request.user.is_superuser
         #request.user.extenduser.<field name>
         
+        # if hasattr(form, 'base_fields'):
         if form.base_fields:    #if not read only mode
             form.base_fields['req_content'].widget.attrs.update({'rows':3,'cols':40})
             form.base_fields['res_content'].widget.attrs.update({'rows':5,'cols':40})
-            form.base_fields['reviewtype'].disabled = True 
+            form.base_fields['reqtype'].disabled = True 
 
             # when creating or updating by non-reviewer (except superuser)
             conditions = ( ( obj is None ) 
-                or ( request.user.profile.is_pro_reviewer and obj.reviewtype == ReviewTypes.PRO.value ) 
-                or ( request.user.profile.is_sec_reviewer and obj.reviewtype == ReviewTypes.SEC.value ) 
-                or ( request.user.profile.is_inf_reviewer and obj.reviewtype == ReviewTypes.INF.value ) 
-                or ( request.user.profile.is_app_reviewer and obj.reviewtype == ReviewTypes.APP.value ) 
-                or ( request.user.profile.is_mgt_reviewer and obj.reviewtype == ReviewTypes.MGT.value ) )
+                or ( request.user.profile.is_pro_reviewer and obj.reqtype == ReqTypes.PRO.value ) )
+                # or ( request.user.profile.is_sec_reviewer and obj.reqtype == ReqTypes.SEC.value ) 
+                # or ( request.user.profile.is_inf_reviewer and obj.reqtype == ReqTypes.INF.value ) 
+                # or ( request.user.profile.is_app_reviewer and obj.reqtype == ReqTypes.APP.value ) 
+                # or ( request.user.profile.is_mgt_reviewer and obj.reqtype == ReqTypes.MGT.value ) )
             if conditions and (not is_superuser):
                 # allow only reviewer to allow updating
                 form.base_fields['status'].disabled = True 
@@ -136,25 +147,18 @@ class ReviewAdmin(ImportExportMixin, admin.ModelAdmin):
                 form.base_fields['reviewer'].disabled = True 
                 form.base_fields['res_content'].disabled = True 
 
+            form.base_fields['project'     ].widget.attrs['style'] = 'width: 40em;'
         return form
 
     # def has_add_permission(self, request):
     #     return True
-    def has_change_permission(self, request, obj=None):
-        if (request.user.is_superuser):
-            return True 
-        if obj: 
-            if request.user.profile.is_pro_reviewer and obj.reviewtype == ReviewTypes.PRO.value:
-                return True
-            elif request.user.profile.is_sec_reviewer and obj.reviewtype == ReviewTypes.SEC.value:
-                return True
-            elif request.user.profile.is_inf_reviewer and obj.reviewtype == ReviewTypes.INF.value:
-                return True
-            elif request.user.profile.is_app_reviewer and obj.reviewtype == ReviewTypes.APP.value:
-                return True
-            elif request.user.profile.is_mgt_reviewer and obj.reviewtype == ReviewTypes.MGT.value:
-                return True
-        return False
+    # def has_change_permission(self, request, obj=None):
+    #     if (request.user.is_superuser):
+    #         return True 
+    #     if obj.pk:  #change 
+    #         if request.user.profile.is_pro_reviewer and obj.reqtype == ReqTypes.PRO.value:
+    #             return True
+    #     return super(ReviewAdmin, self).has_change_permission(request, obj)
 
     # def has_delete_permission(self, request, obj=None):
     #     return True

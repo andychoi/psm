@@ -20,3 +20,5 @@ en_formats.DATETIME_FORMAT = 'm/d/y g:i a'
 en_formats.DATE_FORMAT = 'Y-m-d'
 
 # USE_THOUSAND_SEPARATOR = True
+
+DOMAIN = env('DOMAIN', 'abc.local')

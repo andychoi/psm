@@ -9,6 +9,8 @@ from django.forms import Textarea
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from import_export.admin import ImportExportMixin
+from import_export import resources, fields
+from import_export.widgets import ManyToManyWidget, ForeignKeyWidget
 
 from adminfilters.multiselect import UnionFieldListFilter
 from django.contrib.admin import FieldListFilter
@@ -19,7 +21,7 @@ from django.utils.html import format_html
 from django.utils.html import mark_safe
 from psmprj.utils.dates import previous_working_day
 
-from common.models import State3, ReviewTypes, Versions, CBU
+from common.models import State3, ReqTypes, Versions, CBU
 from .models import Project, ProjectPlan,  ProjectDeliverable, ProjectDeliverableType, Strategy, Program
 from reviews.models import  Review
 from django.contrib.admin import AdminSite
@@ -33,6 +35,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ngettext
 from django.shortcuts import redirect
 
+from users.models import Profile
 
 # README issue with import/export https://github.com/crccheck/django-object-actions/issues/67
 from django_object_actions import DjangoObjectActions
@@ -102,9 +105,29 @@ class ProjectDeliverableInline(admin.TabularInline):
     class Media:
         css = {"all": ("psm/css/custom_admin.css",)}
 
+
+# ----------------------------------------------------------------------------------------------------------------
+class ProjectPlanResource(resources.ModelResource):
+    pm_name     = fields.Field(attribute='pm',     widget=ForeignKeyWidget(Profile, 'name'))
+    cbupm_name  = fields.Field(attribute='CBUpm',  widget=ForeignKeyWidget(Profile, 'name'))
+    cbu_names       = fields.Field(attribute='CBUs',    widget=ManyToManyWidget(model=CBU, separator=',', field='name'), )
+    strategy_names  = fields.Field(attribute='strategy',widget=ManyToManyWidget(model=Strategy, separator=',', field='name'), )
+    class Meta:
+        model = ProjectPlan
+        fields = ( 'id', 'year', 'version', 'code', 'title', 'asis', 'tobe', 'objective', 'consider', 'quali', 'quant',
+            # 'pm', 'pm__name',  
+            # 'CBUpm', 'CBUpm__name',  
+            # 'CBUs', 'cbu_names', 
+            'pm_name', 'cbupm_name', 'cbu_names',  
+            'strategy_names', 'program', 
+            'est_cost', 'resource', 'type', 'priority', 'dept', 'dept__name', 'dept__div', 'dept__div__name',  
+            'p_ideation','p_plan_b','p_kickoff','p_design_b','p_dev_b','p_uat_b','p_launch','p_close',
+        )
+        export_order = fields
 # ----------------------------------------------------------------------------------------------------------------
 @admin.register(ProjectPlan)
 class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
+    resource_class = ProjectPlanResource
     class Meta:
         import_id_fields = ('id',)
         exclude = ()
@@ -291,8 +314,23 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
 #     list_display = ('id', 'proxy_name', 'year', 'version', 'code', 'title', 'ref_plan') 
 #     list_display_links = ('title',)
 
+# ----------------------------------------------------------------------------------------------------------------
+class ProjectResource(resources.ModelResource):
+    cbu_names=fields.Field(attribute='CBUs', widget=ManyToManyWidget(model=CBU, separator=',', field='name'), )
+    class Meta:
+        model = Project
+        fields = ( 'id', 'year', 'code', 'title', 'description', 'objective', 'phase', 'state', 'progress', 'ref_plan__code',
+            'pm', 'pm__name',  'CBUs', 'cbu_names', 'strategy', 'strategy__name', 'program', 'program__name','type', 'priority', 
+            'est_cost', 'app_budg', 'dept', 'dept__name', 'dept__div', 'dept__div__name', 
+            'p_ideation','p_plan_b','p_kickoff','p_design_b','p_dev_b','p_uat_b','p_launch','p_close',
+            'a_plan_b','a_kickoff','a_design_b','a_dev_b','a_uat_b','a_launch','a_close',
+            'wbs__wbs', 'es', 'ref', 'cbu_req','cbu_sow','cbu_po', 'status_o', 'status_t', 'status_b', 'status_s', 
+        )
+        export_order = fields
+# ----------------------------------------------------------------------------------------------------------------
 @admin.register(Project)
 class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
+    resource_class = ProjectResource
     class Meta:
         import_id_fields = ('id',)
         exclude = ()
@@ -315,7 +353,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         ('dept__div', RelatedDropdownFilter), #FIXME dept__div not working
         # ('program', RelatedDropdownFilter),
         ('priority', UnionFieldListFilter),
-        ('req_pro', DropdownFilter),
+        # ('req_pro', DropdownFilter),
         ('is_internal', DropdownFilter),
         # ('req_sec', DropdownFilter),
         # ('req_sec', DropdownFilter),
@@ -339,7 +377,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
                                         ('cbu_req','cbu_sow','cbu_po',),
                                        ), 'classes': ('collapse',)}),
         (_('Communication...'),  {'fields': (('email_active'), ('recipients_to',), ), 'classes': ('collapse',)}),
-        (_('More...'), {'fields': ( ('created_at', 'updated_on'), 'created_by', ('attachment'), ('req_pro',), ), 'classes': ('collapse',)}),
+        (_('More...'), {'fields': ( ('created_at', 'updated_on'), 'created_by', ('attachment'), ), 'classes': ('collapse',)}),
         # (None, {'fields': (('link',),) }) 'req_sec','req_inf'
     )
 
@@ -433,54 +471,14 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
 
     # (not called from admin-import-export)
     def save_model(self, request, obj, form, change):
-        from psmprj.utils.mail import combine_to_addresses
         if change is False:  #when create
             obj.created_by = request.user
 
-            # if not obj.code: #not migration 
-            #     obj.code = f'{obj.year % 100}-{"{:04d}".format(obj.pk+1000)}'
-        # else:
-            # if (obj.recipients_to):
-            #     obj.recipients_to = combine_to_addresses( obj.emails_to )   #comma separated... problem
-
+            if not obj.code: #not migration 
+                obj.code = f'{obj.year % 100}-{"{:04d}".format(obj.pk+2000)}'
+        
         super().save_model(request, obj, form, change)
 
-        review_create = False
-        new_reviews = []
-        if change is False:  #when create
-            if obj.req_pro == State3.YES.value:
-                new_reviews.append(ReviewTypes.PRO.value)
-            if obj.req_sec == State3.YES.value:
-                new_reviews.append(ReviewTypes.SEC.value)
-            if obj.req_inf == State3.YES.value:
-                new_reviews.append(ReviewTypes.INF.value)
-
-        else:   #when update      
-            upd_reviews = []
-            if obj._loaded_values['req_pro'] != obj.req_pro:  #when changed state only
-                upd_reviews.append((ReviewTypes.PRO.value, obj.req_pro))
-            if obj._loaded_values['req_sec'] != obj.req_sec:
-                upd_reviews.append((ReviewTypes.SEC.value, obj.req_sec))
-            if obj._loaded_values['req_inf'] != obj.req_inf:
-                upd_reviews.append((ReviewTypes.INF.value, obj.req_inf))
-
-            for upd in upd_reviews:
-                # read review record
-                theproc = Review.objects.filter(Q(project = obj.id) & Q(reviewtype = upd[0]))      #[:1].get()
-                if theproc: #already exist
-                    update_dic = { 'project' : obj, 'dept' : obj.dept, 'state' : upd[1] }  #FIXME many to many 'CBUs' : obj.CBUs, 
-                    theproc.update(**update_dic)
-                    messages.add_message(request, messages.INFO, '[' + upd[0][3:] + '] review type records are updated.')
-
-                elif upd[1] == State3.YES.value: #not exist and when target is YES only
-                    new_reviews.append(upd[0]) 
-
-        if new_reviews:
-            # breakpoint() CBUs = obj.CBUs,
-            for new in new_reviews:
-                Review.objects.create(reviewtype = new, project = obj,  dept = obj.dept, onboaddt = obj.p_kickoff,  
-                                      state = obj.req_pro, priority = obj.priority, title = obj.title)
-                messages.add_message(request, messages.INFO, '[' + new[3:] + '] review type - New review request is created' )
 
     # def get_queryset(self, request):
     #     return super(ProjectAdmin, self).get_queryset(request)

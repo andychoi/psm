@@ -32,7 +32,7 @@ from common.models import Div, Dept, CBU
 from common.utils import PHASE, PRIORITIES, PRJTYPE, VERSIONS
 from .models import Project, Program, ProjectPlan
 from .tables import ProjectPlanTable
-from .forms import ProjectPlanForm
+# from .forms import ProjectPlanForm
 
 
 # from django_tables2 import SingleTableView, SingleTableMixin
@@ -266,26 +266,27 @@ class projectCreateView(PermissionRequiredMixin, generic.CreateView):
 #     # fields = ['title', 'description'] 
 
 #https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Forms
-@login_required
-@permission_required('psm.change_project', raise_exception=True)
-def project_update(request, id):
-    project = Project.objects.get(id=id)
+# TODO for customer to submit project request
+# @login_required
+# @permission_required('psm.change_project', raise_exception=True)
+# def project_update(request, id):
+#     project = Project.objects.get(id=id)
 
-    if request.method == 'POST':
-        form = ProjectPlanForm(instance=project)  # prepopulate the form with an existing project
-        print(form.errors)
-        if form.is_valid():
-            # update the existing `project` in the database
-            form.save()
-	    # redirect to the detail page of the `project` we just updated
-            return redirect('project_detail', pk=project.id)
-        else:
-            form = ProjectPlanForm(instance=project)
+#     if request.method == 'POST':
+#         form = ProjectPlanForm(instance=project)  # prepopulate the form with an existing project
+#         print(form.errors)
+#         if form.is_valid():
+#             # update the existing `project` in the database
+#             form.save()
+# 	    # redirect to the detail page of the `project` we just updated
+#             return redirect('project_detail', pk=project.id)
+#         else:
+#             form = ProjectPlanForm(instance=project)
     
-    context = {
-	"form":form
-    }
-    return render(request, "project/project_update.html", context)
+#     context = {
+# 	"form":form
+#     }
+#     return render(request, "project/project_update.html", context)
     
 
 class projectPlanListView(PermissionRequiredMixin, generic.ListView):

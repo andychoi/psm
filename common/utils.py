@@ -29,8 +29,8 @@ DECISIONS = (
     (Decision.DUPL.value,     _('Duplicate'))
 )
 # this way is possible... no translation
-            # (ReviewTypes.PRO.value, 'ReviewType - ' + ReviewTypes.PRO.value[3:]),
-            # (ReviewTypes.SEC.value, 'ReviewType - ' + ReviewTypes.SEC.value[3:]),
+            # (ReqTypes.PRO.value, 'ReqType - ' + ReqTypes.PRO.value[3:]),
+            # (ReqTypes.SEC.value, 'ReqType - ' + ReqTypes.SEC.value[3:]),
 
 class State(enum.Enum):
     """
@@ -132,18 +132,18 @@ STATE3 = (
     (State3.NO.value, _('No')),
 )
 
-class ReviewTypes(enum.Enum):
+class ReqTypes(enum.Enum):
     PRO = '10-Procurement'
     SEC = '20-Security'
     INF = '30-Infra-Architecture'
     APP = '40-App-Architecture'
     MGT = '90-Management'
-REVIEWTYPES = (
-    (ReviewTypes.PRO.value, _('10-Procurement')),
-    (ReviewTypes.SEC.value, _('20-Security')),
-    (ReviewTypes.INF.value, _('30-Infrastructure')),
-    (ReviewTypes.APP.value, _('40-App_Architect')),
-    (ReviewTypes.MGT.value, _('90-Management'))
+REQTYPES = (
+    (ReqTypes.PRO.value, _('10-Procurement')),
+    (ReqTypes.SEC.value, _('20-Security')),
+    (ReqTypes.INF.value, _('30-Infrastructure')),
+    (ReqTypes.APP.value, _('40-App_Architect')),
+    (ReqTypes.MGT.value, _('90-Management'))
 )
 
 class Versions(enum.Enum):

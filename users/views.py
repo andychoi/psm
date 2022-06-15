@@ -3,6 +3,9 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from .models import Profile
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.contrib.auth.models import Group
 
 def register(request):
     if request.method == 'POST':
@@ -14,11 +17,18 @@ def register(request):
 
             #https://stackoverflow.com/questions/3063935/django-how-to-make-one-form-from-multiple-models-containing-foreignkeys
             p = p_form.save(commit=False)
-            p.user = u
+            # p.user = u    -> it is created by signals
             p.save()
 
+
+            # if user belongs to internal company, then assign staff role automatically
+            if u.email[u.email.index('@') + 1 : ] == settings.DOMAIN:
+                User.objects.filter(id=u.id).update(is_staff=True)
+                user_group = Group.objects.get(name='staff')
+                u.groups.add(user_group) 
+
             messages.success(
-                request, "Your account has been created with %s!. You are now able to login." % username)
+                request, "Your account has been created with %s!. You are now able to login." % u.username)
             return redirect('login')
     else:
         form = UserRegisterForm()

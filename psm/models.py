@@ -109,18 +109,9 @@ class Project(models.Model):
     # div = models.ForeignKey(Div, blank=True, null=True, on_delete=models.PROTECT)
 
     description = models.TextField(_("description"), max_length=2000, null=True, blank=True)
+    objective   = models.TextField(_("Objectives"),  max_length=2000, null=True, blank=True)
 
     ref_plan    = models.ForeignKey("ProjectPlan", on_delete=models.SET_NULL, null=True, blank=True)
-    version     = models.CharField(max_length=20, choices=VERSIONS, null=True, blank=True)
-    asis        = models.TextField(_("As-Is"), max_length=2000, null=True, blank=True)
-    tobe        = models.TextField(_("To-Be"), max_length=2000, null=True, blank=True)
-    objective   = models.TextField(_("Objective"), max_length=2000, null=True, blank=True)
-    consider    = models.TextField(_("Consideration"), max_length=1000, null=True, blank=True)
-    quali       = models.TextField(_("Qualitative benefit"), max_length=1000, null=True, blank=True)
-    quant       = models.TextField(_("Quantitative benefit"), max_length=1000, null=True, blank=True)
-    resource    = models.TextField(_("Resources"), max_length=500, null=True, blank=True)
-    img_asis    = models.ImageField(_("As-Is Image"), upload_to='project/%Y', null=True, blank=True)  #default='default.jpg', 
-    img_tobe    = models.ImageField(_("To-Be Image"), upload_to='project/%Y', null=True, blank=True)  #default='default.jpg', 
 
     status_o = models.CharField(_("status overall"), max_length=20, choices=STATUS, default=Status.GREEN.value)
     status_t = models.CharField(_("status schedule"), max_length=20, choices=STATUS, default=Status.GREEN.value)
@@ -144,17 +135,17 @@ class Project(models.Model):
 
     p_ideation   = models.DateField(_("Planned Ideation start"), null=True, blank=True, default=date.today)
 
-    p_plan_b = models.DateField(_("planned planning start"), null=True, blank=False, default=date.today)
-    p_plan_e = models.DateField(_("planned planning end"), null=True, blank=True)
+    p_plan_b =  models.DateField(_("planned planning start"), null=True, blank=False, default=date.today)
+    p_plan_e =  models.DateField(_("planned planning end"), null=True, blank=True)
     p_kickoff = models.DateField(_("planned kick-off date"), null=True, blank=False, default=date.today)
     p_design_b = models.DateField(_("planned design start"), null=True, blank=True)
     p_design_e = models.DateField(_("planned design end"), null=True, blank=True)
-    p_dev_b = models.DateField(_("planned develop start"), null=True, blank=True)
-    p_dev_e = models.DateField(_("planned develop end"), null=True, blank=True)
-    p_uat_b = models.DateField(_("planned UAT start"), null=True, blank=True)
-    p_uat_e = models.DateField(_("planned UAT end"), null=True, blank=True)
-    p_launch = models.DateField(_("planned launch"), null=True, blank=False, default=date.today)
-    p_close = models.DateField(_("planned closing"), null=True, blank=False, default=date.today)
+    p_dev_b =   models.DateField(_("planned develop start"), null=True, blank=True)
+    p_dev_e =   models.DateField(_("planned develop end"), null=True, blank=True)
+    p_uat_b =   models.DateField(_("planned UAT start"), null=True, blank=True)
+    p_uat_e =   models.DateField(_("planned UAT end"), null=True, blank=True)
+    p_launch =  models.DateField(_("planned launch"), null=True, blank=False, default=date.today)
+    p_close =   models.DateField(_("planned closing"), null=True, blank=False, default=date.today)
 
     cbu_req    = models.BooleanField(_("CBU ITSC/EAD/..."), default=False)
     cbu_sow     = models.BooleanField(_("SOW signed"), default=False)
@@ -331,7 +322,7 @@ class Project(models.Model):
 # project unplanned request, annual planning : version 10, 11, 12, 20, 21
 # ----------------------------------------------------------------------------------------------------
 class ProjectPlan(models.Model):
-    # code = models.CharField(_("Code"), max_length=18, null=True, blank=True) 
+    code = models.CharField(_("Code"), max_length=18, null=True, blank=True) 
 
     title = models.CharField(_("title"), max_length=200)
     type = models.CharField(_("type"), max_length=20, choices=PRJTYPE, default=PrjType.UNC.value)
@@ -380,7 +371,7 @@ class ProjectPlan(models.Model):
     updated_on = models.DateTimeField(_("updated_on"), auto_now=True,       editable=False)
 
     def __str__(self):
-        return self.title if self.pk is None else "[%s] %s" % (self.pjcode, self.title)            
+        return self.title if self.pk is None else "[%s] %s" % (self.code, self.title)            
 
     class Meta:
         permissions = [ ("approve", "Can approve project plan"),

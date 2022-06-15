@@ -2,8 +2,8 @@ from django.contrib import admin
 from .models import Profile
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from import_export.admin import ImportExportMixin
@@ -31,7 +31,7 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
                             ('dept', 'team'), 
                             ('is_external', 'CBU',), 
                             # ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',),
-                            ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', ),
+                            ('is_pro_reviewer', ),
                             # ('image',), 
                             )}),
         (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by')), 'classes': ('collapse',)}),
@@ -50,7 +50,7 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
                             # ('team','dept', 'u_div'), 
                             ('dept', 'team' ), 
                             ('is_external', 'CBU' ), 
-                            ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', ), 
+                            ('is_pro_reviewer', ), 
                             # ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',), 
                             # ('image',), 
                             ('id_auto') )}),
@@ -179,7 +179,28 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
                         else:
                             messages.add_message(request, messages.INFO, obj.name + ' not found in user, cannot create user without email')
 
+    # permission check; 
+    # def has_change_permission(self, request, obj=None):
+    #     if obj :
+    #         if obj.field == value and not request.user.has_perm('admin'):
+    #             return False    # You do not have access to version 21 (Unplanned approved') 
+    #         return True
+    #     else:
+    #         return super(ProjectPlanAdmin, self).has_change_permission(request, obj)
 
+    # object level permission: https://www.youtube.com/watch?v=2jhQyWeEVHc&ab_channel=VeryAcademy
+    # model level permission:  https://www.youtube.com/watch?v=wlYaUvfXJDc&ab_channel=VeryAcademy
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)        
+        # is_superuser = request.user.is_superuser
+        
+        if form.base_fields and not request.user.has_perm('users.admin_profile'):
+            # when creating or updating by non-reviewer (except superuser)
+            # allow only reviewer to allow updating
+            form.base_fields['is_psmadmin'].disabled = True 
+            form.base_fields['is_pro_reviewer'].disabled = True 
+
+        return form
 
     class Meta:
         model = Profile

@@ -13,7 +13,9 @@ urlpatterns = [
 	# path('project-list2/', views.project_list2, name='project_list2'),
 	
 	re_path(r'^project/(?P<pk>\d+)/$', views.projectDetail.as_view(), name='project_detail'),
-	path('project/<int:id>/update', views.project_update, name='project-update'),
+
+	# TODO for customer to submit project request
+	# path('project/<int:id>/update', views.project_update, name='project-update'),
 	# path('project/<int:id>/delete', views.projectDeleteView.as_view(), name='project-delete'),
 
 	path('projectchart/', views.projectChartView.as_view(), name='project_chart_plan'),

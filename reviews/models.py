@@ -4,8 +4,8 @@ from django.utils.translation import gettext_lazy as _
 from datetime import date
 
 from common.models import CBU, Dept, Div
-from common.utils import STATE3, STATUS, Status, PRIORITIES, Priority, REVIEWTYPES, ReviewTypes, DECISIONS, Decision
-
+from common.utils import STATE3, STATUS, Status, PRIORITIES, Priority, REQTYPES, ReqTypes, DECISIONS, Decision
+from psm.models import Project
 
 # Create your models here.
 # https://stackoverflow.com/questions/241250/single-table-inheritance-in-django
@@ -13,9 +13,9 @@ from common.utils import STATE3, STATUS, Status, PRIORITIES, Priority, REVIEWTYP
 # creating an django model class
 class Review(models.Model):
 
-    reviewtype = models.CharField(_("Review Type"), max_length=40, choices=REVIEWTYPES, default=ReviewTypes.PRO.value, 
-        help_text="User assigned with review type can update review fields")
-    project = models.ForeignKey('psm.Project', on_delete=models.CASCADE, blank=True, null=True)
+    reqtype = models.CharField(_("Review Type"), max_length=40, choices=REQTYPES, default=ReqTypes.PRO.value)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, blank=True, null=True)
+
     title = models.CharField(max_length=200)
 
     # related = models.ManyToManyField( to='common.Dept', related_name='related_depts')
@@ -30,7 +30,7 @@ class Review(models.Model):
     reviewer = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="rev_reviewer", null=True, blank=True, on_delete=models.SET_NULL)
     res_content = models.TextField(_("Review result"), null=True, blank=True)
 
-    attachment=models.FileField(_("attachment"), upload_to='reviews', null=True, blank=True)
+    # attachment=models.FileField(_("attachment"), upload_to='reviews', null=True, blank=True)
 
     # CBUs = models.ForeignKey(CBU, blank=True, null=True, on_delete=models.PROTECT)
     # CBUs  = models.ManyToManyField(CBU, blank=True)
@@ -44,11 +44,11 @@ class Review(models.Model):
     class Meta:
         #https://docs.djangoproject.com/en/2.1/topics/auth/customizing/#custom-permissions
         permissions = [
-            (ReviewTypes.PRO.value, 'ReviewType - ' + ReviewTypes.PRO.value[3:]),
-            (ReviewTypes.SEC.value, 'ReviewType - ' + ReviewTypes.SEC.value[3:]),
-            (ReviewTypes.INF.value, 'ReviewType - ' + ReviewTypes.INF.value[3:]),
-            (ReviewTypes.APP.value, 'ReviewType - ' + ReviewTypes.APP.value[3:]),
-            (ReviewTypes.MGT.value, 'ReviewType - ' + ReviewTypes.MGT.value[3:]),
+            (ReqTypes.PRO.value, 'ReqType - ' + ReqTypes.PRO.value[3:]),
+            # (ReqTypes.SEC.value, 'ReqType - ' + ReqTypes.SEC.value[3:]),
+            # (ReqTypes.INF.value, 'ReqType - ' + ReqTypes.INF.value[3:]),
+            # (ReqTypes.APP.value, 'ReqType - ' + ReqTypes.APP.value[3:]),
+            # (ReqTypes.MGT.value, 'ReqType - ' + ReqTypes.MGT.value[3:]),
         ]        
         ordering = ['-updated_on']
 

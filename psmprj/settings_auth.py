@@ -17,6 +17,9 @@ AUTH_LDAP_USER_ATTR_MAP = {
                     "last_name": "sn",
                         "email": "mail",
 }
+AUTH_LDAP_CONNECTION_OPTIONS = {
+    ldap.OPT_REFERRALS: 0
+}
 # from django_auth_ldap.config import ActiveDirectoryGroupType
 # AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
 #             "dc=tech,dc=local", ldap.SCOPE_SUBTREE, "(objectCategory=Group)"

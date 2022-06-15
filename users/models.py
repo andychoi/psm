@@ -29,10 +29,10 @@ class Profile(models.Model):
 
     #multi-select... FIXME
     is_pro_reviewer = models.BooleanField(_("Procurement reviewer?"), default=False)
-    is_sec_reviewer = models.BooleanField(_("Security reviewer?"), default=False)
-    is_inf_reviewer = models.BooleanField(_("Infrastructure reviewer?"), default=False)
-    is_app_reviewer = models.BooleanField(_("App_Architect?"), default=False)
-    is_mgt_reviewer = models.BooleanField(_("Management reviewer?"), default=False)
+    # is_sec_reviewer = models.BooleanField(_("Security reviewer?"), default=False)
+    # is_inf_reviewer = models.BooleanField(_("Infrastructure reviewer?"), default=False)
+    # is_app_reviewer = models.BooleanField(_("App_Architect?"), default=False)
+    # is_mgt_reviewer = models.BooleanField(_("Management reviewer?"), default=False)
 
     image = models.ImageField(upload_to='profile_pics', null=True, blank=True)  #default='default.jpg', 
     created_on = models.DateTimeField(_("created at"), auto_now_add=True, editable=False, null=True, blank=True)
@@ -42,13 +42,17 @@ class Profile(models.Model):
     id_auto = models.BooleanField(_("User create from Profile"), default=False )    #auto creation of user from profile creation
 
     notes      = models.TextField(_("notes"), max_length=500, null=True, blank=True)
-    migrated   = models.TextField(_("notes"), max_length=10, null=True, blank=True)
+    migrated   = models.TextField(_("migrated"), max_length=10, null=True, blank=True)
 
     def __str__(self):
         if getattr(self, 'user') and not self.name :
             return "%s [%s]" % ("%s %s" % (self.user.first_name, self.user.last_name), self.CBU) 
         else:
             return "%s [%s]" % (self.name, self.CBU)    #preferred
+
+    class Meta:
+        permissions = [ ('admin', 'Can admin user'),
+        ]        
 
     # @property
     # def username(self):

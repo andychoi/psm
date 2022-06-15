@@ -18,19 +18,14 @@ from .models import Profile
 def create_profile(sender, instance, created, **kwargs):
     if created:  #user created
 
-        # check if same profile (email) exist, don't link to User automatically, causing dump...
-        found = None
-        try:
-            found = Profile.objects.get(email=instance.email) if not instance.email is None else None
-        except:
-            pass
-        if not found:    
-            Profile.objects.create(user=instance, name="%s %s" % (instance.first_name, instance.last_name) if instance.first_name else instance.username, 
-                email=instance.email if instance.email else None)
-        else:
-            if instance.email:
-                qs = Profile.objects.filter(email=instance.email)[:1]
-                Profile.objects.filter(id__in=qs).update(user = instance)
+        if getattr(instance, "email") and instance.email: 
+            if not Profile.objects.filter(email=instance.email).exists():
+                Profile.objects.create(user=instance, name="%s %s" % (instance.first_name, instance.last_name) if instance.first_name else instance.username, 
+                    email=instance.email if instance.email else None)
+            # FIXME need to check if profile with email exist, don't link to User automatically, causing dump...
+            # else:
+            #     if Profile.objects.filter(email=instance.email).count() == 1:
+            #         Profile.objects.filter(email=instance.email).update(user = instance)
 
 # try to create profile double time: by signal and by form.
 # use get_or_create instead of create

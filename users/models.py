@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from common.utils import *
+# from psm.models import Project
 # from common.proxy import ProxySuper,  ProxyManager
 # https://pillow.readthedocs.io
 # from PIL import Image  #performance issue https://placeholder.com/900x300
@@ -16,7 +17,8 @@ class Profile(models.Model):
     email = models.EmailField(max_length=150, blank=True, null=True, unique=False)
     # is_active = models.BooleanField(default=True)
 
-    manager = models.ForeignKey(User, verbose_name=_('manager'), related_name='report_to', on_delete=models.CASCADE, null=True, blank=True)
+    pm_count = models.SmallIntegerField(_('PM counts'), default=0)
+    manager = models.ForeignKey('Profile', verbose_name=_('manager'), related_name='report_to', on_delete=models.CASCADE, null=True, blank=True)
 
 #FIXME circular dependency...??
     team = models.ForeignKey('common.Team', verbose_name=_('Team'), on_delete=models.SET_NULL, blank=True, null=True)
@@ -41,8 +43,8 @@ class Profile(models.Model):
     updated_by = models.ForeignKey(User, related_name="profile_updated", null=True, on_delete=models.SET_NULL)
     id_auto = models.BooleanField(_("User create from Profile"), default=False )    #auto creation of user from profile creation
 
-    notes      = models.TextField(_("notes"), max_length=500, null=True, blank=True)
-    migrated   = models.TextField(_("migrated"), max_length=10, null=True, blank=True)
+    notes      = models.CharField(_("notes"), max_length=500, null=True, blank=True)
+    migrated   = models.CharField(_("migrated"), max_length=10, null=True, blank=True)
 
     def __str__(self):
         if getattr(self, 'user') and not self.name :
@@ -67,6 +69,7 @@ class Profile(models.Model):
         return super().form_valid(form)
 
     def save(self, *args, **kwargs):
+        # self.pm_count = Project.objects.filter(pm=self).count()
         super(Profile, self).save(*args, **kwargs)
 
     # models.FileField(upload_to=wrapper)

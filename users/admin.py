@@ -14,6 +14,7 @@ from django.conf import settings
 from django.shortcuts import redirect
 
 from common.models import CBU, Div, Dept
+from psm.models import Project
 
 #for RAW query
 # from django.db import connection
@@ -21,19 +22,19 @@ from common.models import CBU, Div, Dept
 @admin.register(Profile)
 class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
     # list_display = ('id', 'user', 'name', 'email', 'dept', 'manager', 'u_div', 'CBU', 'is_active')
-    list_display = ('id', 'user', 'name', 'email', 'dept', 'CBU', 'is_active')
+    list_display = ('id', 'user', 'name', 'email', 'dept', 'CBU', 'is_active', 'pm_count')
     list_display_links = ('id', 'user', 'name')
     search_fields = ('id', 'name', 'email', 'CBU__name', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
-    ordering = ('CBU', 'dept', 'team', 'name',)
+    ordering = ('CBU', 'dept', 'team', 'name', )
     readonly_fields = ('created_on', 'created_by', 'updated_on', 'updated_by')
-    autocomplete_fields = ( 'user', 'team')
+    autocomplete_fields = ( 'user', 'team', 'manager')
     fieldsets = (  # Edition form
          (None, {'fields': (('user', 'name', 'email') , ('manager', 'is_psmadm', ), 
                             # ('team','dept', 'u_div'), 
                             ('dept', 'team'), 
-                            ('CBU', 'is_external', ), 
+                            ('CBU', 'is_external', 'notes' ), 
                             # ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',),
-                            ('is_pro_reviewer', ),
+                            # ('is_pro_reviewer', ),
                             # ('image',), 
                             )}),
         (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by')), 'classes': ('collapse',)}),
@@ -51,8 +52,8 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
                  (None, {'fields': ('user', ('name', 'email') , ('manager', 'is_psmadm', ), 
                             # ('team','dept', 'u_div'), 
                             ('dept', 'team' ), 
-                            ('is_external', 'CBU' ), 
-                            ('is_pro_reviewer', ), 
+                            ('CBU', 'is_external', 'notes' ), 
+                            # ('is_pro_reviewer', ), 
                             # ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',), 
                             # ('image',), 
                             ('id_auto') )}),
@@ -61,6 +62,8 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
 
     def is_active(self, obj):
         return obj.user.is_active if not obj.user is None else False
+    # def pm_count(self, obj):
+    #     return Project.objects.filter(pm=obj).count()
 
     # default filter to exclude closed ticket
     def changelist_view(self, request, extra_context=None):
@@ -98,7 +101,7 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
         #     obj.created_by = request.user
         # super().save_model(request, obj, form, change)
 
-    actions = ['sync_user_master', 'set_staff', 'remove_staff']
+    actions = ['update_pm_count', 'sync_user_master', 'set_staff', 'remove_staff']
 
     @admin.action(description='Set as staff', permissions=['change'])
     def set_staff(self, request, queryset):
@@ -202,6 +205,15 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
 
     # object level permission: https://www.youtube.com/watch?v=2jhQyWeEVHc&ab_channel=VeryAcademy
     # model level permission:  https://www.youtube.com/watch?v=wlYaUvfXJDc&ab_channel=VeryAcademy
+    @admin.action(description='Update PM count')
+    def update_pm_count(self, request, queryset):
+        for obj in queryset:
+            if obj.email[obj.email.index('@') + 1 : ] == settings.DOMAIN:
+                obj.pm_count = Project.objects.filter(pm=obj).count()
+            else:
+                obj.pm_count = Project.objects.filter(CBUpm=obj).count()
+            obj.save()
+
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)        
         # is_superuser = request.user.is_superuser

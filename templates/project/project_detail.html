@@ -7,9 +7,12 @@
   .card-main { min-height: 400px; }
   .card-obj  { min-height: 250px; }
   .card-sub  { min-height: 150px; }
-  .card-time { height: 120px; }
+  .card-time { height: 150px; }
 
   .text-small { font-size: 0.75rem !important; }
+  .timelinepatch { height: 150px !important; }
+  .timeline-item-up { position: absolute; bottom: 10px; width: 200px; margin-left: -100px; }
+  .timeline-item-down { position: absolute; top: 20px; width: 200px; margin-left: -100px; }
 </style>  
 
 <link href="{% static 'css/timeline.css' %}" rel="stylesheet">
@@ -145,20 +148,8 @@
   <!-- https://freefrontend.com/bootstrap-timelines/ -->
 
           <div class="cd-horizontal-timeline loaded" style="margin-top:-24px;">
-              <div class="timeline">
+              <div class="timeline timelinepatch">
                   <div class="events-wrapper">
-                      <!-- <div class="events" style="width: 1800px;">
-                          <ol>
-                              <li><a href="#" data-date="{{ project.p_ideation }}" class="older-event" style="left: 120px;">Ideation<br>16 Jan</a></li>
-                              <li><a href="#" data-date="{{ project.p_plan_b }}"   style="left:  300px;" class="older-event">Planning Start<br>28 Feb</a></li>
-                              <li><a href="#" data-date="{{ project.kickoff }}"    style="left:  800px;" class="older-event">Kick-Off<br>28 Feb</a></li>
-                              <li><a href="#" data-date="{{ project.p_design_b }}" style="left: 1180px;" class="selected">Design Start<br>20 Mar</a></li>
-                              <li><a href="#" data-date="{{ project.p_uat_b }}"    style="left: 1300px;">UAT Start<br>29 Jan</a></li>
-                              <li><a href="#" data-date="{{ project.p_launch }}"   style="left: 1500px;">Launching<br>29 Jan</a></li>
-                              <li><a href="#" data-date="{{ project.p_closing }}"  style="left: 1680px;">Closing<br>3 Mar</a></li>
-                          </ol>
-                          <span class="filling-line" aria-hidden="true" style="transform: scaleX(0.281506);"></span>
-                      </div> -->
                       <div class="events" style="width: 100%; min-width: 800px;">
                           <ol id="disp_list"></ol>
                           <span class="filling-line" aria-hidden="true"></span>
@@ -189,41 +180,84 @@
     , {text: "Launching", dateStr: "{{ project.p_launch }}"}
     , {text: "Closing", dateStr: "{{ project.p_closing }}"}
   ]; 
+  // merge date
+  var tLen = tItems.length;
+  for(var i = 0; i < tLen; i++) {
+    if (tItems[i].dateStr === '') continue;
+    for(var j = i + 1; j < tLen; j++) {
+      if (tItems[i].dateStr === tItems[j].dateStr) {
+        tItems[i].text += ", " + tItems[j].text;
+        tItems[j].dateStr = '';        
+      } else {
+        break;
+      }
+    }
+  }
+
+  // console.log(tItems);
   var tDateBegin = Date.parse("3000-01-01");
   var tDateEnd = Date.parse("1900-01-01");
   tItems.forEach((pItem)=>{ 
-    pItem.date = Date.parse(pItem.dateStr); 
+    pItem.date = Date.parse(pItem.dateStr) + 17 * 3600 * 1000;    // GMT -0700
     if (pItem.date) {
       tDateBegin = Math.min(tDateBegin, pItem.date); 
       tDateEnd = Math.max(tDateEnd, pItem.date); 
     }
   });
   var tDelta = tDateEnd - tDateBegin;
-  tDateBegin -= tDelta * 0.05;
+  tDateBegin -= tDelta * 0.10;
   tDateEnd += tDelta * 0.10;
-  tDelta *= (1 + 0.15);
-  var tCurrentDate = Date.now();
+  tDelta *= (1 + 0.20);
+  var tDateTmp = new Date();
+  var tCurrentDate = new Date(tDateTmp.getFullYear(), tDateTmp.getMonth(), tDateTmp.getDate());
   var tProgress = Math.min(1.0 * (tCurrentDate - tDateBegin) / tDelta, 1); 
   var mMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
   $(document).ready(function(){
     var tFlag = true;
-    var tCurrentYear = "";
+    var tFlagCurrentDate = false;
+    var tCurrentYear = "";    
+    var getDateStr = (pDate) => {
+      var tDate = new Date(pDate);
+      var tDateStr = mMonths[tDate.getMonth()] + " " + tDate.getDate();
+      if (tCurrentYear !== tDate.getFullYear()) {
+        tCurrentYear = tDate.getFullYear();
+        tDateStr += ", " + tCurrentYear;
+      }
+      return tDateStr;
+    };
+    var getISODateStr = (pDate) => {
+      return new Date(pDate).toISOString().split("T")[0];
+    };
+    var addListItem = (pPos, pText, pClass, pDateStr, pFlag) => {
+      $('#disp_list').append( '<li><a href="#" class="' + pClass + '" data-date="' + pDateStr + '" style="left: ' + pPos + '%;"><span class="' + ((pFlag) ? "timeline-item-up" : "timeline-item-down") + '">' + pText + '</span></a></li>' );
+    }
+
     tItems.forEach((pItem)=>{ 
       if (pItem.date) {
         var tLeft = 100.0 * (pItem.date - tDateBegin) / tDelta;
-        var tClass = (tCurrentDate > pItem.date) ? "older-event" : "";
-        var tDate = new Date(pItem.date);
-        var tDateStr = mMonths[tDate.getMonth()] + " " + tDate.getDate();
-        if (tCurrentYear !== tDate.getFullYear()) {
-          tCurrentYear = tDate.getFullYear();
-          tDateStr += ", " + tCurrentYear;
-        }
+        var tDateStr = getDateStr(pItem.date);
         var tContentStr = (pItem.text + "<br>" + tDateStr);
-        var tHtml = '<li><a href="#" class="text-small ' + tClass + '" data-date="' + pItem.dateStr + '"  style="left: ' + tLeft + '%;">' + tContentStr + '</a></li>';
-        $('#disp_list').append(tHtml);
+        var tClass = "text-small";        
+        if (tCurrentDate > pItem.date) {
+          tClass += " older-event";
+        } 
+        else if (tCurrentDate === pItem.date) {
+          tClass += " selected";
+          tFlagCurrentDate = true;
+        }
+        else {
+          if (!tFlagCurrentDate) {
+            addListItem((tProgress*100), getDateStr(tCurrentDate), "text-small selected", null, tFlag);
+            tFlagCurrentDate = true;
+            tFlag = !tFlag;
+          }
+        }
+        addListItem(tLeft, tContentStr, tClass, getISODateStr(pItem.date), tFlag);
         tFlag = !tFlag;
       }
     });
+
     $('.filling-line').css({transform: "scaleX(" + tProgress + ")"});
     // console.log(tDateBegin, tDateEnd, tProgress, tItems);
   })  

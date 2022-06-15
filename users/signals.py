@@ -23,9 +23,9 @@ def create_profile(sender, instance, created, **kwargs):
                 Profile.objects.create(user=instance, name="%s %s" % (instance.first_name, instance.last_name) if instance.first_name else instance.username, 
                     email=instance.email if instance.email else None)
             # FIXME need to check if profile with email exist, don't link to User automatically, causing dump...
-            # else:
-            #     if Profile.objects.filter(email=instance.email).count() == 1:
-            #         Profile.objects.filter(email=instance.email).update(user = instance)
+            else:
+                if not Profile.objects.filter(user=instance).exists() and Profile.objects.filter(email=instance.email).count() == 1:
+                    Profile.objects.filter(email=instance.email).update(user = instance)
 
 # try to create profile double time: by signal and by form.
 # use get_or_create instead of create
@@ -33,52 +33,51 @@ def create_profile(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=User)
 def save_profile(sender, instance, **kwargs):
-    #profile not exist
-    # profile_exist = True
     if kwargs['created'] == True:
         pass
     
-    else:
-        if not hasattr(instance, 'profile'):    #last login updating in User... triggering this
-            # profile_exist = (instance.profile != None)
-            try:
-                found = Profile.objects.get(email=instance.email) if not instance.email is None else None
-            except:
+    else:   #last login updating in User... triggering this
+        if not hasattr(instance, 'profile'):    # if profile not exist...create it
+            # found = Profile.objects.filter(email=instance.email).exists() if not instance.email is None else None
+            if getattr(instance, "email") and instance.email and not Profile.objects.filter(email=instance.email).exists():
+                Profile.objects.create(user=instance, name="%s %s" % (instance.first_name, instance.last_name) if instance.first_name else instance.username, 
+                    email=instance.email if instance.email else None)
+            else:
                 Profile.objects.create(user=instance, name=instance.username)
-                print("profile created")
 
         # if profile_exist: #to avoid cyclic, check create_profile
-        else:
-            if instance.email and ( instance.profile.email is None or ( instance.profile.email != instance.email))  :
-                instance.profile.email = instance.email
-                instance.profile.save(update_fields=['email'])
-            if ( instance.profile.is_active != instance.is_active ) : 
-                instance.profile.is_active = instance.is_active
-                instance.profile.save(update_fields=['is_active'])
-            if not instance.profile.name:
-                instance.profile.name = instance.username   #first+last
-                instance.profile.save(update_fields=['name']) 
+        # FIXME... logic flow
+        # else:
+        #     if instance.email and ( instance.profile.email is None or ( instance.profile.email != instance.email))  :
+        #         instance.profile.email = instance.email
+        #         instance.profile.save(update_fields=['email'])
+        #     if ( instance.profile.is_active != instance.is_active ) : 
+        #         instance.profile.is_active = instance.is_active
+        #         instance.profile.save(update_fields=['is_active'])
+        #     if not instance.profile.name:
+        #         instance.profile.name = instance.username   #first+last
+        #         instance.profile.save(update_fields=['name']) 
 
 
-@receiver(post_save, sender=Profile)
-def profile_receiver(sender, instance, created, **kwargs):
-    if  created: # profile created
-        pass 
+# @receiver(post_save, sender=Profile)
+# def profile_receiver(sender, instance, created, **kwargs):
+#     if  created: # profile created
+#         pass 
     
-    else: # profile updated -> user update 
-        # check if user exist before processing
-        try:
-            # if hasattr(instance, 'user') and instance.user != None: #user exist in linked way
-            changed = False
-            if hasattr(instance, 'email') and not instance.email is None and hasattr(instance.user, 'email'):                
-                if  instance.user.email != instance.email:
-                    instance.user.email = instance.email
-                    instance.user.save(update_fields=['email'])
-            if hasattr(instance, 'is_active') and hasattr(instance.user, 'is_active'):                
-                if  instance.user.is_active != instance.is_active:
-                    instance.user.is_active = instance.is_active
-                    instance.user.save(update_fields=['is_active'])
-                # print("user updated")
-        except Profile.DoesNotExist:
-            print("user not exist!")
+#     else: # profile updated -> user update 
+#         # check if user exist before processing
+#         try:
+#             # if hasattr(instance, 'user') and instance.user != None: #user exist in linked way
+#             changed = False
+#             if hasattr(instance, 'email') and not instance.email is None and hasattr(instance.user, 'email'):                
+#                 if  instance.user.email != instance.email:
+#                     instance.user.email = instance.email
+#                     instance.user.save(update_fields=['email'])
+#             if hasattr(instance, 'is_active') and hasattr(instance.user, 'is_active'):                
+#                 if  instance.user.is_active != instance.is_active:
+#                     instance.user.is_active = instance.is_active
+#                     instance.user.save(update_fields=['is_active'])
+#                 # print("user updated")
+#         except Profile.DoesNotExist:
+#             print("user not exist!")
 

@@ -1,5 +1,5 @@
 # Auth related settings
-
+# https://pypi.org/project/environs/
 from . import env
 import ldap
 from django_auth_ldap.config import LDAPSearch, GroupOfNamesType
@@ -32,11 +32,20 @@ AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
 )
 AUTH_LDAP_GROUP_TYPE = GroupOfNamesType()
 AUTH_LDAP_USER_FLAGS_BY_GROUP = {
-    "is_staff": AUTH_LDAP_GROUP_STAFF,
+    "is_staff": AUTH_LDAP_GROUP_STAFF,      
 }
-AUTH_LDAP_FIND_GROUP_PERMS = False
-AUTH_LDAP_CACHE_GROUPS = False
-AUTH_LDAP_GROUP_CACHE_TIMEOUT = 1  # 1 hour cache
+
+# https://stackoverflow.com/questions/20245343/getting-groups-from-ldap-to-django
+AUTH_LDAP_FIND_GROUP_PERMS = True
+AUTH_LDAP_CACHE_GROUPS = True
+AUTH_LDAP_CACHE_TIMEOUT  = 3600  # 1 hour cache
+
+AUTH_LDAP_MIRROR_GROUPS = True
+# env.list("AUTH_LDAP_MIRROR_GROUPS")
+# AUTH_LDAP_MIRROR_GROUPS = True
+#default auth group to be assigned for new user 
+DEFAULT_AUTH_GROUP  = env('DEFAULT_AUTH_GROUP', "staff")
+
 
 
 # from decouple import config

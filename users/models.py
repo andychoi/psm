@@ -14,7 +14,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
     name = models.CharField(max_length=100, blank=True, null=True) #FIXME - dump during User creation, unique=True)
     email = models.EmailField(max_length=150, blank=True, null=True, unique=False)
-    is_active = models.BooleanField(default=True)
+    # is_active = models.BooleanField(default=True)
 
     manager = models.ForeignKey(User, verbose_name=_('manager'), related_name='report_to', on_delete=models.CASCADE, null=True, blank=True)
 

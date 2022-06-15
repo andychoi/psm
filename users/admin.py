@@ -10,6 +10,7 @@ from import_export.admin import ImportExportMixin
 from django_object_actions import DjangoObjectActions
 from adminfilters.multiselect import UnionFieldListFilter
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter, DropdownFilter, ChoiceDropdownFilter
+from django.conf import settings
 
 from common.models import CBU, Div, Dept
 
@@ -26,7 +27,7 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
     readonly_fields = ('created_on', 'created_by', 'updated_on', 'updated_by')
     autocomplete_fields = ( 'user', 'team')
     fieldsets = (  # Edition form
-         (None, {'fields': (('user', 'name', 'email') , ('manager', 'is_psmadm', 'is_active'), 
+         (None, {'fields': (('user', 'name', 'email') , ('manager', 'is_psmadm', ), 
                             # ('team','dept', 'u_div'), 
                             ('dept', 'team'), 
                             ('is_external', 'CBU',), 
@@ -40,13 +41,13 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
         ('CBU', RelatedDropdownFilter),
         ('dept', RelatedDropdownFilter),
         ('team', RelatedDropdownFilter),
-        'is_active'
+        'user__is_active'
     )
     def get_fieldsets(self, request, obj=None):
         fieldsets = super().get_fieldsets(request, obj)
         if obj is None:
             fieldsets = (      # Creation form
-                 (None, {'fields': ('user', ('name', 'email') , ('manager', 'is_psmadm', 'is_active'), 
+                 (None, {'fields': ('user', ('name', 'email') , ('manager', 'is_psmadm', ), 
                             # ('team','dept', 'u_div'), 
                             ('dept', 'team' ), 
                             ('is_external', 'CBU' ), 
@@ -56,6 +57,10 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
                             ('id_auto') )}),
             )
         return fieldsets
+
+    def is_active(self, obj):
+        return obj.user.is_active if not obj.user is None else False
+           
 
     # object-function
     # def email_test(self, request, obj):
@@ -94,7 +99,7 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
             if obj.user:
                 User.objects.filter(id=obj.user.id).update(is_staff=True)
                 try:
-                    user_group = Group.objects.get(name='staff')
+                    user_group = Group.objects.get(name=settings.DEFAULT_AUTH_GROUP)
                     obj.user.groups.add(user_group) 
                 except:
                     pass    
@@ -105,7 +110,7 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
             if obj.user:
                 User.objects.filter(id=obj.user.id).update(is_staff=False)
                 try:
-                    user_group = Group.objects.get(name='staff')
+                    user_group = Group.objects.get(name=settings.DEFAULT_AUTH_GROUP)
                     obj.user.groups.remove(user_group) 
                 except:
                     pass    

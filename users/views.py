@@ -6,6 +6,7 @@ from .models import Profile
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
+from django.conf import settings
 
 def register(request):
     if request.method == 'POST':
@@ -24,7 +25,7 @@ def register(request):
             # if user belongs to internal company, then assign staff role automatically
             if u.email[u.email.index('@') + 1 : ] == settings.DOMAIN:
                 User.objects.filter(id=u.id).update(is_staff=True)
-                user_group = Group.objects.get(name='staff')
+                user_group = Group.objects.get(name=settings.DEFAULT_AUTH_GROUP)
                 u.groups.add(user_group) 
 
             messages.success(

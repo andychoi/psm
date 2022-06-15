@@ -2,14 +2,14 @@
 <!-- includes/nav.html -->
 <nav class="navbar navbar-expand-lg navbar-dark navbar-my-color fixed-top bd-navbar-nav">
   <div class="container-fluid">
-    <button class="navbar-toggler" type="button" data-toggle="collapse" 
-      data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+      data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
   </button>
 
   <!-- collapsible wrapper -->
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <a class="navbar-brand" href="{% url 'home' %}">
+  <div class="collapse navbar-collapse" id="navbarSupportedContent" >
+      <a class="navbar-brand" href="{% url 'home' %}"  data-bs-toggle="collapse" data-bs-target=".navbar-collapse.show">
         <img src="{% static 'img/PSM-logos_white_resized.png' %}" alt="PSM" height="32" loading="lazy">
       </a>
 

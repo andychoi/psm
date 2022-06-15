@@ -11,6 +11,7 @@ from django_object_actions import DjangoObjectActions
 from adminfilters.multiselect import UnionFieldListFilter
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter, DropdownFilter, ChoiceDropdownFilter
 from django.conf import settings
+from django.shortcuts import redirect
 
 from common.models import CBU, Div, Dept
 
@@ -30,7 +31,7 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
          (None, {'fields': (('user', 'name', 'email') , ('manager', 'is_psmadm', ), 
                             # ('team','dept', 'u_div'), 
                             ('dept', 'team'), 
-                            ('is_external', 'CBU',), 
+                            ('CBU', 'is_external', ), 
                             # ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',),
                             ('is_pro_reviewer', ),
                             # ('image',), 
@@ -60,7 +61,13 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
 
     def is_active(self, obj):
         return obj.user.is_active if not obj.user is None else False
-           
+
+    # default filter to exclude closed ticket
+    def changelist_view(self, request, extra_context=None):
+        if len(request.GET) == 0:
+            get_param = "CBU__id__exact=50"
+            return redirect("{url}?{get_parms}".format(url=request.path, get_parms=get_param))
+        return super(ProfileAdmin, self).changelist_view(request, extra_context=extra_context)           
 
     # object-function
     # def email_test(self, request, obj):

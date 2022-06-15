@@ -39,9 +39,9 @@ class Team(models.Model):
 #    users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="user_teams")
 
     class Meta:
-        ordering = ("name",)
+        ordering = ("id",)
     def __str__(self):
-        return self.name
+        return f'{"{:04d}".format(self.pk)}-{self.name}'   # "%s-%s" % (self.pk, self.name)
 
 CBU_TYPE = (
 	(0, "Own"),

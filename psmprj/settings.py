@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
+import json
 from . import env
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -263,3 +264,8 @@ LOGOUT_REDIRECT_URL = "/"
 
 # IMPORT Editor related settings ------------------------------------
 from .settings_editor import *
+
+# Load SAP connection settings
+SAP_CONFIG = json.load( open(os.path.join(BASE_DIR, '.sapcfg.json')) )
+SAP_CONN_WBS = SAP_CONFIG['servers'][env('SAP_RFC_WBS', '_')]
+

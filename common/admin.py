@@ -6,6 +6,12 @@ from .models import CBU, Div, Dept, Team, WBS
 
 from django.contrib.auth.models import Permission
 from django.contrib import admin
+
+from datetime import datetime
+from pyrfc import Connection
+from django.conf import settings
+from users.models import User
+
 @admin.register(Permission) 
 class PermissionAdmin(admin.ModelAdmin):
     model = Permission
@@ -134,7 +140,101 @@ class WBSAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
     # FIELDS: PSPID, POST1, STSPD, ...
 
     def import_func(modeladmin, request, queryset):
-    
+        
+        data = {}
+        with Connection(**settings.SAP_CONN_WBS) as conn:
+            try:
+                # abap_structure = {'RFCINT4': 345}
+                # abap_table = [abap_structure]
+                # result = conn.call('STFC_STRUCTURE', IMPORTSTRUCT=abap_structure, RFCTABLE=abap_table)
+                # print (result)
+
+                ROWS_AT_A_TIME = 200
+
+                table = 'ZSUSPSV0020'
+                fields = [ 'PSPID', 'POST1', 'SORTL', 'ERNAM_PRPS', 'ERDAT_PRPS', 'AEDAT_PRPS' ]
+                options = [{ 'TEXT': "PSPID like 'S%'" }]
+
+                rowskips = 0
+                while True:
+                    result = conn.call('RFC_READ_TABLE'
+                                    , QUERY_TABLE=table
+                                    , OPTIONS = options
+                                    , FIELDS = fields
+                                    , ROWSKIPS = rowskips, ROWCOUNT = ROWS_AT_A_TIME)
+                    rowskips += ROWS_AT_A_TIME
+                    for item in result['DATA']:
+                        tObj = { 'STATUS': '0' }
+                        for idx, field in enumerate(result['FIELDS']):
+                            start = int(field['OFFSET'])
+                            end = start + int(field['LENGTH'])
+                            tObj[field['FIELDNAME']] = item['WA'][start:end].strip()
+                        data[tObj['PSPID']] = tObj
+
+                    if len(result['DATA']) < ROWS_AT_A_TIME:
+                        break        
+
+                table = 'ZSUSPST1000'
+                fields = [ 'PSPID', 'STATUS' ]
+                options = [{ 'TEXT': "PSPID like 'S%' and VERSN eq '0'" }]
+
+                rowskips = 0
+                while True:
+                    result = conn.call('RFC_READ_TABLE'
+                                    , QUERY_TABLE=table
+                                    , OPTIONS = options
+                                    , FIELDS = fields
+                                    , ROWSKIPS = rowskips, ROWCOUNT = ROWS_AT_A_TIME)
+                    rowskips += ROWS_AT_A_TIME
+                    for item in result['DATA']:
+                        tObj = {}
+                        for idx, field in enumerate(result['FIELDS']):
+                            start = int(field['OFFSET'])
+                            end = start + int(field['LENGTH'])
+                            tObj[field['FIELDNAME']] = item['WA'][start:end].strip()
+                        if tObj['PSPID'] in data:
+                            data[ tObj['PSPID'] ][ 'STATUS' ] = tObj[ 'STATUS' ]
+
+                    if len(result['DATA']) < ROWS_AT_A_TIME:
+                        break
+
+            except Exception as e:
+                print ('RFC error' + str(e))
+                return
+
+            try:
+                for key in data.keys():
+                    item = data[key]
+                    # print(item)
+                    # item = data['S21-0034']
+                    # item['ERNAM_PRPS']
+                    user = None
+                    userSet = User.objects.filter(username=item['ERNAM_PRPS'].lower())
+                    if len(userSet) > 0:
+                        user = userSet[0]
+                    ctime = None
+                    if item['ERDAT_PRPS'] != '00000000':
+                        ctime = datetime.strptime(item['ERDAT_PRPS'], '%Y%m%d') #.strftime('%Y-%m-%d')
+                    utime = None
+                    if item['AEDAT_PRPS'] != '00000000':
+                        utime = datetime.strptime(item['AEDAT_PRPS'], '%Y%m%d') #.strftime('%Y-%m-%d')
+                    wbsSet = WBS.objects.filter(wbs=item['PSPID'])
+                    if (len(wbsSet) > 0):
+                        if ctime == None:
+                            ctime = wbsSet[0].created_at
+                        if utime == None:
+                            utime = wbsSet[0].updated_on
+                        wbsSet.update(name = item['POST1'], cbu = item['SORTL'], status = item['STATUS'], created_by = user, created_at = ctime, updated_on = utime)
+                    else:
+                        wbs = WBS(wbs = item['PSPID'], name = item['POST1'], cbu = item['SORTL'], status = item['STATUS'], created_by = user, created_at = ctime, updated_on = utime)
+                        wbs.save()
+            except Exception as e:
+                print ('DB error' + str(e))
+                return
+
+            # print(data)
+            # pass
+
     #     try:
 
     #     config = ConfigParser()

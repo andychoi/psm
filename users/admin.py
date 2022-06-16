@@ -27,12 +27,14 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
     search_fields = ('id', 'name', 'email', 'CBU__name', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
     ordering = ('CBU', 'dept', 'team', 'name', )
     readonly_fields = ('created_on', 'created_by', 'updated_on', 'updated_by')
-    autocomplete_fields = ( 'user', 'team', 'manager')
+    autocomplete_fields = ( 'user', 'team', )
     fieldsets = (  # Edition form
-         (None, {'fields': (('user', 'name', 'email') , ('manager', 'is_psmadm', ), 
+         (None, {'fields': (('user', 'name', 'email') , ('is_psmadm', ), 
                             # ('team','dept', 'u_div'), 
                             ('dept', 'team'), 
-                            ('CBU', 'is_external', 'notes' ), 
+                            ('CBU', 'is_external', 'notes' ),
+                            ('job', 'department', 'manager', 'mobile', ),
+                             
                             # ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',),
                             # ('is_pro_reviewer', ),
                             # ('image',), 

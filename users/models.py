@@ -16,14 +16,18 @@ class Profile(models.Model):
     name = models.CharField(max_length=100, blank=True, null=True) #FIXME - dump during User creation, unique=True)
     email = models.EmailField(max_length=150, blank=True, null=True, unique=False)
     # is_active = models.BooleanField(default=True)
+    pm_count    = models.SmallIntegerField(_('PM counts'), default=0)
+    # report_to   = models.ForeignKey('Profile', verbose_name=_('manager'), related_name='report_to', on_delete=models.CASCADE, null=True, blank=True)
 
-    pm_count = models.SmallIntegerField(_('PM counts'), default=0)
-    manager = models.ForeignKey('Profile', verbose_name=_('manager'), related_name='report_to', on_delete=models.CASCADE, null=True, blank=True)
-
-#FIXME circular dependency...??
+    # extra attribute from AD
+    job         = models.CharField(max_length=50, null=True, blank=True)
+    department  = models.CharField(max_length=50, null=True, blank=True)
+    manager     = models.CharField(max_length=50, null=True, blank=True)
+    mobile      = models.CharField(max_length=16, null=True, blank=True)
+    
+    #FIXME circular dependency...??
     team = models.ForeignKey('common.Team', verbose_name=_('Team'), on_delete=models.SET_NULL, blank=True, null=True)
     dept = models.ForeignKey('common.Dept', verbose_name=_('Dept'), on_delete=models.SET_NULL, blank=True, null=True)
-    # u_div  = models.ForeignKey('common.Div',  verbose_name=_('Div'),  on_delete=models.SET_NULL, blank=True, null=True)
     CBU    = models.ForeignKey('common.CBU',  verbose_name=_('CBU'),  on_delete=models.SET_NULL, blank=True, null=True)
 
     is_external = models.BooleanField(_("External user?"), default=False)
@@ -63,6 +67,10 @@ class Profile(models.Model):
     @property
     def u_div(self):
         return self.dept.div if (self.dept.div) else None
+
+    # def create_user_profile(sender, instance, created, **kwargs):
+    #     Profile.objects.get_or_create(user=instance)
+    # post_save.connect(create_user_profile, sender=User)
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user

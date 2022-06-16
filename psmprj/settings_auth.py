@@ -24,7 +24,8 @@ AUTH_LDAP_USER_ATTR_MAP = {
 
 # https://stackoverflow.com/questions/43980247/django-auth-ldap-default-values-for-newly-created-user
 # https://django-auth-ldap.readthedocs.io/en/latest/groups.html
-
+# https://dev.to/lquenti/dynamic-group-based-ldap-authentication-with-django-and-regex-1h4p
+AUTH_LDAP_GROUP_STR = env("AUTH_LDAP_GROUP_STR", "OU=Groups,OU=example,DC=example,DC=com")
 AUTH_LDAP_GROUP_STAFF = env('AUTH_LDAP_GROUP_STAFF', "cn=groupname,OU=Groups,OU=example,DC=example,DC=com")
 
 AUTH_LDAP_GROUP_SEARCH = LDAPSearch(

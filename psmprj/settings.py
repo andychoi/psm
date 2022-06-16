@@ -52,6 +52,8 @@ INSTALLED_APPS = [
     'sorl.thumbnail',
     # 'django_filters'  ,   #bug with pagination
 
+    "django_apscheduler",
+
     # 'multi_email_field',  #not compatible with django 4.x
     'django_object_actions', 
     
@@ -269,3 +271,6 @@ from .settings_editor import *
 SAP_CONFIG = json.load( open(os.path.join(BASE_DIR, '.sapcfg.json')) )
 SAP_CONN_WBS = SAP_CONFIG['servers'][env('SAP_RFC_WBS', '_')]
 
+#https://github.com/jcass77/django-apscheduler
+# https://stackoverflow.com/questions/62525295/how-to-use-python-to-schedule-tasks-in-a-django-application
+APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds

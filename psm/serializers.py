@@ -11,14 +11,15 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Project
-        fields = [
-            'code',
-            'title',
-            'CBU_str',
-            'pm',
-            'description',
-            'state',
-        ]
+        fields = ('__all__')
+        # fields = [
+        #     'code',
+        #     'title',
+        #     'CBU_str',
+        #     'pm',
+        #     'description',
+        #     'state',
+        # ]
 
 
 class ProjectViewSet(viewsets.ModelViewSet):

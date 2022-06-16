@@ -9,6 +9,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import permissions
+from rest_framework import generics
+from rest_framework import routers, serializers, viewsets
 from .serializers import ProjectSerializer
 
 # how to permission?? https://docs.djangoproject.com/en/4.0/topics/auth/default/#permission-caching
@@ -18,9 +20,8 @@ from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 
 # from django.core.paginator import Paginator
-from rest_framework import generics
-from django.urls import reverse_lazy
-from django.urls import reverse
+
+from django.urls import reverse_lazy, reverse
 
 from django.views import generic, View
 from django.http import QueryDict
@@ -44,30 +45,38 @@ class ProjectListApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     # 1. List all
-    def get(self, request, *args, **kwargs):
+    def get(self, request, id=None, year=2022, *args, **kwargs):
         '''
         List all the todo items for given requested user
         '''
-        projects = Project.objects.filter(pm = request.user.id)
+        if id:
+            projects = Project.objects.get(id=id)
+        else:
+            if year:
+                projects = Project.objects.filter(pm = request.user.id)
+            else:
+                projects = Project.objects.filter(year = request.user.id)
+        
         serializer = ProjectSerializer(projects, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     # 2. Create
     def post(self, request, *args, **kwargs):
-        '''
-        Create the Project with given todo data
-        '''
-        data = {
-            'task': request.data.get('task'), 
-            'completed': request.data.get('completed'), 
-            'user': request.user.id
-        }
-        serializer = ProjectSerializer(data=data)
+        # data = {
+        #     'task': request.data.get('task'), 
+        #     'completed': request.data.get('completed'), 
+        #     'user': request.user.id
+        # }
+        serializer = ProjectSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# Routers provide an easy way of automatically determining the URL conf.
+# router = routers.DefaultRouter()
+# router.register(r'users', UserViewSet)
 
 # from django_tables2 import SingleTableView, SingleTableMixin
 

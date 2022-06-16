@@ -523,8 +523,9 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
 
     # default filter to exclude closed ticket
     def changelist_view(self, request, extra_context=None):
-        if len(request.GET) == 0:
-            get_param = "state_filter=30-on_hold%2C20-doing%2C10-to-do%2C00-backlog"
-            return redirect("{url}?{get_parms}".format(url=request.path, get_parms=get_param))
+# FIXME - TODO
+        # if len(request.GET) == 0:
+        #     get_param = "state_filter=30-on_hold%2C20-doing%2C10-to-do%2C00-backlog"
+        #     return redirect("{url}?{get_parms}".format(url=request.path, get_parms=get_param))
         return super(ProjectAdmin, self).changelist_view(request, extra_context=extra_context)
 

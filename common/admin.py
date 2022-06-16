@@ -141,6 +141,7 @@ class WBSAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
 
     def import_func(modeladmin, request, queryset):
         
+        data = {}
         with Connection(**settings.SAP_CONN_WBS) as conn:
             try:
                 # abap_structure = {'RFCINT4': 345}
@@ -149,7 +150,6 @@ class WBSAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
                 # print (result)
 
                 ROWS_AT_A_TIME = 200
-                data = {}
 
                 table = 'ZSUSPSV0020'
                 fields = [ 'PSPID', 'POST1', 'SORTL', 'ERNAM_PRPS', 'ERDAT_PRPS', 'AEDAT_PRPS' ]
@@ -198,6 +198,11 @@ class WBSAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
                     if len(result['DATA']) < ROWS_AT_A_TIME:
                         break
 
+            except Exception as e:
+                print ('RFC error' + str(e))
+                return
+
+            try:
                 for key in data.keys():
                     item = data[key]
                     # print(item)
@@ -209,16 +214,23 @@ class WBSAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
                         user = userSet[0]
                     ctime = None
                     if item['ERDAT_PRPS'] != '00000000':
-                        ctime = datetime.strptime(item['ERDAT_PRPS'], '%Y%m%d').strftime('%Y-%m-%d')
+                        ctime = datetime.strptime(item['ERDAT_PRPS'], '%Y%m%d') #.strftime('%Y-%m-%d')
                     utime = None
                     if item['AEDAT_PRPS'] != '00000000':
-                        utime = datetime.strptime(item['AEDAT_PRPS'], '%Y%m%d').strftime('%Y-%m-%d')
-                    wbs = WBS(wbs = item['PSPID'], name = item['POST1'], cbu = item['SORTL'], status = item['STATUS'], created_by = user, created_at = ctime, updated_on = utime)
-                    wbs.save()
-                
+                        utime = datetime.strptime(item['AEDAT_PRPS'], '%Y%m%d') #.strftime('%Y-%m-%d')
+                    wbsSet = WBS.objects.filter(wbs=item['PSPID'])
+                    if (len(wbsSet) > 0):
+                        if ctime == None:
+                            ctime = wbsSet[0].created_at
+                        if utime == None:
+                            utime = wbsSet[0].updated_on
+                        wbsSet.update(name = item['POST1'], cbu = item['SORTL'], status = item['STATUS'], created_by = user, created_at = ctime, updated_on = utime)
+                    else:
+                        wbs = WBS(wbs = item['PSPID'], name = item['POST1'], cbu = item['SORTL'], status = item['STATUS'], created_by = user, created_at = ctime, updated_on = utime)
+                        wbs.save()
             except Exception as e:
-                print (str(e))
-
+                print ('DB error' + str(e))
+                return
 
             # print(data)
             # pass

@@ -14,8 +14,7 @@ from django.conf import settings
 
 # LDAP login -> create User with Staff status, but fail to assign groups... FIXME
 def assign_staff_role():
-    qs = User.objects.all()
-    for u in qs:
+    for u in User.objects.all():
         if u.is_staff == True:
             if not u.groups.all().filter(name=settings.DEFAULT_AUTH_GROUP).exists():    
                 try:

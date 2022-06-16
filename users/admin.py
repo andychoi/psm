@@ -168,14 +168,9 @@ class ProfileEmpAdmin(ImportExportMixin, admin.ModelAdmin):
 
     # object level permission: https://www.youtube.com/watch?v=2jhQyWeEVHc&ab_channel=VeryAcademy
     # model level permission:  https://www.youtube.com/watch?v=wlYaUvfXJDc&ab_channel=VeryAcademy
-    @admin.action(description='Update PM count')
-    def update_pm_count(self, request, queryset):
-        for obj in queryset:
-            if obj.email[obj.email.index('@') + 1 : ] == settings.DOMAIN:
-                obj.pm_count = Project.objects.filter(pm=obj).count()
-            else:
-                obj.pm_count = Project.objects.filter(CBUpm=obj).count()
-            obj.save()
+    
+    # @admin.action(description='Update PM count')
+    # def update_pm_count(self, request, queryset): -> scheduler
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)        

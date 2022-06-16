@@ -19,10 +19,10 @@ class Review(models.Model):
     title = models.CharField(max_length=200)
 
     # related = models.ManyToManyField( to='common.Dept', related_name='related_depts')
-    state = models.CharField(_("PM Requested?"), max_length=10, choices=STATE3, default=0)
+    state = models.CharField(_("PM Requested?"), max_length=10, choices=STATE3, null=True, blank=True)
     req_content = models.TextField(_("Review request"), null=True, blank=True)
-    proc_start = models.DateField(_("Review DESIRED start date"), null=True, blank=True)
-    onboaddt = models.DateField(_("Vendor DESIRED onboarding date"), null=True, blank=True)
+    proc_start = models.DateField(_("DESIRED start date"), null=True, blank=True)
+    onboaddt = models.DateField(_("DESIRED onboarding date"), null=True, blank=True)
 
     priority = models.CharField(_("priority"), max_length=20, choices=PRIORITIES, default=Priority.NORMAL.value)
     status = models.CharField(_("Progress Status"), max_length=20, choices=DECISIONS, default=Decision.NEW.value)

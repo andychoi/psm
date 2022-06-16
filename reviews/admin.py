@@ -82,9 +82,11 @@ class ReviewAdmin(ImportExportMixin, admin.ModelAdmin):
         ('reqtype', DropdownFilter),
         ('priority', DropdownFilter),
         # ('CBUs', RelatedDropdownFilter),
-        ('project__dept__div', RelatedDropdownFilter),
-        ('project__dept', RelatedDropdownFilter),
-        ('status', DropdownFilter),
+        ('project',             RelatedDropdownFilter),
+        ('project__dept__div',  RelatedDropdownFilter),
+        ('project__dept',       RelatedDropdownFilter),
+        ('project__CBUs',       RelatedDropdownFilter),
+        ('status',              DropdownFilter),
         'updated_on',
     )
 

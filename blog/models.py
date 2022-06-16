@@ -47,7 +47,7 @@ class Post(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
 
     category = models.CharField(_("Category"), max_length=50, choices=CATEGORIES, default=Category.DEFAULT.value)
-    tags  = models.ManyToManyField(Tag, blank=True, null=True)
+    tags  = models.ManyToManyField(Tag, blank=True) #, null=True)
     slug = models.SlugField(null=False, unique=True)
 
     title = models.CharField(max_length=100)

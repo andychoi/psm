@@ -40,6 +40,8 @@ router.register(r'tasks', TaskViewSet)
 admin.site.enable_nav_sidebar = False
 
 urlpatterns = [
+
+    path('api-auth/', include('rest_framework.urls')),
     re_path(r'^api/v1/', include(router.urls)),
 
     # Blog urls

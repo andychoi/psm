@@ -6,23 +6,19 @@ from .models import Project
 
 
 class ProjectSerializer(serializers.HyperlinkedModelSerializer):
-    pass
     # CBU = CBUSerializer(read_only=True)
     # user = UserSerializer(read_only=True)
 
-    # class Meta:
-    #     model = Project
-    #     fields = (
-    #         'number',
-    #         'title',
-    #         'CBU',
-    #         'user',
-    #         'description',
-    #         'resolution',
-    #         'deadline',
-    #         'state',
-    #         'created_at',
-    #     )
+    class Meta:
+        model = Project
+        fields = [
+            'code',
+            'title',
+            'CBU_str',
+            'pm',
+            'description',
+            'state',
+        ]
 
 
 class ProjectViewSet(viewsets.ModelViewSet):

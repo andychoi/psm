@@ -1,6 +1,8 @@
 # importing django routing libraries
 from . import views
 from django.urls import path,  re_path,  include
+from rest_framework import routers
+
 from .views import *
 
 # app_name="psm"
@@ -25,5 +27,6 @@ urlpatterns = [
 	path('project-plan/', views.projectPlanListView.as_view(), name='project_plan'),
 	re_path(r'^project-plan/(?P<pk>\d+)/$', views.projectPlanDetailView.as_view(), name='project_plan_detail'),
 
+   	path('project-api/1.0/', ProjectListApiView.as_view()),
 	path('api/1.0/', include('apis.urls')),
 ]

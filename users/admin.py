@@ -81,7 +81,7 @@ class ProfileEmpAdmin(ImportExportMixin, admin.ModelAdmin):
     #object-function
     def goto_user(self, obj):
         if obj.user:
-            return mark_safe(f"<a class='btn btn-outline-success p-1 btn-sm adminlist' style='color:#000' href='admin/auth/user/{obj.user.pk}/change'>Goto Auth</a>")
+            return mark_safe(f"<a class='btn btn-outline-success p-1 btn-sm adminlist' style='color:#000' href='/admin/auth/user/{obj.user.pk}/change'>Goto Auth</a>")
     goto_user.short_description = 'Auth'
 
     # conflict import/export: changelist_actions = ('email_test', )    

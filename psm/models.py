@@ -11,7 +11,7 @@ from django.contrib import messages
 
 from common.models import CBU, Div, Dept, Team
 from common.models import Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, State3, STATE3, WBS, VERSIONS, Versions
-from users.models import Profile
+from users.models import Profile, ProfileEmp, ProfileCBU
 
 from psmprj.utils.mail import send_mail_async as send_mail, split_combined_addresses
 from psmprj.utils.dates import previous_working_day
@@ -24,7 +24,6 @@ from sorl.thumbnail import get_thumbnail
 #TODO https://docs.djangoproject.com/en/4.0/ref/contrib/postgres/search/
 #from django.contrib.postgres.search import SearchQuery
 
-import markdown2
 
 logger = logging.getLogger(__name__)
 
@@ -103,9 +102,9 @@ class Project(models.Model):
     # is_unplanned = models.BooleanField(_("Unplanned project"), default=False)
 
     CBUs  = models.ManyToManyField(CBU, blank=True)
-    CBUpm = models.ForeignKey(Profile, related_name='cbu_pm', verbose_name=_('CBU PM'), on_delete=models.SET_NULL, null=True, blank=True)
-    team = models.ForeignKey(Team, blank=True, null=True, on_delete=models.PROTECT)
-    dept = models.ForeignKey(Dept, blank=True, null=True, on_delete=models.PROTECT)
+    CBUpm = models.ForeignKey(ProfileCBU, related_name='cbu_pm', verbose_name=_('CBU PM'), on_delete=models.SET_NULL, null=True, blank=True)
+    team = models.ForeignKey(Team, blank=True, null=True, on_delete=models.SET_NULL)
+    dept = models.ForeignKey(Dept, blank=True, null=True, on_delete=models.SET_NULL)
     # div = models.ForeignKey(Div, blank=True, null=True, on_delete=models.PROTECT)
 
     description = models.TextField(_("description"), max_length=2000, null=True, blank=True)
@@ -119,7 +118,7 @@ class Project(models.Model):
     status_s = models.CharField(_("status scope"), max_length=20, choices=STATUS, default=Status.GREEN.value)
     resolution = models.TextField(_("PM Memo"), max_length=2000, null=True, blank=True)
     #settings.AUTH_USER_MODEL - user directory...
-    pm = models.ForeignKey(Profile, related_name='project_manager', verbose_name=_('HAEA PM'),
+    pm = models.ForeignKey(ProfileEmp, related_name='project_manager', verbose_name=_('HAEA PM'),
                            on_delete=models.SET_NULL, null=True, blank=True)
     state = models.CharField(_("state"), max_length=20, choices=STATES, default=State.TO_DO.value)
     phase = models.CharField(_("Phase"), max_length=20, choices=PHASE, default=Phase.PRE_PLAN.value)
@@ -334,15 +333,16 @@ class ProjectPlan(models.Model):
     # is_unplanned = models.BooleanField(_("Unplanned project"), default=False)
 
     CBUs  = models.ManyToManyField(CBU, blank=True)
-    CBUpm = models.ForeignKey(Profile, related_name='req_cbu_pm', verbose_name=_('CBU PM'), on_delete=models.SET_NULL, null=True, blank=True)
-    team = models.ForeignKey(Team, blank=True, null=True, on_delete=models.PROTECT)
-    dept = models.ForeignKey(Dept, blank=True, null=True, on_delete=models.PROTECT)
+    CBUpm = models.ForeignKey(ProfileCBU, related_name='req_cbu_pm', verbose_name=_('CBU PM'), on_delete=models.SET_NULL, null=True, blank=True)
+    team = models.ForeignKey(Team, blank=True, null=True, on_delete=models.SET_NULL)
+    dept = models.ForeignKey(Dept, blank=True, null=True, on_delete=models.SET_NULL)
 
     released    = models.ForeignKey("Project", related_name='released_prj', on_delete=models.SET_NULL, null=True, blank=True)
-    version     = models.CharField(max_length=20, choices=VERSIONS, null=True, blank=True)
-    asis        = models.TextField(_("As-Is"), max_length=2000, null=True, blank=True)
-    tobe        = models.TextField(_("To-Be"), max_length=2000, null=True, blank=True)
-    objective   = models.TextField(_("Objective"), max_length=2000, null=True, blank=True)
+
+    version     = models.CharField(max_length=20, choices=VERSIONS, null=True, )
+    asis        = models.TextField(_("As-Is"), max_length=2000, null=True, )
+    tobe        = models.TextField(_("To-Be"), max_length=2000, null=True, )
+    objective   = models.TextField(_("Objective"), max_length=2000, null=True, )
     consider    = models.TextField(_("Consideration"), max_length=1000, null=True, blank=True)
     quali       = models.TextField(_("Qualitative benefit"), max_length=1000, null=True, blank=True)
     quant       = models.TextField(_("Quantitative benefit"), max_length=1000, null=True, blank=True)
@@ -350,7 +350,7 @@ class ProjectPlan(models.Model):
     img_asis    = models.ImageField(_("As-Is Image"), upload_to='project/%Y', null=True, blank=True)  #default='default.jpg', 
     img_tobe    = models.ImageField(_("To-Be Image"), upload_to='project/%Y', null=True, blank=True)  #default='default.jpg', 
 
-    pm = models.ForeignKey(Profile, related_name='req_pm', verbose_name=_('HAEA PM'),
+    pm = models.ForeignKey(ProfileEmp, related_name='req_pm', verbose_name=_('HAEA PM'),
                            on_delete=models.SET_NULL, null=True, blank=True)
     priority = models.CharField(_("priority"), max_length=20, choices=PRIORITIES, default=Priority.NORMAL.value)
     est_cost = models.DecimalField(_("Est. cost"), decimal_places=0, max_digits=12, blank=True, null=True)

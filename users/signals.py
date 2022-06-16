@@ -46,18 +46,10 @@ def save_profile(sender, instance, **kwargs):
                 Profile.objects.create(user=instance, name=instance.username)
 
         # if profile_exist: #to avoid cyclic, check create_profile
-        # FIXME... logic flow
-        # else:
-        #     if instance.email and ( instance.profile.email is None or ( instance.profile.email != instance.email))  :
-        #         instance.profile.email = instance.email
-        #         instance.profile.save(update_fields=['email'])
-        #     if ( instance.profile.is_active != instance.is_active ) : 
-        #         instance.profile.is_active = instance.is_active
-        #         instance.profile.save(update_fields=['is_active'])
-        #     if not instance.profile.name:
-        #         instance.profile.name = instance.username   #first+last
-        #         instance.profile.save(update_fields=['name']) 
-
+        else:
+            if hasattr(instance, 'email') and instance.email != instance.profile.email :
+                instance.profile.email = instance.email
+                instance.profile.save(update_fields=['email'])
 
 # @receiver(post_save, sender=Profile)
 # def profile_receiver(sender, instance, created, **kwargs):

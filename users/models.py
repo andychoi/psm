@@ -3,14 +3,14 @@ from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from common.utils import *
 # from psm.models import Project
-# from common.proxy import ProxySuper,  ProxyManager
+from common.proxy import ProxySuper,  ProxyManager
 # https://pillow.readthedocs.io
 # from PIL import Image  #performance issue https://placeholder.com/900x300
 
 #avoid circular import, use full name in model with ''. example='common.Team'
 
-class Profile(models.Model):
-    # proxy_name = models.CharField(max_length=20, default='Profile', blank=True, null=True)#FIXME
+class Profile(ProxySuper): #models.Model):
+    proxy_name = models.CharField(max_length=20, default='Profile', blank=True, null=True)
 
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
     name = models.CharField(max_length=100, blank=True, null=True) #FIXME - dump during User creation, unique=True)
@@ -95,14 +95,14 @@ class Profile(models.Model):
         #     img.thumbnail(output_size)
         #     img.save(self.image.path)
 
-# class ProfileCBU(Profile):
-#     class Meta:
-#         proxy = True
+class ProfileCBU(Profile):
+    class Meta:
+        proxy = True
 
-#     objects = ProxyManager()
+    objects = ProxyManager()
 
-# class ProfileEmp(Profile):
-#     class Meta:
-#         proxy = True
+class ProfileEmp(Profile):
+    class Meta:
+        proxy = True
 
-#     objects = ProxyManager()
+    objects = ProxyManager()

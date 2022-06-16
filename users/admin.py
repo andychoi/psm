@@ -1,5 +1,4 @@
 from django.contrib import admin
-from .models import Profile
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
@@ -12,37 +11,43 @@ from adminfilters.multiselect import UnionFieldListFilter
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter, DropdownFilter, ChoiceDropdownFilter
 from django.conf import settings
 from django.shortcuts import redirect
-
+from django.http import HttpResponse
+from django.http import HttpResponseRedirect
+from django.utils.html import mark_safe
 from common.models import CBU, Div, Dept
 from psm.models import Project
 
+from .models import Profile, ProfileCBU, ProfileEmp
+
 #for RAW query
 # from django.db import connection
-
 @admin.register(Profile)
 class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
+    list_display = ('proxy_name', 'id', 'user', 'name', 'email', 'dept', 'CBU', 'pm_count')
+    search_fields = ('id', 'name', 'email', 'CBU__name', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
+    list_display_links = ('id', 'name', 'email')
+    
+
+@admin.register(ProfileEmp)
+class ProfileEmpAdmin(ImportExportMixin, admin.ModelAdmin):
     # list_display = ('id', 'user', 'name', 'email', 'dept', 'manager', 'u_div', 'CBU', 'is_active')
-    list_display = ('id', 'user', 'name', 'email', 'dept', 'CBU', 'is_active', 'pm_count')
-    list_display_links = ('id', 'user', 'name')
+    list_display = ('id', 'user', 'name', 'email', 'dept', 'is_active', 'is_staff', 'pm_count', 'goto_user')
+    list_display_links = ('id', 'name', 'email')
     search_fields = ('id', 'name', 'email', 'CBU__name', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
     ordering = ('CBU', 'dept', 'team', 'name', )
     readonly_fields = ('created_on', 'created_by', 'updated_on', 'updated_by')
     autocomplete_fields = ( 'user', 'team', )
     fieldsets = (  # Edition form
          (None, {'fields': (('user', 'name', 'email') , ('is_psmadm', ), 
-                            # ('team','dept', 'u_div'), 
                             ('dept', 'team'), 
-                            ('CBU', 'is_external', 'notes' ),
-                            ('job', 'department', 'manager', 'mobile', ),
-                             
-                            # ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',),
-                            # ('is_pro_reviewer', ),
+                            ('notes' ),
+                            # ('job', 'department', 'manager', 'mobile', ),
                             # ('image',), 
                             )}),
-        (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by')), 'classes': ('collapse',)}),
+        (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by', 'migrated')), 'classes': ('collapse',)}),
     )
     list_filter = (
-        ('CBU', RelatedDropdownFilter),
+        # ('CBU', RelatedDropdownFilter),
         ('dept', RelatedDropdownFilter),
         ('team', RelatedDropdownFilter),
         'user__is_active'
@@ -52,43 +57,32 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
         if obj is None:
             fieldsets = (      # Creation form
                  (None, {'fields': ('user', ('name', 'email') , ('manager', 'is_psmadm', ), 
-                            # ('team','dept', 'u_div'), 
                             ('dept', 'team' ), 
-                            ('CBU', 'is_external', 'notes' ), 
-                            # ('is_pro_reviewer', ), 
-                            # ('is_pro_reviewer','is_sec_reviewer', 'is_inf_reviewer', 'is_app_reviewer','is_mgt_reviewer',), 
-                            # ('image',), 
-                            ('id_auto') )}),
+                            ('notes' ), 
+                        )}),
             )
         return fieldsets
 
     def is_active(self, obj):
-        return obj.user.is_active if not obj.user is None else False
+        return obj.user.is_active   if not obj.user is None else False
+    def is_staff(self, obj):
+        return obj.user.is_staff    if not obj.user is None else False
     # def pm_count(self, obj):
     #     return Project.objects.filter(pm=obj).count()
 
-    # default filter to exclude closed ticket
-    def changelist_view(self, request, extra_context=None):
-        if len(request.GET) == 0:
-            get_param = "CBU__id__exact=50"
-            return redirect("{url}?{get_parms}".format(url=request.path, get_parms=get_param))
-        return super(ProfileAdmin, self).changelist_view(request, extra_context=extra_context)           
+    # def changelist_view(self, request, extra_context=None):
+    #     if len(request.GET) == 0:
+    #         get_param = "CBU__id__exact=50"
+    #         return redirect("{url}?{get_parms}".format(url=request.path, get_parms=get_param))
+    #     return super(ProfileEmpAdmin, self).changelist_view(request, extra_context=extra_context)           
 
-    # object-function
-    # def email_test(self, request, obj):
-    #     from psmprj.utils.mail import send_mail_async as send_mail
-    #     no_mails = send_mail(
-    #         subject='Subject here',
-    #         message='Here is the message.',
-    #         html_message="<h1>Here is title</h1>",
-    #         from_email='postmaster@sandbox8d3a1fef491c445da7a28136096d4050.mailgun.org',
-    #         recipient_list=['choibc9@gmail.com'],
-    #         fail_silently=False,
-    #     )
-    #     messages.add_message(request, messages.INFO, '%s emails sent!' % no_mails)
+    #README: https://django-tips.avilpage.com/en/latest/admin_custom_admin_actions.html
 
-    # email_test.label = "Email Test"  
-    # change_actions = ('email_test', )
+    #object-function
+    def goto_user(self, obj):
+        if obj.user:
+            return mark_safe(f"<a class='btn btn-outline-success p-1 btn-sm adminlist' style='color:#000' href='admin/auth/user/{obj.user.pk}/change'>Goto Auth</a>")
+    goto_user.short_description = 'Auth'
 
     # conflict import/export: changelist_actions = ('email_test', )    
 
@@ -129,72 +123,39 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
 
     @admin.action(description='Migration - create User, link user with email', permissions=['change'])
     def sync_user_master(self, request, queryset):
-        
+        # email is required for django user creation
         for obj in queryset:
+            if obj.user:
+                break
             if obj.email is None or obj.email == "":
-                messages.add_message(request, messages.ERROR, '%s - %s has no email address to create user' % (obj.id, obj.name))
+                break
+            if Profile.objects.filter(email = obj.email).count() > 1:  #if multiple profiles with same email, pass
                 break
 
-            #check user with same email
-            if Profile.objects.filter(email = obj.email).count() > 1:
-                messages.add_message(request, messages.ERROR, '%s - %s has multiple profiles with same email' % (obj.id, obj.name))
-                break
-
+            found = None
             try:
-                found = User.objects.get(email=obj.email) if not obj.email is None else None
-            except:
-                found = None
+                found = User.objects.get(email=obj.email)
+            except User.DoesNotExist:
+                pass
+            except User.MultipleObjectsReturned:
+                break
 
-            if found and obj.user is None:
-                # one-to-one save/update: https://stackoverflow.com/questions/70622890/how-to-assign-value-to-one-to-one-field-in-django
-                # 3 methods available
-                obj.user = found                  
-                obj.save(update_fields=['user'])    # duplicate update....
-                # Profile.objects.filter(pk=obj.id).update(user=found)   #method 2
-                # with connection.cursor() as cursor:                    #method 3
-                #     cursor.execute("UPDATE users_profile SET user_id = %s WHERE id = %s", ( found.id, obj.id ) )
-                                
-                messages.add_message(request, messages.INFO, obj.name + 'is linked with user using email')
-
-            elif not found and obj.user is None:
-                user_with_email = False
+            if found:
                 try:
-                    found = User.objects.get(username=obj.email) if not obj.email is None else None
-                except:
-                    found = None
-
-                if found:
-                    obj.user = found
-                    obj.save(update_fields=['user'])    
-                    messages.add_message(request, messages.INFO, obj.name + ' already exists with email address as username: ' + obj.email)
-                else:
-                    if obj.migrated:
-                        new_user = User.objects.create_user( username=obj.migrated.lower(), password='init1234', email=obj.email )
-                        if new_user:
-                            obj.user = new_user
-                            obj.save(update_fields=['user'])    
-                            messages.add_message(request, messages.INFO, '%s is created to user as username: %s' % (obj.name, obj.user.username))
-                    #email as username, if not username from profile
-                    elif obj.email:
-                        new_user = User.objects.create_user( username=obj.email, password='init1234', email=obj.email )
-                        if new_user:
-                            obj.user = new_user
-                            obj.save(update_fields=['user'])    
-                            messages.add_message(request, messages.INFO, '%s is created to user as username: %s ' % (obj.name, obj.user.username))
-                    else:
-                        # causing duplicate key... signal User -> Profile (different username) -> don't create
-                        # username = obj.username.lower().replace(" ", "").replace(",",".")
-                        # user = User.objects.create_user( username=username, password='demo' )
-                        try:
-                            found = User.objects.get( username=obj.name )
-                        except:
-                            found = None
-                        if found:
-                            obj.user = found
-                            obj.save(update_fields=['user'])    
-                            messages.add_message(request, messages.INFO, '%s found in user, linked now' % obj.name)
-                        else:
-                            messages.add_message(request, messages.INFO, '%s not found in user, cannot create user without email' % obj.name)
+                    found = Profile.objects.get(user=found)
+                except User.DoesNotExist:  #check if found user is linked to other profile
+                    obj.user = found                  
+                    obj.save(update_fields=['user'])    # duplicate update....
+                    messages.add_message(request, messages.INFO, obj.name + 'is linked with user using email')
+            else:
+                try:
+                    found = User.objects.get( username=obj.migrated if obj.migrated else obj.email )
+                except User.DoesNotExist:
+                    new_user = User.objects.create_user( username=obj.migrated if obj.migrated else obj.email, email=obj.email )
+                    if new_user:
+                        obj.user = new_user
+                        obj.save(update_fields=['user'])    
+                        messages.add_message(request, messages.INFO, '%s is created to user as username: %s ' % (obj.name, obj.user.username))
 
     # permission check; 
     # def has_change_permission(self, request, obj=None):
@@ -231,3 +192,39 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
     class Meta:
         model = Profile
         import_id_fields = ('id',)
+
+
+# ------------------------------------------------------------------
+@admin.register(ProfileCBU)
+class ProfileCBUAdmin(ImportExportMixin, admin.ModelAdmin):
+    # list_display = ('id', 'user', 'name', 'email', 'dept', 'manager', 'u_div', 'CBU', 'is_active')
+    list_display = ('id', 'user', 'name', 'email', 'CBU', 'pm_count')
+    list_display_links = ('id', 'user', 'name')
+    search_fields = ('id', 'name', 'email', 'CBU__name', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
+    ordering = ('CBU', 'name', )
+    readonly_fields = ('created_on', 'created_by', 'updated_on', 'updated_by')
+    autocomplete_fields = ( 'user',  )
+    fieldsets = (  # Edition form
+         (None, {'fields': (('name', 'email', ) ,
+                            ('CBU', 'is_external', 'notes' ),
+                            )}),
+        (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by'), ('user',)), 'classes': ('collapse',)}),
+    )
+    list_filter = (
+        ('CBU', RelatedDropdownFilter),
+    )
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = super().get_fieldsets(request, obj)
+        if obj is None:
+            fieldsets = (      # Creation form
+                 (None, {'fields': (('name', 'email',  ) , 
+                            ('CBU', 'is_external', 'notes' ), 
+                        )}),
+            )
+        return fieldsets
+    actions = ['update_pm_count', ]
+    @admin.action(description='Update PM count')
+    def update_pm_count(self, request, queryset):
+        for obj in queryset:
+            obj.pm_count = Project.objects.filter(CBUpm=obj).count()
+            obj.save()        

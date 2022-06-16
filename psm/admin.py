@@ -149,7 +149,7 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
     )
     ordering = ['version', '-id']  #Project_PRIORITY_FIELDS
     readonly_fields = ('created_at', 'updated_on', 'created_by', 'image_tag_asis', 'image_tag_tobe' )
-    autocomplete_fields = ['pm', 'CBUs', 'strategy', 'CBUpm', 'program']
+    autocomplete_fields = ['pm', 'CBUs', 'strategy', 'CBUpm', 'program', 'team']
     plan_fields = [ ('title', 'year', 'version' ), 
                     ('type', 'priority'), 
                     ('strategy', 'program', 'is_agile'),
@@ -474,10 +474,11 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         if change is False:  #when create
             obj.created_by = request.user
 
-            if not obj.code: #not migration 
-                obj.code = f'{obj.year % 100}-{"{:04d}".format(obj.pk+2000)}'
-        
         super().save_model(request, obj, form, change)
+    
+        if not obj.code: #not migration 
+            obj.code = f'{obj.year % 100}-{"{:04d}".format(obj.pk+2000)}'
+            obj.save()    
 
 
     # def get_queryset(self, request):

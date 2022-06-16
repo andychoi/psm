@@ -34,7 +34,7 @@ class Review(models.Model):
 
     # CBUs = models.ForeignKey(CBU, blank=True, null=True, on_delete=models.PROTECT)
     # CBUs  = models.ManyToManyField(CBU, blank=True)
-    dept = models.ForeignKey(Dept, blank=True, null=True, on_delete=models.PROTECT)
+    # dept = models.ForeignKey(Dept, blank=True, null=True, on_delete=models.PROTECT)
 
     created_on = models.DateField(_("created at"), auto_now_add=True, editable=False)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="rev_created_by", null=True, on_delete=models.SET_NULL)

@@ -24,10 +24,9 @@
           <ul class="dropdown-menu my-menu-1" aria-labelledby="navbarDropdownMenuLink3">
             <li><a class="dropdown-item" href="/admin/psm/projectplan/add/">Create Project Request / BAP</a></li>
             <li><a class="dropdown-item" href="/admin/psm/projectplan">Manage Project Request / BAP</a></li>
-            <li><a class="dropdown-item" href="{% url 'project_plan' %}">
-              <div class="dropdown-divider"></div>Project Demand List</a></li>
+            <div class="dropdown-divider"></div>
+            <li><a class="dropdown-item" href="{% url 'project_plan' %}">Project Demand List</a></li>
           </ul>
-        </li>
 
 
         <li class="nav-item dropdown">
@@ -38,10 +37,13 @@
             <li><a class="dropdown-item" href="/admin/psm/project/add/">Register Project</a></li>
             <li><a class="dropdown-item" href="/admin/psm/project/">Manage Project</a></li>
             <li><a class="dropdown-item" href="/admin/reports/report">Create Project Status Report</a></li>
-            <li><a class="dropdown-item" href="/admin/reports/reportrisk">Create Project Risk Report</a></li>
+            <div class="dropdown-divider"></div>
+            <li><a class="dropdown-item" href="/admin/reports/reportrisk">Manage Project Risk Report</a></li>
+            <li><a class="dropdown-item" href="/admin/reviews/review">Manage ITPC</a></li>
+            <div class="dropdown-divider"></div>
             <li><a class="dropdown-item" href="/admin/psm/program">Register Program</a></li>
-            <li><a class="dropdown-item" href="/admin">
-              <div class="dropdown-divider"></div>Admin - Home</a></li>
+            <div class="dropdown-divider"></div>
+            <li><a class="dropdown-item" href="/admin">Admin - Home</a></li>
           </ul>
         </li>
 
@@ -56,10 +58,12 @@
 
             <li><a class="dropdown-item" href="{% url 'project_list1' %}">Project Dashboard</a></li>
             <li><a class="dropdown-item" href="/reports">Status Report List</a></li>
+            <div class="dropdown-divider"></div>
             <li><a class="dropdown-item" href="/report-risks">Risk Report List</a></li>
-            <li><a class="dropdown-item" href="/projectchart">
-              <div class="dropdown-divider"></div>Gantt chart demo1</a></li>
-            <li><a class="dropdown-item" href="/projectchart2">Gantt chart demo2</a></li>
+            <div class="dropdown-divider"></div>
+            <li><a class="dropdown-item" href="/projectchart2">Gantt chart</a></li>
+            <li><a class="dropdown-item" href="/projectchart">Gantt chart (pilot)</a></li>
+            <div class="dropdown-divider"></div>
             <li><a class="dropdown-item" href="{% url 'project_list2' %}">Key project summary</a></li>
           </ul>
         </li>
@@ -100,8 +104,8 @@
               {% endif %}
               <a class="dropdown-item" href="{% url 'about' %}">About</a>
               <a class="dropdown-item" href="/admin/blog/ticket">Bug tracker</a>
-              <a class="dropdown-item" href="{% url 'profile' %}">
-                <div class="dropdown-divider"></div>Profile</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="{% url 'profile' %}">Profile</a>
               <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
             {% else %}
               <a class="dropdown-item" href="{% url 'login' %}">Login</a>

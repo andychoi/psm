@@ -28,13 +28,13 @@ from import_export import resources, fields
 from import_export.widgets import ManyToManyWidget, ForeignKeyWidget
 
 class ReviewResource(resources.ModelResource):
-    pm_name     = fields.Field(attribute='pm',     widget=ForeignKeyWidget(Profile, 'name'))
-    cbu_names       = fields.Field(attribute='CBUs',    widget=ManyToManyWidget(model=CBU, separator=',', field='name'), )
+    # pm_name     = fields.Field(attribute='project.pm',     widget=ForeignKeyWidget(Profile, 'name'))
+    cbu_names   = fields.Field(attribute='project.CBUs',   widget=ManyToManyWidget(model=CBU, separator=',', field='name'), )
 
     class Meta:
         model = Review
         fields = ('id', 'title', 'status', 'priority', 'reqtype', 
-            'project__code', 'project__title', 'project__phase', 'project__state', 'pm_name', 'project__dept__name', 'project__team__name',
+            'project__code', 'project__title', 'project__phase', 'project__state', 'project__pm__name', 'project__dept__name', 'project__team__name',
             'cbu_names',
             'project__p_ideation','project__p_plan_b','project__p_kickoff',
         )
@@ -58,15 +58,15 @@ class ReviewAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display = ('formatted_rtype', 'project_link', 'title', 'proc_start',  'priority', 'is_escalated', 'project_dept', 'state', 'status', 'formatted_updated',)
     list_display_links = ('title', 'formatted_updated')
     ordering = ('-id',)
-    readonly_fields = ('created_on', 'created_by', 'updated_on', 'updated_by')
+    readonly_fields = ('created_on', 'created_by', 'updated_on', 'updated_by', )
     Custom_fields = ('project_link', 'created_on', 'updated_on', 'created_by', 'updated_by')
-    search_fields = ('title', 'project__title', 'req_content', 'res_content', 'reviewer__profile__name' )
+    search_fields = ('title', 'project__title', 'req_content', 'res_content',  )
     list_editable = ("status", "is_escalated", "state")
     autocomplete_fields = ('reviewer', 'project')
     fieldsets = (               # Edition form
                 (None, {'fields':   (('project',),  ('title', 'reqtype', ),('req_content',), ('proc_start', 'onboaddt', 'state', ), ('status', 'is_escalated', 'priority'), ( 'res_content','reviewer',),   
                             ), "classes": ("stack_labels",)}),
-                (_('More...'), {'fields': (('project__dept'), ('created_on', 'created_by'), ('updated_on', 'updated_by')), 'classes': ('collapse',)}),
+                (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by')), 'classes': ('collapse',)}),
     )
 
     def get_fieldsets(self, request, obj=None):

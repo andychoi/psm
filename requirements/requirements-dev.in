@@ -20,5 +20,6 @@ markdown2
 sorl-thumbnail
 holidays 
 django-auth-ldap
-Cython
-pyrfc
+# PyRFC
+cython~=0.29.30
+pyrfc~=2.5.0

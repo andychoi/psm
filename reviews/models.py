@@ -30,10 +30,9 @@ class Review(models.Model):
     reviewer = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="rev_reviewer", null=True, blank=True, on_delete=models.SET_NULL)
     res_content = models.TextField(_("Review result"), null=True, blank=True)
 
-    # attachment=models.FileField(_("attachment"), upload_to='reviews', null=True, blank=True)
+    CBUs  = models.ManyToManyField(CBU, blank=True)
 
-    # CBUs = models.ForeignKey(CBU, blank=True, null=True, on_delete=models.PROTECT)
-    # CBUs  = models.ManyToManyField(CBU, blank=True)
+    # attachment=models.FileField(_("attachment"), upload_to='reviews', null=True, blank=True)
     # dept = models.ForeignKey(Dept, blank=True, null=True, on_delete=models.PROTECT)
 
     created_on = models.DateField(_("created at"), auto_now_add=True, editable=False)
@@ -52,9 +51,18 @@ class Review(models.Model):
         ]        
         ordering = ['-updated_on']
 
+    @property
+    def CBU_names(self):
+        return " ,".join(p.name for p in self.CBUs.all())
+
 	# used while managing models from terminal
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.CBUs:
+            self.CBUs = self.project.CBUs
+        super().save(*args, **kwargs)        
 
     # @property
     # def CBU_str(self):

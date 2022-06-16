@@ -29,7 +29,7 @@ from import_export.widgets import ManyToManyWidget, ForeignKeyWidget
 
 class ReviewResource(resources.ModelResource):
     # pm_name     = fields.Field(attribute='project.pm',     widget=ForeignKeyWidget(Profile, 'name'))
-    cbu_names   = fields.Field(attribute='project.CBUs',   widget=ManyToManyWidget(model=CBU, separator=',', field='name'), )
+    cbu_names   = fields.Field(attribute='CBUs',   widget=ManyToManyWidget(model=CBU, separator=',', field='name'), )
 
     class Meta:
         model = Review
@@ -55,16 +55,16 @@ class ReviewAdmin(ImportExportMixin, admin.ModelAdmin):
 
     def project_dept(self, obj):
         return obj.project.dept
-    list_display = ('formatted_rtype', 'project_link', 'title', 'proc_start',  'priority', 'is_escalated', 'project_dept', 'state', 'status', 'formatted_updated',)
+    list_display = ('formatted_rtype', 'project_link', 'title', 'proc_start',  'priority', 'is_escalated', 'project_dept', 'state', 'status', 'CBU_names', 'formatted_updated',)
     list_display_links = ('title', 'formatted_updated')
     ordering = ('-id',)
     readonly_fields = ('created_on', 'created_by', 'updated_on', 'updated_by', )
     Custom_fields = ('project_link', 'created_on', 'updated_on', 'created_by', 'updated_by')
     search_fields = ('title', 'project__title', 'req_content', 'res_content',  )
     list_editable = ("status", "is_escalated", "state")
-    autocomplete_fields = ('reviewer', 'project')
+    autocomplete_fields = ('reviewer', 'project', 'CBUs')
     fieldsets = (               # Edition form
-                (None, {'fields':   (('project',),  ('title', 'reqtype', ),('req_content',), ('proc_start', 'onboaddt', 'state', ), ('status', 'is_escalated', 'priority'), ( 'res_content','reviewer',),   
+                (None, {'fields':   (('project', 'CBUs'),  ('title', 'reqtype',  ),('req_content',), ('proc_start', 'onboaddt', 'state', ), ('status', 'is_escalated', 'priority'), ( 'res_content','reviewer',),   
                             ), "classes": ("stack_labels",)}),
                 (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by')), 'classes': ('collapse',)}),
     )
@@ -81,11 +81,11 @@ class ReviewAdmin(ImportExportMixin, admin.ModelAdmin):
     list_filter = (
         ('reqtype', DropdownFilter),
         ('priority', DropdownFilter),
-        # ('CBUs', RelatedDropdownFilter),
+        ('CBUs', RelatedDropdownFilter),
         ('project',             RelatedDropdownFilter),
         ('project__dept__div',  RelatedDropdownFilter),
         ('project__dept',       RelatedDropdownFilter),
-        ('project__CBUs',       RelatedDropdownFilter),
+        # ('project__CBUs',       RelatedDropdownFilter),
         ('status',              DropdownFilter),
         'updated_on',
     )

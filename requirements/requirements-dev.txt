@@ -78,3 +78,5 @@ holidays
 markdown2
 sorl-thumbnail
 django-auth-ldap
+Cython
+pyrfc

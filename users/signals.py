@@ -58,7 +58,7 @@ def profile_receiver(sender, instance, created, **kwargs):
     
     else: # profile updated -> user update 
         # check if user exist before processing
-        if hasattr(instance, 'email') and hasattr(instance, 'user') and instance.user and instance.email != instance.user.email:
+        if hasattr(instance, 'email') and  instance.email and hasattr(instance, 'user') and instance.user and instance.email != instance.user.email:
             instance.user.email = instance.email
             instance.user.save(update_fields=['email'])
 

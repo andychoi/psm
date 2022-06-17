@@ -46,12 +46,6 @@
             <li><a class="dropdown-item" href="/admin/psm/program">Register Program</a></li>
             <div class="dropdown-divider"></div>
             <li><a class="dropdown-item" href="/admin">Admin - Home</a></li>
-            {% if user.is_superuser %}
-                <div class="dropdown-divider"></div>
-                <li><a class="dropdown-item" href="/admin/users/profilecbu/">Manage Profile CBU</a></li>
-                <li><a class="dropdown-item" href="/admin/users/profile/">Manage Profile</a></li>
-                <li><a class="dropdown-item" href="/admin/auth/user/">Manage User</a></li>
-            {% endif %}
           </ul>
         </li>
 
@@ -79,6 +73,26 @@
       </ul>
       <!-- Navbar Right Side -->
       <ul class="navbar-nav">
+
+        {% if user.is_superuser %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink9" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            System Admin
+          </a>
+          <ul class="dropdown-menu my-menu-2" aria-labelledby="navbarDropdownMenuLink9">
+            <li><a class="dropdown-item" href="/admin/users/profilecbu/">Manage Profile CBU</a></li>
+            <li><a class="dropdown-item" href="/admin/users/profile/">Manage Profile</a></li>
+            <li><a class="dropdown-item" href="/admin/auth/user/">Manage User</a></li>
+            <div class="dropdown-divider"></div>
+            <li><a class="dropdown-item" href="/admin">Admin - Home</a></li>
+          </ul>
+        </li>
+        {% endif %}
+
+        {% if users.profile.is_psmadm %}
+        <a class="dropdown-item" href="{% url 'post_create' %}">New Post</a>
+        {% endif %}
+
         <li class="nav-item">
         <!-- <div class=""> -->
           <form class="form-inline ">
@@ -91,25 +105,18 @@
           </form>
         <!-- </div> -->
 
+
         {% if not user.is_authenticated %}
           <li class="nav-item"><a class="nav-item nav-link" href="{% url 'login' %}">Login</a></li>
           <li class="nav-item"><a class="nav-item nav-link" href="{% url 'register' %}">Register</a></li>
           {% endif %}
         
-        {% if user.is_superuser %}
-        <!-- <li class="nav-item"><a class="nav-item nav-link" href="/admin">Admin</a></li> -->
-      
-        {% endif %}
-
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink9" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Help
           </a>
           <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink9">
             {% if user.is_authenticated %}
-              {% if users.profile.is_psmadm %}
-                <a class="dropdown-item" href="{% url 'post_create' %}">New Post</a>
-              {% endif %}
               <a class="dropdown-item" href="{% url 'about' %}">About</a>
               <a class="dropdown-item" href="/admin/blog/ticket">Bug tracker</a>
               <div class="dropdown-divider"></div>

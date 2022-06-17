@@ -46,6 +46,12 @@
             <li><a class="dropdown-item" href="/admin/psm/program">Register Program</a></li>
             <div class="dropdown-divider"></div>
             <li><a class="dropdown-item" href="/admin">Admin - Home</a></li>
+            {% if user.is_superuser %}
+                <div class="dropdown-divider"></div>
+                <li><a class="dropdown-item" href="/admin/users/profilecbu/">Manage Profile CBU</a></li>
+                <li><a class="dropdown-item" href="/admin/users/profile/">Manage Profile</a></li>
+                <li><a class="dropdown-item" href="/admin/auth/user/">Manage User</a></li>
+            {% endif %}
           </ul>
         </li>
 
@@ -101,7 +107,7 @@
           </a>
           <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink9">
             {% if user.is_authenticated %}
-              {% if user.profile.is_psmadm %}
+              {% if users.profile.is_psmadm %}
                 <a class="dropdown-item" href="{% url 'post_create' %}">New Post</a>
               {% endif %}
               <a class="dropdown-item" href="{% url 'about' %}">About</a>

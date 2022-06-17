@@ -10,7 +10,7 @@ from common.models import CBU, State, Priority, PRIORITIES, STATES
 from psm.models import Project
 from psmprj.utils.mail import send_mail_async as send_mail
 from hashlib import sha1
-from users.models import Profile, ProfileEmp
+from users.models import Profile
 
 logger = logging.getLogger(__name__)
 
@@ -93,7 +93,7 @@ class Task(models.Model):
     description = models.TextField(_("description"), max_length=2000, null=True, blank=True)
     resolution = models.TextField(_("resolution"), max_length=2000, null=True, blank=True)
     deadline = models.DateField(_("deadline"), null=True, blank=True)
-    user = models.ForeignKey(ProfileEmp, related_name='tasks_assigned', verbose_name=_('assigned to'),
+    user = models.ForeignKey(Profile, related_name='tasks_assigned', verbose_name=_('assigned to'),
                              on_delete=models.SET_NULL, null=True, blank=True)
     state = models.CharField(_("state"), max_length=20, choices=STATES, default=State.TO_DO.value)
     priority = models.CharField(_("priority"), max_length=20, choices=PRIORITIES, default=Priority.NORMAL.value)

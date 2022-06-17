@@ -1,5 +1,6 @@
 from django.apps import AppConfig
 from django.db.models.signals import pre_save
+from django.db import connection
 
 class UsersConfig(AppConfig):
     name = 'users'
@@ -11,4 +12,7 @@ class UsersConfig(AppConfig):
         import users.signals
 
         from . import scheduler
-        scheduler.start()
+
+        all_tables = connection.introspection.table_names()
+        if 'django_apscheduler_djangojob' in all_tables:
+            scheduler.start()

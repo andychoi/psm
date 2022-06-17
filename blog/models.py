@@ -144,6 +144,8 @@ class Ticket(models.Model):
 
     def __str__(self):
         return self.title
+    # class Meta:
+        # app_label = 'psm' -> table name... issue
 
 class TicketComment(models.Model):
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
@@ -154,3 +156,5 @@ class TicketComment(models.Model):
 
     def __str__(self):
         return self.comment
+    # class Meta:
+        # app_label = 'psm' -> table name... issue

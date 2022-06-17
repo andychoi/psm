@@ -33,7 +33,7 @@ class ReviewResource(resources.ModelResource):
 
     class Meta:
         model = Review
-        fields = ('id', 'title', 'status', 'priority', 'reqtype', 
+        fields = ('id', 'title', 'status', 'priority', 'state', 'reqtype', 
             'project__code', 'project__title', 'project__phase', 'project__state', 'project__pm__name', 'project__dept__name', 'project__team__name',
             'cbu_names',
             'project__p_ideation','project__p_plan_b','project__p_kickoff',

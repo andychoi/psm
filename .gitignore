@@ -39,6 +39,7 @@ venv*/
 # environment setting file
 /.env
 /.sapcfg.json
+db.json
 
 /htmlcov
 

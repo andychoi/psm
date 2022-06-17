@@ -11,7 +11,7 @@ from django.contrib import messages
 
 from common.models import CBU, Div, Dept, Team
 from common.models import Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, State3, STATE3, WBS, VERSIONS, Versions
-from users.models import Profile, ProfileEmp, ProfileCBU
+from users.models import Profile, ProfileCBU
 
 from psmprj.utils.mail import send_mail_async as send_mail, split_combined_addresses
 from psmprj.utils.dates import previous_working_day
@@ -102,7 +102,7 @@ class Project(models.Model):
     # is_unplanned = models.BooleanField(_("Unplanned project"), default=False)
 
     CBUs  = models.ManyToManyField(CBU, blank=True)
-    CBUpm = models.ForeignKey(ProfileCBU, related_name='cbu_pm', verbose_name=_('CBU PM'), on_delete=models.SET_NULL, null=True, blank=True)
+    CBUpm = models.ForeignKey(Profile, related_name='cbu_pm', verbose_name=_('CBU PM'), on_delete=models.PROTECT, null=True, blank=True)
     team = models.ForeignKey(Team, blank=True, null=True, on_delete=models.SET_NULL)
     dept = models.ForeignKey(Dept, blank=True, null=True, on_delete=models.SET_NULL)
     # div = models.ForeignKey(Div, blank=True, null=True, on_delete=models.PROTECT)
@@ -118,8 +118,8 @@ class Project(models.Model):
     status_s = models.CharField(_("status scope"), max_length=20, choices=STATUS, default=Status.NA.value)
     resolution = models.TextField(_("PM Memo"), max_length=2000, null=True, blank=True)
     #settings.AUTH_USER_MODEL - user directory...
-    pm = models.ForeignKey(ProfileEmp, related_name='project_manager', verbose_name=_('HAEA PM'),
-                           on_delete=models.SET_NULL, null=True, blank=True)
+    pm = models.ForeignKey(Profile, related_name='project_manager', verbose_name=_('HAEA PM'),
+                           on_delete=models.PROTECT, null=True, blank=True)
     state = models.CharField(_("state"), max_length=20, choices=STATES, default=State.TO_DO.value)
     phase = models.CharField(_("Phase"), max_length=20, choices=PHASE, default=Phase.PRE_PLAN.value)
     progress = models.SmallIntegerField(_("complete%"), default=0)
@@ -333,7 +333,7 @@ class ProjectPlan(models.Model):
     # is_unplanned = models.BooleanField(_("Unplanned project"), default=False)
 
     CBUs  = models.ManyToManyField(CBU, blank=True)
-    CBUpm = models.ForeignKey(ProfileCBU, related_name='req_cbu_pm', verbose_name=_('CBU PM'), on_delete=models.SET_NULL, null=True, blank=True)
+    CBUpm = models.ForeignKey(Profile, related_name='req_cbu_pm', verbose_name=_('CBU PM'), on_delete=models.SET_NULL, null=True, blank=True)
     team = models.ForeignKey(Team, blank=True, null=True, on_delete=models.SET_NULL)
     dept = models.ForeignKey(Dept, blank=True, null=True, on_delete=models.SET_NULL)
 
@@ -350,7 +350,7 @@ class ProjectPlan(models.Model):
     img_asis    = models.ImageField(_("As-Is Image"), upload_to='project/%Y', null=True, blank=True)  #default='default.jpg', 
     img_tobe    = models.ImageField(_("To-Be Image"), upload_to='project/%Y', null=True, blank=True)  #default='default.jpg', 
 
-    pm = models.ForeignKey(ProfileEmp, related_name='req_pm', verbose_name=_('HAEA PM'),
+    pm = models.ForeignKey(Profile, related_name='req_pm', verbose_name=_('HAEA PM'),
                            on_delete=models.SET_NULL, null=True, blank=True)
     priority = models.CharField(_("priority"), max_length=20, choices=PRIORITIES, default=Priority.NORMAL.value)
     est_cost = models.DecimalField(_("Est. cost"), decimal_places=0, max_digits=12, blank=True, null=True)
@@ -469,6 +469,7 @@ class ProjectDeliverableType(models.Model):
     def __str__(self):
         return self.name
     class Meta:
+        # app_label = 'common' -> issue in table name...
         verbose_name = _("Deliverable Type")
         verbose_name_plural = _("Deliverable Types")
 

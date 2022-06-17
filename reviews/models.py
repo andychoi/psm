@@ -19,7 +19,7 @@ class Review(models.Model):
     title = models.CharField(max_length=200)
 
     # related = models.ManyToManyField( to='common.Dept', related_name='related_depts')
-    state = models.CharField(_("PM Requested?"), max_length=10, choices=STATE3, null=True, blank=True)
+    state = models.CharField(_("Request Sent to Procurement?"), max_length=10, choices=STATE3, null=True, blank=True)
     req_content = models.TextField(_("Review request"), null=True, blank=True)
     proc_start = models.DateField(_("DESIRED start date"), null=True, blank=True)
     onboaddt = models.DateField(_("DESIRED onboarding date"), null=True, blank=True)
@@ -41,6 +41,7 @@ class Review(models.Model):
     updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="rev_updated_by", null=True, on_delete=models.SET_NULL)
 
     class Meta:
+        # app_label = 'reports' -> database is also changed... like reports_review
         #https://docs.djangoproject.com/en/2.1/topics/auth/customizing/#custom-permissions
         permissions = [
             (ReqTypes.PRO.value, 'ReqType - ' + ReqTypes.PRO.value[3:]),

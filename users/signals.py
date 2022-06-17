@@ -51,25 +51,17 @@ def save_profile(sender, instance, **kwargs):
                 instance.profile.email = instance.email
                 instance.profile.save(update_fields=['email'])
 
-# @receiver(post_save, sender=Profile)
-# def profile_receiver(sender, instance, created, **kwargs):
-#     if  created: # profile created
-#         pass 
+@receiver(post_save, sender=Profile)
+def profile_receiver(sender, instance, created, **kwargs):
+    if  created: # profile created
+        pass 
     
-#     else: # profile updated -> user update 
-#         # check if user exist before processing
-#         try:
-#             # if hasattr(instance, 'user') and instance.user != None: #user exist in linked way
-#             changed = False
-#             if hasattr(instance, 'email') and not instance.email is None and hasattr(instance.user, 'email'):                
-#                 if  instance.user.email != instance.email:
-#                     instance.user.email = instance.email
-#                     instance.user.save(update_fields=['email'])
-#             if hasattr(instance, 'is_active') and hasattr(instance.user, 'is_active'):                
-#                 if  instance.user.is_active != instance.is_active:
-#                     instance.user.is_active = instance.is_active
-#                     instance.user.save(update_fields=['is_active'])
-#                 # print("user updated")
-#         except Profile.DoesNotExist:
-#             print("user not exist!")
+    else: # profile updated -> user update 
+        # check if user exist before processing
+        if hasattr(instance, 'email') and hasattr(instance, 'user') and instance.user and instance.email != instance.user.email:
+            instance.user.email = instance.email
+            instance.user.save(update_fields=['email'])
+
+        # except Profile.DoesNotExist:
+        #     pass
 

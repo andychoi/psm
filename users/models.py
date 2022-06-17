@@ -57,6 +57,7 @@ class Profile(ProxySuper): #models.Model):
             return "%s [%s]" % (self.name, self.CBU)    #preferred
 
     class Meta:
+        # app_label = 'auth'  #circular dependency... FIXME
         permissions = [ ('admin', 'Can admin user'),
         ]        
 
@@ -98,11 +99,14 @@ class Profile(ProxySuper): #models.Model):
 class ProfileCBU(Profile):
     class Meta:
         proxy = True
+        # app_label = 'auth'   # admin menu location
+        verbose_name = _("Profile CBU")
+        verbose_name_plural = _("Profile CBU")
 
     objects = ProxyManager()
 
-class ProfileEmp(Profile):
-    class Meta:
-        proxy = True
+# class ProfileEmp(Profile):
+#     class Meta:
+#         proxy = True
 
-    objects = ProxyManager()
+#     objects = ProxyManager()

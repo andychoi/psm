@@ -5,7 +5,7 @@ from django_apscheduler.models import DjangoJobExecution
 import sys
 from django.contrib.auth.models import User, Group
 from django.conf import settings
-from .models import ProfileEmp, Profile
+from .models import Profile
 from psm.models import Project
 
 # This is the function you want to schedule - add as many as you want and then register them in the start() function below
@@ -49,4 +49,4 @@ def start():
 
     register_events(scheduler)
     scheduler.start()
-    print("Scheduler started...", file=sys.stdout)
+    # print("Scheduler started...", file=sys.stdout)

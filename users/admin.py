@@ -17,21 +17,21 @@ from django.utils.html import mark_safe
 from common.models import CBU, Div, Dept
 from psm.models import Project
 
-from .models import Profile, ProfileCBU, ProfileEmp
+from .models import Profile, ProfileCBU
 
 #for RAW query
 # from django.db import connection
-@admin.register(Profile)
-class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
-    list_display = ('proxy_name', 'id', 'user', 'name', 'email', 'dept', 'CBU', 'pm_count')
-    search_fields = ('id', 'name', 'email', 'CBU__name', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
-    list_display_links = ('id', 'name', 'email')
+# @admin.register(Profile)
+# class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
+#     list_display = ('proxy_name', 'id', 'user', 'name', 'email', 'dept', 'CBU', 'pm_count')
+#     search_fields = ('id', 'name', 'email', 'CBU__name', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
+#     list_display_links = ('id', 'name', 'email')
     
 
-@admin.register(ProfileEmp)
-class ProfileEmpAdmin(ImportExportMixin, admin.ModelAdmin):
+@admin.register(Profile)
+class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
     # list_display = ('id', 'user', 'name', 'email', 'dept', 'manager', 'u_div', 'CBU', 'is_active')
-    list_display = ('id', 'user', 'name', 'email', 'dept', 'is_active', 'is_staff', 'pm_count', 'goto_user')
+    list_display = ('id', 'user', 'name', 'email', 'dept', 'is_active', 'is_staff', 'proxy_name', 'pm_count', 'goto_user')
     list_display_links = ('id', 'name', 'email')
     search_fields = ('id', 'name', 'email', 'CBU__name', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
     ordering = ('CBU', 'dept', 'team', 'name', )
@@ -44,7 +44,7 @@ class ProfileEmpAdmin(ImportExportMixin, admin.ModelAdmin):
                             # ('job', 'department', 'manager', 'mobile', ),
                             # ('image',), 
                             )}),
-        (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by', 'migrated')), 'classes': ('collapse',)}),
+        (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by', 'proxy_name', 'migrated')), 'classes': ('collapse',)}),
     )
     list_filter = (
         # ('CBU', RelatedDropdownFilter),

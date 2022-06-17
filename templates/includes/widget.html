@@ -11,7 +11,7 @@
           <li class="list-group-item list-group-item-light"><a href="/admin/psm/project">Admin - project</a></li>
           <li class="list-group-item list-group-item-light"><a href="/admin/reports/report">Admin - status report</a></li>
           <li class="list-group-item list-group-item-light"><a href="/admin/reports/reportrisk">Admin - project risk</a></li>
-          {% if user.profile.is_psmadm %}
+          {% if users.profile.is_psmadm %}
           {% endif %}
         </ul>
         {% endif %}

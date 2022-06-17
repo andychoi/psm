@@ -435,10 +435,10 @@ class ProjectPlan(models.Model):
 
         super().save(*args, **kwargs)        
 
-        # if self.code is None:
-        #     prefix = 'BAP-' if self.version == Versions.V20.value else ('UNP-' if self.version == Versions.V21.value else 'REQ-')
-        #     self.code = prefix + f'{self.year % 100}-{"{:04d}".format(self.pk)}'    
-        #     self.save()
+        if self.code is None:
+            prefix = 'BAP-' if self.version == Versions.V20.value else ('UNP-' if self.version == Versions.V21.value else 'REQ-')
+            self.code = prefix + f'{self.year % 100}-{"{:04d}".format(self.pk)}'    
+            self.save()
 
     def clean(self):
         validation_errors = {}

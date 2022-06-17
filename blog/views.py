@@ -6,13 +6,8 @@ from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import PostForm
-from django.views.generic import (
-    CreateView,
-    ListView,
-    DetailView,
-    UpdateView,
-    DeleteView
-)
+from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
+
 # django_filter
 # from .filters import PostFilter
 # 

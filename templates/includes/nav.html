@@ -84,13 +84,17 @@
             <li><a class="dropdown-item" href="/admin/users/profile/">Manage Profile</a></li>
             <li><a class="dropdown-item" href="/admin/auth/user/">Manage User</a></li>
             <div class="dropdown-divider"></div>
+            <li><a class="dropdown-item" href="/admin/blog/post/">Manage Post</a></li>
+            <li><a class="dropdown-item" href="/admin/blog/ticket/">Manage Tickets</a></li>
+            <div class="dropdown-divider"></div>
             <li><a class="dropdown-item" href="/admin">Admin - Home</a></li>
           </ul>
         </li>
         {% endif %}
 
-        {% if users.profile.is_psmadm %}
-        <a class="dropdown-item" href="{% url 'post_create' %}">New Post</a>
+
+        {% if user.profile.is_psmadm %}
+        <li class="nav-item"><a class="nav-item nav-link"  href="/admin/blog/post/add/">New Post</a></li>
         {% endif %}
 
         <li class="nav-item">

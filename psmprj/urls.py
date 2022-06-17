@@ -43,10 +43,13 @@ urlpatterns = [
 
     path('api-auth/', include('rest_framework.urls')),
     re_path(r'^api/v1/', include(router.urls)),
-
-    # Blog urls
     # path('api-blog/', include('blog.api.urls')),
+    # urls handling app  routes
     path('', include('blog.urls')),
+    path('', include('reports.urls')),
+    path('', include('psm.urls')),
+    # path('', include('resources.urls')),
+
 
     # Authentication Urls
     path('register/', user_views.register, name='register'),
@@ -69,11 +72,6 @@ urlpatterns = [
         template_name='users/password_change.html'), name='password_change'),
     path('password-change/done/', auth_views.PasswordChangeDoneView.as_view(
         template_name='users/password_change_done.html'), name='password_change_done'),
-
-    # urls handling report app  routes
-    path('', include('reports.urls')),
-    path('', include('psm.urls')),
-    # path('', include('resources.urls')),
 
     # private media files
     # path('^media-private/', include(private_storage.urls)),

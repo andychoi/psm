@@ -47,8 +47,20 @@
       align-items: center;
       justify-content: center;
     }
-    .my-badge-font { font-size: 0.8em; font-weight: 100; }
+    .my-badge-font { font-size: 0.85em; font-weight: 100; }
+
+.borderless table {
+    border-top-style: none;
+    border-left-style: none;
+    border-right-style: none;
+    border-bottom-style: none;
+    border-color: rgb(197, 197, 197) !important;
+}    
 </style>
+
+<!-- https://getbootstrap.com/docs/5.0/examples/masonry/ -->
+<script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous" async></script>
+
 {% endblock %}
 
 {% block content %}
@@ -70,7 +82,8 @@
 
   </div><!--row-->
 
-  <div class="row m-3"> 
+  <div class="row m-3 " data-masonry='{"percentPosition": true }' style="position: relative;">
+     
     <!-- <div class="grid" style="--bs-columns: 3;"> -->
 
       <div class="col-4 ">
@@ -96,9 +109,74 @@
       </div><!--2nd-->
 
       
+      <div class="col-4 mb-3">
+        <div class="card w-100 mb-3">
+          <div class="card-body">
+            <h5 class="card-title">Status Information</h5>
+            <div class="row ms-2 media">
+              <table class="table table-borderless" >
+                <tr><td>State</td><td>{{ project.state|slice:'3:' }}</td></tr>
+                <tr><td>Phase</td><td>{{ project.phase|slice:'3:' }}</td></tr>
+                <tr><td>Complete%</td><td>{{ project.complete }}%</td></tr>
+                <tr><td>Health</td><td>
+                  Overall
+                  {%   if project.status_o|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
+                  {% elif project.status_o|slice:'0:1' == '2' %}<i class="text-warning bi-exclamation-circle"></i>
+                  {% elif project.status_o|slice:'0:1' == '3' %}<i class="text-danger  bi-exclamation-circle-fill"></i>
+                  {% elif project.status_o|slice:'0:1' == '9' %}<i class="text-primary bi-circle-fill"></i>
+                  {% else %}<i class="text-secondary  bi-dash-circle-dotted"></i>
+                  {% endif %}
+                  Schedule
+                  {%   if project.status_t|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
+                  {% elif project.status_t|slice:'0:1' == '2' %}<i class="text-warning bi-exclamation-circle"></i>
+                  {% elif project.status_t|slice:'0:1' == '3' %}<i class="text-danger  bi-exclamation-circle-fill"></i>
+                  {% elif project.status_t|slice:'0:1' == '9' %}<i class="text-primary bi-circle-fill"></i>
+                  {% else %}<i class="text-secondary  bi-dash-circle-dotted"></i>
+                  {% endif %}
+                  Scope
+                  {%   if project.status_s|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
+                  {% elif project.status_s|slice:'0:1' == '2' %}<i class="text-warning bi-exclamation-circle"></i>
+                  {% elif project.status_s|slice:'0:1' == '3' %}<i class="text-danger  bi-exclamation-circle-fill"></i>
+                  {% elif project.status_s|slice:'0:1' == '9' %}<i class="text-primary bi-circle-fill"></i>
+                  {% else %}<i class="text-secondary  bi-dash-circle-dotted"></i>
+                  {% endif %}
+                  Budget
+                  {%   if project.status_b|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
+                  {% elif project.status_b|slice:'0:1' == '2' %}<i class="text-warning bi-exclamation-circle"></i>
+                  {% elif project.status_b|slice:'0:1' == '3' %}<i class="text-danger  bi-exclamation-circle-fill"></i>
+                  {% elif project.status_b|slice:'0:1' == '9' %}<i class="text-primary bi-circle-fill"></i>
+                  {% else %}<i class="text-secondary  bi-dash-circle-dotted"></i>
+                  {% endif %}
+                </td></tr>
+                <tr><td>Last report</td><td>{{ project.lstrpt }}</td></tr>
+                <tr><td>PM memo</td><td>{{ project.resolution }}</td></tr>
+              </table>  
+            </div>
+          </div>
+        </div>
+      </div><!--1st-->
+
+      <div class="col-4 mb-3">
+        <div class="card w-100 ">
+          <div class="card-body">
+            <h5 class="card-title">Profile</h5>
+            <div class="row ms-2 media">
+              <table class="table table-borderless" >
+                <tr><td>Agile project?</td><td>{{ project.is_agile }}</td></tr>
+                <tr><td>Related Strategy</td><td>{{ project.strategy_str }}</td></tr>
+                <tr><td>Related Program</td><td>{{ project.program }}</td></tr>
+                <tr><td>CBU</td><td>{{ project.cbu_str }}</td></tr>
+                <tr><td>Est.cost</td><td>{{ project.est_cost }}</td></tr>
+                <tr><td>Approved budget</td><td>{{ project.app_budg }}</td></tr>
+                <tr><td>Reference Plan</td><td>{{ project.ref_plan }}</td></tr>
+              </table>  
+              </div>
+          </div>
+        </div>  
+      </div><!--2nd-->
 
       
-      <div class="col-4">
+      <div class="col-4 mb-3">
 
         <div class="card w-100 card-main">
           <div class="card-body">
@@ -108,7 +186,7 @@
                   <!-- https://mdbootstrap.com/docs/standard/extended/timeline/ -->
                   <ul class="timeline-with-icons">
                   {% for r in reports %}
-                    <li class="timeline-item mb-5">
+                    <li class="timeline-item mb-2">
                       <span class="timeline-icon fs-4">
                         {%   if r.status_o|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
                         {% elif r.status_o|slice:'0:1' == '2' %}<i class="text-warning bi-exclamation-circle"></i>
@@ -138,7 +216,7 @@
                         {% elif r.status_b|slice:'0:1' == '9' %} text-primary
                         {% else %} text-light text-dark  
                         {% endif %}" style="width: 3.5rem;">Budget</span>  
-                    <span class="small  fw-light text-black-50">{{ r.created_on }}</span></p>
+                    <span class="small  fw-light text-black-50"><a href="/reports/{{r.id}}/">{{ r.created_on }}</a></span></p>
                       </li>
                   {% endfor %}
                   </ul>
@@ -152,15 +230,15 @@
   </div><!--row-->
 
 
-  <div class="row mt-3 mb-0" style="padding-right:12px">
+  <!-- timeline -->
+  <!-- https://www.bootdey.com/snippets/view/bs4-Horizontal-timeline#preview -->
+  <!-- https://freefrontend.com/bootstrap-timelines/ -->
+  <!-- <div class="row mt-3 mb-0" style="padding-right:12px">
     <div class="card w-100 card-time" style="margin-left:12px;"" >
       <div class="card-body">
         <div clas="container">
         <h5 class="mb-0">Schedule</h5>
         
-<!-- timeline -->
-  <!-- https://www.bootdey.com/snippets/view/bs4-Horizontal-timeline#preview -->
-  <!-- https://freefrontend.com/bootstrap-timelines/ -->
 
           <div class="cd-horizontal-timeline loaded" style="margin-top:-24px;">
               <div class="timeline timelinepatch">
@@ -173,12 +251,12 @@
                   </div>
               </div>
           </div>
+      </div>
 
-<!-- timeline -->
-      </div>
-      </div>
     </div>
-  </div>
+    </div>
+  </div> -->
+
 </div>
 
 {% endblock %}

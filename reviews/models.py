@@ -61,7 +61,7 @@ class Review(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
-        if not self.CBUs:
+        if self.pk and not self.CBUs:   #needs to have a value for field "id" before this many-to-many relationship can be used.
             self.CBUs = self.project.CBUs
         super().save(*args, **kwargs)        
 

@@ -135,7 +135,7 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
         css = { 'all': ('psm/css/custom_admin.css',), }
 
     search_fields = ('id', 'title', 'asis', 'tobe', 'objective', 'consider', 'pm__name', 'CBUpm__name', 'CBUs__name')
-    list_display = ('version', 'pjcode',  'title', 'pm', 'dept', 'CBU_str', 'est_cost' )    #CBU many to many
+    list_display = ('version', 'pjcode',  'title', 'pm', 'dept', 'CBU_str', 'est_cost', 'view' )    #CBU many to many
     list_display_links = ('pjcode', 'title')
     list_editable = ("version", )
     list_filter = (
@@ -167,6 +167,9 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
                 , "classes": ("stack_labels",)}),
         (_('More...'), {'fields': ( ('created_at', 'updated_on'), 'created_by', ('attachment'),  ), 'classes': ('collapse',)}),
     )
+
+    def view(self, obj):
+        return mark_safe(f"<a class='btn btn-outline-success p-1 btn-sm adminlist' style='color:#000' href='/project-plan/{obj.id}'>View</a>")
 
     def get_fieldsets(self, request, obj=None): # Creation form
         return ( (None, { 'fields': self.plan_fields  }), )
@@ -342,7 +345,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         'all': ('psm/css/custom_admin.css',),
     }    
     search_fields = ('id', 'title', 'description', 'objective', 'resolution', 'code', 'wbs__wbs', 'es', 'ref', 'program__name', 'strategy__name', 'pm__name', 'CBUpm__name', 'CBUs__name')     #FIXME many to many
-    list_display = ('pjcode', 'title', 'pm', 'dept', 'phase', 'state', 'CBU_str', 'ITPC' )    #CBU many to many
+    list_display = ('pjcode', 'title', 'pm', 'dept', 'phase', 'state', 'CBU_str', 'view', 'ITPC' )    #CBU many to many
     list_display_links = ('pjcode', 'title')
     list_editable = ("phase", 'state',)
     list_filter = ('pm', 'dept', 'phase', 'state', 'CBU_str', )    #CBU many to many
@@ -388,6 +391,10 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         count = Review.objects.filter(project=obj).count()
         return mark_safe(f"<a class='btn btn-outline-success p-1 btn-sm adminlist' style='color:#000' href='/admin/reviews/review/?project__id__exact={obj.id}'>{count}</a>")
     ITPC.short_description = 'ITPC'
+
+    def view(self, obj):
+        count = Review.objects.filter(project=obj).count()
+        return mark_safe(f"<a class='btn btn-outline-success p-1 btn-sm adminlist' style='color:#000' href='/project/{obj.id}'>View</a>")
 
     def get_fieldsets(self, request, obj=None):
         fieldsets = super().get_fieldsets(request, obj)
@@ -520,8 +527,8 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     @admin.action(description="Request procurement(ITPC)", permissions=['change'])
     def create_review(self, request, queryset):
         for obj in queryset:
-            new_review = Review.objects.create(title='New Request', state=State3.YES, project=obj)
-            messages.add_message(request, messages.SUCCESS, mark_safe(" is forwarded to ITPC - <a href='/admin/reviews/review/%s'>review #%s</a>" % (new_review.id, new_review.id) ))
+            new_review = Review.objects.create(title='New Request', project=obj)
+            messages.add_message(request, messages.SUCCESS, mark_safe("New review is requested. <a href='/admin/reviews/review/%s'>review #%s</a>" % (new_review.id, new_review.id) ))
 
     changelist_actions = ['redirect_to_export', 'redirect_to_import']
     def redirect_to_export(self, request, obj):

@@ -55,7 +55,7 @@ class ReviewAdmin(ImportExportMixin, admin.ModelAdmin):
 
     def project_dept(self, obj):
         return obj.project.dept
-    list_display = ('formatted_rtype', 'project_link', 'title', 'proc_start',  'priority', 'is_escalated', 'project_dept', 'state', 'status', 'CBU_names', 'formatted_updated',)
+    list_display = ('formatted_rtype', 'project_view', 'title', 'proc_start',  'priority', 'is_escalated', 'project_dept', 'state', 'status', 'CBU_names', 'formatted_updated',)
     list_display_links = ('title', 'formatted_updated')
     ordering = ('-id',)
     readonly_fields = ('created_on', 'created_by', 'updated_on', 'updated_by', )
@@ -92,11 +92,15 @@ class ReviewAdmin(ImportExportMixin, admin.ModelAdmin):
 
     inlines = [ReviewInline]
 
-    def project_link(self, obj):
+    # def view_project(self, obj):
+    #     # count = Review.objects.filter(project=obj).count()
+    #     return mark_safe(f"<a class='btn btn-outline-success p-1 btn-sm adminlist' style='color:#000' href='/project/{obj.project.id}'>{obj.project}</a>")
+
+    def project_view(self, obj):
         if obj.project:
             return mark_safe('<a href="{}">{}</a>'.format(
-                reverse("admin:psm_project_change", args=(obj.project.pk,)), obj.project.title ))
-    project_link.short_description = 'Project'
+                reverse("project_detail", args=(obj.project.pk,)), obj.project ))
+    # project_link.short_description = 'Project'
 
     def formatted_rtype(self, obj):
         return obj.reqtype[3:]

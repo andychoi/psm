@@ -38,6 +38,7 @@ from common.models import Div, Dept, CBU
 from common.utils import PHASE, PRIORITIES, PRJTYPE, VERSIONS
 from .models import Project, Program, ProjectPlan
 from .tables import ProjectPlanTable
+from reports.models import Report
 # from .forms import ProjectPlanForm
 
 class ProjectListApiView(APIView):
@@ -292,7 +293,12 @@ class projectDetail(PermissionRequiredMixin, generic.DetailView):
 
     model = Project
     template_name = "project/project_detail.html"
-    context_object_name = 'project'
+    
+    # context_object_name = 'project'
+    def get_context_data(self, **kwargs):
+        reports = Report.objects.filter(project=self.object)
+        context = {"reports": reports}
+        return super().get_context_data(**context)
 
 
 class projectCreateView(PermissionRequiredMixin, generic.CreateView):

@@ -35,7 +35,7 @@ class PostManager(models.Manager):
     #     return is_liked
 
 class Tag(models.Model):
-    tag = models.CharField(_("Category"), max_length=20, blank=True, unique=True)
+    tag = models.CharField(_("Tag"), max_length=20, blank=True, unique=True)
     slug = models.SlugField(null=False, unique=True)
 
     def __str__(self):

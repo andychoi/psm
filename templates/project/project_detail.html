@@ -16,7 +16,38 @@
 </style>  
 
 <link href="{% static 'css/timeline.css' %}" rel="stylesheet">
+<style>
+    .timeline-with-icons {
+      border-left: 1px solid hsl(0, 0%, 90%);
+      position: relative;
+      list-style: none;
+      padding-left: 2rem
+    }
 
+    .timeline-with-icons .timeline-item {
+      position: relative;
+    }
+
+    .timeline-with-icons .timeline-item:after {
+      position: absolute;
+      display: block;
+      top: 0;
+    }
+
+    .timeline-with-icons .timeline-icon {
+      position: absolute;
+      left: -48px;
+      background-color: #fff; /* hsl(217, 88.2%, 90%); */
+      /* color: rgb(89, 90, 90); */
+      /* border-radius: 50%; */
+      height: 31px;
+      width: 31px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .my-badge-font { font-size: 0.8em; font-weight: 100; }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -41,36 +72,52 @@
   <div class="row m-3"> 
     <!-- <div class="grid" style="--bs-columns: 3;"> -->
 
-      <div class="col-4 ">
-        <div class="card w-100 card-main">
-          <div class="card-body">
-            <h5 class="card-title">As-Is</h5>
-            <div class="row ms-2 media">
-                
-                  {% if project.img_asis %}
-                  {% thumbnail project.img_asis "x300" crop="center" as asis %}
-                  <img src="{{ asis.url }}" width="{ asis.width }" height="{ asis.height }" alt="asis" class="mb-3">
-                  {% endthumbnail %} 
-                  </div><div class="row">
-                  {% endif %}
-                <p class="card-text">{{ project.asis }}</p>
-            </div>
-          </div>
-        </div>
-      </div><!--1st-->
 
-      <div class="col-4">
+
+      <div class="col-8">
         <div class="card w-100 card-main">
           <div class="card-body">
-            <h5 class="card-title">To-be</h5>
-            <div class="row ms-2 media">
-              {% if project.img_tobe %}
-              {% thumbnail project.img_tobe "x300" crop="center" as tobe %}
-              <img src="{{ tobe.url }}" width="{ tobe.width }" height="{ tobe.height }" alt="tobe" class="mb-3">
-              {% endthumbnail %} 
-              </div><div class="row">
-            {% endif %}
-              <p class="card-text">{{ project.tobe }}</p>
+            <h5 class="card-title">Timeline</h5>
+            <div class="row ms-3 mt-3 media">
+                  <!-- https://stackoverflow.com/questions/15300314/django-template-using-set-all -->
+                  <!-- https://mdbootstrap.com/docs/standard/extended/timeline/ -->
+                  <ul class="timeline-with-icons">
+                  {% for r in reports %}
+                    <li class="timeline-item mb-5">
+                      <span class="timeline-icon fs-4">
+                        {%   if r.status_o|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
+                        {% elif r.status_o|slice:'0:1' == '2' %}<i class="text-warning bi-exclamation-circle"></i>
+                        {% elif r.status_o|slice:'0:1' == '3' %}<i class="text-danger  bi-exclamation-circle-fill"></i>
+                        {% elif r.status_o|slice:'0:1' == '9' %}<i class="text-primary fas bi-circle-fill"></i>
+                        {% else %}<i class="text-secondary  bi-dash-circle-dotted"></i>
+                        {% endif %}
+                      </span>
+                      <p>  <span class="badge rounded text-center my-badge-font 
+                        {%   if r.status_t|slice:'0:1' == '1' %} text-success 
+                        {% elif r.status_t|slice:'0:1' == '2' %} text-warning
+                        {% elif r.status_t|slice:'0:1' == '3' %} text-danger  
+                        {% elif r.status_t|slice:'0:1' == '9' %} text-primary
+                        {% else %} text-light text-dark
+                        {% endif %}" style="width: 3.5rem;">Schedule</span>
+                        <span class="badge rounded text-center my-badge-font 
+                        {%   if r.status_s|slice:'0:1' == '1' %} text-success 
+                        {% elif r.status_s|slice:'0:1' == '2' %} text-warning
+                        {% elif r.status_s|slice:'0:1' == '3' %} text-danger  
+                        {% elif r.status_s|slice:'0:1' == '9' %} text-primary
+                        {% else %} text-light text-dark
+                        {% endif %}" style="width: 3.5rem;">Scope</span>
+                        <span class="badge rounded text-center  my-badge-font 
+                        {%   if r.status_b|slice:'0:1' == '1' %} text-success 
+                        {% elif r.status_b|slice:'0:1' == '2' %} text-warning
+                        {% elif r.status_b|slice:'0:1' == '3' %} text-danger  
+                        {% elif r.status_b|slice:'0:1' == '9' %} text-primary
+                        {% else %} text-light text-dark  
+                        {% endif %}" style="width: 3.5rem;">Budget</span>  
+                    <span class="small  fw-light text-black-50">{{ r.created_on }}</span></p>
+                      </li>
+                  {% endfor %}
+                  </ul>
+
             </div>
           </div>
         </div>  
@@ -99,43 +146,6 @@
     <!-- </div>grid -->
   </div><!--row-->
 
-
-  <div class="row m-3">
-
-    <div class="col-4">
-      <div class="card w-100 card-sub">
-        <div class="card-body">
-          <h5 class="card-title">Qualitative Benefit</h5><p class="card-text">{{ project.quali }}</p>
-        </div>
-      </div>
-    </div>
-    
-    <div class="col-4">
-      <div class="card w-100 card-sub">
-        <div class="card-body">
-          <h5 class="card-title">Quantitative Benefit</h5><p class="card-text">{{ project.quant }}</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-4">
-      <div class="card w-100 card-sub">
-        <div class="card-body">
-          <h5 class="card-title">Budget/Resource</h5>
-          <div class="card-text">
-            <div class="grid">
-              <div class="row">
-              <div class="col-3">Budget</div><div class="col-9">{{ project.quant }}</div>
-              </div><div class="row">
-                <div class="col-3">Resource</div><div class="col-9">{{ project.resource }}</div>
-              </div>
-            </grid>  
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>  
 
   <div class="row mt-3 mb-0" style="padding-right:12px">
     <div class="card w-100 card-time" style="margin-left:12px;"" >

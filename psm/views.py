@@ -256,7 +256,7 @@ class projectList1View(PermissionRequiredMixin, generic.ListView):
 	    # if req_page:
 	    #     return self.paginate_queryset(queryset, req_page)
 	
-            return queryset
+        return queryset
 
     # def paginator(self):
     # def paginate_queryset(self, queryset, page_size):

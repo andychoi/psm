@@ -131,7 +131,7 @@
                 <tr><td>Agile project?</td><td>{{ project.is_agile }}</td></tr>
                 <tr><td>Related Strategy</td><td>{{ project.strategy_str }}</td></tr>
                 <tr><td>Related Program</td><td>{{ project.program }}</td></tr>
-                <tr><td>Reference Plan</td><td><a href="/project-plan/{{ project.ref_plan.id }}/">{{ project.ref_plan }}</a></td></tr>
+                <tr><td>Reference Plan</td><td>{% if project.ref_plan %}<a href="/project-plan/{{ project.ref_plan.id }}/">{{ project.ref_plan }}</a>{% else %}None{% endif %}</td></tr>
               </table>  
               </div>
           </div>

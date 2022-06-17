@@ -47,9 +47,10 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
         (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by', 'proxy_name', 'migrated')), 'classes': ('collapse',)}),
     )
     list_filter = (
-        # ('CBU', RelatedDropdownFilter),
+        ('CBU', RelatedDropdownFilter),
         ('dept', RelatedDropdownFilter),
         ('team', RelatedDropdownFilter),
+        'user__is_staff',
         'user__is_active'
     )
     def get_fieldsets(self, request, obj=None):

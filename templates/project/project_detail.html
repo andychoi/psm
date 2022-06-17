@@ -1,5 +1,6 @@
 {% extends "base_wide.html" %}
 {% load static %}
+{% load markdown_extras %}
 {% load thumbnail %}
 
 {% block child_css %}
@@ -72,9 +73,33 @@
   <div class="row m-3"> 
     <!-- <div class="grid" style="--bs-columns: 3;"> -->
 
+      <div class="col-4 ">
+        <div class="card w-100">
+          <div class="card-body">
+            <h5 class="card-title">Description</h5>
+            <div class="row ms-2 media">
+                <p class="card-text">{{ project.description|md2|safe }}</p>
+            </div>
+          </div>
+        </div>
+      </div><!--1st-->
 
+      <div class="col-4">
+        <div class="card w-100 ">
+          <div class="card-body">
+            <h5 class="card-title">Objectives</h5>
+            <div class="row ms-2 media">
+              <p class="card-text">{{ project.objective|md2|safe }}</p>
+            </div>
+          </div>
+        </div>  
+      </div><!--2nd-->
 
-      <div class="col-8">
+      
+
+      
+      <div class="col-4">
+
         <div class="card w-100 card-main">
           <div class="card-body">
             <h5 class="card-title">Timeline</h5>
@@ -121,26 +146,6 @@
             </div>
           </div>
         </div>  
-      </div><!--2nd-->
-      
-      <div class="col-4">
-        <div class="card w-100 border-0"><div class="container" style="padding-left:12px; padding-right:12px;">
-          <div class="row border-0">
-            <div class="card w-100 card-obj">
-              <div class="card-body">
-                <h5 class="card-title">Objectives</h5><p class="card-text">{{ project.description }}</p>
-              </div>
-            </div>
-          </div><!--row-->
-
-          <div class="row">
-            <div class="card w-100 card-sub">
-              <div class="card-body">
-                <h5 class="card-title">Considerations</h5><p class="card-text">{{ project.consider }}</p>
-              </div>
-            </div>
-          </div><!--row-->
-        </div></div>
       </div><!--3rd col-->
 
     <!-- </div>grid -->

@@ -16,6 +16,8 @@
 </style>  
 
 <link href="{% static 'css/timeline.css' %}" rel="stylesheet">
+<!-- https://getbootstrap.com/docs/5.0/examples/masonry/ -->
+<script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous" async></script>
 
 {% endblock %}
 
@@ -23,11 +25,13 @@
 
 <div class="container-lg">
   <div class="row m-3">
-    <div class="col d-flex align-items-start">Project code : <b>{{ project.pjcode }}</b> <a href="/admin/psm/projectplan/{{ project.id }}"><i class="bi bi-pencil"></i></a></div>
+    <div class="col d-flex align-items-start">Project code : <b>{{ project.pjcode }}</b>
+       <a href="/admin/psm/projectplan/{{ project.id }}"><i class="bi bi-pencil"></i></a>
+    </div>
     <div class="col d-flex justify-content-end">Project year : <b>{{ project.year }}</b></div>
   </div>
   
-  <div class="row m-3 ">
+  <div class="row m-2 ">
     <!-- border-top border-bottom -->
     <div class="col-8"><div class="card w-100"><div class="card-body">
       <h5>Title: <b>{{ project.title }}</b></h5>
@@ -38,7 +42,7 @@
 
   </div><!--row-->
 
-  <div class="row m-3"> 
+  <div class="row m-2" data-masonry='{"percentPosition": true }' >
     <!-- <div class="grid" style="--bs-columns: 3;"> -->
 
       <div class="col-4 ">
@@ -86,7 +90,7 @@
             </div>
           </div><!--row-->
 
-          <div class="row">
+          <div class="row mt-2">
             <div class="card w-100 card-sub">
               <div class="card-body">
                 <h5 class="card-title">Considerations</h5><p class="card-text">{{ project.consider }}</p>
@@ -100,7 +104,7 @@
   </div><!--row-->
 
 
-  <div class="row m-3">
+  <div class="row m-2" data-masonry='{"percentPosition": true }' >
 
     <div class="col-4">
       <div class="card w-100 card-sub">
@@ -137,16 +141,15 @@
 
   </div>  
 
-  <div class="row mt-3 mb-0" style="padding-right:12px">
-    <div class="card w-100 card-time" style="margin-left:12px;"" >
-      <div class="card-body">
-        <div clas="container">
-        <h5 class="mb-0">Schedule</h5>
-        
-<!-- timeline -->
+  <!-- timeline -->
   <!-- https://www.bootdey.com/snippets/view/bs4-Horizontal-timeline#preview -->
   <!-- https://freefrontend.com/bootstrap-timelines/ -->
-
+    <div class="row mt-2 mb-2" style="margin-right:0; padding-right:0;" >
+      <div class="col-12  mt-3 mb-4" style="padding-right:0;" >
+      <div class="card w-100 card-time">
+        <div class="card-body">
+          <!-- <div clas="container"> -->
+          <h5 class="mb-0">Schedule</h5>
           <div class="cd-horizontal-timeline loaded" style="margin-top:-24px;">
               <div class="timeline timelinepatch">
                   <div class="events-wrapper">
@@ -154,16 +157,19 @@
                           <ol id="disp_list"></ol>
                           <span class="filling-line" aria-hidden="true"></span>
                       </div>
-                      <!-- .events -->
                   </div>
               </div>
           </div>
-
-<!-- timeline -->
+        <!-- </div> -->
+        </div>
       </div>
-      </div>
+    </div> <!--col12-->
     </div>
-  </div>
+
+    {% if actual.id %}
+      <a href="/project/{{ actual.id }}"><i class="bi bi-kanban"></i> Link to actual project</a>
+    {% endif %}
+
 </div>
 
 {% endblock %}

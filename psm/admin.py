@@ -148,7 +148,7 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
         ('priority',    UnionFieldListFilter),
     )
     ordering = ['version', '-id']  #Project_PRIORITY_FIELDS
-    readonly_fields = ('created_at', 'updated_on', 'created_by', 'image_tag_asis', 'image_tag_tobe' )
+    readonly_fields = ('created_at', 'updated_on', 'created_by', 'image_tag_asis', 'image_tag_tobe', 'released' )
     autocomplete_fields = ['pm', 'CBUs', 'strategy', 'CBUpm', 'program', 'team']
     plan_fields = [ ('title', 'year', 'version' ), 
                     ('type', 'priority'), 
@@ -160,7 +160,8 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
                     ('objective', 'consider'),
                     ('quali', 'quant'),
                     ('est_cost', 'resource'),
-                    ('p_ideation','p_plan_b','p_kickoff','p_design_b','p_dev_b','p_uat_b','p_launch','p_close')]
+                    ('p_ideation','p_plan_b','p_kickoff','p_design_b','p_dev_b','p_uat_b','p_launch','p_close'), ('released',)
+                ]
     fieldsets = (               # Edition form
         (None,  {'fields': plan_fields 
                 , "classes": ("stack_labels",)}),
@@ -264,6 +265,8 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
                 new_proj.p_uat_e    = obj.p_uat_e
                 new_proj.ref_plan   = obj
                 new_proj.save()
+                obj.released = new_proj
+                obj.save()
                 messages.add_message(request, messages.INFO, mark_safe("released to actual project to <a href='/admin/psm/project/%s'>%s</a>" % (new_proj.id, new_proj.pjcode) ))
 
 

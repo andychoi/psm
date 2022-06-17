@@ -297,7 +297,8 @@ class projectDetail(PermissionRequiredMixin, generic.DetailView):
     # context_object_name = 'project'
     def get_context_data(self, **kwargs):
         reports = Report.objects.filter(project=self.object)
-        context = {"reports": reports}
+        planprj = ProjectPlan.objects.filter(id=self.object.ref_plan.id) if self.object.ref_plan else None
+        context = {"reports": reports, "planprj" : planprj }
         return super().get_context_data(**context)
 
 
@@ -440,5 +441,14 @@ class projectPlanDetailView(PermissionRequiredMixin, generic.DetailView):
     permission_required = 'psm.view_projectplan'
     model = ProjectPlan
     template_name = "project/project_plan_detail.html"
+
     context_object_name = 'project'
 
+    def get_context_data(self, **kwargs):
+        # reports = Report.objects.filter(project=self.object)
+        try:
+            actual = Project.objects.get(id=self.object.released.id) if self.object.released else None
+        except:
+            actual = None
+        context = {"actual" : actual }
+        return super().get_context_data(**context)

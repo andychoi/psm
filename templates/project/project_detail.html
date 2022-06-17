@@ -17,46 +17,7 @@
 </style>  
 
 <link href="{% static 'css/timeline.css' %}" rel="stylesheet">
-<style>
-    .timeline-with-icons {
-      border-left: 1px solid hsl(0, 0%, 90%);
-      position: relative;
-      list-style: none;
-      padding-left: 2rem
-    }
-
-    .timeline-with-icons .timeline-item {
-      position: relative;
-    }
-
-    .timeline-with-icons .timeline-item:after {
-      position: absolute;
-      display: block;
-      top: 0;
-    }
-
-    .timeline-with-icons .timeline-icon {
-      position: absolute;
-      left: -48px;
-      background-color: #fff; /* hsl(217, 88.2%, 90%); */
-      /* color: rgb(89, 90, 90); */
-      /* border-radius: 50%; */
-      height: 31px;
-      width: 31px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .my-badge-font { font-size: 0.85em; font-weight: 100; }
-
-.borderless table {
-    border-top-style: none;
-    border-left-style: none;
-    border-right-style: none;
-    border-bottom-style: none;
-    border-color: rgb(197, 197, 197) !important;
-}    
-</style>
+<link href="{% static 'css/timeline_vertical.css' %}" rel="stylesheet">
 
 <!-- https://getbootstrap.com/docs/5.0/examples/masonry/ -->
 <script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous" async></script>
@@ -66,12 +27,12 @@
 {% block content %}
 
 <div class="container-lg">
-  <div class="row m-3">
+  <div class="row m-2">
     <div class="col d-flex align-items-start">Project code : <b>{{ project.pjcode }}</b> <a href="/admin/psm/project/{{ project.id }}"><i class="bi bi-pencil"></i></a></div>
     <div class="col d-flex justify-content-end">Project year : <b>{{ project.year }}</b></div>
   </div>
   
-  <div class="row m-3 ">
+  <div class="row m-2 ">
     <!-- border-top border-bottom -->
     <div class="col-8"><div class="card w-100"><div class="card-body">
       <h5>Title: <b>{{ project.title }}</b></h5>
@@ -82,11 +43,11 @@
 
   </div><!--row-->
 
-  <div class="row m-3 " data-masonry='{"percentPosition": true }' style="position: relative;">
+  <div class="row m-2 " data-masonry='{"percentPosition": true }' >
      
     <!-- <div class="grid" style="--bs-columns: 3;"> -->
 
-      <div class="col-4 ">
+      <div class="col-4 mt-2">
         <div class="card w-100">
           <div class="card-body">
             <h5 class="card-title">Description</h5>
@@ -97,7 +58,7 @@
         </div>
       </div><!--1st-->
 
-      <div class="col-4">
+      <div class="col-4 mt-2">
         <div class="card w-100 ">
           <div class="card-body">
             <h5 class="card-title">Objectives</h5>
@@ -109,8 +70,8 @@
       </div><!--2nd-->
 
       
-      <div class="col-4 mb-3">
-        <div class="card w-100 mb-3">
+      <div class="col-4 mt-2">
+        <div class="card w-100 ">
           <div class="card-body">
             <h5 class="card-title">Status Information</h5>
             <div class="row ms-2 media">
@@ -156,7 +117,7 @@
         </div>
       </div><!--1st-->
 
-      <div class="col-4 mb-3">
+      <div class="col-4 mt-2">
         <div class="card w-100 ">
           <div class="card-body">
             <h5 class="card-title">Profile</h5>
@@ -178,7 +139,7 @@
       </div><!--2nd-->
 
       
-      <div class="col-4 mb-3">
+      <div class="col-4 mt-2">
 
         <div class="card w-100 card-main">
           <div class="card-body">
@@ -229,19 +190,17 @@
       </div><!--3rd col-->
 
     <!-- </div>grid -->
-  </div><!--row-->
+  <!-- </div>row -->
 
 
   <!-- timeline -->
   <!-- https://www.bootdey.com/snippets/view/bs4-Horizontal-timeline#preview -->
   <!-- https://freefrontend.com/bootstrap-timelines/ -->
-  <!-- <div class="row mt-3 mb-0" style="padding-right:12px">
-    <div class="card w-100 card-time" style="margin-left:12px;"" >
-      <div class="card-body">
-        <div clas="container">
-        <h5 class="mb-0">Schedule</h5>
-        
-
+    <div class="col-12 mt-3 mb-4" >
+      <div class="card w-100 card-time">
+        <div class="card-body">
+          <div clas="container">
+          <h5 class="mb-0">Planned/Actual Schedule</h5>
           <div class="cd-horizontal-timeline loaded" style="margin-top:-24px;">
               <div class="timeline timelinepatch">
                   <div class="events-wrapper">
@@ -249,15 +208,14 @@
                           <ol id="disp_list"></ol>
                           <span class="filling-line" aria-hidden="true"></span>
                       </div>
-                      <!-- .events -->
                   </div>
               </div>
           </div>
-      </div>
-
-    </div>
-    </div>
-  </div> -->
+        </div>
+      </div><!--card body-->
+      </div><!--card-->
+    </div><!-- schedule 12col-->
+  </div>
 
 </div>
 

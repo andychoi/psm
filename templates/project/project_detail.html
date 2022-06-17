@@ -179,6 +179,7 @@
                         {% elif r.status_b|slice:'0:1' == '9' %} text-primary
                         {% else %} text-light text-dark  
                         {% endif %}" style="width: 3.5rem;">Budget</span>  
+                    <span class="">{{ r.complete }}%</span>
                     <span class="small  fw-light text-black-50"><a href="/reports/{{r.id}}/">{{ r.created_on }}</a></span></p>
                       </li>
                   {% endfor %}

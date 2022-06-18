@@ -4,7 +4,7 @@ from urllib.request import Request
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render, redirect
-from django.db.models import Count, Sum, Q
+from django.db.models import Count, Q, Sum, Subquery, OuterRef, When, Case, IntegerField
 from django.http import Http404
 from django.contrib.auth.decorators import login_required
 from rest_framework.views import APIView
@@ -330,36 +330,40 @@ def project_json_data1(request):
 
     # generic way - Filter the request for non-empty values and then use dictionary expansion to do the query.
     q =  {k:v for k, v in request.GET.items() if v}
-    q1 = Project.objects.filter(**q).aggregate(Sum('est_cost'))
+    # test = Project.objects.filter(**q).aggregate(Sum('est_cost'))
 
     # samples: https://betterprogramming.pub/django-annotations-and-aggregations-48685994d149
     # https://blog.logrocket.com/querysets-and-aggregations-in-django/
-
+    # README: https://stackoverflow.com/questions/33775011/how-to-annotate-count-with-a-condition-in-a-django-queryset
+    # README: https://stackoverflow.com/questions/50930002/django-annotate-sum-case-when-depending-on-the-status-of-a-field
     metrics = {
-        'cost_sum': Sum('est_cost', filter=Q(phase__gte='6')),
+        'cost_sum'      : Sum(  'est_cost'  ),
+        'completed'     : Count(Case( When(phase__gte='6', then=1), output_field=IntegerField(),  )),
+        'not_completed' : Count(Case( When(phase__lte='5', then=1), output_field=IntegerField(),  )),
     }
-    qs = Project.objects \
-        .filter(**q) \
-        .values('dept') \
-        .annotate(**metrics)
+    dataset = Project.objects.filter(**q).values('dept__name').annotate(**metrics).order_by('dept__name')
+    # print(dataset)
     
     # dataset = Project.objects \
     #     .filter(**q) \
-    #     .values('dept') \
-    #     .annotate(completed=Count('*'),  not_completed=Count('*'))
+    #     .values('dept__name') \
+    #     .annotate( completed     =Count(Case( When(phase__gte='6', then=1), output_field=IntegerField(),  )), 
+    #                not_completed =Count(Case( When(phase__lte='5', then=1), output_field=IntegerField(),  ))) \
+    #     .order_by('dept__name')
+    # print(dataset)
 
-    dataset = Dept.objects \
-        .values('name') \
-        .annotate(completed     =Count('project', filter=Q(project__phase__gte='6')),
-                  not_completed =Count('project', filter=Q(project__phase__lte='5'))) \
-        .order_by('name')
+    # dataset = Dept.objects \
+    #     .values('name') \
+    #     .annotate(completed     =Count('project', filter=Q(project__phase__gte='6')),
+    #               not_completed =Count('project', filter=Q(project__phase__lte='5'))) \
+    #     .order_by('name')
         
         
     categories = list()
     completed = list()
     not_completed = list()
     for entry in dataset:
-        categories.append('%s Class' % entry['name'])
+        categories.append('%s Class' % entry['dept__name'])
         completed.append(entry['completed'])
         not_completed.append(entry['not_completed'])
 

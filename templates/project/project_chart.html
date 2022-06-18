@@ -3,9 +3,15 @@
 {% block child_css %}
 <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.6.1/frappe-gantt.css" integrity="sha512-57KPd8WI3U+HC1LxsxWPL2NKbW82g0BH+0PuktNNSgY1E50mnIc0F0cmWxdnvrWx09l8+PU2Kj+Vz33I+0WApw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.6.1/frappe-gantt.min.js" integrity="sha512-HyGTvFEibBWxuZkDsE2wmy0VQ0JRirYgGieHp0pUmmwyrcFkAbn55kZrSXzCgKga04SIti5jZQVjbTSzFpzMlg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+<!-- https://github.com/frappe/gantt -->
 <link rel="stylesheet" href="/static/libs/frappe-gantt/frappe-gantt.css" />
-<script src="/static/libs/frappe-gantt/frappe-gantt.min.js"></script>
+<script src="/static/libs/frappe-gantt/frappe-gantt.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<script>
+.cc-red g rect { fill: red !important; }
+
+</script>
 {% endblock %}
 
 {% block content %}
@@ -13,7 +19,7 @@
     <!-- filter area -->
     <div style="display: flex; justify-content: space-between;">
         <div>
-            <h3>Projects</h3>
+            <h3>Project Gantt Chart</h3>
         </div>
         <div id="chart_filter_ctrl" style="height: 2rem; display: flex;">
             <label>Max Display Item:</label>
@@ -164,9 +170,31 @@
         if (tChartData.length > 0) {
             var tList = [];
             var tCounter = 0;
-            tChartData.forEach((pItem) => {
+            tChartData.forEach((pItem, i) => {
+                // limit in SVG
                 if (tCounter++ < tMaxItem) {
-                    tList.push({id: String(pItem.id), name: pItem.title, start: pItem.p_plan_b, end: pItem.p_close, progress: pItem.progress, custom_class: 'bar-milestoe'});
+                    // phase split - TODO
+                    // if (pItem.a_plan_e) {
+                    //     plan_progress = 100
+                    // } else {
+                    //     if (pItem.a_plan_b) {
+                    //         plan_progress = 50
+                    //     } else {
+                    //         plan_progress = 0
+                    //     }
+                    // }
+                    // tList.push({id: String(pItem.id), row_id: i, name: '',  start:  pItem.p_plan_b,     end: pItem.p_plan_e,    progress: 0, });
+                    // tList.push({id: String(pItem.id), row_id: i, name: '',  start:  pItem.p_design_b,   end: pItem.p_design_e,  progress: 0, });
+                    // tList.push({id: String(pItem.id), row_id: i, name: '',  start:  pItem.p_dev_b,      end: pItem.p_dev_e,     progress: 0, });
+                    // tList.push({id: String(pItem.id), row_id: i, name: '',  start:  pItem.p_uat_b,      end: pItem.p_uat_e,     progress: 0, });
+                    // tList.push({id: String(pItem.id), row_id: i, name: '',  start:  pItem.p_launch,     end: pItem.close,       progress: 0, });
+                    
+                    // // total plan
+                    // l_start = (pItem.a_plan_b) ? pItem.a_plan_b : pItem.p_plan_b 
+                    // l_end   = (pItem.a_close) ?  pItem.a_close  : pItem.p_close
+                    // tList.push({id: String(pItem.id), row_id: i, name: pItem.title, start: l_start, end: l_end, progress: pItem.progress, custom_class: 'cc-red'});
+                    
+                    tList.push({id: String(pItem.id), name: pItem.title, start: pItem.p_plan_b, end: pItem.p_close, progress: pItem.progress, custom_class: 'bar-milestone'});
                 }
             });
             if (tList.length > 0) {

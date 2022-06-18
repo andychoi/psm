@@ -10,11 +10,13 @@ from django.utils.translation import gettext_lazy as _
 import markdown2    #https://github.com/trentm/python-markdown2
 # from common.proxy import ProxyManager, ProxySuper
 
-class Category(enum.Enum):
-    DEFAULT = '00-Default'
+# class Category(enum.Enum):
+#     POST    = '00-POST'
+#     WIDGET  = '01-Widget'
 
-CATEGORIES = (
-    (Category.DEFAULT.value, Category.DEFAULT.value[3:]),
+POST_CATEGORY = (
+	(0, "Post"),
+	(1, "Widget"),
 )
 
 FEATURED = (
@@ -46,7 +48,7 @@ class Post(models.Model):
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
 
-    category = models.CharField(_("Category"), max_length=50, choices=CATEGORIES, default=Category.DEFAULT.value)
+    category = models.IntegerField(_("Category"), choices=POST_CATEGORY, default=0)
     tags  = models.ManyToManyField(Tag, blank=True) #, null=True)
     slug = models.SlugField(null=False, unique=True)
 
@@ -85,8 +87,20 @@ class Post(models.Model):
 
     def save(self, *args, **kwargs):
         self.updated_on = timezone.now()
+
         if not self.slug:
-            self.slug = slugify(self.title)
+            baseslug = slugify(self.title)
+            try:
+                last = Post.objects.filter(slug__regex="%s-\d+" % baseslug).latest('id')
+                # safe, becouse slugify won't return regex special chars
+                # also field with latest id will have highest counter in slug if it was populated that way
+                trash, count = last.slug.rsplit('-', 1)            
+                count = int(count)+1
+                self.slug = "%s-%d" % (baseslug, count)
+            except:
+                count = 1
+                self.slug = baseslug
+
         super(Post, self).save(*args, **kwargs)
 
     def get_absolute_url(self):

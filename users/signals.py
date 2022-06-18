@@ -64,4 +64,3 @@ def profile_receiver(sender, instance, created, **kwargs):
 
         # except Profile.DoesNotExist:
         #     pass
-

@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import PostForm
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
+from django.views.generic.edit import FormView
 
 # django_filter
 # from .filters import PostFilter
@@ -25,7 +26,8 @@ class PostListView(ListView):
         context = super().get_context_data(*args, **kwargs) #dict
         # context = self.get_queryset().values()
         # add additional object list
-        context['featured'] = self.model.objects.all().filter(featured=1).filter(status=1).order_by('date_posted')[:5]
+        context['featured'] = self.model.objects.all().filter(Q(featured=1) & Q(status=1)).order_by('date_posted')[:5]
+        context['widgets']  = self.model.objects.all().filter(Q(category=1) & Q(status=1)).order_by('date_posted')[:5]
 
         # https://stackoverflow.com/questions/59972694/django-pagination-maintaining-filter-and-order-by
         get_copy = self.request.GET.copy()
@@ -42,11 +44,11 @@ class PostListView(ListView):
             keyword = ''
         if (keyword != ''):
             object_list = self.model.objects.filter(
-                Q(status=1) & ~Q(featured=1) &                 #published only, exclude featured..
+                Q(category=0) & Q(status=1) & ~Q(featured=1) &                 #published only, exclude featured..
                 ( Q(content__icontains=keyword) | Q(title__icontains=keyword) ) )
         else:
             # object_list = self.model.objects.all()
-            object_list = self.model.objects.filter(status=1).filter(~Q(featured=1))   #published only
+            object_list = self.model.objects.filter(Q(category=0) & Q(status=1) & ~Q(featured=1))   #published only
         
         # breakpoint()
         if self.request.user.is_authenticated :   #not login
@@ -78,39 +80,34 @@ class PostDetailView(DetailView):
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
-    form_class = PostForm
-
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        return super().form_valid(form)
+    fields = ['title', 'content', 'image', 'featured', 'private', 'status', 'tags']
+    # template_name = 'blog/post_form.html'
+    success_url = '/'
 
 
+# https://stackoverflow.com/questions/6989762/what-does-test-func-and-view-func-do-in-python-django
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
-    fields = ['title', 'content', 'image', 'featured', 'private']
+    fields = ['title', 'content', 'image', 'featured', 'private', 'status', 'tags']
+    # template_name = 'blog/post_form.html'
 
     def form_valid(self, form):
         form.instance.author = self.request.user
         return super().form_valid(form)
 
     def test_func(self):
-        if self.request.user.is_superuser:
+        if self.request.user.is_superuser or self.request.user.profile.is_psmadmin :
             return True
-        post = self.get_object()
-        if self.request.user == post.author:
-            return True
-        return False
-
+        return True if self.request.user == self.get_object().author else False
 
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     success_url = '/'
 
     def test_func(self):
-        post = self.get_object()
-        if self.request.user == post.author:
+        if self.request.user.is_superuser:
             return True
-        return False
+        return True if self.request.user == self.get_object().author else False
 
 
 def about(request):

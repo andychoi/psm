@@ -1135,6 +1135,10 @@ var Gantt = (function () {
 
                 // cache index
                 task._index = i;
+                
+                //FIXME
+                //https://github.com/frappe/gantt/issues/95#issuecomment-1006711071
+                if (typeof task.row_id === 'number') { task._index = task.row_id; }
 
                 // invalid dates
                 if (!task.start && !task.end) {
@@ -1356,7 +1360,15 @@ var Gantt = (function () {
             });
         }
 
+        //FIXME https://github.com/frappe/gantt/issues/95#issuecomment-1006711071
         make_grid_rows() {
+            let counter_rows = 0;
+            const distinctRows = [...new Set(this.tasks.map(x => x.row_id))];
+            for (let row of distinctRows){
+                counter_rows = counter_rows + 1;
+            }
+            console.log(counter_rows + " unique rows")
+
             const rows_layer = createSVG('g', { append_to: this.layers.grid });
             const lines_layer = createSVG('g', { append_to: this.layers.grid });
 
@@ -1365,7 +1377,13 @@ var Gantt = (function () {
 
             let row_y = this.options.header_height + this.options.padding / 2;
 
-            for (let task of this.tasks) {
+            // for (let task of this.tasks) {
+            for (let row of distinctRows) {
+                    // console.log("for each log");
+                    // console.log(counter);
+                    // counter = counter + 1;
+                    // console.log(counter);
+                    // console.log('row id:' + task.row_id)                
                 createSVG('rect', {
                     x: 0,
                     y: row_y,

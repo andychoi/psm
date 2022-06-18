@@ -25,7 +25,7 @@
             <li><a class="dropdown-item" href="/admin/psm/projectplan/add/">Create Project Request / BAP</a></li>
             <li><a class="dropdown-item" href="/admin/psm/projectplan">Manage Project Request / BAP</a></li>
             <div class="dropdown-divider"></div>
-            <li><a class="dropdown-item" href="{% url 'project_plan' %}">Project Demand List</a></li>
+            <li><a class="dropdown-item" href="{% url 'project_plan_index' %}">Project Demand List</a></li>
           </ul>
 
 
@@ -57,14 +57,14 @@
             <!-- <li><a class="nav-item nav-link text-capitalize" href="{% url 'project_list1' %}">Project Dashboard</a></li>
             <li><a class="nav-item nav-link text-capitalize" href="/reports">Status Report</a></li>
             <li><a class="nav-item nav-link text-capitalize" href="/report-risks">Risk Report</a></li> -->
-
+            
             <li><a class="dropdown-item" href="{% url 'project_list1' %}">Project Dashboard</a></li>
             <li><a class="dropdown-item" href="/reports">Status Report List</a></li>
             <div class="dropdown-divider"></div>
             <li><a class="dropdown-item" href="/report-risks">Risk Report List</a></li>
             <div class="dropdown-divider"></div>
-            <li><a class="dropdown-item" href="/projectchart2">Gantt chart</a></li>
-            <li><a class="dropdown-item" href="/projectchart">Gantt chart (pilot)</a></li>
+            <li><a class="dropdown-item" href="{% url 'project_chart_1' %}">Gantt chart</a></li>
+            <li><a class="dropdown-item" href="{% url 'project_chart_2' %}">Gantt chart (pilot)</a></li>
             <div class="dropdown-divider"></div>
             <li><a class="dropdown-item" href="{% url 'project_list2' %}">Key project summary</a></li>
           </ul>
@@ -93,8 +93,8 @@
         {% endif %}
 
 
-        {% if user.profile.is_psmadm %}
-        <li class="nav-item"><a class="nav-item nav-link"  href="/admin/blog/post/add/">New Post</a></li>
+        {% if user.profile.is_psmadm or user.is_superuser %}
+        <li class="nav-item"><a class="nav-item nav-link"  href="/post/new/">New Post</a></li>
         {% endif %}
 
         <li class="nav-item">

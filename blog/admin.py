@@ -15,7 +15,7 @@ class TagAdmin(admin.ModelAdmin):
 class PostAdmin(admin.ModelAdmin):
     list_display = ('id', 'title', 'tags_', 'author', 'status', 'featured', 'private', )
     list_display_links = ('id', 'title')
-    list_filter = ('featured', 'private', 'category', 'author', 'date_posted')
+    list_filter = ('featured', 'private', 'author', 'date_posted')  #'category', 
     list_editable = ( 'status', 'featured', 'private')
     search_fields = ('id', 'title', 'content', 'author__profile__name')    
     list_per_page = 20

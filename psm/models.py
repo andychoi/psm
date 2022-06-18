@@ -223,6 +223,15 @@ class Project(models.Model):
         if self.code is None:
             self.code = f'{self.year % 100}-{"{:04d}".format(self.pk+2000)}'    #migration upto 1999
             self.save()
+        # backfill planning dates
+        if not self.p_launch:
+            self.p_launch = previous_working_day(self.p_close, 1)
+        if not self.p_plan_e:
+            self.p_plan_e = previous_working_day(self.p_design_b, 1)
+        if not self.p_design_e:
+            self.p_design_e = previous_working_day(self.p_uat_b, 1)
+        if not self.p_uat_e:
+            self.p_uat_e = previous_working_day(self.p_launch_b, 1)
 
         if send_email:
             # TODO Emails are sent to manager/HOD if the order is new

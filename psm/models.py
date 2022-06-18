@@ -122,7 +122,7 @@ class Project(models.Model):
                            on_delete=models.PROTECT, null=True, blank=True)
     state = models.CharField(_("state"), max_length=20, choices=STATES, default=State.TO_DO.value)
     phase = models.CharField(_("Phase"), max_length=20, choices=PHASE, default=Phase.PRE_PLAN.value)
-    progress = models.SmallIntegerField(_("complete%"), default=0)
+    progress = models.PositiveSmallIntegerField(_("complete%"), default=0)
     priority = models.CharField(_("priority"), max_length=20, choices=PRIORITIES, default=Priority.NORMAL.value)
 
     est_cost = models.DecimalField(_("Est. cost"), decimal_places=0, max_digits=12, blank=True, null=True)
@@ -223,15 +223,21 @@ class Project(models.Model):
         if self.code is None:
             self.code = f'{self.year % 100}-{"{:04d}".format(self.pk+2000)}'    #migration upto 1999
             self.save()
+
         # backfill planning dates
-        if not self.p_launch:
+        if not self.p_launch and self.p_close:
             self.p_launch = previous_working_day(self.p_close, 1)
-        if not self.p_plan_e:
+            self.save()
+        if not self.p_plan_e and self.p_design_b:
             self.p_plan_e = previous_working_day(self.p_design_b, 1)
-        if not self.p_design_e:
+            self.save()
+        if not self.p_design_e and self.p_uat_b:
             self.p_design_e = previous_working_day(self.p_uat_b, 1)
-        if not self.p_uat_e:
-            self.p_uat_e = previous_working_day(self.p_launch_b, 1)
+            self.save()
+        if not self.p_uat_e and self.p_launch:
+            self.p_uat_e = previous_working_day(self.p_launch, 1)
+            self.save()
+
 
         if send_email:
             # TODO Emails are sent to manager/HOD if the order is new

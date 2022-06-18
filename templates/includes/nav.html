@@ -64,7 +64,10 @@
             <li><a class="dropdown-item" href="/report-risks">Risk Report List</a></li>
             <div class="dropdown-divider"></div>
             <li><a class="dropdown-item" href="{% url 'project_chart_1' %}">Gantt chart</a></li>
-            <li><a class="dropdown-item" href="{% url 'project_chart_2' %}">Gantt chart (pilot)</a></li>
+            <li><a class="dropdown-item" href="{% url 'project_chart_2' %}">Gantt chart (pilot1)</a></li>
+    {% if user.is_superuser %}            
+            <li><a class="dropdown-item" href="{% url 'project_chart_3' %}">Gantt chart (pilot2)</a></li>
+    {% endif %}
             <div class="dropdown-divider"></div>
             <li><a class="dropdown-item" href="{% url 'project_list2' %}">Key project summary</a></li>
           </ul>

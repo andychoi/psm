@@ -1,8 +1,10 @@
+import json
+from django.http import JsonResponse
 from urllib.request import Request
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render, redirect
-from django.db.models import Q
+from django.db.models import Count, Sum, Q
 from django.http import Http404
 from django.contrib.auth.decorators import login_required
 from rest_framework.views import APIView
@@ -40,6 +42,8 @@ from .models import Project, Program, ProjectPlan
 from .tables import ProjectPlanTable
 from reports.models import Report
 # from .forms import ProjectPlanForm
+
+from common.models import Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, State3, STATE3, WBS, VERSIONS, Versions
 
 class ProjectListApiView(APIView):
     # add permission to check if user is authenticated
@@ -174,10 +178,10 @@ class projectList1View(PermissionRequiredMixin, generic.ListView):
             "key": "TYP", "text": "Type", "qId": "type", "selected": self.request.GET.get('type', '')
             , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRJTYPE)]
         } )
-	# context['filterItems'].append( {
-	#     "key": "PRI", "text": "Priority", "qId": "pri", "selected": self.request.GET.get('pri', '')
-	#     , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRIORITIES)]
-	# } )
+        # context['filterItems'].append( {
+        #     "key": "PRI", "text": "Priority", "qId": "pri", "selected": self.request.GET.get('pri', '')
+        #     , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRIORITIES)]
+        # } )
 		
         context['filterItems'].append( {
             "key": "PRG", "text": "Program", "qId": "prg", "selected": self.request.GET.get('prg', '')
@@ -269,15 +273,12 @@ class projectList1View(PermissionRequiredMixin, generic.ListView):
 
 class projectList2View(projectList1View):
     template_name = 'project/project_list2.html'
-
 class projectChartView(projectList1View):
     template_name = 'project/project_chart.html'
-
 class projectChartView2(projectList1View):
     template_name = 'project/project_chart2.html'
-
-class projectChartPlanView(projectList1View):
-    template_name = 'project/project_chart.html'
+class projectChartView3(projectList1View):
+    template_name = 'project/project_chart3.html'
 
     # django-tables2
     # class FilteredProjectPlanView(SingleTableMixin, FilterView):
@@ -286,7 +287,102 @@ class projectChartPlanView(projectList1View):
     #     template_name = 'project/project_plan.html'
     #     filterset_class = ProjectFilter
     #     table_pagination = {"per_page": 10}
+
+# https://simpleisbetterthancomplex.com/tutorial/2018/04/03/how-to-integrate-highcharts-js-with-django.html
+def project_data_view(request):
+    dataset = Dept.objects \
+        .values('name') \
+        .annotate(completed     =Count('project', filter=Q(project__phase__gte='6')),
+                  not_completed =Count('project', filter=Q(project__phase__lte='5'))) \
+        .order_by('name')
+
+    categories = list()
+    completed = list()
+    not_completed = list()
+
+    for entry in dataset:
+        categories.append('%s Class' % entry['name'])
+        completed.append(entry['completed'])
+        not_completed.append(entry['not_completed'])
+
+    return render(request, 'project/project_chart3.html', {
+        'categories': json.dumps(categories),
+        'completed': json.dumps(completed),
+        'not_completed': json.dumps(not_completed)
+    })
+    # return render(request, 'project/project_chart3.html', {'dataset': dataset})
+
+"""
+이거 써야겠다...
+https://django-plotly-dash.readthedocs.io/en/latest/index.html
+
+"""
+
+# -----------------------------------------------------------------------------------
+@login_required
+# @permission_required('psm.change_project', raise_exception=True)
+def project_json_view1(request):
+    return render(request, 'project/project_chart3.html')
+
+@login_required
+# @permission_required('psm.change_project', raise_exception=True)
+def project_json_data1(request):
+
+    # generic way - Filter the request for non-empty values and then use dictionary expansion to do the query.
+    q =  {k:v for k, v in request.GET.items() if v}
+    q1 = Project.objects.filter(**q).aggregate(Sum('est_cost'))
+
+    # samples: https://betterprogramming.pub/django-annotations-and-aggregations-48685994d149
+    # https://blog.logrocket.com/querysets-and-aggregations-in-django/
+
+    metrics = {
+        'cost_sum': Sum('est_cost', filter=Q(phase__gte='6')),
+    }
+    qs = Project.objects \
+        .filter(**q) \
+        .values('dept') \
+        .annotate(**metrics)
     
+    # dataset = Project.objects \
+    #     .filter(**q) \
+    #     .values('dept') \
+    #     .annotate(completed=Count('*'),  not_completed=Count('*'))
+
+    dataset = Dept.objects \
+        .values('name') \
+        .annotate(completed     =Count('project', filter=Q(project__phase__gte='6')),
+                  not_completed =Count('project', filter=Q(project__phase__lte='5'))) \
+        .order_by('name')
+        
+        
+    categories = list()
+    completed = list()
+    not_completed = list()
+    for entry in dataset:
+        categories.append('%s Class' % entry['name'])
+        completed.append(entry['completed'])
+        not_completed.append(entry['not_completed'])
+
+    completed = {
+        'name': 'completed',
+        'data': completed,
+        'color': 'green'
+    }
+
+    not_completed = {
+        'name': 'not_completed',
+        'data': not_completed,
+        'color': 'red'
+    }
+
+    chart = {
+        'chart': {'type': 'column'},
+        'title': {'text': 'Completion by Dept'},
+        'xAxis': {'categories': categories },
+        'series': [completed, not_completed]
+        }
+    return JsonResponse(chart)
+# -----------------------------------------------------------------------------------
 # class based view for each Project
 class projectDetail(PermissionRequiredMixin, generic.DetailView):
     permission_required = 'psm.view_projectplan'
@@ -339,6 +435,7 @@ class projectCreateView(PermissionRequiredMixin, generic.CreateView):
 #     return render(request, "project/project_update.html", context)
     
 
+# -----------------------------------------------------------------------------------
 class projectPlanListView(PermissionRequiredMixin, generic.ListView):
     permission_required = 'psm.view_projectplan'
 
@@ -436,6 +533,12 @@ class projectPlanListView(PermissionRequiredMixin, generic.ListView):
             queryset = queryset.filter(type=PRJTYPE[int(ltmp)][0])
 	
         return queryset
+
+
+# -----------------------------------------------------------------------------------
+class projectPlanChartView(projectPlanListView):
+    template_name = 'project/project_chart.html'
+
 
 class projectPlanDetailView(PermissionRequiredMixin, generic.DetailView):
     permission_required = 'psm.view_projectplan'

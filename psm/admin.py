@@ -120,7 +120,7 @@ class ProjectPlanResource(resources.ModelResource):
             # 'CBUs', 'cbu_names', 
             'pm_name', 'cbupm_name', 'cbu_names',  
             'strategy_names', 'program', 
-            'est_cost', 'resource', 'type', 'priority', 'dept', 'dept__name', 'dept__div', 'dept__div__name',  
+            'est_cost', 'resource', 'type', 'category', 'priority', 'dept', 'dept__name', 'dept__div', 'dept__div__name',  
             'p_ideation','p_plan_b','p_kickoff','p_design_b','p_dev_b','p_uat_b','p_launch','p_close',
         )
         export_order = fields
@@ -151,7 +151,7 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
     readonly_fields = ('created_at', 'updated_on', 'created_by', 'image_tag_asis', 'image_tag_tobe', 'released' )
     autocomplete_fields = ['pm', 'CBUs', 'strategy', 'CBUpm', 'program', 'team']
     plan_fields = [ ('title', 'year', 'version' ), 
-                    ('type', 'priority'), 
+                    ('type', 'category', 'priority'), 
                     ('strategy', 'program', 'is_agile'),
                     ('pm', 'team'),
                     ('CBUs', 'CBUpm'),
@@ -326,7 +326,7 @@ class ProjectResource(resources.ModelResource):
     class Meta:
         model = Project
         fields = ( 'id', 'year', 'code', 'title', 'description', 'objective', 'phase', 'state', 'progress', 'ref_plan__code',
-            'pm', 'pm__name',  'CBUs', 'cbu_names', 'strategy', 'strategy__name', 'program', 'program__name','type', 'priority', 
+            'pm', 'pm__name',  'CBUs', 'cbu_names', 'strategy', 'strategy__name', 'program', 'program__name','type', 'category', 'priority', 
             'est_cost', 'app_budg', 'dept', 'dept__name', 'dept__div', 'dept__div__name', 
             'p_ideation','p_plan_b','p_kickoff','p_design_b','p_dev_b','p_uat_b','p_launch','p_close',
             'a_plan_b','a_kickoff','a_design_b','a_dev_b','a_uat_b','a_launch','a_close',
@@ -371,7 +371,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     autocomplete_fields = ['pm', 'CBUs', 'strategy', 'CBUpm', 'program', 'ref_plan']
 
     fieldsets = (               # Edition form
-        (None,  {'fields': (('title', 'type', 'year', ), 
+        (None,  {'fields': (('title', 'type', 'category', 'year', ), 
                             ('state', 'phase', 'progress', 'priority'), 
                             ('status_o', 'status_t', 'status_b', 'status_s', 'lstrpt', 'resolution'), 
                             ), "classes": ("stack_labels",)}),

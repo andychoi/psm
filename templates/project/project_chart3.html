@@ -72,6 +72,23 @@
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
 <script src="https://code.highcharts.com/modules/export-data.js"></script>
 <script>
+    //second method using Json
+    arguments = window.location.href.split("?")[1]
+    if (arguments) {
+        callurl = $("#chart-json").attr("data-url") + "?" + arguments 
+    } else {
+        callurl = $("#chart-json").attr("data-url")  
+    }
+    console.log(callurl)
+    $.ajax({
+      url: callurl,  //$("#chart-json").attr("data-url") +  arguments, 
+      dataType: 'json',
+      success: function (data) {
+        Highcharts.chart("chart-json", data);
+      }
+    });
+
+// first method - return data series
 // Highcharts.chart('chart_area', {{ chart|safe }});
 // Highcharts.chart('container', {
 //       chart: {
@@ -93,14 +110,5 @@
 //           color: 'red'
 //       }]
 //   });
-
-  //second method using Json
-  $.ajax({
-      url: $("#chart-json").attr("data-url"),
-      dataType: 'json',
-      success: function (data) {
-        Highcharts.chart("chart-json", data);
-      }
-    });
 </script>
 {% endblock %}

@@ -341,7 +341,10 @@ def project_json_data1(request):
         'completed'     : Count(Case( When(phase__gte='6', then=1), output_field=IntegerField(),  )),
         'not_completed' : Count(Case( When(phase__lte='5', then=1), output_field=IntegerField(),  )),
     }
-    dataset = Project.objects.filter(**q).values('dept__name').annotate(**metrics).order_by('dept__name')
+    try:    # GET string may have wrong parameters
+        dataset = Project.objects.filter(**q).values('dept__name').annotate(**metrics).order_by('dept__name')
+    except:
+        return JsonResponse({})
     # print(dataset)
     
     # dataset = Project.objects \
@@ -363,7 +366,7 @@ def project_json_data1(request):
     completed = list()
     not_completed = list()
     for entry in dataset:
-        categories.append('%s Class' % entry['dept__name'])
+        categories.append('%s' % entry['dept__name'])
         completed.append(entry['completed'])
         not_completed.append(entry['not_completed'])
 

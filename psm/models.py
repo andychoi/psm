@@ -9,8 +9,9 @@ from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from django.contrib import messages
 
+from common.models import Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, State3, STATE3, PrjCate, PRJCATE
 from common.models import CBU, Div, Dept, Team
-from common.models import Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, State3, STATE3, WBS, VERSIONS, Versions
+from common.models import WBS, VERSIONS, Versions
 from users.models import Profile, ProfileCBU
 
 from psmprj.utils.mail import send_mail_async as send_mail, split_combined_addresses
@@ -94,6 +95,7 @@ class Project(models.Model):
 
     title = models.CharField(_("title"), max_length=200)
     type = models.CharField(_("type"), max_length=20, choices=PRJTYPE, default=PrjType.UNC.value)
+    category = models.CharField(_("Category"), max_length=20, choices=PRJCATE, default=PrjCate.APP.value)
     year = models.PositiveIntegerField(_("Year"), default=current_year(), validators=[MinValueValidator(2014), max_value_current_year])
     strategy = models.ManyToManyField(Strategy, blank=True)
     program = models.ForeignKey(Program, blank=True, null=True, on_delete=models.PROTECT)
@@ -339,7 +341,8 @@ class ProjectPlan(models.Model):
     code = models.CharField(_("Code"), max_length=18, null=True, blank=True) 
 
     title = models.CharField(_("title"), max_length=200)
-    type = models.CharField(_("type"), max_length=20, choices=PRJTYPE, default=PrjType.UNC.value)
+    type     = models.CharField(_("type"), max_length=20, choices=PRJTYPE, default=PrjType.UNC.value)
+    category = models.CharField(_("Category"), max_length=20, choices=PRJCATE, default=PrjCate.APP.value)
     year = models.PositiveIntegerField(_("Year"), default=current_year(), validators=[MinValueValidator(2014), max_value_current_year])
     strategy = models.ManyToManyField(Strategy, blank=True)
     program = models.ForeignKey(Program, blank=True, null=True, on_delete=models.PROTECT)

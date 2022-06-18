@@ -122,6 +122,16 @@ PRJTYPE = (
     (PrjType.UNC.value, _('Unclassified')),
 )
 
+class PrjCate(enum.Enum):
+    APP = '10-Application'
+    INF = '20-Infrastructure'
+    ASS = '30-Assessment/Audit'
+PRJCATE = (
+    (PrjCate.APP.value, _('Application')),
+    (PrjCate.INF.value, _('Infrastructure')),
+    (PrjCate.ASS.value, _('Assessment/Audit')),
+)
+
 class State3(enum.Enum):
     TBD = '0-TBD'
     YES = '1-Yes'

@@ -8,18 +8,25 @@ from .views import *
 # app_name="psm"
 
 urlpatterns = [
-	# home page to blog
-	#path('', views.IndexView.as_view(), name='project_index'),
-	path('project/', views.projectList1View.as_view(), name='project_list1'),
-	path('project/list2/', views.projectList2View.as_view(), name='project_list2'),
+	# home page 
+	path('project/', views.IndexView, name='project_index'),
+
+	path('project/year-options/', views.get_year_options, 	name='project_year_options'),
+	
+	
+	path('project/list1', views.projectList1View.as_view(), name='project_list1'),
+	path('project/list2', views.projectList2View.as_view(), name='project_list2'),
 	# path('project-list2/', views.project_list2, name='project_list2'),
+	path('project/list', projectList3View.as_view(), 		name="project_list"),
 
 	path('project/chart1/', views.projectChartView.as_view(), 	name='project_chart_1'),
 	path('project/chart2/', views.projectChartView2.as_view(), 	name='project_chart_2'),
 	path('project/chart3/', views.project_data_view, 			name='project_chart_3'),
 	
-    path('project/json/', 		views.project_json_view1, 	name='project_json_view1'),
-    path('project/json/data/', 	views.project_json_data1,	name='project_json_data1'),
+    # path('project/json/', 						views.project_json_view1, 	name='project_json_view1'),
+    path('project/json/get_completed_chart/<int:year>', views.get_completed_chart,	name='get_completed_chart'),
+    path('project/json/get_kickoff_chart/<int:year>', 	views.get_kickoff_chart,	name='get_kickoff_chart'),
+    path('project/json/get_launch_chart/<int:year>', 	views.get_launch_chart,	name='get_launch_chart'),
 
 	re_path(r'^project/(?P<pk>\d+)/$', views.projectDetail.as_view(), name='project_detail'),
 

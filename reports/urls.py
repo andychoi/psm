@@ -2,18 +2,18 @@
 from . import views
 from django.urls import path, include
 from .views import *
-from psm.views import projectList3View
+# from psm.views import projectList3View
 #from .feeds import blogFeed
 
 from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
 
-	path('report/test/', 		views.test_view),
-	path('report/test/dash', 	views.test_dash),
-	path('report/test/chart', 	views.test_chart),
-	path('report/test/table', 	views.test_table),
-	path('report/test/project', projectList3View.as_view()),
+	# path('report/test/', 		views.test_view),
+	# path('report/test/dash', 	views.test_dash),
+	# path('report/test/chart', 	views.test_chart),
+	# path('report/test/table', 	views.test_table),
+
 	
 	# home page
 

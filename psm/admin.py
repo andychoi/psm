@@ -325,7 +325,7 @@ class ProjectResource(resources.ModelResource):
     cbu_names=fields.Field(attribute='CBUs', widget=ManyToManyWidget(model=CBU, separator=',', field='name'), )
     class Meta:
         model = Project
-        fields = ( 'id', 'year', 'code', 'title', 'description', 'objective', 'phase', 'state', 'progress', 'ref_plan__code',
+        fields = ( 'id', 'year', 'code', 'cf', 'title', 'description', 'objective', 'phase', 'state', 'progress', 'ref_plan__code',
             'pm', 'pm__name',  'CBUs', 'cbu_names', 'strategy', 'strategy__name', 'program', 'program__name','type', 'category', 'priority', 
             'est_cost', 'app_budg', 'dept', 'dept__name', 'dept__div', 'dept__div__name', 
             'p_ideation','p_plan_b','p_kickoff','p_design_b','p_dev_b','p_uat_b','p_launch','p_close',
@@ -345,7 +345,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         'all': ('psm/css/custom_admin.css',),
     }    
     search_fields = ('id', 'title', 'description', 'objective', 'resolution', 'code', 'wbs__wbs', 'es', 'ref', 'program__name', 'strategy__name', 'pm__name', 'CBUpm__name', 'CBUs__name')     #FIXME many to many
-    list_display = ('pjcode', 'title', 'pm', 'dept', 'phase', 'state', 'CBU_str', 'view', 'ITPC' )    #CBU many to many
+    list_display = ('year', 'pjcode', 'title', 'pm', 'dept', 'phase', 'state', 'CBU_str', 'view', 'ITPC' )    #CBU many to many
     list_display_links = ('pjcode', 'title')
     list_editable = ("phase", 'state',)
     list_filter = ('pm', 'dept', 'phase', 'state', 'CBU_str', )    #CBU many to many
@@ -357,9 +357,10 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         ('CBUs', RelatedDropdownFilter),   #FIXME many to many
         ('dept', RelatedDropdownFilter),
         ('dept__div', RelatedDropdownFilter), #FIXME dept__div not working
-        # ('program', RelatedDropdownFilter),
+        ('program', RelatedDropdownFilter),
         ('priority', UnionFieldListFilter),
         # ('req_pro', DropdownFilter),
+        ('cf',          DropdownFilter),
         ('is_internal', DropdownFilter),
         # ('req_sec', DropdownFilter),
         # ('req_sec', DropdownFilter),
@@ -367,7 +368,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
 #        'deadline'
     )
     ordering = ['-id']  #Project_PRIORITY_FIELDS
-    readonly_fields = ('created_at', 'updated_on', 'created_by', 'lstrpt',  'link', )
+    readonly_fields = ('cf', 'created_at', 'updated_on', 'created_by', 'lstrpt',  'link', )
     autocomplete_fields = ['pm', 'CBUs', 'strategy', 'CBUpm', 'program', 'ref_plan']
 
     fieldsets = (               # Edition form
@@ -515,7 +516,25 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         # pass
 
 
-    actions = ['duplicate_project', 'create_review']
+    actions = ['carryfoward', 'duplicate_project', 'create_review']
+    @admin.action(description="Carryforward to next year", permissions=['change'])
+    def carryfoward(self, request, queryset):
+        for obj in queryset:
+
+            if Project.objects.filter(year=(obj.year+1), code=obj.code).exists():
+                messages.add_message(request, messages.ERROR, f'{obj.code} {obj.title} is already carryfoward done')
+                break
+            if obj.p_close.year <= obj.year:
+                messages.add_message(request, messages.ERROR, f'{obj.code} {obj.title} is planned to complete in {obj.year}. Please check project planned schedule')
+                break
+
+            obj.id = None   #same project code
+            obj.year = obj.year + 1
+            obj.cf = True   #carryforward 
+
+            obj.save()
+            messages.add_message(request, messages.INFO, ' is processed')
+
     @admin.action(description="Duplicate selected record", permissions=['change'])
     def duplicate_project(self, request, queryset):
         for object in queryset:

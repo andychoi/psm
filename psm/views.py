@@ -4,7 +4,8 @@ from urllib.request import Request
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render, redirect
-from django.db.models import Count, Q, Sum, Subquery, OuterRef, When, Case, IntegerField
+from django.db.models import Count, F, Q, Sum, Avg, Subquery, OuterRef, When, Case, IntegerField
+from django.db.models.functions import ExtractYear, ExtractMonth
 from django.http import Http404
 from django.contrib.auth.decorators import login_required
 from rest_framework.views import APIView
@@ -14,6 +15,8 @@ from rest_framework import permissions
 from rest_framework import generics
 from rest_framework import routers, serializers, viewsets
 from .serializers import ProjectSerializer
+from datetime import date
+from django.contrib.admin.views.decorators import staff_member_required
 
 # how to permission?? https://docs.djangoproject.com/en/4.0/topics/auth/default/#permission-caching
 # https://docs.djangoproject.com/en/4.0/topics/auth/default/#the-permission-required-decorator
@@ -44,6 +47,8 @@ from reports.models import Report
 # from .forms import ProjectPlanForm
 
 from common.models import Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, State3, STATE3, WBS, VERSIONS, Versions
+# for charting
+from .utils.charts import get_year_dict, generate_color_palette, colorPalette, colorPrimary, colorSuccess, colorDanger, months
 
 class ProjectListApiView(APIView):
     # add permission to check if user is authenticated
@@ -88,14 +93,12 @@ class ProjectListApiView(APIView):
 # https://medium.com/@ksarthak4ever/django-class-based-views-vs-function-based-view-e74b47b2e41b
 # class based vs. function based views
 
-class IndexView(PermissionRequiredMixin, generic.ListView):
-    permission_required = 'psm.view_project'
-    template_name = 'project/index.html'
-    context_object_name = 'latest_project_list'
-
-    def get_queryset(self):
-        """Return the last five project."""
-        return Project.objects.order_by('-updated_on')[:5]
+@staff_member_required
+def IndexView(request): 
+    context ={}
+     # add the dictionary during initialization
+    # context["data"] = ...
+    return render(request, "project/index.html", context)
 
 # https://django-filter.readthedocs.io/ -> error, don't use
 # https://django-tables2.readthedocs.io/ -> this is better, but...
@@ -122,18 +125,17 @@ class IndexView(PermissionRequiredMixin, generic.ListView):
 
 from django_filters.views import FilterView
 from .filters import ProjectFilter
-# class projectList2View(FilterView):
-# class projectList2View(generic.ListView):
-#     model = Project
-#     template_name = 'project/project_list2.html'
-#     context_object_name = 'project_list2'
-#     # filterset_class = ProjectFilter
 
-#     def get_queryset(self):
-#         # return Project.objects.all()[:25]
-#         qs = self.model.objects.all()
-#         project_filtered_list = ProjectFilter(self.request.GET, queryset=qs)
-#         return project_filtered_list.qs
+# @staff_member_required
+def get_year_options(request):
+    qs = Project.objects.values('year').order_by('-year').distinct()
+    options = [project['year'] for project in qs]
+
+    return JsonResponse({
+        'options': options,
+    })
+
+
 
 class projectList1View(PermissionRequiredMixin, generic.ListView):
     permission_required = 'psm.view_project'
@@ -152,11 +154,11 @@ class projectList1View(PermissionRequiredMixin, generic.ListView):
         # generic way to get dict
         q =  {k:v for k, v in self.request.GET.items() if v}
 
-        context['filterItems'] = []
-        context['filterItems'].append( {
-		"key": "YEAR", "text": "Year", "qId": "year", "selected": self.request.GET.get('year', '')
+        context['year_options'] = { "key": "YEAR", "text": "Year", "qId": "year", "selected": self.request.GET.get('year', '')
 		, "items": map( lambda x: {"id": x['year'], "name": x['year']}, Project.objects.values('year').distinct().order_by('-year') )
-        } )
+        }
+
+        context['filterItems'] = []
         context['filterItems'].append( {
 		"key": "DIV", "text": "Div", "qId": "div", "selected": self.request.GET.get('div', '')
 		, "items": Div.objects.all()
@@ -223,9 +225,9 @@ class projectList1View(PermissionRequiredMixin, generic.ListView):
         if (Project.objects.count() > 0):
             # queryset = Project.objects.all()
             queryset = Project.objects.filter(is_internal=False)    #exclude internal
-            ltmp = self.request.GET.get('year', '')
-            if ltmp:
-                queryset = queryset.filter(year=ltmp)
+            # ltmp = self.request.GET.get('year', '')
+            # if ltmp:
+            #     queryset = queryset.filter(year=ltmp)
 
             ltmp = self.request.GET.get('div', '')
             if ltmp:
@@ -274,8 +276,9 @@ class projectList1View(PermissionRequiredMixin, generic.ListView):
 #     project_filter = ProjectFilter(request.GET, queryset=project_list)
 #     return render(request, 'project/project_list2.html', {'filter': project_filter })    
 
-class projectList2View(projectList1View):
+class projectList2View(projectList1View): #FIXME year=date.today().year):
     template_name = 'project/project_list2.html'
+
 class projectList3View(projectList1View):
     template_name = 'project/project_list1-new.html'
 
@@ -295,6 +298,7 @@ class projectChartView3(projectList1View):
     #     table_pagination = {"per_page": 10}
 
 # https://simpleisbetterthancomplex.com/tutorial/2018/04/03/how-to-integrate-highcharts-js-with-django.html
+# https://testdriven.io/blog/django-charts/
 def project_data_view(request):
     dataset = Dept.objects \
         .values('name') \
@@ -319,7 +323,7 @@ def project_data_view(request):
     # return render(request, 'project/project_chart3.html', {'dataset': dataset})
 
 """
-이거 써야겠다...
+이거 어떨지...
 https://django-plotly-dash.readthedocs.io/en/latest/index.html
 
 """
@@ -331,8 +335,9 @@ def project_json_view1(request):
     return render(request, 'project/project_chart3.html')
 
 @login_required
+# @staff_member_required
 # @permission_required('psm.change_project', raise_exception=True)
-def project_json_data1(request):
+def get_completed_chart(request, year):
 
     # generic way - Filter the request for non-empty values and then use dictionary expansion to do the query.
     q =  {k:v for k, v in request.GET.items() if v}
@@ -352,23 +357,8 @@ def project_json_data1(request):
     except:
         return JsonResponse({})
     # print(dataset)
-    
-    # dataset = Project.objects \
-    #     .filter(**q) \
-    #     .values('dept__name') \
-    #     .annotate( completed     =Count(Case( When(phase__gte='6', then=1), output_field=IntegerField(),  )), 
-    #                not_completed =Count(Case( When(phase__lte='5', then=1), output_field=IntegerField(),  ))) \
-    #     .order_by('dept__name')
-    # print(dataset)
-
-    # dataset = Dept.objects \
-    #     .values('name') \
-    #     .annotate(completed     =Count('project', filter=Q(project__phase__gte='6')),
-    #               not_completed =Count('project', filter=Q(project__phase__lte='5'))) \
-    #     .order_by('name')
         
-        
-    categories = list()
+    categories = list() #dict()
     completed = list()
     not_completed = list()
     for entry in dataset:
@@ -376,25 +366,70 @@ def project_json_data1(request):
         completed.append(entry['completed'])
         not_completed.append(entry['not_completed'])
 
-    completed = {
-        'name': 'completed',
-        'data': completed,
-        'color': 'green'
-    }
+    completed = { 'name': 'completed', 'data': completed, 'color': 'green' }
+    not_completed = { 'name': 'not_completed', 'data': not_completed, 'color': 'red' }
 
-    not_completed = {
-        'name': 'not_completed',
-        'data': not_completed,
-        'color': 'red'
-    }
-
-    chart = {
+    return JsonResponse({
         'chart': {'type': 'column'},
-        'title': {'text': 'Completion by Dept'},
+        'title': {'text': f'Completion by Dept in {year}'},
         'xAxis': {'categories': categories },
         'series': [completed, not_completed]
-        }
-    return JsonResponse(chart)
+    })
+
+@staff_member_required
+def get_kickoff_chart(request, year):
+    ps = Project.objects.filter(year=year)
+    grouped_ps = ps.annotate(month=ExtractMonth('a_kickoff'))\
+        .values('month').annotate(count=Count('code')).values('month', 'count').order_by('month')
+
+    data_dict = get_year_dict()
+
+    for group in grouped_ps:
+        if not group['month'] is None:
+            data_dict[months[group['month']-1]] = group['count']
+
+    return JsonResponse({
+        'title': f'Kickoff in {year}',
+        'data': {
+            'labels': list(data_dict.keys()),
+            'datasets': [{
+                'label': 'Amount ($)',
+                'backgroundColor': colorPrimary,
+                'borderColor': colorPrimary,
+                'data': list(data_dict.values()),
+            }]
+        },
+    })
+
+@staff_member_required
+def get_launch_chart(request, year):
+    # ps = Project.objects.filter(year=year)
+    # grouped_ps = ps.annotate(month=ExtractMonth('a_launch'))\
+    #     .values('month').annotate(count=Count('ps')).values('month', 'count').order_by('month')
+
+    # ps = Project.objects.filter(year=year)
+    grouped_ps = Project.objects.all().annotate(month=ExtractMonth('a_launch'))\
+        .values('month').annotate(count=Count('code')).values('month', 'count').order_by('month')
+
+    data_dict = get_year_dict()
+
+    for group in grouped_ps:
+        if not group['month'] is None:
+            data_dict[months[group['month']-1]] = group['count']
+
+    return JsonResponse({
+        'title': f'Launched in {year}',
+        'data': {
+            'labels': list(data_dict.keys()),
+            'datasets': [{
+                'label': 'Amount ($)',
+                'backgroundColor': colorPrimary,
+                'borderColor': colorPrimary,
+                'data': list(data_dict.values()),
+            }]
+        },
+    })
+
 # -----------------------------------------------------------------------------------
 # class based view for each Project
 class projectDetail(PermissionRequiredMixin, generic.DetailView):
@@ -405,7 +440,7 @@ class projectDetail(PermissionRequiredMixin, generic.DetailView):
     
     # context_object_name = 'project'
     def get_context_data(self, **kwargs):
-        reports = Report.objects.filter(project=self.object)
+        reports = Report.objects.filter(project__in=Project.objects.filter(code=self.object.code))
         planprj = ProjectPlan.objects.filter(id=self.object.ref_plan.id) if self.object.ref_plan else None
         context = {"reports": reports, "planprj" : planprj }
         return super().get_context_data(**context)

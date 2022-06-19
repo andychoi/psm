@@ -1,1 +1,159 @@
+{% extends "theme/root.html" %}
+{% load static %}
 
+{% block head_script %}
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.css">
+    <!-- <link href="/static/theme/assets/vendor/datatables/datatables.min.css" rel="stylesheet"> -->
+    <link href="{% static 'css/tablelist.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+	<div class="container">
+
+        <form id="filterForm">
+            <label for="year">Choose a year:</label>
+            <select name="year" id="year"></select>
+            <input type="submit" value="Load" name="_load">
+        </form>
+
+
+        <!-- 2nd row -->
+        <div class="row">
+            <div class="col-6">
+                <canvas id="Completed_chart"></canvas>
+              </div>
+              <div class="col-6">
+                <canvas id="Kickoff_chart"></canvas>
+              </div>
+              <div class="col-6">
+                <canvas id="Launch_chart"></canvas>
+              </div>
+
+            </div>            
+
+		</div>		
+	</div>
+
+{% endblock content %}
+
+
+<!-- Other script here -->
+{% block script_body %}
+
+
+{% endblock %}
+
+<!-- nav filter script -->
+{% block script_nav %} 
+
+<script>
+  $(document).ready(function() {
+    $.ajax({
+      url: "/project/year-options/",
+      type: "GET",
+      dataType: "json",
+      success: (jsonResponse) => {
+        // Load all the options
+        jsonResponse.options.forEach(option => {
+          $("#year").append(new Option(option, option));
+        });
+        // Load data for the first option
+        loadAllCharts($("#year").children().first().val());
+      },
+      error: () => console.log("Failed to fetch chart filter options!")
+    });
+  });    
+
+  $("#filterForm").on("submit", (event) => {
+  event.preventDefault();
+
+  const year = $("#year").val();
+  loadAllCharts(year)
+});
+
+function loadChart(chart, endpoint) {
+  $.ajax({
+    url: endpoint,
+    type: "GET",
+    dataType: "json",
+    success: (jsonResponse) => {
+      // Extract data from the response
+      const title = jsonResponse.title;
+      const labels = jsonResponse.data.labels;
+      const datasets = jsonResponse.data.datasets;
+
+      // Reset the current chart
+      chart.data.datasets = [];
+      chart.data.labels = [];
+
+      // Load new data into the chart
+      chart.options.title.text = title;
+      chart.options.title.display = true;
+      chart.data.labels = labels;
+      datasets.forEach(dataset => {
+        chart.data.datasets.push(dataset);
+      });
+      chart.update();
+    },
+    error: () => console.log("Failed to fetch chart data from " + endpoint + "!")
+  });
+}
+
+function loadAllCharts(year) {
+  loadChart(Completed_chart,    `/project/json/get_completed_chart/${year}/`);
+  loadChart(Kickoff_chart,      `/project/json/get_kickoff_chart/${year}/`);
+  loadChart(Launch_chart,       `/project/json//get_lauhch_chart/${year}/`);
+
+}
+
+</script>
+
+<script>
+    let completeCtx = document.getElementById("Completed_chart").getContext("2d");
+    let Completed_chart = new Chart(completeCtx, {
+      type: "bar",
+      options: {
+        responsive: true,
+      }
+    });
+    let kickoffCtx = document.getElementById("Kickoff_chart").getContext("2d");
+    let Kickoff_chart = new Chart(kickoffCtx, {
+      type: "line",
+      options: {
+        responsive: true,
+      }
+    });
+    let launchCtx = document.getElementById("Launch_chart").getContext("2d");
+    let Launch_chart = new Chart(launchCtx, {
+      type: "Line",
+      options: {
+        responsive: true,
+        // layout: {
+        //   padding: {
+        //     left: 0,
+        //     right: 0,
+        //     top: 0,
+        //     bottom: 25
+        //   }
+        // }
+      }
+    });
+    // let paymentMethodCtx = document.getElementById("paymentMethodChart").getContext("2d");
+    // let paymentMethodChart = new Chart(paymentMethodCtx, {
+    //   type: "pie",
+    //   options: {
+    //     responsive: true,
+    //     // layout: {
+    //     //   padding: {
+    //     //     left: 0,
+    //     //     right: 0,
+    //     //     top: 0,
+    //     //     bottom: 25
+    //     //   }
+    //     // }
+    //   }
+    // });
+
+  </script>
+
+{% endblock %}

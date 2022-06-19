@@ -2,6 +2,7 @@ import ast
 import sys
 import logging
 import datetime
+import cffi
 from django.core.validators import validate_email, MaxValueValidator, MinValueValidator
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -78,6 +79,20 @@ class Program(models.Model):
     def __str__(self):
         return self.name
 
+# ----------------------------------------------------------------------------------------------------
+class ProjectManager(models.Manager):
+    def others(self, pk, **kwargs):
+        """
+        Return queryset with all objects
+        excluding the one with the "pk" passed, and carryfoward but
+        applying the filters passed in "kwargs".
+        """
+        if pk:
+            obj = Project.objects.get(pk=pk)
+            return self.exclude(pk=pk).exclude(code=obj.code).filter(**kwargs)
+        else: #new record
+            return self.filter(**kwargs)
+
 
 # Fields used to create an index in the DB and sort the Projects in the Admin
 Project_PRIORITY_FIELDS = ('state', '-priority', '-lstrpt')
@@ -92,6 +107,7 @@ class Project(models.Model):
         ]
 
     code = models.CharField(_("Code"), max_length=18, null=True, blank=True) 
+    cf   = models.BooleanField(_("carryforward?"),default=False)
 
     title = models.CharField(_("title"), max_length=200)
     type = models.CharField(_("type"), max_length=20, choices=PRJTYPE, default=PrjType.UNC.value)
@@ -177,17 +193,18 @@ class Project(models.Model):
                                    on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(_("created at"), auto_now_add=True,   editable=False)
     updated_on = models.DateTimeField(_("updated_on"), auto_now=True,       editable=False)
+    last_accessed = models.DateTimeField(blank=True, null=True)
 
     attachment=models.FileField(_("attachment"), upload_to='project/%Y', null=True, blank=True)
 
-    objects = ObjectManager()
+    objects = ProjectManager()
 
     def __str__(self):
-        return "[%s] %s" % (self.code, self.title) if self.pk else self.title
+        return f'[{self.code}{"*" if self.cf else ""}] {self.title}' 
 
     @property
     def pjcode(self) -> str:
-        return f'{self.year % 100}-{"{:04d}".format(self.pk)}' if (self.code is None) and (not self.pk is None) else self.code    
+        return f'{self.year % 100}-{"{:04d}".format(self.pk)}' if (self.code is None) and (not self.pk is None) else f'{self.code}{"*" if self.cf else ""}'    
     @property
     def CBU_str(self):
         return " ,".join(p.name for p in self.CBUs.all())

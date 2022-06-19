@@ -10,8 +10,10 @@ from .views import *
 urlpatterns = [
 	# home page 
 	path('project/', views.IndexView, name='project_index'),
+	path('project/stat/<int:year>', views.get_project_stats, name='get_project_stats'),
 
 	path('project/year-options/', views.get_year_options, 	name='project_year_options'),
+	
 	
 	
 	path('project/list1', views.projectList1View.as_view(), name='project_list1'),

@@ -430,6 +430,19 @@ def get_launch_chart(request, year):
         },
     })
 
+#-----------------------------------------------------------------------------------
+@staff_member_required
+def get_project_stats(request, year):
+
+    import pandas as pd
+    q =  {k:v for k, v in request.GET.items() if v}
+    items = Project.objects.filter(**q).values()
+    df = pd.DataFrame(items)
+    myDict = {
+        "df": df.to_html()
+    }
+    return render(request, 'project/test-pandas.html', context=myDict)
+
 # -----------------------------------------------------------------------------------
 # class based view for each Project
 class projectDetail(PermissionRequiredMixin, generic.DetailView):

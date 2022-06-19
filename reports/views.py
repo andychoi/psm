@@ -88,3 +88,22 @@ class reportRisks(PermissionRequiredMixin, generic.ListView):
 	paginate_by = 10
 	context_object_name = 'report_risks'
     
+
+# pass id attribute from urls
+def test_view(request): #, id):
+    context ={}
+ 
+    # add the dictionary during initialization
+    # context["data"] = GeeksModel.objects.get(id = id)
+         
+    return render(request, "theme/index.html", context)
+def test_dash(request):
+    return render(request, "theme/dashboard.html")
+
+def test_chart(request):
+    return render(request, "theme/charts.html")
+def test_table(request):
+    return render(request, "theme/tables.html")
+def test_pages(request):
+    return render(request, "theme/blank.html")
+	

@@ -1,0 +1,143 @@
+{% load static %}
+<!-- navbar navigation component -->
+<nav class="navbar navbar-expand-lg navbar-white bg-white">
+    <button type="button" id="sidebarCollapse" class="btn btn-light">
+        <i class="fas fa-bars"></i><span></span>
+    </button>
+
+
+
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <!-- <a class="navbar-brand" href="{% url 'home' %}"  data-bs-toggle="collapse" data-bs-target=".navbar-collapse.show">
+            <span>Home</span>
+        </a> -->
+
+        <!--left links-->
+        <ul class="nav navbar-nav me-auto">
+
+
+            <li class="nav-item dropdown">
+                <div class="nav-dropdown">
+                    <a href="#" id="nav1" class="nav-item nav-link dropdown-toggle text-secondary" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span>Project Demand</span> <i style="font-size: .8em;" class="fas fa-caret-down"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end nav-link-menu" aria-labelledby="nav1">
+                            <ul class="nav-list">
+                            <li><a class="dropdown-item" href="/admin/psm/projectplan/add/"><i class="fas fa-list"></i> Create Project Request / BAP</a></li>
+                            <li><a class="dropdown-item" href="/admin/psm/projectplan"><i class="fas fa-list"></i> Manage Project Request / BAP</a></li>
+                            <div class="dropdown-divider"></div>
+                            <li><a class="dropdown-item" href="{% url 'project_plan_index' %}"><i class="fas fa-list"></i> Project Demand List</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </li>
+
+            <li class="nav-item dropdown">
+                <div class="nav-dropdown">
+                    <a href="#" id="nav2" class="nav-item nav-link dropdown-toggle text-secondary" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class=""></i> <span>Project Administration</span> <i style="font-size: .8em;" class="fas fa-caret-down"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end nav-link-menu">
+                        <ul class="nav-list">
+                            <li><a class="dropdown-item" href="/admin/psm/project/add/">Register Project</a></li>
+                            <li><a class="dropdown-item" href="/admin/psm/project/?year={% now 'Y' %}">Manage Project - FY{% now 'Y' %}</a></li>
+                            <div class="dropdown-divider"></div>
+                            <li><a class="dropdown-item" href="/admin/reports/report/add/">Create Project Status Report</a></li>
+                            <li><a class="dropdown-item" href="/admin/reports/report">Manage Status Report</a></li>
+                            <div class="dropdown-divider"></div>
+                            <li><a class="dropdown-item" href="/admin/reports/reportrisk">Manage Project Risk Report</a></li>
+                            <li><a class="dropdown-item" href="/admin/reviews/review">Manage ITPC</a></li>
+                            <div class="dropdown-divider"></div>
+                            <li><a class="dropdown-item" href="/admin/psm/program">Register Program</a></li>
+                            <div class="dropdown-divider"></div>
+                            <li><a class="dropdown-item" href="/admin">Admin - Home</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <div class="nav-dropdown">
+                    <a href="#" id="nav2" class="nav-item nav-link dropdown-toggle text-secondary" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class=""></i> <span>Reports</span> <i style="font-size: .8em;" class="fas fa-caret-down"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end nav-link-menu">
+                        <ul class="nav-list">
+                            <li><a class="dropdown-item" href="{% url 'project_list1' %}">Project Dashboard</a></li>
+                            <li><a class="dropdown-item" href="/report">Status Report List</a></li>
+                            <div class="dropdown-divider"></div>
+                            <li><a class="dropdown-item" href="/report/risks">Risk Report List</a></li>
+                            <div class="dropdown-divider"></div>
+                            <li><a class="dropdown-item" href="{% url 'project_chart_1' %}">Gantt chart</a></li>
+                            <li><a class="dropdown-item" href="{% url 'project_chart_2' %}">Gantt chart (pilot1)</a></li>
+                    {% if user.is_superuser %}            
+                            <li><a class="dropdown-item" href="{% url 'project_chart_3' %}">Gantt chart (pilot2)</a></li>
+                    {% endif %}
+                            <div class="dropdown-divider"></div>
+                            <li><a class="dropdown-item" href="{% url 'project_list2' %}">Key project summary</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+
+
+        <!--Right links-->
+        <ul class="nav navbar-nav ms-auto">
+            {% if user.is_superuser %}
+            <li class="nav-item dropdown">
+                <div class="nav-dropdown">
+                    <a href="#" id="nav1" class="nav-item nav-link dropdown-toggle text-secondary" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-link"></i> <span>System Admin</span> <i style="font-size: .8em;" class="fas fa-caret-down"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end nav-link-menu" aria-labelledby="nav1">
+                        <ul class="nav-list">
+                            <li><a class="dropdown-item" href="/admin/users/profilecbu/">Manage Profile CBU</a></li>
+                            <li><a class="dropdown-item" href="/admin/users/profile/">Manage Profile</a></li>
+                            <li><a class="dropdown-item" href="/admin/auth/user/">Manage User</a></li>
+                            <div class="dropdown-divider"></div>
+                            <li><a class="dropdown-item" href="/admin/blog/post/">Manage Post</a></li>
+                            <li><a class="dropdown-item" href="/admin/blog/ticket/">Manage Tickets</a></li>
+                            <div class="dropdown-divider"></div>
+                            <li><a class="dropdown-item" href="/admin">Admin - Home</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </li>
+            {% endif %}
+
+            <!-- <li class="nav-item dropdown"><a class="nav-item nav-link"  href="/post/new/">New Post</a></li> -->
+
+            {% if not user.is_authenticated %}
+            <li class="nav-item"><a class="nav-item nav-link" href="{% url 'login' %}">Login</a></li>
+            <li class="nav-item"><a class="nav-item nav-link" href="{% url 'register' %}">Register</a></li>
+            {% endif %}
+
+            <li class="nav-item dropdown">
+                <div class="nav-dropdown">
+                    <a href="#" id="nav2" class="nav-item nav-link dropdown-toggle text-secondary" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user"></i> <span>TBD</span> <i style="font-size: .8em;" class="fas fa-caret-down"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end nav-link-menu">
+                        <ul class="nav-list">
+                            {% if user.is_authenticated %}
+                            <li><a class="dropdown-item" href="{% url 'about' %}">About</a></li>
+                            <li><a class="dropdown-item" href="/admin/blog/ticket">Bug tracker</a></li>
+                            <li><div class="dropdown-divider"></div>
+                            <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                          {% else %}
+                            <li><a class="dropdown-item" href="{% url 'login' %}">Login</a></li>
+                            <li><a class="dropdown-item" href="{% url 'register' %}">Register</a></li>
+                          {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </li>
+        </ul>
+
+
+    </div>
+</nav>
+<!-- end of navbar navigation -->

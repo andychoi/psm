@@ -149,6 +149,9 @@ class projectList1View(PermissionRequiredMixin, generic.ListView):
     # pagination fix: https://stackoverflow.com/questions/61090168/why-is-my-pagination-not-working-django
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
+        # generic way to get dict
+        q =  {k:v for k, v in self.request.GET.items() if v}
+
         context['filterItems'] = []
         context['filterItems'].append( {
 		"key": "YEAR", "text": "Year", "qId": "year", "selected": self.request.GET.get('year', '')
@@ -273,6 +276,9 @@ class projectList1View(PermissionRequiredMixin, generic.ListView):
 
 class projectList2View(projectList1View):
     template_name = 'project/project_list2.html'
+class projectList3View(projectList1View):
+    template_name = 'project/project_list1-new.html'
+
 class projectChartView(projectList1View):
     template_name = 'project/project_chart.html'
 class projectChartView2(projectList1View):

@@ -25,8 +25,7 @@
                                 <label  class="form-group label" for='sel_{{ filterItem.qId }}'>{{ filterItem.text }}</label>        
                                 <select class="form-select"  id='sel_{{ filterItem.qId }}' onchange="updateData()">
                                     <option value=''>ALL</option>
-                                    {% for pItem in filterItem.items %}
-                                    <option value={{ pItem.id }}>{{ pItem.name }}</option>
+                                    {% for pItem in filterItem.items %}<option value={{ pItem.id }}>{{ pItem.name }}</option>
                                     {% endfor %}
                                 </select>
                             </div>

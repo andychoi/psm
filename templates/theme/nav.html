@@ -1,0 +1,39 @@
+<nav id="sidebar" class="active">
+    <div class="sidebar-header">
+        <img src="/static/img/PSM-logos_black.png" width="30" height="30" alt="PSM System" class="app-logo">PSM
+    </div>
+    <ul class="list-unstyled components text-secondary">
+        <li>
+            <a href="/"><i class="fas fa-home"></i> Homepage</a>
+        </li>
+        <li>
+            <a href="#uielementsmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle no-caret-down"><i class="fas fa-chart-bar"></i> Charts</a>
+            <ul class="collapse list-unstyled" id="uielementsmenu">
+                <li>
+                    <a href="#"><i class="fas fa-angle-right"></i> Chart 1</a>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <a href="#uielementsmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle no-caret-down"><i class="fas fa-table"></i> Tables</a>
+            <ul class="collapse list-unstyled" id="uielementsmenu">
+                <li>
+                    <a href="#"><i class="fas fa-angle-right"></i> Table 1</a>
+                </li>
+            </ul>
+        </li>
+
+        {% for filterItem in filterItems %}
+        <li>
+            <label  class="form-group label" for='sel_{{ filterItem.qId }}'>{{ filterItem.text }}</label>        
+            <select class="form-select"  id='sel_{{ filterItem.qId }}' onchange="updateData()">
+                <option value=''>ALL</option>
+                {% for pItem in filterItem.items %}<option value={{ pItem.id }}>{{ pItem.name }}</option>
+                {% endfor %}
+            </select>
+        </li>
+        {% endfor %}
+
+
+    </ul>
+</nav>

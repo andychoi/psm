@@ -38,7 +38,7 @@ from django_filters.views import FilterView
 # Create your views here.
 # importing models and libraries
 from common.models import Div, Dept, CBU
-from common.utils import PHASE, PHASE_OPEN, PHASE_CLOSE, STATE_ACTIVE, PRIORITIES, PRJTYPE, VERSIONS
+from common.utils import PHASE, PHASE_OPEN, PHASE_CLOSE, PHASE_BACKLOG, PHASE_WORK, STATE_ACTIVE, PRIORITIES, PRJTYPE, VERSIONS
 from .models import Project, Program, ProjectPlan
 from .tables import ProjectPlanTable
 from reports.models import Report
@@ -388,6 +388,8 @@ def get_project_metrics(request, year=date.today().year, groupby='year' ):
         'completed'    : Count('pk', filter=Q(phase__in=PHASE_CLOSE)),
         # 'completed'    : Count(Case( When(phase__in=PHASE_CLOSE, then=1), output_field=IntegerField(), default=0)), -> not working
         'not_complete' : Count('pk', filter=~Q(phase__in=PHASE_CLOSE) & ~Q(state=State.CANCEL.value)),
+        'in_progress'  : Count('pk', filter=~Q(phase__in=PHASE_WORK) & ~Q(state=State.CANCEL.value)),
+        'not_started'  : Count('pk', filter=~Q(phase__in=PHASE_BACKLOG) & ~Q(state=State.CANCEL.value)),
         'canceled'     : Count('pk', filter=Q(state=State.CANCEL.value), default=0),
         'total'        : Count('pk'),
         'total_net'    : F('total') - F('canceled'),

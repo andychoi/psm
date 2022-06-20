@@ -239,7 +239,8 @@ class Project(models.Model):
 
         super().save(*args, **kwargs)
         
-        if self.code is None:
+        # if not c/f, new year is set, then allow to change project code
+        if self.code is None or ( self.cf == False and self.code[:2] != f'{self.year % 100}' ):
             self.code = f'{self.year % 100}-{"{:04d}".format(self.pk+2000)}'    #migration upto 1999
             self.save()
 

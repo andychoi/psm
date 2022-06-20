@@ -107,6 +107,11 @@ PHASE = (
     (Phase.COMPLETED.value, _('Completed')),        
     (Phase.CLOSED.value, _('Closed')),
 )
+PHASE_BACKLOG = (
+    Phase.IDEATION.value, Phase.PRE_PLAN.value )
+PHASE_WORK = (
+    Phase.PLANNING.value, Phase.DESIGN.value, 
+    Phase.DEVELOP.value, Phase.TESTING.value, Phase.LAUNCH.value )
 PHASE_OPEN = (
     Phase.IDEATION.value, Phase.PRE_PLAN.value, Phase.PLANNING.value, Phase.DESIGN.value, 
     Phase.DEVELOP.value, Phase.TESTING.value, Phase.LAUNCH.value )

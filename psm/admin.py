@@ -203,22 +203,23 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
     def queryset_update_version(self, request, queryset, version):
         updated = queryset.update(version=version)
         self.message_user(request, ngettext(
-            '%d  was successfully moved to marked as published.',
-            '%d  were successfully marked as published.',
-        ) % updated, messages.SUCCESS)        
+            '%d  was successfully moved to version %s',
+            '%d  were successfully moved to version %s',
+            updated,
+        ) % (updated, version), messages.SUCCESS)        
         messages.add_message(request, messages.INFO, ' moved to final version')
 
     @admin.action(description="Move to final version", permissions=['change'])
     def move_to_final_version(self, request, queryset):
-        self.queryset_update_version(self, request, queryset, Versions.V20.value)
+        self.queryset_update_version(request, queryset, Versions.V20.value)
 
     @admin.action(description="Move to working version 11", permissions=['change'])
     def move_to_11_version(self, request, queryset):
-        self.queryset_update_version(self, request, queryset, Versions.V11.value)
+        self.queryset_update_version(request, queryset, Versions.V11.value)
 
     @admin.action(description="Move to working version 12", permissions=['change'])
     def move_to_12_version(self, request, queryset):
-        self.queryset_update_version(self, request, queryset, Versions.V12.value)
+        self.queryset_update_version(request, queryset, Versions.V12.value)
 
     def has_approve_permission(self, request):
         opts = self.opts

@@ -58,7 +58,13 @@
             <li><a class="nav-item nav-link text-capitalize" href="/reports">Status Report</a></li>
             <li><a class="nav-item nav-link text-capitalize" href="/report-risks">Risk Report</a></li> -->
             
-            <li><a class="dropdown-item" href="{% url 'project_list1' %}">Project Dashboard</a></li>
+    {% if user.is_superuser %}            
+            <li><a class="dropdown-item" href="/project/">Dashboard Home</a></li>
+            <li><a class="dropdown-item" href="/project/json/get_project_stat_api/2022/CBUs__name/?dept__name=ERP">API test</a></li>
+            <div class="dropdown-divider"></div>
+    {% endif %}
+
+    <li><a class="dropdown-item" href="{% url 'project_list1' %}">Project Dashboard</a></li>
     {% if user.is_superuser %}            
             <li><a class="dropdown-item" href="{% url 'project_list3' %}">Project Dashboard-new</a></li>
     {% endif %}

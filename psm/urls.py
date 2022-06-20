@@ -10,10 +10,14 @@ from .views import *
 urlpatterns = [
 	# home page 
 	path('project/', views.IndexView, name='project_index'),
-	path('project/stat/<int:year>', views.get_project_stats, name='get_project_stats'),
+	re_path(r'project/stat/(?P<year>\d{4})?', views.get_project_chartss, name='get_project_chartss'),
 
 	path('project/year-options/', views.get_year_options, 	name='project_year_options'),
 	
+    # path('project/json/', 						views.project_json_view1, 	name='project_json_view1'),
+    re_path(r'project/json/get_project_charts/(?P<year>[0-9]{4})/(?P<groupby>[\w-]+)/$', 	views.get_project_charts,	name='get_project_charts'),
+    # re_path(r'project/json/get_kickoff_chart/(?P<year>\d{4})?', 	views.get_kickoff_chart,	name='get_kickoff_chart'),
+    # re_path(r'project/json/get_launch_chart/(?P<year>\d{4})?', 		views.get_launch_chart,		name='get_launch_chart'),
 	
 	
 	path('project/list1', views.projectList1View.as_view(), name='project_list1'),
@@ -25,10 +29,6 @@ urlpatterns = [
 	path('project/chart2/', views.projectChartView2.as_view(), 	name='project_chart_2'),
 	path('project/chart3/', views.project_data_view, 			name='project_chart_3'),
 	
-    # path('project/json/', 						views.project_json_view1, 	name='project_json_view1'),
-    path('project/json/get_completed_chart/<int:year>', views.get_completed_chart,	name='get_completed_chart'),
-    path('project/json/get_kickoff_chart/<int:year>', 	views.get_kickoff_chart,	name='get_kickoff_chart'),
-    path('project/json/get_launch_chart/<int:year>', 	views.get_launch_chart,	name='get_launch_chart'),
 
 	re_path(r'^project/(?P<pk>\d+)/$', views.projectDetail.as_view(), name='project_detail'),
 

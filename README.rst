@@ -300,6 +300,9 @@ If you open the "Show All Commands" tab, ( by pressing Ctrl+Shift+P or F1 ) and 
 
 Just choose tabs if you use tabs or spaces if use spaces as your indentation method.
 
+Jango & Juypter Notebook
+------------------------
+    $ python manage.py shell_plus --notebook
 
 Translations
 ^^^^^^^^^^^^

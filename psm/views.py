@@ -5,7 +5,8 @@ from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render, redirect
 from django.db.models import Count, F, Q, Sum, Avg, Subquery, OuterRef, When, Case, IntegerField
-from django.db.models.functions import ExtractYear, ExtractMonth
+from django.db.models.functions import ExtractYear, ExtractMonth, Coalesce
+
 from django.http import Http404
 from django.contrib.auth.decorators import login_required
 from rest_framework.views import APIView
@@ -334,50 +335,112 @@ https://django-plotly-dash.readthedocs.io/en/latest/index.html
 def project_json_view1(request):
     return render(request, 'project/project_chart3.html')
 
-@login_required
-# @staff_member_required
-# @permission_required('psm.change_project', raise_exception=True)
-def get_completed_chart(request, year):
+
+"""
+# samples: https://betterprogramming.pub/django-annotations-and-aggregations-48685994d149
+# https://blog.logrocket.com/querysets-and-aggregations-in-django/
+# README: https://stackoverflow.com/questions/33775011/how-to-annotate-count-with-a-condition-in-a-django-queryset
+# README: https://stackoverflow.com/questions/50930002/django-annotate-sum-case-when-depending-on-the-status-of-a-field
+- django 2.0+ : The Count object has a filter parameter
+    qs = LicenseType.objects.annotate(
+        rel_count=Count(
+            'licenserequest',
+            filter=Q(licenserequest__created_at__range=(start_date, end_date))
+        )
+    )
+- django 1.1
+    qs = LicenseType.objects.annotate(
+        rel_count=Sum(Case(
+            When(
+                licenserequest__created_at__range=(start_date, end_date),
+                then=1
+            ),
+            default=0,
+            output_field=IntegerField()
+        ))
+    )
+# queryset to list[], tuple(), dict{},  set{}
+    # qs_list = list(qs)            queryset to list -> is it okay?
+    # [dict(q) for q in qs]             queryset to list
+    # https://stackoverflow.com/questions/39702538/python-converting-a-queryset-in-a-list-of-tuples
+"""
+
+# example: groupby = CBUs__name, dept__div__name
+def get_project_metrics(request, year=date.today().year, groupby='dept__name'):
+    qs = Project.objects.filter(year=year)
+
+    # test = Project.objects.filter(**q).aggregate(Sum('est_cost'))
+    # zero if None
+    # many-to-many, count/sum/avg per each, CBUs__name
+    metrics = {
+        'cost_sum'     : Coalesce( Sum(  'est_cost', output_field=IntegerField()), 0),
+        'budg_sum'     : Coalesce( Sum(  'app_budg', output_field=IntegerField()), 0 ),
+        'avg_progress' : Coalesce( Avg(  'progress', output_field=IntegerField()), 0 ),
+        'completed'    : Count(Case( When(phase__gte='6', then=1), output_field=IntegerField(), default=0)),
+        'not_complete' : Count(Case( When(phase__lte='5', then=1), output_field=IntegerField(), default=0)),
+    }
 
     # generic way - Filter the request for non-empty values and then use dictionary expansion to do the query.
     q =  {k:v for k, v in request.GET.items() if v}
-    # test = Project.objects.filter(**q).aggregate(Sum('est_cost'))
-
-    # samples: https://betterprogramming.pub/django-annotations-and-aggregations-48685994d149
-    # https://blog.logrocket.com/querysets-and-aggregations-in-django/
-    # README: https://stackoverflow.com/questions/33775011/how-to-annotate-count-with-a-condition-in-a-django-queryset
-    # README: https://stackoverflow.com/questions/50930002/django-annotate-sum-case-when-depending-on-the-status-of-a-field
-    metrics = {
-        'cost_sum'      : Sum(  'est_cost'  ),
-        'completed'     : Count(Case( When(phase__gte='6', then=1), output_field=IntegerField(),  )),
-        'not_completed' : Count(Case( When(phase__lte='5', then=1), output_field=IntegerField(),  )),
-    }
     try:    # GET string may have wrong parameters
-        dataset = Project.objects.filter(**q).values('dept__name').annotate(**metrics).order_by('dept__name')
+        return qs.filter(**q).values( groupby ).annotate(**metrics).order_by( groupby )
+    except:
+        return None
+
+@login_required
+# @staff_member_required
+# @permission_required('psm.change_project', raise_exception=True)
+def get_project_charts(request, year=date.today().year, groupby='dept__name'):
+
+    qs = Project.objects.filter(year=year)
+
+
+    # test = Project.objects.filter(**q).aggregate(Sum('est_cost'))
+    # zero if None
+    # many-to-many, count/sum/avg per each, CBUs__name
+    metrics = {
+        'cost_sum'     : Coalesce( Sum(  'est_cost', output_field=IntegerField()), 0),
+        'budg_sum'     : Coalesce( Sum(  'app_budg', output_field=IntegerField()), 0 ),
+        'avg_progress' : Coalesce( Avg(  'progress', output_field=IntegerField()), 0 ),
+        'completed'    : Count(Case( When(phase__gte='6', then=1), output_field=IntegerField(), default=0)),
+        'not_complete' : Count(Case( When(phase__lte='5', then=1), output_field=IntegerField(), default=0)),
+    }
+
+    # generic way - Filter the request for non-empty values and then use dictionary expansion to do the query.
+    q =  {k:v for k, v in request.GET.items() if v}
+    try:    # GET string may have wrong parameters
+        # dataset = qs.filter(**q).values('dept__name').annotate(**metrics).order_by('dept__name')
+        dataset = qs.filter(**q).values( groupby ).annotate(**metrics).order_by( groupby )
     except:
         return JsonResponse({})
-    # print(dataset)
-        
-    categories = list() #dict()
-    completed = list()
-    not_completed = list()
-    for entry in dataset:
-        categories.append('%s' % entry['dept__name'])
-        completed.append(entry['completed'])
-        not_completed.append(entry['not_completed'])
-
-    completed = { 'name': 'completed', 'data': completed, 'color': 'green' }
-    not_completed = { 'name': 'not_completed', 'data': not_completed, 'color': 'red' }
+    
+    # categories = list(dataset.values_list('dept__name', flat=True))
+    categories = [ (q[groupby]) for q in dataset ]
 
     return JsonResponse({
-        'chart': {'type': 'column'},
-        'title': {'text': f'Completion by Dept in {year}'},
-        'xAxis': {'categories': categories },
-        'series': [completed, not_completed]
+        'title': f'Completed in {year} by {groupby}',
+        'data': {
+            'labels': categories,
+            'datasets': [{
+                'label': 'Count',
+                'backgroundColor': colorPrimary,
+                'data': [
+                    {'label': 'Completed',      'data': [(q['completed']) for q in dataset],     'backgroundColor': 'green' },
+                    {'label': 'Not Complete',   'data': [(q['not_complete']) for q in dataset],  'backgroundColor': 'red' },
+                    {'label': 'Est.Cost',       'data': [(q['cost_sum']) for q in dataset],      'backgroundColor': 'black' },
+                    {'label': 'Budget',         'data': [(q['budg_sum']) for q in dataset],      'backgroundColor': 'yellow' },
+                    {'label': 'Avg Progress',   'data': [(q['avg_progress']) for q in dataset],  'backgroundColor': 'blue' }
+                ]
+            }]
+        }
     })
+        #highcharts
+        # 'title': {'text': f'Completion by Dept in {year}'},
+        # 'xAxis': {'categories': categories },
+        # 'series': [completed, not_completed]
 
 @staff_member_required
-def get_kickoff_chart(request, year):
+def get_kickoff_chart(request, year=date.today().year):
     ps = Project.objects.filter(year=year)
     grouped_ps = ps.annotate(month=ExtractMonth('a_kickoff'))\
         .values('month').annotate(count=Count('code')).values('month', 'count').order_by('month')
@@ -402,7 +465,7 @@ def get_kickoff_chart(request, year):
     })
 
 @staff_member_required
-def get_launch_chart(request, year):
+def get_launch_chart(request, year=date.today().year):
     # ps = Project.objects.filter(year=year)
     # grouped_ps = ps.annotate(month=ExtractMonth('a_launch'))\
     #     .values('month').annotate(count=Count('ps')).values('month', 'count').order_by('month')
@@ -432,7 +495,7 @@ def get_launch_chart(request, year):
 
 #-----------------------------------------------------------------------------------
 @staff_member_required
-def get_project_stats(request, year):
+def get_project_chartss(request, year=date.today().year):
 
     import pandas as pd
     q =  {k:v for k, v in request.GET.items() if v}

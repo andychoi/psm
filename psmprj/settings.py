@@ -66,7 +66,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    'django_extensions',    #debugging tool
+    'django_extensions',    #debugging tool, jupyter
     'import_export',
     'django_admin_listfilter_dropdown',
     'adminfilters',

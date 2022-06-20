@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.utils.html import mark_safe
 from datetime import datetime   
 # from ckeditor.fields import RichTextField
+from django.core.exceptions import ValidationError
 
 # not yet compatible with django 4.x
 # from multi_email_field.fields import MultiEmailField
@@ -89,6 +90,10 @@ class Report(models.Model):
     @property
     def issue_md2(self):
         return md2(self.issue)
+
+    def clean(self):
+        if self.project.year < datetime.now().year:
+            raise ValidationError(f'Selected project is valid on {self.project.year}. If it is still open this year, please execute carryfoward project')
 
 # https://docs.djangoproject.com/en/4.0/topics/db/examples/many_to_one/
 # report.milestone_set.all()

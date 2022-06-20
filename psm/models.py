@@ -89,7 +89,7 @@ class ProjectManager(models.Manager):
         """
         if pk:
             obj = Project.objects.get(pk=pk)
-            return self.exclude(pk=pk).exclude(code=obj.code).filter(**kwargs)
+            return self.exclude(pk=pk).filter(**kwargs)
         else: #new record
             return self.filter(**kwargs)
 
@@ -274,7 +274,7 @@ class Project(models.Model):
         # if matching_projects.exists():
         #     validation_errors['title'] = u"Project name: %s has already exist." % title
         if Project.objects \
-                .others(self.pk, title=title) \
+                .others(self.pk, title=title, year=self.year) \
                 .exclude(state__in=(State.DONE.value, State.CANCEL.value)) \
                 .exists():
             validation_errors['title'] = _('Open Project with this title already exists.')
@@ -415,7 +415,7 @@ class ProjectPlan(models.Model):
                         # ("transfer", "Can transfer project plan to actual project"),
         ]
 
-    objects = ObjectManager()
+    objects = ProjectManager()
 
     @property
     def pjcode(self) -> str:
@@ -487,7 +487,7 @@ class ProjectPlan(models.Model):
         #     validation_errors['title'] = u"Project name: %s has already exist." % title
         
         if ProjectPlan.objects \
-                .others(self.pk, title=title) \
+                .others(self.pk, title=title, year=self.year) \
                 .exists():
             validation_errors['title'] = _('Project with this title already exists.')
 

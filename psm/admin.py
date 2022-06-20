@@ -21,7 +21,7 @@ from django.utils.html import format_html
 from django.utils.html import mark_safe
 from psmprj.utils.dates import previous_working_day
 
-from common.models import State3, ReqTypes, Versions, CBU
+from common.models import State3, ReqTypes, Versions, CBU, State, Phase
 from .models import Project, ProjectPlan,  ProjectDeliverable, ProjectDeliverableType, Strategy, Program
 from reviews.models import  Review
 from django.contrib.admin import AdminSite
@@ -522,18 +522,27 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         for obj in queryset:
 
             if Project.objects.filter(year=(obj.year+1), code=obj.code).exists():
-                messages.add_message(request, messages.ERROR, f'{obj.code} {obj.title} is already carryfoward done')
+                messages.add_message(request, messages.ERROR, f'{obj.code} "{obj.title}" is already carryfoward done')
+                break
+            if obj.a_close and obj.a_close.year == obj.year:
+                messages.add_message(request, messages.ERROR, f'{obj.code} "{obj.title}" is already closed in {obj.year}')
                 break
             if obj.p_close.year <= obj.year:
-                messages.add_message(request, messages.ERROR, f'{obj.code} {obj.title} is planned to complete in {obj.year}. Please check project planned schedule')
+                messages.add_message(request, messages.ERROR, f'{obj.code} "{obj.title}" is planned to complete in {obj.year}. Please check project planned schedule')
                 break
-
+            if obj.state in [State.CANCEL.value, State.DONE.value ]:
+                messages.add_message(request, messages.ERROR, f'{obj.code} "{obj.title}" is cancel/complete state')
+                break
+            if obj.phase in [ Phase.COMPLETED.value, Phase.CLOSED.value ]: 
+                messages.add_message(request, messages.ERROR, f'{obj.code} "{obj.title}" is completed/closed phase')
+                break
+            
             obj.id = None   #same project code
             obj.year = obj.year + 1
             obj.cf = True   #carryforward 
 
             obj.save()
-            messages.add_message(request, messages.INFO, ' is processed')
+            messages.add_message(request, messages.INFO, f'{obj} is processed')
 
     @admin.action(description="Duplicate selected record", permissions=['change'])
     def duplicate_project(self, request, queryset):

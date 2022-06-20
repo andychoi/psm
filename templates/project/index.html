@@ -100,7 +100,7 @@ function loadChart(chart, endpoint) {
 }
 
 function loadAllCharts(year) {
-  loadChart(Completed_chart,    `/project/json/get_completed_chart/${year}/`);
+  loadChart(Completed_chart,    `/project/json/get_project_charts/${year}/`);
   loadChart(Kickoff_chart,      `/project/json/get_kickoff_chart/${year}/`);
   loadChart(Launch_chart,       `/project/json//get_lauhch_chart/${year}/`);
 

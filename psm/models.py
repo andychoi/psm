@@ -2,7 +2,7 @@ import ast
 import sys
 import logging
 import datetime
-import cffi
+# import cffi
 from django.core.validators import validate_email, MaxValueValidator, MinValueValidator
 from django.core.exceptions import ValidationError
 from django.db import models

@@ -2,13 +2,11 @@ import json
 from django.http import JsonResponse
 from urllib.request import Request
 from django.http import HttpRequest
-from django.shortcuts import get_object_or_404
 from django.shortcuts import render, redirect
 from django.db.models import Count, F, Q, Sum, Avg, Subquery, OuterRef, When, Case, IntegerField
 from django.db.models.functions import ExtractYear, ExtractMonth, Coalesce
 from django.core.exceptions import FieldError, FieldDoesNotExist
 
-from django.http import Http404
 from django.contrib.auth.decorators import login_required
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -32,8 +30,6 @@ from django.urls import reverse_lazy, reverse
 
 from django.views import generic, View
 from django.http import QueryDict
-from django.shortcuts import render
-from pyparsing import common
 
 # import logging   
 from django.views.generic.edit import FormView
@@ -52,6 +48,7 @@ from common.models import Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase
 # for charting
 from .utils.charts import get_year_dict, generate_color_palette, colorPalette, colorPrimary, colorSuccess, colorDanger, months
 
+#----------------------------------------------------------------------------------------------------
 class ProjectListApiView(APIView):
     # add permission to check if user is authenticated
     permission_classes = [permissions.IsAuthenticated]
@@ -125,9 +122,6 @@ def IndexView(request):
 # To use DjangoObjectPermissions you'll need a permission backend that supports object-level permissions. We'll look at django-guardian.
 
 
-from django_filters.views import FilterView
-from .filters import ProjectFilter
-
 # @staff_member_required
 def get_year_options(request):
     qs = Project.objects.values('year').order_by('-year').distinct()
@@ -136,7 +130,6 @@ def get_year_options(request):
     return JsonResponse({
         'options': options,
     })
-
 
 
 class projectList1View(PermissionRequiredMixin, generic.ListView):
@@ -651,7 +644,7 @@ class projectPlanListView(PermissionRequiredMixin, generic.ListView):
         # generic way to get dict, filter non-existing fields in model, foreign key attribute
         q =  {k:v for k, v in self.request.GET.items() if v and hasattr(Project, k.split('__')[0] ) }
 
-        if not 'year' in q.keys():
+        if not 'year' in q.keys():      # default to current year
             q[ "year" ] = date.today().year
 
         if q: 
@@ -661,41 +654,36 @@ class projectPlanListView(PermissionRequiredMixin, generic.ListView):
             qs = Project.objects.all()
 
         if (qs.objects.count() == 0):
-            return qs   # return empty queryset
-
-        # ltmp = self.request.GET.get('year', '')
-        # if ltmp:
-        #     queryset = queryset.filter(year=ltmp)
+            return qs   # return empty qs
 
         ltmp = self.request.GET.get('div', '')
         if ltmp:
-            queryset = queryset.filter(dept__div__id=ltmp)
-
-        ltmp = self.request.GET.get('dept', '')
-        if ltmp:
-            queryset = queryset.filter(dept__id=ltmp)
-
-        # ltmp = self.request.GET.get('version', '')
-        # if ltmp:
-        #     queryset = queryset.filter(version=VERSIONS[int(ltmp)][0])
-
-        # ltmp = self.request.GET.get('cbu', '')
-        # if ltmp:
-        #     queryset = queryset.filter(CBUs__id=ltmp)
-
-        # ltmp = self.request.GET.get('pri', '')
-        # if ltmp:
-        #     queryset = queryset.filter(priority=PRIORITIES[int(ltmp)][0])
+            qs = qs.filter(dept__div__id=ltmp)
 
         ltmp = self.request.GET.get('prg', '')
         if ltmp:
-            queryset = queryset.filter(program__id=ltmp)
+            qs = qs.filter(program__id=ltmp)
 
+        # ltmp = self.request.GET.get('dept', '')
+        # if ltmp:
+        #     qs = qs.filter(dept__id=ltmp)
+        # ltmp = self.request.GET.get('year', '')
+        # if ltmp:
+        #     qs = qs.filter(year=ltmp)
+        # ltmp = self.request.GET.get('version', '')
+        # if ltmp:
+        #     qs = qs.filter(version=VERSIONS[int(ltmp)][0])
+        # ltmp = self.request.GET.get('cbu', '')
+        # if ltmp:
+        #     qs = qs.filter(CBUs__id=ltmp)
+        # ltmp = self.request.GET.get('pri', '')
+        # if ltmp:
+        #     qs = qs.filter(priority=PRIORITIES[int(ltmp)][0])
         # ltmp = self.request.GET.get('type', '')
         # if ltmp:
-        #     queryset = queryset.filter(type=PRJTYPE[int(ltmp)][0])
+        #     qs = qs.filter(type=PRJTYPE[int(ltmp)][0])
 	
-        return queryset
+        return qs
 
 
 # -----------------------------------------------------------------------------------

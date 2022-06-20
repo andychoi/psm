@@ -22,6 +22,9 @@
 <!-- https://getbootstrap.com/docs/5.0/examples/masonry/ -->
 <script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous" async></script>
 
+<script src="https://code.highcharts.com/gantt/highcharts-gantt.js"></script>
+<script src="https://code.highcharts.com/gantt/modules/draggable-points.js"></script>
+<script src="https://code.highcharts.com/gantt/modules/accessibility.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -136,6 +139,33 @@
                 <tr><td>Related Program</td><td>{{ project.program }}</td></tr>
                 <tr><td>Reference Plan</td><td>{% if project.ref_plan %}<a href="/project-plan/{{ project.ref_plan.id }}/">{{ project.ref_plan }}</a>{% else %}None{% endif %}</td></tr>
               </table>  
+              </div>
+          </div>
+        </div>  
+      </div><!--2nd-->
+
+      <div class="col-4 mt-2">
+        <div class="card w-100 ">
+          <div class="card-body">
+            <h5 class="card-title">Schedule Actual/Plan</h5>
+            <div class="row ms-2 media">
+              <div id="gantt_chart"></div>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Phase</th>
+                    <th scope="col">Actual</th>
+                    <th scope="col">Plan</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Planning</td><td>{{ project.a_plan_b }} - {{ project.a_plan_e }}</td><td>{{ project.p_plan_b }} - {{ project.p_plan_e }}</td> </tr>
+                  <tr><td>Kick-Off</td><td>{{ project.a_kickoff }} </td><td> {{ project.p_kickoff }}</td></li>
+                  <tr><td>Design </td><td>{{ project.a_design_b }} - {{ project.a_design_e }}</td><td>{{ project.p_design_b }} - {{ project.p_design_e }}</td> </tr>
+                  <tr><td>Develop</td><td>{{ project.a_dev_b }} - {{ project.a_dev_e }}</td><td{{ project.p_dev_b }} - {{ project.p_dev_e }></td> </tr>
+                  <tr><td>UAT </td><td>   {{ project.a_uat_b }} - {{ project.a_uat_e }}</td><td>{{ project.p_uat_b }} - {{ project.p_uat_e }}</td> </tr>
+                  <tr><td>Launch/Close</td><td> {{ project.a_launch }} /   {{ project.a_close }} </td><td>{{ project.p_launch }} /   {{ project.p_close }}</td></tr>
+                </tbody></table>
               </div>
           </div>
         </div>  
@@ -319,7 +349,203 @@
     // console.log(tDateBegin, tDateEnd, tProgress, tItems);
   })  
 </script>
-<!-- Javascript is here -->
+
+<!-- highcharts -->
+<script>
+function convertDate(pYYYYMMDD) {
+    if (typeof pYYYYMMDD !== 'undefined')
+            return new Date()
+    let tData = pYYYYMMDD.split("-");
+    return Date.UTC(Number.parseInt(tData[0]), Number.parseInt(tData[1]) - 1, Number.parseInt(tData[2]));
+    //Date.UTC(2014, 11, 25)
+}
+
+var today = new Date(),
+    day = 1000 * 60 * 60 * 24,
+    each = Highcharts.each,
+    reduce = Highcharts.reduce,
+    btnShowDialog = document.getElementById('btnShowDialog'),
+    btnRemoveTask = document.getElementById('btnRemoveSelected'),
+    btnAddTask = document.getElementById('btnAddTask'),
+    btnCancelAddTask = document.getElementById('btnCancelAddTask'),
+    addTaskDialog = document.getElementById('addTaskDialog'),
+    inputName = document.getElementById('inputName'),
+    selectDepartment = document.getElementById('selectDepartment'),
+    selectDependency = document.getElementById('selectDependency'),
+    chkMilestone = document.getElementById('chkMilestone'),
+    isAddingTask = false;
+
+// Set to 00:00:00:000 today
+today.setUTCHours(0);
+today.setUTCMinutes(0);
+today.setUTCSeconds(0);
+today.setUTCMilliseconds(0);
+today = today.getTime();
+
+
+// Update disabled status of the remove button, depending on whether or not we
+// have any selected points.
+function updateRemoveButtonStatus() {
+    var chart = this.series.chart;
+    // Run in a timeout to allow the select to update
+    setTimeout(function () {
+        btnRemoveTask.disabled = !chart.getSelectedPoints().length ||
+            isAddingTask;
+    }, 10);
+}
+
+
+// Create the chart
+var chart = Highcharts.ganttChart('gantt_chart', {
+
+    chart: {
+        spacingLeft: 1
+    },
+
+    plotOptions: {
+        series: {
+            animation: false, // Do not animate dependency connectors
+            dragDrop: {
+                draggableX: true,
+                draggableY: true,
+                dragMinY: 0,
+                dragMaxY: 2,
+                dragPrecisionX: day / 3 // Snap to eight hours
+            },
+            dataLabels: {
+                enabled: true,
+                format: '{point.name}',
+                style: {
+                    cursor: 'default',
+                    pointerEvents: 'none'
+                }
+            },
+            allowPointSelect: true,
+            point: {
+                events: {
+                    select: updateRemoveButtonStatus,
+                    unselect: updateRemoveButtonStatus,
+                    remove: updateRemoveButtonStatus
+                }
+            }
+        }
+    },
+
+    yAxis: {
+        type: 'category',
+        categories: ['Actual', 'Plan'],
+        min: 0,
+        max: 1
+    },
+
+    xAxis: [{
+        tickInterval: 1000 * 60 * 60 * 24 * 30, // Month
+        labels: {
+            format: '{value:%b}',
+            style: {
+                fontSize: '8px'
+            }
+        },
+        min: Date.UTC(2022, 01, 01),
+        max: Date.UTC(2022, 12, 31),
+        currentDateIndicator: true
+    }, {
+        tickInterval: 1000 * 60 * 60 * 24 * 365, // Year
+        labels: {
+            format: '{value:%Y}',
+            style: {
+                fontSize: '10px'
+            }
+        },
+        linkedTo: 0
+    }],
+
+    tooltip: {
+        xDateFormat: '%a %b %d'
+    },
+
+    series: [{
+        name: 'Project 1',
+        data: [{
+          start: convertDate({{ project.p_plan_b }}),
+            end: convertDate({{ project.p_plan_e }}),
+            name: 'Planning',
+            y: 0,
+        }, {
+          start: convertDate({{ project.p_kickoff }}),
+            name: 'Kick Off',
+            milestone: true,
+            y: 0
+        }, {          
+          start: convertDate({{ project.p_design_b }}),
+            end: convertDate({{ project.p_design_e }}),
+            name: 'Design',
+            y: 0
+        }, {
+          start: convertDate({{ project.p_dev_b }}),
+            end: convertDate({{ project.p_dev_e }}),
+            name: 'Develop',
+            y: 0
+        }, {
+          start: convertDate({{ project.p_uat_b }}),
+            end: convertDate({{ project.p_uat_e }}),
+            name: 'UAT',
+            y: 0
+        }, {
+          start: convertDate({{ project.p_launch }}),
+            name: 'Launch',
+            milestone: true,
+            y: 0
+        }, {  
+          start: convertDate({{ project.p_close }}),
+            name: 'Close',
+            milestone: true,
+            y: 0
+        }, {
+            start: convertDate({{ project.p_plan_b }}),
+            end: convertDate({{ project.p_plan_e }}),
+            name: 'Planning',
+            y: 1,
+        }, {
+          start: convertDate({{ project.p_kickoff }}),
+            name: 'Kick Off',
+            milestone: true,
+            y: 1
+        }, {          
+          start: convertDate({{ project.p_design_b }}),
+            end: convertDate({{ project.p_design_e }}),
+            name: 'Design',
+            y: 1
+        }, {
+          start: convertDate({{ project.p_dev_b }}),
+            end: convertDate({{ project.p_dev_e }}),
+            name: 'Develop',
+            y: 1
+        }, {
+          start: convertDate({{ project.p_uat_b }}),
+            end: convertDate({{ project.p_uat_e }}),
+            name: 'UAT',
+            y: 1
+        }, {
+          start: convertDate({{ project.p_launch }}),
+            name: 'Launch',
+            milestone: true,
+            y: 1
+        }, {  
+          start: convertDate({{ project.p_close }}),
+            name: 'Close',
+            milestone: true,
+            y: 1
+        }, {  
+        }]
+    }]
+});
+
+
+/* Add button handlers for add/remove tasks */
+
+
+</script>
 
 {% endblock %}
 

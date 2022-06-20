@@ -38,20 +38,21 @@ class State(enum.Enum):
     (codes are prefixed with numbers to be easily sorted in the DB).
     """
     BACKLOG = '00-backlog'
-    TO_DO   = '10-to-do'
+    TODO    = '10-todo'
     DOING   = '20-doing'
-    HOLD    = '30-on_hold'
+    HOLD    = '30-hold'
     DONE    = '40-done'
     CANCEL  = '50-cancel'
 # from django.contrib.auth.models import (BaseUserManager, AbstractBaseUser)
 STATES = (
     (State.BACKLOG.value, _('Backlog')),
-    (State.TO_DO.value, _('To_Do')),
+    (State.TODO.value, _('To_Do')),
     (State.DOING.value, _('Doing')),
     (State.HOLD.value, _('Blocked')),
     (State.DONE.value, _('Done')),
     (State.CANCEL.value, _('Canceled'))
 )
+STATE_ACTIVE = { State.BACKLOG.value, State.TODO.value, State.DOING.value, State.HOLD.value, State.DONE.value }
 
 class Priority(enum.Enum):
     """
@@ -72,12 +73,11 @@ PRIORITIES = (
 
 
 class Status(enum.Enum):
-    NA = '00-N/A'
-    GREEN = '10-Green'
-    YELLOW = '20-Yellow'
-    RED = '30-Red'
+    NA =        '00-N/A'
+    GREEN =     '10-Green'
+    YELLOW =    '20-Yellow'
+    RED =       '30-Red'
     COMPLETED = '90-Completed'
-
 STATUS = (
     (Status.GREEN.value, _('Green')),
     (Status.YELLOW.value, _('Yellow')),
@@ -96,7 +96,6 @@ class Phase(enum.Enum):
     LAUNCH =    '60-Launch'
     COMPLETED = '70-Completed'
     CLOSED =    '80-Closed'
-
 PHASE = (
     (Phase.IDEATION.value, _('Ideation')),
     (Phase.PRE_PLAN.value, _('Pre-Planning')),
@@ -108,6 +107,11 @@ PHASE = (
     (Phase.COMPLETED.value, _('Completed')),        
     (Phase.CLOSED.value, _('Closed')),
 )
+PHASE_OPEN = (
+    Phase.IDEATION.value, Phase.PRE_PLAN.value, Phase.PLANNING.value, Phase.DESIGN.value, 
+    Phase.DEVELOP.value, Phase.TESTING.value, Phase.LAUNCH.value )
+PHASE_CLOSE = (
+    Phase.COMPLETED.value, Phase.CLOSED.value )
 
 class PrjType(enum.Enum):
     MAJOR = '10-Major'

@@ -129,7 +129,7 @@ class ReportRisk(models.Model):
     plan = models.TextField(_("Mitigation Plan"))
 
     status = models.CharField(_("status"), max_length=20, choices=STATUS, default=Status.NA.value)
-    state = models.CharField(_("State"), max_length=20, choices=STATES, default=State.TO_DO.value)
+    state = models.CharField(_("State"), max_length=20, choices=STATES, default=State.TODO.value)
     report_on = models.DateField(_("Reporting On"), default=datetime.now, blank=False)
     deadline = models.DateField(_("deadline"), null=True, blank=True)
 

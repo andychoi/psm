@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import render, redirect
 from django.db.models import Count, F, Q, Sum, Avg, Subquery, OuterRef, When, Case, IntegerField
 from django.db.models.functions import ExtractYear, ExtractMonth, Coalesce
+from django.core.exceptions import FieldDoesNotExist
 
 from django.http import Http404
 from django.contrib.auth.decorators import login_required
@@ -41,7 +42,7 @@ from django_filters.views import FilterView
 # Create your views here.
 # importing models and libraries
 from common.models import Div, Dept, CBU
-from common.utils import PHASE, PRIORITIES, PRJTYPE, VERSIONS
+from common.utils import PHASE, PHASE_OPEN, PHASE_CLOSE, STATE_ACTIVE, PRIORITIES, PRJTYPE, VERSIONS
 from .models import Project, Program, ProjectPlan
 from .tables import ProjectPlanTable
 from reports.models import Report
@@ -341,6 +342,7 @@ def project_json_view1(request):
 # https://blog.logrocket.com/querysets-and-aggregations-in-django/
 # README: https://stackoverflow.com/questions/33775011/how-to-annotate-count-with-a-condition-in-a-django-queryset
 # README: https://stackoverflow.com/questions/50930002/django-annotate-sum-case-when-depending-on-the-status-of-a-field
+# README: https://stackoverflow.com/questions/57524903/django-annotate-taking-a-dictionary
 - django 2.0+ : The Count object has a filter parameter
     qs = LicenseType.objects.annotate(
         rel_count=Count(
@@ -364,56 +366,93 @@ def project_json_view1(request):
     # [dict(q) for q in qs]             queryset to list
     # https://stackoverflow.com/questions/39702538/python-converting-a-queryset-in-a-list-of-tuples
 """
+# example: groupby = CBUs__name,
+# return in qs or json
+def get_project_metrics(request, year=date.today().year, groupby='year' ):
 
-# example: groupby = CBUs__name, dept__div__name
-def get_project_metrics(request, year=date.today().year, groupby='dept__name'):
-    qs = Project.objects.filter(year=year)
+    # check groupby exist
+    if groupby:
+        try:
+            Project._meta.get_field( groupby.split('__')[0] )
+        except FieldDoesNotExist:
+            groupby = 'year'   #default_field
 
     # test = Project.objects.filter(**q).aggregate(Sum('est_cost'))
     # zero if None
-    # many-to-many, count/sum/avg per each, CBUs__name
+    # caution: many-to-many, count/sum/avg per each, CBUs__name
+
+    qs = Project.objects.filter(year=year)  #, state__in=STATE_ACTIVE)
+
+    # readme: https://docs.djangoproject.com/en/4.0/ref/models/conditional-expressions/
+    # string gte, lte... not working -> use "in" instead
+    # sequence is important for F calculation
     metrics = {
-        'cost_sum'     : Coalesce( Sum(  'est_cost', output_field=IntegerField()), 0),
-        'budg_sum'     : Coalesce( Sum(  'app_budg', output_field=IntegerField()), 0 ),
-        'avg_progress' : Coalesce( Avg(  'progress', output_field=IntegerField()), 0 ),
-        'completed'    : Count(Case( When(phase__gte='6', then=1), output_field=IntegerField(), default=0)),
-        'not_complete' : Count(Case( When(phase__lte='5', then=1), output_field=IntegerField(), default=0)),
+        'completed'    : Count('pk', filter=Q(phase__in=PHASE_CLOSE)),
+        # 'completed'    : Count(Case( When(phase__in=PHASE_CLOSE, then=1), output_field=IntegerField(), default=0)), -> not working
+        'not_complete' : Count('pk', filter=~Q(phase__in=PHASE_CLOSE) & ~Q(state=State.CANCEL.value)),
+        'canceled'     : Count('pk', filter=Q(state=State.CANCEL.value), default=0),
+        'total'        : Count('pk'),
+        'total_net'    : F('total') - F('canceled'),
+        'complete_pct' : Case(When(total_net=0, then=0), default=F('completed') * 100 / F('total_net') ),
+        'progress_avg' : Coalesce( Avg(  'progress', output_field=IntegerField()), 0 ),
+        # 'est_cost_sum' : Coalesce( Case(When(~Q(state=State.CANCEL.value), then=F('est_cost')), output_field=IntegerField(), default=0), 0),
+        'est_cost_sum' : Coalesce( Sum('est_cost', filter=~Q(state=State.CANCEL.value), output_field=IntegerField(), default=0), 0),
+        'cnc_cost_sum' : Coalesce( Sum('est_cost', filter=Q(state=State.CANCEL.value),  output_field=IntegerField(), default=0), 0),  
+        # for same field, causing another line
+        'app_budg_sum' : Coalesce( Sum('app_budg', filter=~Q(state=State.CANCEL.value), output_field=IntegerField(), default=0), 0),
+        # 'app_budg_sum' : Coalesce( Sum(  'app_budg', output_field=IntegerField()), 0 ),
     }
 
     # generic way - Filter the request for non-empty values and then use dictionary expansion to do the query.
     q =  {k:v for k, v in request.GET.items() if v}
-    try:    # GET string may have wrong parameters
-        return qs.filter(**q).values( groupby ).annotate(**metrics).order_by( groupby )
-    except:
-        return None
+
+    #FIXME... not working...
+    # q_clean = []
+    # for item in q:
+    #     try:    # GET string may have wrong fields
+    #         Project._meta.get_field( item )
+    #         q_clean.append(item)
+    #     except FieldDoesNotExist:
+    #         break
+    # q = q_clean
+
+    if q:
+        qs_result = qs.filter(**q).values( groupby ).annotate(**metrics).order_by( groupby )
+    else:
+        qs_result = qs.values( groupby ).annotate(**metrics).order_by( groupby )
+    return qs_result
+    # return qs_result | qs_cancel if qs_cancel else qs_result      # merge querysets ...error 
 
 @login_required
 # @staff_member_required
 # @permission_required('psm.change_project', raise_exception=True)
-def get_project_charts(request, year=date.today().year, groupby='dept__name'):
+def get_project_stat_api(request, year=date.today().year, groupby='year', mstr='total_net'):
+    """
+        Example: http://localhost:8000/project/json/get_project_stat_api/2022/CBUs__name/?dept__name=ERP
+        http://localhost:8000/project/json/get_project_stat_api/2023/phase/?dept__name=Emerging%20Tech
+    """
 
-    qs = Project.objects.filter(year=year)
+    dataset = get_project_metrics(request, year, groupby)
+
+    # metrics... split by, ... TODO
+    lst = mstr.split(',')
+    qs = {}
+    for m in mstr.split(','):
+        pass    #TODO select groupby & metric_name in column
 
 
-    # test = Project.objects.filter(**q).aggregate(Sum('est_cost'))
-    # zero if None
-    # many-to-many, count/sum/avg per each, CBUs__name
-    metrics = {
-        'cost_sum'     : Coalesce( Sum(  'est_cost', output_field=IntegerField()), 0),
-        'budg_sum'     : Coalesce( Sum(  'app_budg', output_field=IntegerField()), 0 ),
-        'avg_progress' : Coalesce( Avg(  'progress', output_field=IntegerField()), 0 ),
-        'completed'    : Count(Case( When(phase__gte='6', then=1), output_field=IntegerField(), default=0)),
-        'not_complete' : Count(Case( When(phase__lte='5', then=1), output_field=IntegerField(), default=0)),
-    }
+    return JsonResponse({'results': list(dataset)})
 
-    # generic way - Filter the request for non-empty values and then use dictionary expansion to do the query.
-    q =  {k:v for k, v in request.GET.items() if v}
-    try:    # GET string may have wrong parameters
-        # dataset = qs.filter(**q).values('dept__name').annotate(**metrics).order_by('dept__name')
-        dataset = qs.filter(**q).values( groupby ).annotate(**metrics).order_by( groupby )
-    except:
-        return JsonResponse({})
-    
+
+@login_required
+# @staff_member_required
+# @permission_required('psm.change_project', raise_exception=True)
+def get_project_charts(request, year=date.today().year, groupby='year', mstr='total,'):
+
+    dataset = get_project_metrics(request, year, groupby)
+    if not dataset:
+        return  JsonResponse( {} )
+
     # categories = list(dataset.values_list('dept__name', flat=True))
     categories = [ (q[groupby]) for q in dataset ]
 
@@ -425,11 +464,13 @@ def get_project_charts(request, year=date.today().year, groupby='dept__name'):
                 'label': 'Count',
                 'backgroundColor': colorPrimary,
                 'data': [
+                    {'label': 'Complete%',      'data': [(q['complete_pctr']) for q in dataset], 'backgroundColor': 'green' },
+                    {'label': 'Count',          'data': [(q['count']) for q in dataset],     'backgroundColor': 'green' },
                     {'label': 'Completed',      'data': [(q['completed']) for q in dataset],     'backgroundColor': 'green' },
                     {'label': 'Not Complete',   'data': [(q['not_complete']) for q in dataset],  'backgroundColor': 'red' },
-                    {'label': 'Est.Cost',       'data': [(q['cost_sum']) for q in dataset],      'backgroundColor': 'black' },
-                    {'label': 'Budget',         'data': [(q['budg_sum']) for q in dataset],      'backgroundColor': 'yellow' },
-                    {'label': 'Avg Progress',   'data': [(q['avg_progress']) for q in dataset],  'backgroundColor': 'blue' }
+                    {'label': 'Est.Cost',       'data': [(q['est_cost_sum']) for q in dataset],  'backgroundColor': 'black' },
+                    {'label': 'Budget',         'data': [(q['app_budg_sum']) for q in dataset],  'backgroundColor': 'yellow' },
+                    {'label': 'Avg Progress',   'data': [(q['progress_avg']) for q in dataset],  'backgroundColor': 'blue' }
                 ]
             }]
         }

@@ -95,7 +95,7 @@ class Task(models.Model):
     deadline = models.DateField(_("deadline"), null=True, blank=True)
     user = models.ForeignKey(Profile, related_name='tasks_assigned', verbose_name=_('assigned to'),
                              on_delete=models.SET_NULL, null=True, blank=True)
-    state = models.CharField(_("state"), max_length=20, choices=STATES, default=State.TO_DO.value)
+    state = models.CharField(_("state"), max_length=20, choices=STATES, default=State.TODO.value)
     priority = models.CharField(_("priority"), max_length=20, choices=PRIORITIES, default=Priority.NORMAL.value)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='users_created', verbose_name=_('created by'),
                                    on_delete=models.SET_NULL, null=True)

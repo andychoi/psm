@@ -19,7 +19,7 @@ def task1() -> Task:
 def test_automated_default_fields(task1: Task):
     assert task1.pk is not None
     assert task1.number == '00000001'
-    assert task1.state == State.TO_DO.value
+    assert task1.state == State.TODO.value
     assert task1.priority == Priority.NORMAL.value
 
 

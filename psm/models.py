@@ -138,7 +138,7 @@ class Project(models.Model):
     #settings.AUTH_USER_MODEL - user directory...
     pm = models.ForeignKey(Profile, related_name='project_manager', verbose_name=_('HAEA PM'),
                            on_delete=models.PROTECT, null=True, blank=True)
-    state = models.CharField(_("state"), max_length=20, choices=STATES, default=State.TO_DO.value)
+    state = models.CharField(_("state"), max_length=20, choices=STATES, default=State.TODO.value)
     phase = models.CharField(_("Phase"), max_length=20, choices=PHASE, default=Phase.PRE_PLAN.value)
     progress = models.PositiveSmallIntegerField(_("complete%"), default=0)
     priority = models.CharField(_("priority"), max_length=20, choices=PRIORITIES, default=Priority.NORMAL.value)

@@ -15,7 +15,13 @@ urlpatterns = [
 	path('project/year-options/', views.get_year_options, 	name='project_year_options'),
 	
     # path('project/json/', 						views.project_json_view1, 	name='project_json_view1'),
-    re_path(r'project/json/get_project_charts/(?P<year>[0-9]{4})/(?P<groupby>[\w-]+)/$', 	views.get_project_charts,	name='get_project_charts'),
+	
+	# https://stackoverflow.com/questions/5399035/django-regex-for-optional-url-parameters
+    re_path(r'project/json/get_project_stat_api/(?P<year>[0-9]{4})/(?P<groupby>[^/]+)/(?P<mstr>[^/]+)/$', 	views.get_project_stat_api,	name='get_project_stat_api'),
+    re_path(r'project/json/get_project_stat_api/(?P<year>[0-9]{4})/(?P<groupby>[^/]+)/$', 					views.get_project_stat_api,	name='get_project_stat_api'),
+    re_path(r'project/json/get_project_stat_api/(?P<year>[0-9]{4})/', 										views.get_project_stat_api,	name='get_project_stat_api'),
+
+    re_path(r'project/json/get_project_charts/(?P<year>[0-9]{4})/(?P<groupby>[^/]+)/$', 	views.get_project_charts,	name='get_project_charts'),
     # re_path(r'project/json/get_kickoff_chart/(?P<year>\d{4})?', 	views.get_kickoff_chart,	name='get_kickoff_chart'),
     # re_path(r'project/json/get_launch_chart/(?P<year>\d{4})?', 		views.get_launch_chart,		name='get_launch_chart'),
 	

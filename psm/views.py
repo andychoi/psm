@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import render, redirect
 from django.db.models import Count, F, Q, Sum, Avg, Subquery, OuterRef, When, Case, IntegerField
 from django.db.models.functions import ExtractYear, ExtractMonth, Coalesce
-from django.core.exceptions import FieldDoesNotExist
+from django.core.exceptions import FieldError, FieldDoesNotExist
 
 from django.http import Http404
 from django.contrib.auth.decorators import login_required
@@ -153,27 +153,28 @@ class projectList1View(PermissionRequiredMixin, generic.ListView):
     # pagination fix: https://stackoverflow.com/questions/61090168/why-is-my-pagination-not-working-django
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        # generic way to get dict
-        q =  {k:v for k, v in self.request.GET.items() if v}
-
-        context['year_options'] = { "key": "YEAR", "text": "Year", "qId": "year", "selected": self.request.GET.get('year', '')
-		, "items": map( lambda x: {"id": x['year'], "name": x['year']}, Project.objects.values('year').distinct().order_by('-year') )
-        }
 
         context['filterItems'] = []
-        context['filterItems'].append( {
-		"key": "DIV", "text": "Div", "qId": "div", "selected": self.request.GET.get('div', '')
-		, "items": Div.objects.all()
+        
+        # default year
+        get_def_year = date.today().year if not self.request.GET.get('year', '') else self.request.GET.get('year', '') 
+        context['filterItems'].append( { "key": "YEAR", "text": "Year", "qId": "year", "selected": get_def_year
+		, "items": map( lambda x: {"id": x['year'], "name": x['year']}, Project.objects.values('year').distinct().order_by('-year') )
         } )
 
         context['filterItems'].append( {
-            "key": "DEP", "text": "Dept.", "qId": "dep", "selected": self.request.GET.get('dep', '')
-        	, "items": Dept.objects.all()
+		"key": "DIV", "text": "Div", "qId": "div", "selected": self.request.GET.get('div', ''), "items": Div.objects.all()
+        } )
+
+        context['filterItems'].append( {
+            "key": "DEP", "text": "Dept.", "qId": "dept", "selected": self.request.GET.get('dept', ''), "items": Dept.objects.all()
+            # "key": "DEP", "text": "Dept.", "qId": "dept__name", "selected": self.request.GET.get('dept__name', ''), "items": [{ "id": x[0], "name":x[0]} for i, x in Dept.objects.all().values_list('name') ]
         } )
 		
         context['filterItems'].append( {
             "key": "PHASE", "text": "Phase", "qId": "phase", "selected": self.request.GET.get('phase', '')
-            , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PHASE)]
+            # , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PHASE)]
+            , "items": [{"id": x[0], "name" : x[1]} for i, x in enumerate(PHASE)]
         } )
 	
         context['filterItems'].append( {
@@ -183,12 +184,13 @@ class projectList1View(PermissionRequiredMixin, generic.ListView):
 
         context['filterItems'].append( {
             "key": "TYP", "text": "Type", "qId": "type", "selected": self.request.GET.get('type', '')
-            , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRJTYPE)]
+            , "items": [{"id": x[0], "name" : x[1]} for i, x in enumerate(PRJTYPE)]
+            # , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRJTYPE)]
         } )
-        # context['filterItems'].append( {
-        #     "key": "PRI", "text": "Priority", "qId": "pri", "selected": self.request.GET.get('pri', '')
-        #     , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRIORITIES)]
-        # } )
+        context['filterItems'].append( {
+            "key": "PRI", "text": "Priority", "qId": "priority", "selected": self.request.GET.get('priority', '')
+            , "items": [{"id": x[0], "name": x[1]} for i, x in enumerate(PRIORITIES)]
+        } )
 		
         context['filterItems'].append( {
             "key": "PRG", "text": "Program", "qId": "prg", "selected": self.request.GET.get('prg', '')
@@ -219,55 +221,64 @@ class projectList1View(PermissionRequiredMixin, generic.ListView):
 
 
     def get_queryset(self):
-	# self.request has GET parameter
-	# # self.year = get_object_or_404(self.year, name=self.kwargs['year'])
-	# # return Project.objects.filter(year=self.year).order_by('dept')
-	# queryset = Project.objects.filter(year=self.kwargs['year'])
-        queryset = []
-        if (Project.objects.count() > 0):
-            # queryset = Project.objects.all()
-            queryset = Project.objects.filter(is_internal=False)    #exclude internal
-            # ltmp = self.request.GET.get('year', '')
-            # if ltmp:
-            #     queryset = queryset.filter(year=ltmp)
 
-            ltmp = self.request.GET.get('div', '')
-            if ltmp:
-                queryset = queryset.filter(dept__div__id=ltmp)
+        # generic way to get dict, filter non-existing fields in model, foreign key attribute
+        q =  {k:v for k, v in self.request.GET.items() if v and hasattr(Project, k.split('__')[0] ) }
 
-            ltmp = self.request.GET.get('dep', '')
-            if ltmp:
-                queryset = queryset.filter(dept__id=ltmp)
+        if not 'year' in q.keys():
+            q[ "year" ] = date.today().year
 
-            ltmp = self.request.GET.get('phase', '')
-            if ltmp:
-                queryset = queryset.filter(phase=PHASE[int(ltmp)][0])
+        if q: 
+            qs = Project.objects.filter( **q )
+                # qs = Project.objects.filter(year=self.kwargs['year']).filter( **q )
+        else:
+            qs = Project.objects.all()
 
-            ltmp = self.request.GET.get('cbu', '')
-            if ltmp:
-                queryset = queryset.filter(CBUs__id=ltmp)
+        qs = qs.filter(is_internal=False)    #exclude internal
+        if qs.count() == 0:
+            return  qs      # return empty queryset
 
-            ltmp = self.request.GET.get('pri', '')
-            if ltmp:
-                queryset = queryset.filter(priority=PRIORITIES[int(ltmp)][0])
+        # ltmp = self.request.GET.get('year', '')
+        # if ltmp:
+        #     queryset = queryset.filter(year=ltmp)
 
-            ltmp = self.request.GET.get('prg', '')
-            if ltmp:
-                queryset = queryset.filter(program__id=ltmp)
+        ltmp = self.request.GET.get('div', '')
+        if ltmp:
+            qs = qs.filter(dept__div__id=ltmp)
 
-            ltmp = self.request.GET.get('type', '')
-            if ltmp:
-                queryset = queryset.filter(type=PRJTYPE[int(ltmp)][0])
+        # ltmp = self.request.GET.get('dept', '')
+        # if ltmp:
+        #     qs = qs.filter(dept__id=ltmp)
+
+        # ltmp = self.request.GET.get('phase', '')
+        # if ltmp:
+        #     qs = qs.filter(phase=PHASE[int(ltmp)][0])
+
+        ltmp = self.request.GET.get('cbu', '')
+        if ltmp:
+            qs = qs.filter(CBUs__id=ltmp)
+
+        # ltmp = self.request.GET.get('pri', '')
+        # if ltmp:
+        #     qs = qs.filter(priority=PRIORITIES[int(ltmp)][0])
+
+        ltmp = self.request.GET.get('prg', '')
+        if ltmp:
+            qs = qs.filter(program__id=ltmp)
+
+        # ltmp = self.request.GET.get('type', '')
+        # if ltmp:
+        #     qs = qs.filter(type=PRJTYPE[int(ltmp)][0])
 
 	    # pagenation http://localhost:8000/project/?page=3
 	    # https://stackoverflow.com/questions/43544701/django-pagination-from-page-to-page
 	    # https://stackoverflow.com/questions/29071312/pagination-in-django-rest-framework-using-api-view
 	    # req_page = self.request.GET.get('page', '')
-	    # page = self.paginate_queryset(queryset, req_page)
+	    # page = self.paginate_qs(qs, req_page)
 	    # if req_page:
-	    #     return self.paginate_queryset(queryset, req_page)
+	    #     return self.paginate_qs(qs, req_page)
 	
-        return queryset
+        return qs
 
     # def paginator(self):
     # def paginate_queryset(self, queryset, page_size):
@@ -299,6 +310,12 @@ class projectChartView3(projectList1View):
     #     filterset_class = ProjectFilter
     #     table_pagination = {"per_page": 10}
 
+
+"""
+이거 어떨지...
+https://django-plotly-dash.readthedocs.io/en/latest/index.html
+
+"""
 # https://simpleisbetterthancomplex.com/tutorial/2018/04/03/how-to-integrate-highcharts-js-with-django.html
 # https://testdriven.io/blog/django-charts/
 def project_data_view(request):
@@ -323,19 +340,6 @@ def project_data_view(request):
         'not_completed': json.dumps(not_completed)
     })
     # return render(request, 'project/project_chart3.html', {'dataset': dataset})
-
-"""
-이거 어떨지...
-https://django-plotly-dash.readthedocs.io/en/latest/index.html
-
-"""
-
-# -----------------------------------------------------------------------------------
-@login_required
-# @permission_required('psm.change_project', raise_exception=True)
-def project_json_view1(request):
-    return render(request, 'project/project_chart3.html')
-
 
 """
 # samples: https://betterprogramming.pub/django-annotations-and-aggregations-48685994d149
@@ -366,8 +370,11 @@ def project_json_view1(request):
     # [dict(q) for q in qs]             queryset to list
     # https://stackoverflow.com/questions/39702538/python-converting-a-queryset-in-a-list-of-tuples
 """
+
+#-----------------------------------------------------------------------------------
 # example: groupby = CBUs__name,
 # return in qs or json
+#-----------------------------------------------------------------------------------
 def get_project_metrics(request, year=date.today().year, groupby='year' ):
 
     # check groupby exist
@@ -402,7 +409,7 @@ def get_project_metrics(request, year=date.today().year, groupby='year' ):
     }
 
     # generic way - Filter the request for non-empty values and then use dictionary expansion to do the query.
-    q =  {k:v for k, v in request.GET.items() if v}
+    q =  {k:v for k, v in request.GET.items() if v and hasattr(Project, k.split('__')[0] ) }
 
     #     try:    # GET string may have wrong fields - FIXME
     #         Project._meta.get_field( item )
@@ -415,26 +422,48 @@ def get_project_metrics(request, year=date.today().year, groupby='year' ):
     return qs_result
     # return qs_result | qs_cancel if qs_cancel else qs_result      # merge querysets ...error 
 
+#-----------------------------------------------------------------------------------
 @login_required
 # @staff_member_required
 # @permission_required('psm.change_project', raise_exception=True)
-def get_project_stat_api(request, year=date.today().year, groupby='year', mstr='total_net', res='json'):
+#-----------------------------------------------------------------------------------
+def get_project_stat_api(request, year=date.today().year, groupby='year', mstr=None, res='json'):
     """
-        Example: http://localhost:8000/project/json/get_project_stat_api/2022/CBUs__name/?dept__name=ERP
-        http://localhost:8000/project/json/get_project_stat_api/2023/phase/?dept__name=Emerging%20Tech
+        Example: 
+        http://localhost:8000/project/json/get_project_stat_api/2022/CBUs__name/?dept__name=ERP
         http://localhost:8000/project/json/get_project_stat_api/2023/phase/total,completed/
+        http://localhost:8000/project/json/get_project_stat_api/2022/year/?dept__name=ERP
+        http://localhost:8000/project/json/get_project_stat_api/2022/year/
+        http://localhost:8000/project/json/get_project_stat_api/2022/
     """
 
     # obtain project metrics
-    dataset = get_project_metrics(request, year, groupby)
+    # dataset = get_project_metrics(request, year, groupby)
 
-    # value_str = ', '.join(['"{}"'.format(e) for e in mstr.split(',')])
-    vs = [groupby, ] + mstr.split(',')
-    qs = dataset.values( *tuple(vs)  ) 
+    if mstr:
+        # value_str = ', '.join(['"{}"'.format(e) for e in mstr.split(',')])
+        vs = [groupby, ] + mstr.split(',')
+        qs = get_project_metrics(request, year, groupby).values( *tuple(vs)  ) 
+    else:
+        qs = get_project_metrics(request, year, groupby)
 
     return JsonResponse({'results': list(qs)}) if res == 'json' else qs
-    
 
+#-----------------------------------------------------------------------------------
+@staff_member_required
+#-----------------------------------------------------------------------------------
+def get_project_stat_pd(request, year=date.today().year):
+
+    import pandas as pd
+    q =  {k:v for k, v in request.GET.items() if v and hasattr(Project, k.split('__')[0] ) }
+    items = Project.objects.filter(**q).values()
+    df = pd.DataFrame(items)
+    myDict = {
+        "df": df.to_html()
+    }
+    return render(request, 'project/test-pandas.html', context=myDict)
+
+#-----------------------------------------------------------------------------------
 @login_required
 # @staff_member_required
 # @permission_required('psm.change_project', raise_exception=True)
@@ -503,19 +532,6 @@ def get_kickoff_chart(request, year=date.today().year):
         },
     })
 
-#-----------------------------------------------------------------------------------
-@staff_member_required
-def get_project_stat_pd(request, year=date.today().year):
-
-    import pandas as pd
-    q =  {k:v for k, v in request.GET.items() if v}
-    items = Project.objects.filter(**q).values()
-    df = pd.DataFrame(items)
-    myDict = {
-        "df": df.to_html()
-    }
-    return render(request, 'project/test-pandas.html', context=myDict)
-
 # -----------------------------------------------------------------------------------
 # class based view for each Project
 class projectDetail(PermissionRequiredMixin, generic.DetailView):
@@ -582,40 +598,41 @@ class projectPlanListView(PermissionRequiredMixin, generic.ListView):
         context = super().get_context_data(*args, **kwargs)
         context['filterItems'] = []
 
-        context['filterItems'].append( {
-            "key": "YEAR", "text": "Year", "qId": "year", "selected": self.request.GET.get('year', '')
-             , "items": map( lambda x: {"id": x['year'], "name": x['year']}, Project.objects.values('year').distinct().order_by('-year') )
+        get_def_year = date.today().year if not self.request.GET.get('year', '') else self.request.GET.get('year', '') 
+        context['filterItems'].append( { "key": "YEAR", "text": "Year", "qId": "year", "selected": get_def_year
+            , "items": map( lambda x: {"id": x['year'], "name": x['year']}, Project.objects.values('year').distinct().order_by('-year') )
         } )
 
         context['filterItems'].append( {
         	"key": "DIV", "text": "Div", "qId": "div", "selected": self.request.GET.get('div', '')
-	    , "items": Div.objects.all()
+	        , "items": Div.objects.all()
         } )
 
         context['filterItems'].append( {
-		"key": "DEP", "text": "Dept.", "qId": "dep", "selected": self.request.GET.get('dep', '')
-		, "items": Dept.objects.all()
+            "key": "DEPT", "text": "Dept.", "qId": "dept", "selected": self.request.GET.get('dept', '')
+            , "items": Dept.objects.all()
         } )
 			
         context['filterItems'].append( {
-		"key": "VERSION", "text": "Version", "qId": "version", "selected": self.request.GET.get('version', '')
-		, "items": [{"id": i, "name": x[1]} for i, x in enumerate(VERSIONS)]
+            "key": "VERSION", "text": "Version", "qId": "version", "selected": self.request.GET.get('version', '')
+            , "items": [{"id": x[0], "name" : x[1]} for i, x in enumerate(VERSIONS)]
         } )
 
         context['filterItems'].append( {
-		"key": "CBU", "text": "CBU", "qId": "cbu", "selected": self.request.GET.get('cbu', '')
-		, "items": CBU.objects.filter(is_active=True)
+            # "key": "CBU", "text": "CBU", "qId": "cbu", "selected": self.request.GET.get('cbu', '')
+            "key": "CBU", "text": "CBU", "qId": "CBUs__name", "selected": self.request.GET.get('CBUs__name', '')
+            , "items": CBU.objects.filter(is_active=True)
         } )
 
         context['filterItems'].append( {
-		"key": "TYP", "text": "Type", "qId": "type", "selected": self.request.GET.get('type', '')
-		, "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRJTYPE)]
+            "key": "TYP", "text": "Type", "qId": "type", "selected": self.request.GET.get('type', '')
+            , "items": [{"id": x[0], "name" : x[1]} for i, x in enumerate(PRJTYPE)]
         } )
 
-        # context['filterItems'].append( {
-        #     "key": "PRI", "text": "Priority", "qId": "pri", "selected": self.request.GET.get('pri', '')
-        #     , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRIORITIES)]
-        # } )
+        context['filterItems'].append( {
+            "key": "PRI", "text": "Priority", "qId": "priority", "selected": self.request.GET.get('priority', '')
+            , "items": [{"id": x[0], "name": x[1]} for i, x in enumerate(PRIORITIES)]
+        } )
 
         context['filterItems'].append( {
         	"key": "PRG", "text": "Program", "qId": "prg", "selected": self.request.GET.get('prg', '')
@@ -631,40 +648,52 @@ class projectPlanListView(PermissionRequiredMixin, generic.ListView):
         return context
 
     def get_queryset(self):
-        queryset = []
-        if (ProjectPlan.objects.count() > 0):
-            queryset = ProjectPlan.objects.all()
-        ltmp = self.request.GET.get('year', '')
-        if ltmp:
-            queryset = queryset.filter(year=ltmp)
+        # generic way to get dict, filter non-existing fields in model, foreign key attribute
+        q =  {k:v for k, v in self.request.GET.items() if v and hasattr(Project, k.split('__')[0] ) }
+
+        if not 'year' in q.keys():
+            q[ "year" ] = date.today().year
+
+        if q: 
+            qs = Project.objects.filter( **q )
+                # qs = Project.objects.filter(year=self.kwargs['year']).filter( **q )
+        else:
+            qs = Project.objects.all()
+
+        if (qs.objects.count() == 0):
+            return qs   # return empty queryset
+
+        # ltmp = self.request.GET.get('year', '')
+        # if ltmp:
+        #     queryset = queryset.filter(year=ltmp)
 
         ltmp = self.request.GET.get('div', '')
         if ltmp:
             queryset = queryset.filter(dept__div__id=ltmp)
 
-        ltmp = self.request.GET.get('dep', '')
+        ltmp = self.request.GET.get('dept', '')
         if ltmp:
             queryset = queryset.filter(dept__id=ltmp)
 
-        ltmp = self.request.GET.get('version', '')
-        if ltmp:
-            queryset = queryset.filter(version=VERSIONS[int(ltmp)][0])
+        # ltmp = self.request.GET.get('version', '')
+        # if ltmp:
+        #     queryset = queryset.filter(version=VERSIONS[int(ltmp)][0])
 
-        ltmp = self.request.GET.get('cbu', '')
-        if ltmp:
-            queryset = queryset.filter(CBUs__id=ltmp)
+        # ltmp = self.request.GET.get('cbu', '')
+        # if ltmp:
+        #     queryset = queryset.filter(CBUs__id=ltmp)
 
-        ltmp = self.request.GET.get('pri', '')
-        if ltmp:
-            queryset = queryset.filter(priority=PRIORITIES[int(ltmp)][0])
+        # ltmp = self.request.GET.get('pri', '')
+        # if ltmp:
+        #     queryset = queryset.filter(priority=PRIORITIES[int(ltmp)][0])
 
         ltmp = self.request.GET.get('prg', '')
         if ltmp:
             queryset = queryset.filter(program__id=ltmp)
 
-        ltmp = self.request.GET.get('type', '')
-        if ltmp:
-            queryset = queryset.filter(type=PRJTYPE[int(ltmp)][0])
+        # ltmp = self.request.GET.get('type', '')
+        # if ltmp:
+        #     queryset = queryset.filter(type=PRJTYPE[int(ltmp)][0])
 	
         return queryset
 

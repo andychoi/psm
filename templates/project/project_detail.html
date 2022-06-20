@@ -120,15 +120,18 @@
       <div class="col-4 mt-2">
         <div class="card w-100 ">
           <div class="card-body">
-            <h5 class="card-title">Profile</h5>
+            <h5 class="card-title">Project Info</h5>
             <div class="row ms-2 media">
               <table class="table table-borderless" >
                 <tr><td>HAEA Dept.</td><td>{{ project.dept }}</td></tr>
                 <tr><td>CBU</td><td>{{ project.CBU_str }}</td></tr>
                 <tr><td>CBU PM</td><td>{{ project.CBUpm }}</td></tr>
+                <tr><td>Carryfoward?</td><td>{{ project.cf }}</td></tr>
+                <tr><td>Project Type</td><td>{{ project.type|slice:'3:' }}</td></tr>
+                <tr><td>Project Catgory</td><td>{{ project.category|slice:'3:' }}</td></tr>
+                <tr><td>Agile project?</td><td>{{ project.is_agile }}</td></tr>
                 <tr><td>Est.cost</td><td>{{ project.est_cost }}</td></tr>
                 <tr><td>Approved budget</td><td>{{ project.app_budg }}</td></tr>
-                <tr><td>Agile project?</td><td>{{ project.is_agile }}</td></tr>
                 <tr><td>Related Strategy</td><td>{{ project.strategy_str }}</td></tr>
                 <tr><td>Related Program</td><td>{{ project.program }}</td></tr>
                 <tr><td>Reference Plan</td><td>{% if project.ref_plan %}<a href="/project-plan/{{ project.ref_plan.id }}/">{{ project.ref_plan }}</a>{% else %}None{% endif %}</td></tr>

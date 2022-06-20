@@ -28,7 +28,9 @@
               <div class="col-6">
                 <canvas id="Launch_chart"></canvas>
               </div>
-
+              <div class="col-6">
+                <canvas id="Pie_chart"></canvas>
+              </div>
             </div>            
 
 		</div>		
@@ -86,7 +88,7 @@ function loadChart(chart, endpoint) {
       chart.data.datasets = [];
       chart.data.labels = [];
 
-      // Load new data into the chart
+      // Load new data into the chart - FIXME
       // chart.options.title.text = title;
       // chart.options.title.display = true;
       chart.data.labels = labels;
@@ -103,7 +105,7 @@ function loadAllCharts(year) {
   loadChart(Completed_chart,    `/project/json/get_project_chart/${year}/year/total/`);
   loadChart(Kickoff_chart,      `/project/json/get_project_chart/${year}/year/total/`);
   loadChart(Launch_chart,       `/project/json/get_project_chart/${year}/year/total/`);
-
+  loadChart(Pie_chart,          `/project/json/get_project_chart/${year}/year/completed,not_complete/`);
 }
 
 </script>
@@ -138,21 +140,21 @@ function loadAllCharts(year) {
         // }
       }
     });
-    // let paymentMethodCtx = document.getElementById("paymentMethodChart").getContext("2d");
-    // let paymentMethodChart = new Chart(paymentMethodCtx, {
-    //   type: "pie",
-    //   options: {
-    //     responsive: true,
-    //     // layout: {
-    //     //   padding: {
-    //     //     left: 0,
-    //     //     right: 0,
-    //     //     top: 0,
-    //     //     bottom: 25
-    //     //   }
-    //     // }
-    //   }
-    // });
+    let PieCtx = document.getElementById("Pie_chart").getContext("2d");
+    let Pie_chart = new Chart(PieCtx, {
+      type: "pie",
+      options: {
+        responsive: true,
+        // layout: {
+        //   padding: {
+        //     left: 0,
+        //     right: 0,
+        //     top: 0,
+        //     bottom: 25
+        //   }
+        // }
+      }
+    });
 
   </script>
 

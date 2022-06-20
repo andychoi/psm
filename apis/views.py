@@ -15,42 +15,56 @@ from datetime import datetime, date
 import json
 
 def _project_list(request):
-    projects = []    
-    if (Project.objects.count() > 0):
-        projects = Project.objects.all()
 
-        ltmp = request.GET.get('year', '')
-        if ltmp:
-            projects = projects.filter(year=ltmp)
+    #TOD enhance
+    # generic way to get dict, filter non-existing fields in model, foreign key attribute
+    q =  {k:v for k, v in request.GET.items() if v and hasattr(Project, k.split('__')[0] ) }
+
+    if not 'year' in q.keys():
+        q[ "year" ] = date.today().year
+
+    if q: 
+        qs = Project.objects.filter( **q )
+            # qs = Project.objects.filter(year=self.kwargs['year']).filter( **q )
+    else:
+        qs = Project.objects.all()
+
+    # projects = []    
+    if (qs.count() > 0):
+        # projects = Project.objects.all()
+
+        # ltmp = request.GET.get('year', '')
+        # if ltmp:
+        #     qs = qs.filter(year=ltmp)
 
         ltmp = request.GET.get('div', '')
         if ltmp:
-            projects = projects.filter(dept__div__id=ltmp)
+            qs = qs.filter(dept__div__id=ltmp)
 
-        ltmp = request.GET.get('dep', '')
-        if ltmp:
-            projects = projects.filter(dept__id=ltmp)
+        # ltmp = request.GET.get('dept', '')
+        # if ltmp:
+        #     qs = qs.filter(dept__id=ltmp)
 
-        ltmp = request.GET.get('phase', '')
-        if ltmp:
-            projects = projects.filter(phase=PHASE[int(ltmp)][0])
+        # ltmp = request.GET.get('phase', '')
+        # if ltmp:
+        #     qs = qs.filter(phase=PHASE[int(ltmp)][0])
 
         ltmp = request.GET.get('cbu', '')
-        if len(projects) > 0 and ltmp:
-            projects = projects.filter(CBUs__id=ltmp)
+        if len(ltmp) > 0 and ltmp:
+            qs = qs.filter(CBUs__id=ltmp)
 
-        ltmp = request.GET.get('pri', '')
-        if ltmp:
-            projects = projects.filter(priority=PRIORITIES[int(ltmp)][0])
+        # ltmp = request.GET.get('pri', '')
+        # if ltmp:
+        #     qs = qs.filter(priority=PRIORITIES[int(ltmp)][0])
 
         ltmp = request.GET.get('prg', '')
         if ltmp:
-            projects = projects.filter(program__id=ltmp)
+            qs = qs.filter(program__id=ltmp)
 
-        ltmp = request.GET.get('type', '')
-        if ltmp:
-            projects = projects.filter(type=PRJTYPE[int(ltmp)][0])
-    return projects
+        # ltmp = request.GET.get('type', '')
+        # if ltmp:
+        #     qs = qs.filter(type=PRJTYPE[int(ltmp)][0])
+    return qs
 
 @csrf_exempt
 def project_list(request):

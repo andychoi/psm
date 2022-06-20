@@ -10,7 +10,7 @@ from .views import *
 urlpatterns = [
 	# home page 
 	path('project/', views.IndexView, name='project_index'),
-	re_path(r'project/stat/(?P<year>\d{4})?', views.get_project_chartss, name='get_project_chartss'),
+	re_path(r'project/stat/(?P<year>\d{4})?', views.get_project_stat_pd, name='get_project_stat_pd'),
 
 	path('project/year-options/', views.get_year_options, 	name='project_year_options'),
 	
@@ -21,7 +21,8 @@ urlpatterns = [
     re_path(r'project/json/get_project_stat_api/(?P<year>[0-9]{4})/(?P<groupby>[^/]+)/$', 					views.get_project_stat_api,	name='get_project_stat_api'),
     re_path(r'project/json/get_project_stat_api/(?P<year>[0-9]{4})/', 										views.get_project_stat_api,	name='get_project_stat_api'),
 
-    re_path(r'project/json/get_project_charts/(?P<year>[0-9]{4})/(?P<groupby>[^/]+)/$', 	views.get_project_charts,	name='get_project_charts'),
+    re_path(r'project/json/get_project_chart/(?P<year>[0-9]{4})/(?P<groupby>[^/]+)/(?P<mstr>[^/]+)/$', 	views.get_project_chart,	name='get_project_chart'),
+    # re_path(r'project/json/get_project_chart/(?P<year>[0-9]{4})/(?P<groupby>[^/]+)/$', 	views.get_project_chart,	name='get_project_chart'),
     # re_path(r'project/json/get_kickoff_chart/(?P<year>\d{4})?', 	views.get_kickoff_chart,	name='get_kickoff_chart'),
     # re_path(r'project/json/get_launch_chart/(?P<year>\d{4})?', 		views.get_launch_chart,		name='get_launch_chart'),
 	

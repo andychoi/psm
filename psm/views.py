@@ -377,15 +377,13 @@ def get_project_metrics(request, year=date.today().year, groupby='year' ):
         except FieldDoesNotExist:
             groupby = 'year'   #default_field
 
-    # test = Project.objects.filter(**q).aggregate(Sum('est_cost'))
-    # zero if None
-    # caution: many-to-many, count/sum/avg per each, CBUs__name
-
     qs = Project.objects.filter(year=year)  #, state__in=STATE_ACTIVE)
 
     # readme: https://docs.djangoproject.com/en/4.0/ref/models/conditional-expressions/
     # string gte, lte... not working -> use "in" instead
     # sequence is important for F calculation
+    # zero if None
+    # caution: many-to-many, count/sum/avg per each, CBUs__name
     metrics = {
         'completed'    : Count('pk', filter=Q(phase__in=PHASE_CLOSE)),
         # 'completed'    : Count(Case( When(phase__in=PHASE_CLOSE, then=1), output_field=IntegerField(), default=0)), -> not working
@@ -406,15 +404,9 @@ def get_project_metrics(request, year=date.today().year, groupby='year' ):
     # generic way - Filter the request for non-empty values and then use dictionary expansion to do the query.
     q =  {k:v for k, v in request.GET.items() if v}
 
-    #FIXME... not working...
-    # q_clean = []
-    # for item in q:
-    #     try:    # GET string may have wrong fields
+    #     try:    # GET string may have wrong fields - FIXME
     #         Project._meta.get_field( item )
-    #         q_clean.append(item)
     #     except FieldDoesNotExist:
-    #         break
-    # q = q_clean
 
     if q:
         qs_result = qs.filter(**q).values( groupby ).annotate(**metrics).order_by( groupby )
@@ -426,35 +418,45 @@ def get_project_metrics(request, year=date.today().year, groupby='year' ):
 @login_required
 # @staff_member_required
 # @permission_required('psm.change_project', raise_exception=True)
-def get_project_stat_api(request, year=date.today().year, groupby='year', mstr='total_net'):
+def get_project_stat_api(request, year=date.today().year, groupby='year', mstr='total_net', res='json'):
     """
         Example: http://localhost:8000/project/json/get_project_stat_api/2022/CBUs__name/?dept__name=ERP
         http://localhost:8000/project/json/get_project_stat_api/2023/phase/?dept__name=Emerging%20Tech
+        http://localhost:8000/project/json/get_project_stat_api/2023/phase/total,completed/
     """
 
+    # obtain project metrics
     dataset = get_project_metrics(request, year, groupby)
 
-    # metrics... split by, ... TODO
-    lst = mstr.split(',')
-    qs = {}
-    for m in mstr.split(','):
-        pass    #TODO select groupby & metric_name in column
+    # value_str = ', '.join(['"{}"'.format(e) for e in mstr.split(',')])
+    vs = [groupby, ] + mstr.split(',')
+    qs = dataset.values( *tuple(vs)  ) 
 
-
-    return JsonResponse({'results': list(dataset)})
-
+    return JsonResponse({'results': list(qs)}) if res == 'json' else qs
+    
 
 @login_required
 # @staff_member_required
 # @permission_required('psm.change_project', raise_exception=True)
-def get_project_charts(request, year=date.today().year, groupby='year', mstr='total,'):
+def get_project_chart(request, year=date.today().year, groupby='year', mstr='total_net,completed'):
 
-    dataset = get_project_metrics(request, year, groupby)
+    # example: http://localhost:8000/project/json/get_project_chart/2023/year/total,completed,est_cost_sum/
+
+    dataset = get_project_stat_api(request, year, groupby, mstr, res='qs')
     if not dataset:
         return  JsonResponse( {} )
 
     # categories = list(dataset.values_list('dept__name', flat=True))
     categories = [ (q[groupby]) for q in dataset ]
+
+    series = []
+    for m in mstr.split(','):
+        data = {
+            'label': m,
+            'data': [(q[ m ]) for q in dataset],
+            'backgroundColor': 'green',
+        }
+        series.append(data)
 
     return JsonResponse({
         'title': f'Completed in {year} by {groupby}',
@@ -463,15 +465,11 @@ def get_project_charts(request, year=date.today().year, groupby='year', mstr='to
             'datasets': [{
                 'label': 'Count',
                 'backgroundColor': colorPrimary,
-                'data': [
-                    {'label': 'Complete%',      'data': [(q['complete_pctr']) for q in dataset], 'backgroundColor': 'green' },
-                    {'label': 'Count',          'data': [(q['count']) for q in dataset],     'backgroundColor': 'green' },
-                    {'label': 'Completed',      'data': [(q['completed']) for q in dataset],     'backgroundColor': 'green' },
-                    {'label': 'Not Complete',   'data': [(q['not_complete']) for q in dataset],  'backgroundColor': 'red' },
-                    {'label': 'Est.Cost',       'data': [(q['est_cost_sum']) for q in dataset],  'backgroundColor': 'black' },
-                    {'label': 'Budget',         'data': [(q['app_budg_sum']) for q in dataset],  'backgroundColor': 'yellow' },
-                    {'label': 'Avg Progress',   'data': [(q['progress_avg']) for q in dataset],  'backgroundColor': 'blue' }
-                ]
+                'data': series,
+                    # [
+                    # {'label': 'Completed',      'data': [(q['completed']) for q in dataset],     'backgroundColor': 'green' },
+                    # {'label': 'Not Complete',   'data': [(q['not_complete']) for q in dataset],  'backgroundColor': 'red' },
+                    # ]
             }]
         }
     })
@@ -505,38 +503,9 @@ def get_kickoff_chart(request, year=date.today().year):
         },
     })
 
-@staff_member_required
-def get_launch_chart(request, year=date.today().year):
-    # ps = Project.objects.filter(year=year)
-    # grouped_ps = ps.annotate(month=ExtractMonth('a_launch'))\
-    #     .values('month').annotate(count=Count('ps')).values('month', 'count').order_by('month')
-
-    # ps = Project.objects.filter(year=year)
-    grouped_ps = Project.objects.all().annotate(month=ExtractMonth('a_launch'))\
-        .values('month').annotate(count=Count('code')).values('month', 'count').order_by('month')
-
-    data_dict = get_year_dict()
-
-    for group in grouped_ps:
-        if not group['month'] is None:
-            data_dict[months[group['month']-1]] = group['count']
-
-    return JsonResponse({
-        'title': f'Launched in {year}',
-        'data': {
-            'labels': list(data_dict.keys()),
-            'datasets': [{
-                'label': 'Amount ($)',
-                'backgroundColor': colorPrimary,
-                'borderColor': colorPrimary,
-                'data': list(data_dict.values()),
-            }]
-        },
-    })
-
 #-----------------------------------------------------------------------------------
 @staff_member_required
-def get_project_chartss(request, year=date.today().year):
+def get_project_stat_pd(request, year=date.today().year):
 
     import pandas as pd
     q =  {k:v for k, v in request.GET.items() if v}

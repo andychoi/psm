@@ -31,9 +31,10 @@ def project_pm_count():
     for p in Profile.objects.all():
         if p.email[p.email.index('@') + 1 : ] == settings.DOMAIN:
             p.pm_count = Project.objects.filter(pm=p).count()
+            p.save(update_fields=['pm_count'])
         else:
             p.pm_count = Project.objects.filter(CBUpm=p).count()
-        p.save()
+            p.save(update_fields=['pm_count'])
 
 
 # https://github.com/jcass77/django-apscheduler

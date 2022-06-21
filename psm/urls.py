@@ -9,7 +9,7 @@ from .views import *
 
 urlpatterns = [
 	# home page 
-	path('project/', views.IndexView, name='project_index'),
+	path('project/', views.projectIndexView.as_view(), name='project_index'),
 	re_path(r'project/stat/(?P<year>\d{4})?', views.get_project_stat_pd, name='get_project_stat_pd'),
 
 	path('project/year-options/', views.get_year_options, 	name='project_year_options'),

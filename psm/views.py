@@ -92,12 +92,6 @@ class ProjectListApiView(APIView):
 # https://medium.com/@ksarthak4ever/django-class-based-views-vs-function-based-view-e74b47b2e41b
 # class based vs. function based views
 
-@staff_member_required
-def IndexView(request): 
-    context ={}
-     # add the dictionary during initialization
-    # context["data"] = ...
-    return render(request, "project/index.html", context)
 
 # https://django-filter.readthedocs.io/ -> error, don't use
 # https://django-tables2.readthedocs.io/ -> this is better, but...
@@ -295,6 +289,9 @@ class projectChartView2(projectList1View):
 
 class projectChartView3(projectList1View):
     template_name = 'project/project_chart3.html'
+
+class projectIndexView(projectList1View):
+    template_name = 'project/index.html'
 
     # django-tables2
     # class FilteredProjectPlanView(SingleTableMixin, FilterView):

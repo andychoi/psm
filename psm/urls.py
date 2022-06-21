@@ -31,8 +31,10 @@ urlpatterns = [
 	path('project/chart1/', views.projectChartView.as_view(), 		name='project_chart_1'),
 	path('project/chart2/', views.projectChartView2.as_view(), 		name='project_chart_2'),
 	
+	path('project/chart2-new/', 	 views.projectChartView2_new.as_view(), name='project_chart_2_new'),
+
 	path('project/chart3/', 	 views.projectChartView3.as_view(), name='project_chart_3'),
-	path('project/chart3/json/', views.project_chart_sample1_json, 	name='project_chart_sample1_json'),
+	path('project/chart3/json/', views.project_chart_sample1_json, 	name='project_chart_3_json'),
 	
 
 	re_path(r'^project/(?P<pk>\d+)/$', views.projectDetail.as_view(), name='project_detail'),

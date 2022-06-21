@@ -286,12 +286,17 @@ class projectChartView(projectList1View):
     template_name = 'project/project_chart.html'
 class projectChartView2(projectList1View):
     template_name = 'project/project_chart2.html'
-
-class projectChartView3(projectList1View):
-    template_name = 'project/project_chart3.html'
+class projectChartView2_new(projectList1View):
+    template_name = 'project/project_chart2_new.html'
 
 class projectIndexView(projectList1View):
     template_name = 'project/index.html'
+
+class projectChartView2_new(projectList1View):
+    template_name = 'project/project_chart2_new.html'
+
+class projectChartView3(projectList1View):
+    template_name = 'project/project_chart-test-w-json.html'
 
     # django-tables2
     # class FilteredProjectPlanView(SingleTableMixin, FilterView):

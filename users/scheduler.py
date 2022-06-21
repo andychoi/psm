@@ -7,6 +7,7 @@ from django.contrib.auth.models import User, Group
 from django.conf import settings
 from .models import Profile
 from psm.models import Project
+from django.db.models import Count  #, F, Q, Sum, Avg
 
 # This is the function you want to schedule - add as many as you want and then register them in the start() function below
 # def deactivate_expired_accounts():
@@ -28,13 +29,15 @@ def assign_staff_role():
                 u.groups.remove(u.groups.get(name=settings.DEFAULT_AUTH_GROUP)) 
 
 def project_pm_count():
-    for p in Profile.objects.all():
-        if p.email[p.email.index('@') + 1 : ] == settings.DOMAIN:
-            p.pm_count = Project.objects.filter(pm=p).count()
-            p.save(update_fields=['pm_count'])
-        else:
-            p.pm_count = Project.objects.filter(CBUpm=p).count()
-            p.save(update_fields=['pm_count'])
+    # queryset count groupby
+    pm_qs = Project.objects.values('pm').annotate(pm_count=Count('pk'))
+    cbupm_qs = Project.objects.values('CBUpm').annotate(pm_count=Count('pk'))
+
+    for item in pm_qs:
+        Profile.objects.filter(id=item['pm']).update(pm_count=item['pm_count'])
+    for item in cbupm_qs:
+        Profile.objects.filter(id=item['CBUpm']).update(pm_count=item['pm_count'])
+    # for k, v in pm_dict.items():
 
 
 # https://github.com/jcass77/django-apscheduler

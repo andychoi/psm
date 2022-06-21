@@ -268,8 +268,11 @@ LOGOUT_REDIRECT_URL = "/"
 from .settings_editor import *
 
 # Load SAP connection settings
-SAP_CONFIG = json.load( open(os.path.join(BASE_DIR, '.sapcfg.json')) )
-SAP_CONN_WBS = SAP_CONFIG['servers'][env('SAP_RFC_WBS', '_')]
+
+SAP = env.bool('SAP', False)
+if SAP:
+    SAP_CONFIG = json.load( open(os.path.join(BASE_DIR, '.sapcfg.json')) )
+    SAP_CONN_WBS = SAP_CONFIG['servers'][env('SAP_RFC_WBS', '_')]
 
 #https://github.com/jcass77/django-apscheduler
 # https://stackoverflow.com/questions/62525295/how-to-use-python-to-schedule-tasks-in-a-django-application

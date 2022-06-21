@@ -293,6 +293,11 @@ a:focus {
     transition: all 0.3s;
 }
 
+a:hover { 
+    /* color: white; */
+    background-color: rgb(223, 223, 224) !important; 
+}
+
 .btn.focus,
 .btn:focus {
     box-shadow: none;

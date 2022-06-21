@@ -49,39 +49,9 @@
           </ul>
         </li>
 
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Reports
-          </a>
-          <ul class="dropdown-menu my-menu-1" aria-labelledby="navbarDropdownMenuLink2">
-            <!-- <li><a class="nav-item nav-link text-capitalize" href="{% url 'project_list1' %}">Project Dashboard</a></li>
-            <li><a class="nav-item nav-link text-capitalize" href="/reports">Status Report</a></li>
-            <li><a class="nav-item nav-link text-capitalize" href="/report-risks">Risk Report</a></li> -->
-            
-    {% if user.is_superuser %}            
-            <li><a class="dropdown-item" href="/project/">Dashboard Home</a></li>
-            <li><a class="dropdown-item" href="/project/json/get_project_stat_api/2022/CBUs__name/?dept__name=ERP">API test</a></li>
-            <div class="dropdown-divider"></div>
-    {% endif %}
+        <li class="nav-item"><a class="nav-item nav-link"  href="/project/">Reports</a></li>
 
-    <li><a class="dropdown-item" href="{% url 'project_list1' %}">Project Dashboard</a></li>
-    {% if user.is_superuser %}            
-            <li><a class="dropdown-item" href="{% url 'project_list3' %}">Project Dashboard-new</a></li>
-    {% endif %}
-            <li><a class="dropdown-item" href="/report">Status Report List</a></li>
-            <div class="dropdown-divider"></div>
-            <li><a class="dropdown-item" href="/report/risks">Risk Report List</a></li>
-            <div class="dropdown-divider"></div>
-            <li><a class="dropdown-item" href="{% url 'project_chart_1' %}">Gantt chart</a></li>
-            <li><a class="dropdown-item" href="{% url 'project_chart_2' %}">Gantt chart (pilot1)</a></li>
-    {% if user.is_superuser %}            
-            <li><a class="dropdown-item" href="{% url 'project_chart_3' %}">Gantt chart (pilot2)</a></li>
-    {% endif %}
-            <div class="dropdown-divider"></div>
-            <li><a class="dropdown-item" href="{% url 'project_list2' %}">Key project summary</a></li>
-          </ul>
-        </li>
-                
+               
       </ul>
       <!-- Navbar Right Side -->
       <ul class="navbar-nav">

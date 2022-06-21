@@ -14,7 +14,7 @@
         </a> -->
 
         <!--left links-->
-        <ul class="nav navbar-nav me-auto">
+        <ul class="nav navbar-nav me-auto mb-2 mb-lg-0">
 
 
             <li class="nav-item dropdown">
@@ -56,29 +56,7 @@
                     </div>
                 </div>
             </li>
-            <li class="nav-item dropdown">
-                <div class="nav-dropdown">
-                    <a href="#" id="nav2" class="nav-item nav-link dropdown-toggle text-secondary" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class=""></i> <span>Reports</span> <i style="font-size: .8em;" class="fas fa-caret-down"></i>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-end nav-link-menu">
-                        <ul class="nav-list">
-                            <li><a class="dropdown-item" href="{% url 'project_list1' %}">Project Dashboard</a></li>
-                            <li><a class="dropdown-item" href="/report">Status Report List</a></li>
-                            <div class="dropdown-divider"></div>
-                            <li><a class="dropdown-item" href="/report/risks">Risk Report List</a></li>
-                            <div class="dropdown-divider"></div>
-                            <li><a class="dropdown-item" href="{% url 'project_chart_1' %}">Gantt chart</a></li>
-                            <li><a class="dropdown-item" href="{% url 'project_chart_2' %}">Gantt chart (pilot1)</a></li>
-                    {% if user.is_superuser %}            
-                            <li><a class="dropdown-item" href="{% url 'project_chart_3' %}">Gantt chart (pilot2)</a></li>
-                    {% endif %}
-                            <div class="dropdown-divider"></div>
-                            <li><a class="dropdown-item" href="{% url 'project_list2' %}">Key project summary</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </li>
+            <li class="nav-item"><a class="nav-item nav-link mt-2"  href="/project/">Reports</a></li>
 
         </ul>
 

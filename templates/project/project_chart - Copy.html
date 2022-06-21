@@ -1,12 +1,25 @@
-{% extends "theme/root.html" %}
-{% load static %}
+{% extends "base_wide.html" %}
+
+{% block child_css %}
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.6.1/frappe-gantt.css" integrity="sha512-57KPd8WI3U+HC1LxsxWPL2NKbW82g0BH+0PuktNNSgY1E50mnIc0F0cmWxdnvrWx09l8+PU2Kj+Vz33I+0WApw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.6.1/frappe-gantt.min.js" integrity="sha512-HyGTvFEibBWxuZkDsE2wmy0VQ0JRirYgGieHp0pUmmwyrcFkAbn55kZrSXzCgKga04SIti5jZQVjbTSzFpzMlg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+<!-- https://github.com/frappe/gantt -->
+<link rel="stylesheet" href="/static/libs/frappe-gantt/frappe-gantt.css" />
+<script src="/static/libs/frappe-gantt/frappe-gantt.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<script>
+.cc-red g rect { fill: red !important; }
+
+</script>
+{% endblock %}
 
 {% block content %}
 <div id="container">
     <!-- filter area -->
     <div style="display: flex; justify-content: space-between;">
         <div>
-            <h4>Project Gantt Chart</h4>
+            <h3>Project Gantt Chart</h3>
         </div>
         <div id="chart_filter_ctrl" style="height: 2rem; display: flex;">
             <label>Max Display Item:</label>
@@ -15,7 +28,19 @@
             <button onclick="toggleFilter()" id="btn_toggle_filter" class="btn btn-sm btn-link"></button>
         </div>
     </div>
-    <!-- move to left navbar -->
+    <div id="chart_fiter" class="row p-3">
+        {% for filterItem in filterItems %}
+        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+            <label  class="form-group label" for='sel_{{ filterItem.qId }}'>{{ filterItem.text }}</label>        
+            <select class="form-select"  id='sel_{{ filterItem.qId }}' onchange="updateData()">
+                <option value=''>ALL</option>
+                {% for pItem in filterItem.items %}
+                <option value="{{ pItem.id }}">{{ pItem.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endfor %}
+    </div>
     <!-- chart area -->
     <div class="row">
         {% if project_list %}
@@ -27,12 +52,10 @@
                         <button type="button" class="btn btn-sm btn-light">Month</button>
                         <button type="button" class="btn btn-sm btn-light">Custom</button>
                     </div>
-                    {% if user.is_superuser %}   
                     <div style="margin-right: 5px;">
                         <button id="btn_reset" type="button" class="btn btn-sm btn-primary" onclick="resetChange()">Reset</button>
                         <button id="btn_save" type="button" class="btn btn-sm btn-danger" onclick="saveChange()">Save</button>
                     </div>
-                    {% endif %}   
                 </div>
                 <div class="card" >
                     <svg id="gantt" ></svg>
@@ -46,10 +69,7 @@
 
 {% endblock content %}
 
-{% block script_body %}
-<link rel="stylesheet" href="/static/libs/frappe-gantt/frappe-gantt.css" />
-<script src="/static/libs/frappe-gantt/frappe-gantt.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+{% block child_js_above_files %} 
 <script>
     var tChart = null;
 

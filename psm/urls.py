@@ -19,7 +19,7 @@ urlpatterns = [
     re_path(r'project/json/get_project_stat_api/(?P<year>[0-9]{4})/(?P<groupby>[^/]+)/$', 					views.get_project_stat_api,	name='get_project_stat_api'),
     re_path(r'project/json/get_project_stat_api/(?P<year>[0-9]{4})/', 										views.get_project_stat_api,	name='get_project_stat_api'),
 
-    re_path(r'project/json/get_project_chart/(?P<year>[0-9]{4})/(?P<groupby>[^/]+)/(?P<mstr>[^/]+)/$', 	views.get_project_chart,	name='get_project_chart'),
+    re_path(r'project/json/get_project_chart/(?P<year>[0-9]{4})/(?P<groupby>[^/]+)/(?P<mstr>[^/]+)/$', 	views.get_project_highchart,	name='get_project_chart'),
 	
 	
 	path('project/list1', views.projectList1View.as_view(), name='project_list1'),
@@ -28,9 +28,11 @@ urlpatterns = [
 	# path('project-list2/', views.project_list2, name='project_list2'),
 	path('project/list', projectList3View.as_view(), 		name="project_list"),
 
-	path('project/chart1/', views.projectChartView.as_view(), 	name='project_chart_1'),
-	path('project/chart2/', views.projectChartView2.as_view(), 	name='project_chart_2'),
-	path('project/chart3/', views.project_data_view, 			name='project_chart_3'),
+	path('project/chart1/', views.projectChartView.as_view(), 		name='project_chart_1'),
+	path('project/chart2/', views.projectChartView2.as_view(), 		name='project_chart_2'),
+	
+	path('project/chart3/', 	 views.projectChartView3.as_view(), name='project_chart_3'),
+	path('project/chart3/json/', views.project_chart_sample1_json, 	name='project_chart_sample1_json'),
 	
 
 	re_path(r'^project/(?P<pk>\d+)/$', views.projectDetail.as_view(), name='project_detail'),

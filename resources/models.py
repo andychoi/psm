@@ -33,6 +33,8 @@ class Resource(models.Model):
 
     year = models.PositiveSmallIntegerField(default=date.today().year)
 
+#JSON field?
+# 
     m01 = models.IntegerField(default = 100, validators = [MinValueValidator(0), MaxValueValidator(MAX_MM)])
     m02 = models.IntegerField(default = 100, validators = [MinValueValidator(0), MaxValueValidator(MAX_MM)])
     m03 = models.IntegerField(default = 100, validators = [MinValueValidator(0), MaxValueValidator(MAX_MM)])

@@ -1,114 +1,96 @@
-{% extends "base_wide.html" %}
+{% extends "theme/root.html" %}
+{% load static %}
 
-<!-- README: https://www.highcharts.com/blog/tutorials/create-a-dashboard-using-highcharts-and-django/ -->
-
-{% block child_css %}
-
-<style>
-    .testclass {font-size: 10rem;}
-</style>
+{% block head_script %}
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.css">
+    <!-- <link href="/static/theme/assets/vendor/datatables/datatables.min.css" rel="stylesheet"> -->
+    <link href="{% static 'css/tablelist.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
 <div id="container">
-    <!-- filter area -->
-    <div class="row"> <!-- filter area -->
-        <div class="col-2">
-            <h4 class="font-weight-bold"><button class="btn btn-success" type="button"  data-bs-toggle="collapse"  href="#collapseFilter" 
-                role="button" aria-expanded="false" aria-controls="collapseFilter">PROJECT PLAN</button></h4>                        
-          </div>
-          <!-- div class="col-4 text-nowrap float-end" >
-        <p class="text-end m-0 small"></p>
-        </div-->
-        <div class="col-10">
-            <div class="collapse show float-end" id="collapseFilter">
-                <form class="row row-cols-lg-auto g-3 align-items-center form-control-sm">
-                        <label><!-- Local filters:--></label>
-                        {% for filterItem in filterItems %}
-                        <div class="col-auto">
-                            <label  class="form-group label" for='sel_{{ filterItem.qId }}'>{{ filterItem.text }}</label>        
-                            <select class="form-select"  id='sel_{{ filterItem.qId }}' onchange="updateData()">
-                                <option value=''>ALL</option>
-                                {% for pItem in filterItem.items %}
-                                <option value={{ pItem.id }}>{{ pItem.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        {% endfor %}
-                
-                </form>                    
-            </div>
-        </div>
-    </div> <!-- filter area -->
-    <!-- Home        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-    Customer    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-    Reports     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bar-chart-2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-    Calendar    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> -->
 
     <!-- chart area -->
     <div id="chart_area" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-    <div id="chart-json" data-url="{% url 'project_json_data1' %}" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-
+    <div id="chart-json" data-url="{% url 'project_chart_sample1_json' %}" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
     <!-- chart area -->  
         
-    <!-- Table data -->
-    <h2 class="pt-4">Section Details</h2>
-    <p class="text-danger">This table will be upated by Django objects, hence leaving it as it is.</p>
-    <div class="table-responsive">
-        {% for p in project_list %}
-            {{ p.title }}
-        {% endfor %}
-    </div>
-
 </div>
 {% endblock content %}
 
-{% block child_js_above_files %} 
+{% block script_body %}
+    <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+    <!-- Chartjs libraries -->
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script>
+        //second method using Json
+        arguments = window.location.href.split("?")[1]
+        if (arguments) {
+            callurl = $("#chart-json").attr("data-url") + "?" + arguments 
+        } else {
+            callurl = $("#chart-json").attr("data-url")  
+        }
+        console.log(callurl)
+        $.ajax({
+        url: callurl,  //$("#chart-json").attr("data-url") +  arguments, 
+        dataType: 'json',
+        success: function (data) {
+            console.log('calling chart...')
+            Highcharts.chart("chart-json", data);
+        }
+        });
 
-<!-- Chartjs libraries -->
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
-<script src="https://code.highcharts.com/modules/export-data.js"></script>
+    // first method - return data series
+    // Highcharts.chart('chart_area', {{ chart|safe }});
+    // Highcharts.chart('container', {
+    //       chart: {
+    //           type: 'column'
+    //       },
+    //       title: {
+    //           text: 'Completion by Dept'
+    //       },
+    //       xAxis: {
+    //           categories: {{ categories|safe }}
+    //       },
+    //       series: [{
+    //           name: 'Completed',
+    //           data: {{ completed }},
+    //           color: 'green'
+    //       }, {
+    //           name: 'Not completed',
+    //           data: {{ not_completed }},
+    //           color: 'red'
+    //       }]
+    //   });
+    </script>
+{% endblock %}
+
+
+<!-- nav filter script -->
+{% block script_nav %} 
 <script>
-    //second method using Json
-    arguments = window.location.href.split("?")[1]
-    if (arguments) {
-        callurl = $("#chart-json").attr("data-url") + "?" + arguments 
-    } else {
-        callurl = $("#chart-json").attr("data-url")  
-    }
-    console.log(callurl)
-    $.ajax({
-      url: callurl,  //$("#chart-json").attr("data-url") +  arguments, 
-      dataType: 'json',
-      success: function (data) {
-        Highcharts.chart("chart-json", data);
-      }
-    });
+    // set preselected values
+    {% for filterItem in filterItems %}
+        $('#sel_{{filterItem.qId}}').val("{{ filterItem.selected }}");
+    {% endfor %}
 
-// first method - return data series
-// Highcharts.chart('chart_area', {{ chart|safe }});
-// Highcharts.chart('container', {
-//       chart: {
-//           type: 'column'
-//       },
-//       title: {
-//           text: 'Completion by Dept'
-//       },
-//       xAxis: {
-//           categories: {{ categories|safe }}
-//       },
-//       series: [{
-//           name: 'Completed',
-//           data: {{ completed }},
-//           color: 'green'
-//       }, {
-//           name: 'Not completed',
-//           data: {{ not_completed }},
-//           color: 'red'
-//       }]
-//   });
+    function updateData() {
+        var q = "";
+        var qs = [];
+        var tmp = '';
+
+        {% for filterItem in filterItems %}
+            tmp = $('#sel_{{filterItem.qId}}').val();
+            if (tmp != '') qs.push('{{filterItem.qId}}=' + tmp);
+        {% endfor %}
+
+        if (qs.length > 0) {
+            q = "?" + qs.join("&");
+        }
+        window.location.href = window.location.pathname + q;
+    }
 </script>
 {% endblock %}

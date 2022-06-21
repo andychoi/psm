@@ -292,6 +292,7 @@ class projectChartView(projectList1View):
     template_name = 'project/project_chart.html'
 class projectChartView2(projectList1View):
     template_name = 'project/project_chart2.html'
+
 class projectChartView3(projectList1View):
     template_name = 'project/project_chart3.html'
 
@@ -308,10 +309,12 @@ class projectChartView3(projectList1View):
 이거 어떨지...
 https://django-plotly-dash.readthedocs.io/en/latest/index.html
 
+
 """
+# -----------------------------------------------------------------------------------------------
 # https://simpleisbetterthancomplex.com/tutorial/2018/04/03/how-to-integrate-highcharts-js-with-django.html
 # https://testdriven.io/blog/django-charts/
-def project_data_view(request):
+def project_json_sample2(request):
     dataset = Dept.objects \
         .values('name') \
         .annotate(completed     =Count('project', filter=Q(project__phase__gte='6')),
@@ -333,6 +336,42 @@ def project_data_view(request):
         'not_completed': json.dumps(not_completed)
     })
     # return render(request, 'project/project_chart3.html', {'dataset': dataset})
+
+# -----------------------------------------------------------------------------------------------
+# def project_chart_sample1(request):
+#     return render(request, 'project/project_chart3.html')
+
+@login_required
+# @permission_required('psm.change_project', raise_exception=True)
+def project_chart_sample1_json(request):
+
+    q =  {k:v for k, v in request.GET.items() if v and hasattr(Project, k.split('__')[0] ) }
+
+    dataset = Dept.objects \
+        .values('name') \
+        .annotate(completed     =Count('project', filter=Q(project__phase__gte='6')),
+                  not_completed =Count('project', filter=Q(project__phase__lte='5'))) \
+        .order_by('name')
+        
+        
+    categories = list()
+    completed = list()
+    not_completed = list()
+    for entry in dataset:
+        categories.append('%s Class' % entry['name'])
+        completed.append(entry['completed'])
+        not_completed.append(entry['not_completed'])
+
+    series_completed    = {'name': 'completed',     'data': completed,      'color': 'green' }
+    series_not_completed= {'name': 'not_completed', 'data': not_completed,  'color': 'red'   }
+
+    chart = {
+        'chart': {'type': 'column'},
+        'title': {'text': 'Completion by Dept'},
+        'xAxis': {'categories': categories },
+        'series': [series_completed, series_not_completed]
+        }
+    return JsonResponse(chart)
 
 """
 # samples: https://betterprogramming.pub/django-annotations-and-aggregations-48685994d149
@@ -462,7 +501,39 @@ def get_project_stat_pd(request, year=date.today().year):
 @login_required
 # @staff_member_required
 # @permission_required('psm.change_project', raise_exception=True)
-def get_project_chart(request, year=date.today().year, groupby='year', mstr='total_net,completed'):
+def get_project_highchart(request, year=date.today().year, groupby='year', mstr='total_net,completed'):
+
+    # example: http://localhost:8000/project/json/get_project_chart/2023/year/total,completed,est_cost_sum/
+
+    dataset = get_project_stat_api(request, year, groupby, mstr, res='qs')
+    if not dataset:
+        return  JsonResponse( {} )
+
+    # categories = list(dataset.values_list('dept__name', flat=True))
+    categories = [ (q[groupby]) for q in dataset ]
+
+    series = []
+    for m in mstr.split(','):
+        data = {
+            'label': m,
+            'data': [(q[ m ]) for q in dataset],
+            'backgroundColor': 'green',
+        }
+        series.append(data)
+
+    chart = {
+        'chart': {'type': 'column'},
+        'title': {'text': f'{mstr} by {groupby}'},
+        'xAxis': {'categories': categories },
+        'series': series
+        }
+
+    return JsonResponse(chart)
+
+@login_required
+# @staff_member_required
+# @permission_required('psm.change_project', raise_exception=True)
+def get_project_chartjs(request, year=date.today().year, groupby='year', mstr='total_net,completed'):
 
     # example: http://localhost:8000/project/json/get_project_chart/2023/year/total,completed,est_cost_sum/
 

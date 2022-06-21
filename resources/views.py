@@ -234,3 +234,5 @@ def done_order_view(request, pk):
     instance.is_paid = True
     instance.save()
     return redirect(reverse('homepage'))
+
+    

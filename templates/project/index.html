@@ -20,16 +20,16 @@
         <!-- 2nd row -->
         <div class="row">
             <div class="col-6">
-                <canvas id="Completed_chart"></canvas>
+              <div id="chart-json1" data-url="/project/json/get_project_chart/{% now 'Y' %}/CBUs__name/total,completed/" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+            </div>
+              <div class="col-6">
+                <div id="chart-json2" data-url="/project/json/get_project_chart/{% now 'Y' %}/dept__name/total,completed/" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
               </div>
               <div class="col-6">
-                <canvas id="Kickoff_chart"></canvas>
+                <div id="chart-json3" data-url="/project/json/get_project_chart/{% now 'Y' %}/year/total,completed/" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
               </div>
               <div class="col-6">
-                <canvas id="Launch_chart"></canvas>
-              </div>
-              <div class="col-6">
-                <canvas id="Pie_chart"></canvas>
+                <div id="chart-json4" data-url="/project/json/get_project_chart/{% now 'Y' %}/year/total,completed/" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
               </div>
             </div>            
 
@@ -41,12 +41,6 @@
 
 <!-- Other script here -->
 {% block script_body %}
-
-
-{% endblock %}
-
-<!-- nav filter script -->
-{% block script_nav %} 
 
 <script>
   $(document).ready(function() {
@@ -65,15 +59,20 @@
       error: () => console.log("Failed to fetch chart filter options!")
     });
   });    
-
+  // filter submit event --------------------------
   $("#filterForm").on("submit", (event) => {
-  event.preventDefault();
+    event.preventDefault();
 
-  const year = $("#year").val();
-  loadAllCharts(year)
-});
+    const year = $("#year").val();
+    loadAllCharts(year)
+  });
 
 function loadChart(chart, endpoint) {
+  args = window.location.href.split("?")[1]
+  if (args) {
+      endpoint = endpoint + args 
+  }
+
   $.ajax({
     url: endpoint,
     type: "GET",
@@ -105,57 +104,96 @@ function loadAllCharts(year) {
   loadChart(Completed_chart,    `/project/json/get_project_chart/${year}/year/total/`);
   loadChart(Kickoff_chart,      `/project/json/get_project_chart/${year}/year/total/`);
   loadChart(Launch_chart,       `/project/json/get_project_chart/${year}/year/total/`);
-  loadChart(Pie_chart,          `/project/json/get_project_chart/${year}/year/completed,not_complete/`);
 }
 
-</script>
 
-<script>
-    let completeCtx = document.getElementById("Completed_chart").getContext("2d");
-    let Completed_chart = new Chart(completeCtx, {
-      type: "bar",
-      options: {
-        responsive: true,
-      }
-    });
-    let kickoffCtx = document.getElementById("Kickoff_chart").getContext("2d");
-    let Kickoff_chart = new Chart(kickoffCtx, {
-      type: "bar",
-      options: {
-        responsive: true,
-      }
-    });
-    let launchCtx = document.getElementById("Launch_chart").getContext("2d");
-    let Launch_chart = new Chart(launchCtx, {
-      type: "bar",
-      options: {
-        responsive: true,
-        // layout: {
-        //   padding: {
-        //     left: 0,
-        //     right: 0,
-        //     top: 0,
-        //     bottom: 25
-        //   }
-        // }
-      }
-    });
-    let PieCtx = document.getElementById("Pie_chart").getContext("2d");
-    let Pie_chart = new Chart(PieCtx, {
-      type: "pie",
-      options: {
-        responsive: true,
-        // layout: {
-        //   padding: {
-        //     left: 0,
-        //     right: 0,
-        //     top: 0,
-        //     bottom: 25
-        //   }
-        // }
-      }
-    });
+// initialization
+  // let completeCtx = document.getElementById("Completed_chart").getContext("2d");
+  // let Completed_chart = new Chart(completeCtx, {
+  //   type: "bar",
+  //   options: {
+  //     responsive: true,
+  //   }
+  // });
+  // let kickoffCtx = document.getElementById("Kickoff_chart").getContext("2d");
+  // let Kickoff_chart = new Chart(kickoffCtx, {
+  //   type: "bar",
+  //   options: {
+  //     responsive: true,
+  //   }
+  // });
+  // let launchCtx = document.getElementById("Launch_chart").getContext("2d");
+  // let Launch_chart = new Chart(launchCtx, {
+  //   type: "bar",
+  //   options: {
+  //     responsive: true,
+  //   }
+  // });
 
   </script>
 
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script>
+        //highcharts
+
+        arguments = window.location.href.split("?")[1]
+        if (arguments) {
+            callurl = $("#chart-json1").attr("data-url") + "?" + arguments 
+        } else {
+            callurl = $("#chart-json1").attr("data-url")  
+        }
+        console.log(callurl)
+        $.ajax({
+            url: callurl,  //$("#chart-json").attr("data-url") +  arguments, 
+            dataType: 'json',
+            success: function (data) {
+                Highcharts.chart("chart-json1", data);
+            }
+        });
+
+        arguments = window.location.href.split("?")[1]
+        if (arguments) {
+            callurl = $("#chart-json2").attr("data-url") + "?" + arguments 
+        } else {
+            callurl = $("#chart-json2").attr("data-url")  
+        }
+        console.log(callurl)
+        $.ajax({
+            url: callurl,  //$("#chart-json").attr("data-url") +  arguments, 
+            dataType: 'json',
+            success: function (data) {
+                Highcharts.chart("chart-json2", data);
+            }
+        });
+
+</script>
+{% endblock %}
+
+
+{% block script_nav %} 
+<!-- nav filter script -->
+<script>
+    // set preselected values
+    {% for filterItem in filterItems %}
+        $('#sel_{{filterItem.qId}}').val("{{ filterItem.selected }}");
+    {% endfor %}
+
+    function updateData() {
+        var q = "";
+        var qs = [];
+        var tmp = '';
+
+        {% for filterItem in filterItems %}
+            tmp = $('#sel_{{filterItem.qId}}').val();
+            if (tmp != '') qs.push('{{filterItem.qId}}=' + tmp);
+        {% endfor %}
+
+        if (qs.length > 0) {
+            q = "?" + qs.join("&");
+        }
+        window.location.href = window.location.pathname + q;
+    }
+</script>
 {% endblock %}

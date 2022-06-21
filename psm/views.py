@@ -718,12 +718,12 @@ class projectPlanListView(PermissionRequiredMixin, generic.ListView):
             q[ "year" ] = date.today().year
 
         if q: 
-            qs = Project.objects.filter( **q )
+            qs = ProjectPlan.objects.filter( **q )
                 # qs = Project.objects.filter(year=self.kwargs['year']).filter( **q )
         else:
-            qs = Project.objects.all()
+            qs = ProjectPlan.objects.all()
 
-        if (qs.objects.count() == 0):
+        if (qs.count() == 0):
             return qs   # return empty qs
 
         ltmp = self.request.GET.get('div', '')

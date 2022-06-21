@@ -88,7 +88,7 @@ class ProjectManager(models.Manager):
         applying the filters passed in "kwargs".
         """
         if pk:
-            obj = Project.objects.get(pk=pk)
+            # obj = Project.objects.get(pk=pk)
             return self.exclude(pk=pk).filter(**kwargs)
         else: #new record
             return self.filter(**kwargs)

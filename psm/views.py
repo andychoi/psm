@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect
 from django.db.models import Count, F, Q, Sum, Avg, Subquery, OuterRef, When, Case, IntegerField
 from django.db.models.functions import ExtractYear, ExtractMonth, Coalesce
 from django.core.exceptions import FieldError, FieldDoesNotExist
+from django.contrib import messages
 
 from django.contrib.auth.decorators import login_required
 from rest_framework.views import APIView
@@ -18,6 +19,7 @@ from rest_framework import routers, serializers, viewsets
 from .serializers import ProjectSerializer
 from datetime import date
 from django.contrib.admin.views.decorators import staff_member_required
+from django.shortcuts import get_object_or_404
 
 # how to permission?? https://docs.djangoproject.com/en/4.0/topics/auth/default/#permission-caching
 # https://docs.djangoproject.com/en/4.0/topics/auth/default/#the-permission-required-decorator
@@ -47,6 +49,7 @@ from reports.models import Report, ReportRisk
 # from .forms import ProjectPlanForm
 
 from common.models import Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, Decision3, DECISION3, WBS, VERSIONS, Versions
+from users.models import Profile
 # for charting
 from .utils.charts import get_year_dict, generate_color_palette, colorPalette, colorPrimary, colorSuccess, colorDanger, months
 
@@ -127,27 +130,7 @@ def get_year_options(request):
         'options': options,
     })
 
-# - how to provide my project for PM, HOD
-class projectIndexView(generic.ListView):
-    template_name = 'project/index.html'
-    context_object_name = 'project_list'    
 
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs) #dict
-        context['latest_update'] =  Project.objects.order_by('-updated_on')[:10]
-        context['oldest_update'] =  Project.objects.filter(Q(state__in=STATE_OPEN)).order_by('updated_on')[:10]
-        context['latest_report'] =  Report.objects.all().order_by('-created_at')[:10]
-
-        context['latest_risk'] =    ReportRisk.objects.filter(state=State2.OPEN.value).order_by('created_at')[:5] 
-        context['latest_request'] = ProjectPlan.objects.filter(Q(version__in=VERSION_QUEUE) & ~Q(released=False)).order_by('-created_at')[:5]
-        return context
-
-    def get_queryset(self):
-        q =  {k:v for k, v in self.request.GET.items() if v and hasattr(Project, k.split('__')[0] ) }
-        return Project.objects.filter(**q).order_by('-created_at')[:5]
-      
-
-#----------------------------------------------------------------------------------------------------
 
 class projectList1View(PermissionRequiredMixin, generic.ListView):
     permission_required = 'psm.view_project'
@@ -329,6 +312,106 @@ class projectChartView3(projectList1View):
     #     filterset_class = ProjectFilter
     #     table_pagination = {"per_page": 10}
 
+# - how to provide my project for PM, HOD
+class projectIndexView(generic.ListView):
+    template_name = 'project/index.html'
+    context_object_name = 'project_list'    
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs) #dict
+
+        scope = self.request.GET.get('scope', '')
+        pm = self.request.GET.get('pm', '')
+        context['scope'] = scope    # my, dept, blank=all
+        context['pm'] = pm          # my own project view
+
+        if pm:
+            profile = get_object_or_404(Profile, id=pm)
+    
+        q =  {k:v for k, v in self.request.GET.items() if v and hasattr(Project, k.split('__')[0] ) }
+        if scope == 'dp' and pm:
+            if profile.dept is None:
+                messages.add_message(self.request, messages.INFO, ' user profile has no department, showing personal view')
+            else:
+                q['dept'] = profile.dept.id
+                q.pop('pm')
+
+        q =  {k:v for k, v in self.request.GET.items() if v and hasattr(Project, k.split('__')[0] ) }
+        context['project_list'] = Project.objects.filter(**q).order_by('-created_at')[:5]
+        context['latest_update'] =  Project.objects.filter(**q).order_by('-updated_on')[:10]
+        context['oldest_update'] =  Project.objects.filter(**q).filter(Q(state__in=STATE_OPEN)).order_by('updated_on')[:10]
+        context['latest_request'] = ProjectPlan.objects.filter(Q(version__in=VERSION_QUEUE) & ~Q(released=False)).order_by('-created_at')[:5]
+
+        q2 =  {k:v for k, v in self.request.GET.items() if v and hasattr(Report, k.split('__')[0] ) }
+        if scope == 'dp' and pm:
+            if not profile.dept is None:
+                q2['project__dept'] = profile.dept.id
+        elif pm:
+                q2['project__pm'] = profile.id
+        context['latest_report'] =  Report.objects.filter(**q2).order_by('-created_at')[:10]
+
+        q3 =  {k:v for k, v in self.request.GET.items() if v and hasattr(ReportRisk, k.split('__')[0] ) }
+        if scope == 'dp' and pm:
+            if not profile.dept is None:
+                q3['project__dept'] = profile.dept.id
+        elif pm:
+                q3['project__pm'] = profile.id
+        context['latest_risk'] =    ReportRisk.objects.filter(state=State2.OPEN.value).order_by('created_at')[:5] 
+
+
+        # For side filter
+        context['filterItems'] = []
+        
+        get_def_year = date.today().year if not self.request.GET.get('year', '') else self.request.GET.get('year', '') 
+        context['filterItems'].append( { "key": "YEAR", "text": "Year", "qId": "year", "selected": get_def_year
+		, "items": map( lambda x: {"id": x['year'], "name": x['year']}, Project.objects.values('year').distinct().order_by('-year') )
+        } )
+
+        context['filterItems'].append( {
+		"key": "DIV", "text": "Div", "qId": "div", "selected": self.request.GET.get('div', ''), "items": Div.objects.all()
+        } )
+
+        context['filterItems'].append( {
+            "key": "DEP", "text": "Dept.", "qId": "dept", "selected": self.request.GET.get('dept', ''), "items": Dept.objects.all()
+            # "key": "DEP", "text": "Dept.", "qId": "dept__name", "selected": self.request.GET.get('dept__name', ''), "items": [{ "id": x[0], "name":x[0]} for i, x in Dept.objects.all().values_list('name') ]
+        } )
+		
+        context['filterItems'].append( {
+            "key": "PHASE", "text": "Phase", "qId": "phase", "selected": self.request.GET.get('phase', '')
+            # , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PHASE)]
+            , "items": [{"id": x[0], "name" : x[1]} for i, x in enumerate(PHASE)]
+        } )
+	
+        context['filterItems'].append( {
+            "key": "CBU", "text": "CBU", "qId": "cbu", "selected": self.request.GET.get('cbu', '')
+            , "items": CBU.objects.filter(is_active=True)
+        } )
+
+        context['filterItems'].append( {
+            "key": "TYP", "text": "Type", "qId": "type", "selected": self.request.GET.get('type', '')
+            , "items": [{"id": x[0], "name" : x[1]} for i, x in enumerate(PRJTYPE)]
+            # , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRJTYPE)]
+        } )
+        context['filterItems'].append( {
+            "key": "PRI", "text": "Priority", "qId": "priority", "selected": self.request.GET.get('priority', '')
+            , "items": [{"id": x[0], "name": x[1]} for i, x in enumerate(PRIORITIES)]
+        } )
+		
+        context['filterItems'].append( {
+            "key": "PRG", "text": "Program", "qId": "prg", "selected": self.request.GET.get('prg', '')
+            # , "items": Project.objects.values('program').distinct()
+            , "items": Program.objects.filter(is_active=True)  # all()
+        } )
+
+
+        return context
+
+    def get_queryset(self):
+        return None
+        # q =  {k:v for k, v in self.request.GET.items() if v and hasattr(Project, k.split('__')[0] ) }
+        # return Project.objects.filter(**q).order_by('-created_at')[:5]
+      
+#----------------------------------------------------------------------------------------------------
 
 """
 이거 어떨지...

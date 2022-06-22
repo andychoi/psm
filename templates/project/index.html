@@ -14,8 +14,19 @@
 {% block content %}
 	<div class="container-fluid">
 
-    <h5>Report Home | <a href="{% url 'project_index' %}?pm={{ user.profile.id }}">My Project</a></h5>
-    <p>please navigate top/left hamberger menu to run charts/table report</p>
+    <p><span class="fs-4"> Dashboard for {% now 'Y' %} </span>
+      <span><a href="{% url 'project_index' %}"> All </a></span> 
+      | <span {% if scope != 'my' %}class="text-small text-muted"{% endif %} ><a href="{% url 'project_index' %}?pm={{ user.profile.id }}&scope=my"> My Project</a></span>
+      | <span {% if scope != 'my' %}class="text-small text-muted"{% endif %} ><a href="{% url 'project_index' %}?pm={{ user.profile.id }}&scope=dp"> My Dept</a></span>
+    </p>
+
+    <div class="alert alert-primary d-flex align-items-center" role="alert">
+      <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill"/></svg>
+      <div>
+        please navigate top/left hamberger menu to run charts/table report <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    </div>
+        <!-- <p>please navigate top/left hamberger menu to run charts/table report</p> -->
 
     <div class="row m-2 " data-masonry='{"percentPosition": true }' >
 
@@ -165,3 +176,28 @@
 
 {% endblock content %}
 
+
+<!-- nav filter script -->
+{% block script_nav %} 
+    {% if filterItems %}
+    <script>
+        // set preselected values
+        {% for filterItem in filterItems %}$('#sel_{{filterItem.qId}}').val("{{ filterItem.selected }}");
+        {% endfor %}
+
+        function updateData() {
+            var q = "";
+            var qs = [];
+            var tmp = '';
+
+            {% for filterItem in filterItems %} tmp = $('#sel_{{filterItem.qId}}').val(); if (tmp != '') qs.push('{{filterItem.qId}}=' + tmp);
+            {% endfor %}
+
+            if (qs.length > 0) {
+                q = "?" + qs.join("&");
+            }            
+            window.location.href = window.location.pathname + q;
+        }
+    </script>    
+    {% endif %}
+{% endblock %}

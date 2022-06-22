@@ -1,4 +1,4 @@
-{% extends "base_wide.html" %}
+{% extends "theme/root.html" %}
 {% load static %}
 {% load thumbnail %}
 
@@ -23,7 +23,7 @@
 
 {% block content %}
 
-<div class="container-lg">
+<div class="container-fluid">
   <div class="row m-3">
     <div class="col d-flex align-items-start">Project code : <b>{{ project.pjcode }}</b>
        <a href="/admin/psm/projectplan/{{ project.id }}"><i class="bi bi-pencil"></i></a>
@@ -83,15 +83,15 @@
       <div class="col-4">
         <div class="card w-100 border-0"><div class="container" style="padding-left:12px; padding-right:12px;">
           <div class="row border-0">
-            <div class="card w-100 card-obj">
+            <div class="card w-100 card-obj mb-0">
               <div class="card-body">
                 <h5 class="card-title">Objectives</h5><p class="card-text">{{ project.objective }}</p>
               </div>
             </div>
           </div><!--row-->
 
-          <div class="row mt-2">
-            <div class="card w-100 card-sub">
+          <div class="row mt-0">
+            <div class="card w-100 card-sub mb-0">
               <div class="card-body">
                 <h5 class="card-title">Considerations</h5><p class="card-text">{{ project.consider }}</p>
               </div>

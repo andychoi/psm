@@ -1,4 +1,4 @@
-{% extends "base_wide.html" %}
+{% extends "theme/root.html" %}
 {% load static %}
 {% load markdown_extras %}
 {% load thumbnail %}
@@ -30,7 +30,7 @@
 
 {% block content %}
 
-<div class="container-lg">
+<div class="container-fluid">
   <div class="row m-2">
     <div class="col d-flex align-items-start">Project code : <b>{{ project.pjcode }}</b> <a href="/admin/psm/project/{{ project.id }}"><i class="bi bi-pencil"></i></a></div>
     <div class="col d-flex justify-content-end">Project year : <b>{{ project.year }}</b></div>
@@ -227,13 +227,14 @@
     <!-- </div>grid -->
   <!-- </div>row -->
 
-  <div class="col-4 mt-2">
+  <!-- <div class="col-4 mt-2"> -->
 
+  <div class="row">
 
   <!-- timeline -->
   <!-- https://www.bootdey.com/snippets/view/bs4-Horizontal-timeline#preview -->
   <!-- https://freefrontend.com/bootstrap-timelines/ -->
-    <div class="col-12 mt-3 mb-4" >
+    <div class="col-12 mt-3" style="padding-right:0; margin-right:0;">
       <div class="card w-100 card-time">
         <div class="card-body">
           <div clas="container">

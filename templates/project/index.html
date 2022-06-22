@@ -88,7 +88,7 @@
                             {% for r in latest_report %}
                               <tr>
                                   <!-- <th scope="row">{{ p.CBU_str }}</th> -->
-                                  <td><a href="{% url 'project_detail' r.project.id %}">{{ r.project.title }}</a></td>
+                                  <td><a href="{% url 'report_detail' r.id %}">{{ r.project.title }}</a></td>
                                   <td>{{ r.project.pm }}</td>
                                   <td>{{ r.created_at|naturalday }}<!--|date:"m/d/y"--></td>
                               </tr>

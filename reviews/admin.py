@@ -100,7 +100,7 @@ class ReviewAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     #     return mark_safe(f"<a class='btn btn-outline-success p-1 btn-sm adminlist' style='color:#000' href='/project/{obj.project.id}'>{obj.project}</a>")
 
     def pm(self, obj):
-        return obj.project.pm.name
+        return obj.project.pm.name if obj.project.pm else "not assigned"
 
     def project_view(self, obj):
         if obj.project:

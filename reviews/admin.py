@@ -8,6 +8,7 @@ from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter, Drop
 
 from django.urls import reverse
 from django.utils.html import mark_safe
+from django.http import HttpResponseRedirect
 # from django.forms import TextInput, Textarea
 # from django.db import models
 
@@ -26,6 +27,8 @@ from users.models import Profile
 
 from import_export import resources, fields
 from import_export.widgets import ManyToManyWidget, ForeignKeyWidget
+
+from django_object_actions import DjangoObjectActions
 
 class ReviewResource(resources.ModelResource):
     # pm_name     = fields.Field(attribute='project.pm',     widget=ForeignKeyWidget(Profile, 'name'))
@@ -50,12 +53,12 @@ class ReviewInline(admin.TabularInline):
 #change base class admin.ModelAdmin into GuardedModelAdmin for object level perms.
 
 @admin.register(Review)
-class ReviewAdmin(ImportExportMixin, admin.ModelAdmin):
+class ReviewAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     resource_class = ReviewResource
 
     def project_dept(self, obj):
         return obj.project.dept
-    list_display = ('formatted_rtype', 'project_view', 'title', 'proc_start',  'priority', 'is_escalated', 'project_dept', 'state', 'status', 'CBU_names', 'formatted_updated',)
+    list_display = ('formatted_rtype', 'project_view', 'title', 'proc_start', 'onboaddt', 'priority', 'is_escalated', 'project_dept', 'pm', 'state', 'status', 'CBU_names', 'formatted_updated',)
     list_display_links = ('title', 'formatted_updated')
     ordering = ('-id',)
     readonly_fields = ('created_at', 'created_by', 'updated_on', 'updated_by', )
@@ -95,6 +98,9 @@ class ReviewAdmin(ImportExportMixin, admin.ModelAdmin):
     # def view_project(self, obj):
     #     # count = Review.objects.filter(project=obj).count()
     #     return mark_safe(f"<a class='btn btn-outline-success p-1 btn-sm adminlist' style='color:#000' href='/project/{obj.project.id}'>{obj.project}</a>")
+
+    def pm(self, obj):
+        return obj.project.pm.name
 
     def project_view(self, obj):
         if obj.project:
@@ -183,3 +189,18 @@ class ReviewAdmin(ImportExportMixin, admin.ModelAdmin):
     #     # form.base_fields['related'].widget.attrs.update({'rows':3,'cols':40})
     #     form.base_fields['content'].widget.attrs.update({'rows':5,'cols':40})
     #     return form        
+
+       # object action FIXME
+    change_actions = ('goto_project',)
+    # object-function
+    def goto_project(self, request, obj):
+        return HttpResponseRedirect(f'/admin/psm/project/{obj.project.id}')
+
+    #FIX conflict with DjangoObjectActions, import/export
+    changelist_actions = ['redirect_to_export', 'redirect_to_import']
+    def redirect_to_export(self, request, obj):
+        return HttpResponseRedirect(reverse('admin:%s_%s_export' % self.get_model_info()))
+    redirect_to_export.label = "Export"
+    def redirect_to_import(self, request, obj):
+        return HttpResponseRedirect(reverse('admin:%s_%s_import' % self.get_model_info()))
+    redirect_to_export.label = "Import"

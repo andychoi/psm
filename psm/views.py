@@ -320,11 +320,16 @@ class projectIndexView(generic.ListView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs) #dict
 
+        context['year'] = self.request.GET.get('year', date.today().year)
+
         scope = self.request.GET.get('scope', '')
         pm = self.request.GET.get('pm', '')
         context['scope'] = scope    # my, dept, blank=all
         context['pm'] = pm          # my own project view
-
+        # url https://stackoverflow.com/questions/6453652/how-to-add-the-current-query-string-to-an-url-in-a-django-template
+        # updated = self.request.GET.copy()
+        # updated.update(kwargs)
+        
         if pm:
             profile = get_object_or_404(Profile, id=pm)
     
@@ -335,6 +340,7 @@ class projectIndexView(generic.ListView):
             else:
                 q['dept'] = profile.dept.id
                 q.pop('pm')
+                # context['url'] = q.urlencode()
 
         q =  {k:v for k, v in self.request.GET.items() if v and hasattr(Project, k.split('__')[0] ) }
         context['project_list'] = Project.objects.filter(**q).order_by('-created_at')[:5]

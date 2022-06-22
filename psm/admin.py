@@ -391,7 +391,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
 
     def ITPC(self, obj):
         count = Review.objects.filter(project=obj).count()
-        return mark_safe(f"<a class='btn btn-outline-success p-1 btn-sm adminlist' style='color:#000' href='/admin/reviews/review/?project__id__exact={obj.id}'>{count}</a>")
+        return mark_safe(f"<a class='btn btn-outline-success p-1 btn-sm adminlist' style='color:#000' target='_blank' href='/admin/reviews/review/?project__id__exact={obj.id}'>{count}</a>")
     ITPC.short_description = 'ITPC'
 
     def view(self, obj):

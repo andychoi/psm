@@ -723,49 +723,6 @@ class projectPlanListView(PermissionRequiredMixin, generic.ListView):
 
         get_filter_options(self, context, plan=True)
 
-        # context['filterItems'] = []
-
-        # get_def_year = date.today().year if not self.request.GET.get('year', '') else self.request.GET.get('year', '') 
-        # context['filterItems'].append( { "key": "YEAR", "text": "Year", "qId": "year", "selected": get_def_year
-        #     , "items": map( lambda x: {"id": x['year'], "name": x['year']}, Project.objects.values('year').distinct().order_by('-year') )
-        # } )
-
-        # context['filterItems'].append( {
-        # 	"key": "DIV", "text": "Div", "qId": "div", "selected": self.request.GET.get('div', '')
-	    #     , "items": Div.objects.all()
-        # } )
-
-        # context['filterItems'].append( {
-        #     "key": "DEPT", "text": "Dept.", "qId": "dept", "selected": self.request.GET.get('dept', '')
-        #     , "items": Dept.objects.all()
-        # } )
-			
-        # context['filterItems'].append( {
-        #     "key": "VERSION", "text": "Version", "qId": "version", "selected": self.request.GET.get('version', '')
-        #     , "items": [{"id": x[0], "name" : x[1]} for i, x in enumerate(VERSIONS)]
-        # } )
-
-        # context['filterItems'].append( {
-        #     # "key": "CBU", "text": "CBU", "qId": "cbu", "selected": self.request.GET.get('cbu', '')
-        #     "key": "CBU", "text": "CBU", "qId": "CBU__name", "selected": self.request.GET.get('CBU__name', '')
-        #     , "items": CBU.objects.filter(is_active=True)
-        # } )
-
-        # context['filterItems'].append( {
-        #     "key": "TYP", "text": "Type", "qId": "type", "selected": self.request.GET.get('type', '')
-        #     , "items": [{"id": x[0], "name" : x[1]} for i, x in enumerate(PRJTYPE)]
-        # } )
-
-        # context['filterItems'].append( {
-        #     "key": "PRI", "text": "Priority", "qId": "priority", "selected": self.request.GET.get('priority', '')
-        #     , "items": [{"id": x[0], "name": x[1]} for i, x in enumerate(PRIORITIES)]
-        # } )
-
-        # context['filterItems'].append( {
-        # 	"key": "PRG", "text": "Program", "qId": "prg", "selected": self.request.GET.get('prg', '')
-        # 	, "items": Program.objects.filter(is_active=True)  # all()
-        # } )
-
         #https://stackoverflow.com/questions/59972694/django-pagination-maintaining-filter-and-order-by
         get_copy = self.request.GET.copy()
         if get_copy.get('page'):
@@ -776,7 +733,7 @@ class projectPlanListView(PermissionRequiredMixin, generic.ListView):
 
     def get_queryset(self):
         # generic way to get dict, filter non-existing fields in model, foreign key attribute
-        q =  {k:v for k, v in self.request.GET.items() if v and hasattr(Project, k.split('__')[0] ) }
+        q =  {k:v for k, v in self.request.GET.items() if v and hasattr(ProjectPlan, k.split('__')[0] ) }
 
         if not 'year' in q.keys():      # default to current year
             q[ "year" ] = date.today().year

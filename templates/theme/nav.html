@@ -6,10 +6,11 @@
         <li>
             <a href="/"><i class="fas fa-home"></i> Homepage</a>
         </li>
-        <li><a class="dropdown-item" href="{% url 'project_dashboard' %}"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+        <li><a class="dropdown-item" href="{% url 'project_index' %}"><i class="fas fa-bullseye"></i> Report Home</a></li>
         <li>
             <a href="#navmenu2" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle no-caret-down"><i class="fas fa-chart-bar"></i> Charts</a>
             <ul class="collapse list-unstyled" id="navmenu2">
+                <li><a class="dropdown-item" href="{% url 'project_dashboard' %}"><i class="fas fa-chart-line"></i> Dashboard</a></li>
                 <li><a class="dropdown-item" href="{% url 'project_chart_1' %}"><i class="fas fa-angle-right"></i>Gantt chart</a></li>
                 <li><a class="dropdown-item" href="{% url 'project_chart_2' %}"><i class="fas fa-angle-right"></i>Gantt chart (pilot1)</a></li>
         {% if user.is_superuser %}            

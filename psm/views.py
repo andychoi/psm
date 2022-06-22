@@ -133,6 +133,52 @@ def get_year_options(request):
     })
 
 
+def get_filter_options(self, context):
+    # For side filter
+    context['filterItems'] = []
+    
+    get_def_year = date.today().year if not self.request.GET.get('year', '') else self.request.GET.get('year', '') 
+    context['filterItems'].append( { "key": "YEAR", "text": "Year", "qId": "year", "selected": get_def_year
+    , "items": map( lambda x: {"id": x['year'], "name": x['year']}, Project.objects.values('year').distinct().order_by('-year') )
+    } )
+
+    context['filterItems'].append( {
+    "key": "DIV", "text": "Div", "qId": "div", "selected": self.request.GET.get('div', ''), "items": Div.objects.all()
+    } )
+
+    context['filterItems'].append( {
+        "key": "DEP", "text": "Dept.", "qId": "dept", "selected": self.request.GET.get('dept', ''), "items": Dept.objects.all()
+        # "key": "DEP", "text": "Dept.", "qId": "dept__name", "selected": self.request.GET.get('dept__name', ''), "items": [{ "id": x[0], "name":x[0]} for i, x in Dept.objects.all().values_list('name') ]
+    } )
+    
+    context['filterItems'].append( {
+        "key": "PHASE", "text": "Phase", "qId": "phase", "selected": self.request.GET.get('phase', '')
+        # , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PHASE)]
+        , "items": [{"id": x[0], "name" : x[1]} for i, x in enumerate(PHASE)]
+    } )
+
+    context['filterItems'].append( {
+        "key": "CBU", "text": "CBU", "qId": "cbu", "selected": self.request.GET.get('cbu', '')
+        , "items": CBU.objects.filter(is_active=True)
+    } )
+
+    context['filterItems'].append( {
+        "key": "TYP", "text": "Type", "qId": "type", "selected": self.request.GET.get('type', '')
+        , "items": [{"id": x[0], "name" : x[1]} for i, x in enumerate(PRJTYPE)]
+        # , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRJTYPE)]
+    } )
+    context['filterItems'].append( {
+        "key": "PRI", "text": "Priority", "qId": "priority", "selected": self.request.GET.get('priority', '')
+        , "items": [{"id": x[0], "name": x[1]} for i, x in enumerate(PRIORITIES)]
+    } )
+    
+    context['filterItems'].append( {
+        "key": "PRG", "text": "Program", "qId": "prg", "selected": self.request.GET.get('prg', '')
+        # , "items": Project.objects.values('program').distinct()
+        , "items": Program.objects.filter(is_active=True)  # all()
+    } )
+
+
 
 class projectList1View(PermissionRequiredMixin, generic.ListView):
     permission_required = 'psm.view_project'
@@ -149,49 +195,7 @@ class projectList1View(PermissionRequiredMixin, generic.ListView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
 
-        context['filterItems'] = []
-        
-        # default year
-        get_def_year = date.today().year if not self.request.GET.get('year', '') else self.request.GET.get('year', '') 
-        context['filterItems'].append( { "key": "YEAR", "text": "Year", "qId": "year", "selected": get_def_year
-		, "items": map( lambda x: {"id": x['year'], "name": x['year']}, Project.objects.values('year').distinct().order_by('-year') )
-        } )
-
-        context['filterItems'].append( {
-		"key": "DIV", "text": "Div", "qId": "div", "selected": self.request.GET.get('div', ''), "items": Div.objects.all()
-        } )
-
-        context['filterItems'].append( {
-            "key": "DEP", "text": "Dept.", "qId": "dept", "selected": self.request.GET.get('dept', ''), "items": Dept.objects.all()
-            # "key": "DEP", "text": "Dept.", "qId": "dept__name", "selected": self.request.GET.get('dept__name', ''), "items": [{ "id": x[0], "name":x[0]} for i, x in Dept.objects.all().values_list('name') ]
-        } )
-		
-        context['filterItems'].append( {
-            "key": "PHASE", "text": "Phase", "qId": "phase", "selected": self.request.GET.get('phase', '')
-            # , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PHASE)]
-            , "items": [{"id": x[0], "name" : x[1]} for i, x in enumerate(PHASE)]
-        } )
-	
-        context['filterItems'].append( {
-            "key": "CBU", "text": "CBU", "qId": "cbu", "selected": self.request.GET.get('cbu', '')
-            , "items": CBU.objects.filter(is_active=True)
-        } )
-
-        context['filterItems'].append( {
-            "key": "TYP", "text": "Type", "qId": "type", "selected": self.request.GET.get('type', '')
-            , "items": [{"id": x[0], "name" : x[1]} for i, x in enumerate(PRJTYPE)]
-            # , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRJTYPE)]
-        } )
-        context['filterItems'].append( {
-            "key": "PRI", "text": "Priority", "qId": "priority", "selected": self.request.GET.get('priority', '')
-            , "items": [{"id": x[0], "name": x[1]} for i, x in enumerate(PRIORITIES)]
-        } )
-		
-        context['filterItems'].append( {
-            "key": "PRG", "text": "Program", "qId": "prg", "selected": self.request.GET.get('prg', '')
-            # , "items": Project.objects.values('program').distinct()
-            , "items": Program.objects.filter(is_active=True)  # all()
-        } )
+        get_filter_options(self, context)
 
         #https://stackoverflow.com/questions/59972694/django-pagination-maintaining-filter-and-order-by
         get_copy = self.request.GET.copy()
@@ -201,22 +205,7 @@ class projectList1View(PermissionRequiredMixin, generic.ListView):
 	
         return context
 
-
-	# queryset = self.get_queryset().annotate(
-	#     first_name_len=Length('user__first_name'),
-	#     last_name_len=Length('user__last_name')
-	# ).filter(
-	#     first_name_len__gt=0,
-	#     last_name_len__gt=0,
-	# ).filter(
-	#     **parameters
-	# ).order_by(
-	#     '-created'
-	# )
-
-
     def get_queryset(self):
-
         # generic way to get dict, filter non-existing fields in model, foreign key attribute
         q =  {k:v for k, v in self.request.GET.items() if v and hasattr(Project, k.split('__')[0] ) }
 
@@ -225,7 +214,6 @@ class projectList1View(PermissionRequiredMixin, generic.ListView):
 
         if q: 
             qs = Project.objects.filter( **q )
-                # qs = Project.objects.filter(year=self.kwargs['year']).filter( **q )
         else:
             qs = Project.objects.all()
 
@@ -241,26 +229,23 @@ class projectList1View(PermissionRequiredMixin, generic.ListView):
         if ltmp:
             qs = qs.filter(dept__div__id=ltmp)
 
-        # ltmp = self.request.GET.get('dept', '')
-        # if ltmp:
-        #     qs = qs.filter(dept__id=ltmp)
-
-        # ltmp = self.request.GET.get('phase', '')
-        # if ltmp:
-        #     qs = qs.filter(phase=PHASE[int(ltmp)][0])
-
         ltmp = self.request.GET.get('cbu', '')
         if ltmp:
             qs = qs.filter(CBU__id=ltmp)
-
-        # ltmp = self.request.GET.get('pri', '')
-        # if ltmp:
-        #     qs = qs.filter(priority=PRIORITIES[int(ltmp)][0])
 
         ltmp = self.request.GET.get('prg', '')
         if ltmp:
             qs = qs.filter(program__id=ltmp)
 
+        # ltmp = self.request.GET.get('dept', '')
+        # if ltmp:
+        #     qs = qs.filter(dept__id=ltmp)
+        # ltmp = self.request.GET.get('phase', '')
+        # if ltmp:
+        #     qs = qs.filter(phase=PHASE[int(ltmp)][0])
+        # ltmp = self.request.GET.get('pri', '')
+        # if ltmp:
+        #     qs = qs.filter(priority=PRIORITIES[int(ltmp)][0])
         # ltmp = self.request.GET.get('type', '')
         # if ltmp:
         #     qs = qs.filter(type=PRJTYPE[int(ltmp)][0])
@@ -277,12 +262,6 @@ class projectList1View(PermissionRequiredMixin, generic.ListView):
 
     # def paginator(self):
     # def paginate_queryset(self, queryset, page_size):
-
-# why not class...
-# def project_list2(request):
-#     project_list = Project.objects.all()
-#     project_filter = ProjectFilter(request.GET, queryset=project_list)
-#     return render(request, 'project/project_list2.html', {'filter': project_filter })    
 
 # class projectList1View_old(projectList1View):   
 #     template_name = 'project/project_list1.html'    #old template
@@ -306,13 +285,7 @@ class projectChartView2_new(projectList1View):
 class projectChartView3(projectList1View):
     template_name = 'project/project_chart-test-w-json.html'
 
-    # django-tables2
-    # class FilteredProjectPlanView(SingleTableMixin, FilterView):
-    #     model = Project
-    #     table_class = ProjectPlanTable
-    #     template_name = 'project/project_plan.html'
-    #     filterset_class = ProjectFilter
-    #     table_pagination = {"per_page": 10}
+
 
 # - how to provide my project for PM, HOD
 class projectIndexView(generic.ListView):
@@ -371,51 +344,7 @@ class projectIndexView(generic.ListView):
                 q3['project__pm'] = profile.id
         context['latest_risk'] =    ReportRisk.objects.filter(state=State2.OPEN.value).order_by('created_at')[:5] 
 
-
-        # For side filter
-        context['filterItems'] = []
-        
-        get_def_year = date.today().year if not self.request.GET.get('year', '') else self.request.GET.get('year', '') 
-        context['filterItems'].append( { "key": "YEAR", "text": "Year", "qId": "year", "selected": get_def_year
-		, "items": map( lambda x: {"id": x['year'], "name": x['year']}, Project.objects.values('year').distinct().order_by('-year') )
-        } )
-
-        context['filterItems'].append( {
-		"key": "DIV", "text": "Div", "qId": "div", "selected": self.request.GET.get('div', ''), "items": Div.objects.all()
-        } )
-
-        context['filterItems'].append( {
-            "key": "DEP", "text": "Dept.", "qId": "dept", "selected": self.request.GET.get('dept', ''), "items": Dept.objects.all()
-            # "key": "DEP", "text": "Dept.", "qId": "dept__name", "selected": self.request.GET.get('dept__name', ''), "items": [{ "id": x[0], "name":x[0]} for i, x in Dept.objects.all().values_list('name') ]
-        } )
-		
-        context['filterItems'].append( {
-            "key": "PHASE", "text": "Phase", "qId": "phase", "selected": self.request.GET.get('phase', '')
-            # , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PHASE)]
-            , "items": [{"id": x[0], "name" : x[1]} for i, x in enumerate(PHASE)]
-        } )
-	
-        context['filterItems'].append( {
-            "key": "CBU", "text": "CBU", "qId": "cbu", "selected": self.request.GET.get('cbu', '')
-            , "items": CBU.objects.filter(is_active=True)
-        } )
-
-        context['filterItems'].append( {
-            "key": "TYP", "text": "Type", "qId": "type", "selected": self.request.GET.get('type', '')
-            , "items": [{"id": x[0], "name" : x[1]} for i, x in enumerate(PRJTYPE)]
-            # , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRJTYPE)]
-        } )
-        context['filterItems'].append( {
-            "key": "PRI", "text": "Priority", "qId": "priority", "selected": self.request.GET.get('priority', '')
-            , "items": [{"id": x[0], "name": x[1]} for i, x in enumerate(PRIORITIES)]
-        } )
-		
-        context['filterItems'].append( {
-            "key": "PRG", "text": "Program", "qId": "prg", "selected": self.request.GET.get('prg', '')
-            # , "items": Project.objects.values('program').distinct()
-            , "items": Program.objects.filter(is_active=True)  # all()
-        } )
-
+        get_filter_options(self, context)
 
         return context
 
@@ -425,6 +354,7 @@ class projectIndexView(generic.ListView):
         # return Project.objects.filter(**q).order_by('-created_at')[:5]
       
 #----------------------------------------------------------------------------------------------------
+
 
 """
 이거 어떨지...

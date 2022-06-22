@@ -125,6 +125,22 @@ def get_year_options(request):
         'options': options,
     })
 
+class projectIndexView(generic.ListView):
+    template_name = 'project/index.html'
+    context_object_name = 'project_list'    
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs) #dict
+        context['latest_update'] = Project.objects.all().order_by('-updated_on')[:10]
+        context['latest_report'] = Report.objects.all().order_by('-created_at')[:10]
+        context['latest_request'] = ProjectPlan.objects.filter(version=10).order_by('-created_at')[:10]
+        return context
+
+    def get_queryset(self):
+        return Project.objects.filter().order_by('-created_at')[:10]
+      
+
+#----------------------------------------------------------------------------------------------------
 
 class projectList1View(PermissionRequiredMixin, generic.ListView):
     permission_required = 'psm.view_project'
@@ -289,8 +305,8 @@ class projectChartView2(projectList1View):
 class projectChartView2_new(projectList1View):
     template_name = 'project/project_chart2_new.html'
 
-class projectIndexView(projectList1View):
-    template_name = 'project/index.html'
+class projectDashboard(projectList1View):
+    template_name = 'project/project_dashboard.html'
 
 class projectChartView2_new(projectList1View):
     template_name = 'project/project_chart2_new.html'

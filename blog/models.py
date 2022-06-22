@@ -150,7 +150,7 @@ class Ticket(models.Model):
     state = models.CharField(max_length=2, choices = STATE_CHOICES, default='UN', blank=True, null=True)
     # state = models.CharField(max_length=2, choices = STATE_CHOICES, default=0, blank=True, null=True)
 
-    created_on = models.DateField(_("created at"), auto_now_add=True, editable=False)
+    created_at = models.DateField(_("created at"), auto_now_add=True, editable=False)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="ticket_created_by", editable=False, null=True, on_delete=models.SET_NULL)
     updated_on = models.DateTimeField(_("last updated"), auto_now=True, editable=False)
     updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="ticket_updated_by", editable=False, null=True, on_delete=models.SET_NULL)
@@ -165,7 +165,7 @@ class TicketComment(models.Model):
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
     comment = models.CharField(max_length=512, null=True, blank=True)
 
-    created_on = models.DateField(_("created at"), auto_now_add=True, editable=False)
+    created_at = models.DateField(_("created at"), auto_now_add=True, editable=False)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="ticket_comment_created_by", editable=False, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):

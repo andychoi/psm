@@ -58,15 +58,15 @@ class ReviewAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display = ('formatted_rtype', 'project_view', 'title', 'proc_start',  'priority', 'is_escalated', 'project_dept', 'state', 'status', 'CBU_names', 'formatted_updated',)
     list_display_links = ('title', 'formatted_updated')
     ordering = ('-id',)
-    readonly_fields = ('created_on', 'created_by', 'updated_on', 'updated_by', )
-    Custom_fields = ('project_link', 'created_on', 'updated_on', 'created_by', 'updated_by')
+    readonly_fields = ('created_at', 'created_by', 'updated_on', 'updated_by', )
+    Custom_fields = ('project_link', 'created_at', 'updated_on', 'created_by', 'updated_by')
     search_fields = ('title', 'project__title', 'req_content', 'res_content',  )
     list_editable = ("status", "is_escalated", "state")
     autocomplete_fields = ('reviewer', 'project', 'CBUs')
     fieldsets = (               # Edition form
                 (None, {'fields':   (('project', 'CBUs'),  ('title', 'reqtype',  ),('req_content',), ('proc_start', 'onboaddt', 'state', ), ('status', 'is_escalated', 'priority'), ( 'res_content','reviewer',),   
                             ), "classes": ("stack_labels",)}),
-                (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by')), 'classes': ('collapse',)}),
+                (_('More...'), {'fields': (('created_at', 'created_by'), ('updated_on', 'updated_by')), 'classes': ('collapse',)}),
     )
 
     def get_fieldsets(self, request, obj=None):

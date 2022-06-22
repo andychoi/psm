@@ -101,7 +101,7 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
     list_editable = ('status',)
     ordering = ('-id',)
     autocomplete_fields = [ 'project' ]
-    readonly_fields = ('project_link', 'created_on', 'updated_on', 'created_by', 'updated_by')
+    readonly_fields = ('project_link', 'created_at', 'updated_on', 'created_by', 'updated_by')
     #'CBUs', 'dept', 
     search_fields = ('title', 'project__title', 'content_a', 'content_p', 'issue', 'created_by__profile__name', 'updated_by__profile__name',
                     )
@@ -119,7 +119,7 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
         (None, {'fields': (('project', 'title', 'status', 'is_monthly'), 
                             ('status_o', 'status_t', 'status_b', 'status_s', 'progress' ), 
                             ('content_a', 'content_p', 'issue'), ),  "classes": ("stack_labels",)}),
-            (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by'),
+            (_('More...'), {'fields': (('created_at', 'created_by'), ('updated_on', 'updated_by'),
                         # ('CBUs','dept',)
             ), 'classes': ('collapse',)}),
     )
@@ -356,7 +356,7 @@ class ReportRiskAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display_links = ('title', 'formatted_reporton')
     list_editable = ("state", 'status',)
     ordering = ('-id',)
-    readonly_fields = ('project_link', 'updated_on', 'updated_by', 'created_on', 'created_by', 'cbu_list', 'get_dept')
+    readonly_fields = ('project_link', 'updated_on', 'updated_by', 'created_at', 'created_by', 'cbu_list', 'get_dept')
     search_fields = ('title', 'project__title', 'risk', 'plan', 'owner')
     autocomplete_fields = [ 'project' ]
 
@@ -368,8 +368,8 @@ class ReportRiskAdmin(ImportExportMixin, admin.ModelAdmin):
     fieldsets = (               # Edition form
         (None, {'fields': (('project', 'status'), ('report_on', 'title', ), 
                                 ('risk', 'plan', ), ('deadline', 'owner', 'state', ) ),  "classes": ("stack_labels",)}),
-            (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by'),('cbu_list', 'get_dept',)), 'classes': ('collapse',)}),
-            # (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by'),('CBU','dept',)), 'classes': ('collapse',)}),
+            (_('More...'), {'fields': (('created_at', 'created_by'), ('updated_on', 'updated_by'),('cbu_list', 'get_dept',)), 'classes': ('collapse',)}),
+            # (_('More...'), {'fields': (('created_at', 'created_by'), ('updated_on', 'updated_by'),('CBU','dept',)), 'classes': ('collapse',)}),
     )
 
     def get_fieldsets(self, request, obj=None):

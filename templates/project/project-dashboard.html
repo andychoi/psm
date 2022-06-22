@@ -1,0 +1,201 @@
+{% extends "theme/root.html" %}
+{% load static %}
+
+{% block head_script %}
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.css">
+    <!-- <link href="/static/theme/assets/vendor/datatables/datatables.min.css" rel="stylesheet"> -->
+    <link href="{% static 'css/tablelist.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+	<div class="container">
+
+        <h5>Dashboard - under construction</h5>
+        <p>please navigate top/left hamberger menu to run charts/table report</p>
+        <form id="filterForm">
+            <label for="year">Choose a year:</label>
+            <select name="year" id="year"></select>
+            <input type="submit" value="Load" name="_load">
+        </form>
+
+
+        <!-- 2nd row -->
+        <div class="row">
+            <div class="col-6">
+              <div id="chart-json1" data-url="/project/json/get_project_chart/{% now 'Y' %}/CBUs__name/total,completed/" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+            </div>
+              <div class="col-6">
+                <div id="chart-json2" data-url="/project/json/get_project_chart/{% now 'Y' %}/dept__name/total,completed/" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+              </div>
+              <div class="col-6">
+                <div id="chart-json3" data-url="/project/json/get_project_chart/{% now 'Y' %}/year/total,completed/" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+              </div>
+              <div class="col-6">
+                <div id="chart-json4" data-url="/project/json/get_project_chart/{% now 'Y' %}/year/total,completed/" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+              </div>
+            </div>            
+
+		</div>		
+	</div>
+
+{% endblock content %}
+
+
+<!-- Other script here -->
+{% block script_body %}
+
+<script>
+  $(document).ready(function() {
+    $.ajax({
+      url: "/project/year-options/",
+      type: "GET",
+      dataType: "json",
+      success: (jsonResponse) => {
+        // Load all the options
+        jsonResponse.options.forEach(option => {
+          $("#year").append(new Option(option, option));
+        });
+        // Load data for the first option
+        loadAllCharts($("#year").children().first().val());
+      },
+      error: () => console.log("Failed to fetch chart filter options!")
+    });
+  });    
+  // filter submit event --------------------------
+  $("#filterForm").on("submit", (event) => {
+    event.preventDefault();
+
+    const year = $("#year").val();
+    loadAllCharts(year)
+  });
+
+function loadChart(chart, endpoint) {
+  args = window.location.href.split("?")[1]
+  if (args) {
+      endpoint = endpoint + args 
+  }
+
+  $.ajax({
+    url: endpoint,
+    type: "GET",
+    dataType: "json",
+    success: (jsonResponse) => {
+      // Extract data from the response
+      const title = jsonResponse.title;
+      const labels = jsonResponse.data.labels;
+      const datasets = jsonResponse.data.datasets;
+
+      // Reset the current chart
+      chart.data.datasets = [];
+      chart.data.labels = [];
+
+      // Load new data into the chart - FIXME
+      // chart.options.title.text = title;
+      // chart.options.title.display = true;
+      chart.data.labels = labels;
+      datasets.forEach(dataset => {
+        chart.data.datasets.push(dataset);
+      });
+      chart.update();
+    },
+    error: () => console.log("Failed to fetch chart data from " + endpoint + "!")
+  });
+}
+
+function loadAllCharts(year) {
+  loadChart(Completed_chart,    `/project/json/get_project_chart/${year}/year/total/`);
+  loadChart(Kickoff_chart,      `/project/json/get_project_chart/${year}/year/total/`);
+  loadChart(Launch_chart,       `/project/json/get_project_chart/${year}/year/total/`);
+}
+
+
+// initialization
+  // let completeCtx = document.getElementById("Completed_chart").getContext("2d");
+  // let Completed_chart = new Chart(completeCtx, {
+  //   type: "bar",
+  //   options: {
+  //     responsive: true,
+  //   }
+  // });
+  // let kickoffCtx = document.getElementById("Kickoff_chart").getContext("2d");
+  // let Kickoff_chart = new Chart(kickoffCtx, {
+  //   type: "bar",
+  //   options: {
+  //     responsive: true,
+  //   }
+  // });
+  // let launchCtx = document.getElementById("Launch_chart").getContext("2d");
+  // let Launch_chart = new Chart(launchCtx, {
+  //   type: "bar",
+  //   options: {
+  //     responsive: true,
+  //   }
+  // });
+
+  </script>
+
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script>
+        //highcharts
+
+        arguments = window.location.href.split("?")[1]
+        if (arguments) {
+            callurl = $("#chart-json1").attr("data-url") + "?" + arguments 
+        } else {
+            callurl = $("#chart-json1").attr("data-url")  
+        }
+        console.log(callurl)
+        $.ajax({
+            url: callurl,  //$("#chart-json").attr("data-url") +  arguments, 
+            dataType: 'json',
+            success: function (data) {
+                Highcharts.chart("chart-json1", data);
+            }
+        });
+
+        arguments = window.location.href.split("?")[1]
+        if (arguments) {
+            callurl = $("#chart-json2").attr("data-url") + "?" + arguments 
+        } else {
+            callurl = $("#chart-json2").attr("data-url")  
+        }
+        console.log(callurl)
+        $.ajax({
+            url: callurl,  //$("#chart-json").attr("data-url") +  arguments, 
+            dataType: 'json',
+            success: function (data) {
+                Highcharts.chart("chart-json2", data);
+            }
+        });
+
+</script>
+{% endblock %}
+
+
+{% block script_nav %} 
+<!-- nav filter script -->
+<script>
+    // set preselected values
+    {% for filterItem in filterItems %}
+        $('#sel_{{filterItem.qId}}').val("{{ filterItem.selected }}");
+    {% endfor %}
+
+    function updateData() {
+        var q = "";
+        var qs = [];
+        var tmp = '';
+
+        {% for filterItem in filterItems %}
+            tmp = $('#sel_{{filterItem.qId}}').val();
+            if (tmp != '') qs.push('{{filterItem.qId}}=' + tmp);
+        {% endfor %}
+
+        if (qs.length > 0) {
+            q = "?" + qs.join("&");
+        }
+        window.location.href = window.location.pathname + q;
+    }
+</script>
+{% endblock %}

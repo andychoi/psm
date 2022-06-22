@@ -41,7 +41,7 @@ class Profile(ProxySuper): #models.Model):
     # is_mgt_reviewer = models.BooleanField(_("Management reviewer?"), default=False)
 
     image = models.ImageField(upload_to='profile_pics', null=True, blank=True)  #default='default.jpg', 
-    created_on = models.DateTimeField(_("created at"), auto_now_add=True, editable=False, null=True, blank=True)
+    created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False, null=True, blank=True)
     created_by = models.ForeignKey(User, related_name="profile_created", null=True, on_delete=models.SET_NULL)
     updated_on = models.DateTimeField(_("updated_on"), auto_now=True, editable=False)
     updated_by = models.ForeignKey(User, related_name="profile_updated", null=True, on_delete=models.SET_NULL)

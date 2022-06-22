@@ -67,7 +67,7 @@ class Report(models.Model):
     progress = models.SmallIntegerField(_("complete%"), default=0)
     is_monthly = models.BooleanField(_("Is Monthly?"), default=False)
 
-    created_on = models.DateField(_("created at"), auto_now_add=True, editable=False)
+    created_at = models.DateField(_("created at"), auto_now_add=True, editable=False)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="report_created_by", null=True, on_delete=models.SET_NULL)
     updated_on = models.DateTimeField(_("last updated"), auto_now=True, editable=False)
     updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="report_updated_by", null=True, on_delete=models.SET_NULL)
@@ -137,7 +137,7 @@ class ReportRisk(models.Model):
     # dept = models.ForeignKey(Dept, blank=True, null=True, on_delete=models.PROTECT)
     # div = models.ForeignKey(Div, blank=True, null=True, on_delete=models.PROTECT)
 
-    created_on = models.DateField(_("created at"), auto_now_add=True, editable=False)
+    created_at = models.DateField(_("created at"), auto_now_add=True, editable=False)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="riskr_eport_created_by", null=True, on_delete=models.SET_NULL)
     updated_on = models.DateTimeField(_("last updated"), auto_now=True, editable=False)
     updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="risk_report_updated_by", null=True, on_delete=models.SET_NULL)

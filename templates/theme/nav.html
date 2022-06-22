@@ -6,7 +6,7 @@
         <li>
             <a href="/"><i class="fas fa-home"></i> Homepage</a>
         </li>
-        <li><a class="dropdown-item" href="/project/"><i class="fas fa-chart-line"></i> Dashboard Home</a></li>
+        <li><a class="dropdown-item" href="{% url 'project_dashboard' %}"><i class="fas fa-chart-line"></i> Dashboard</a></li>
         <li>
             <a href="#navmenu2" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle no-caret-down"><i class="fas fa-chart-bar"></i> Charts</a>
             <ul class="collapse list-unstyled" id="navmenu2">
@@ -18,7 +18,7 @@
             </ul>
         </li>
         <li>
-            <a href="#navmenu3" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle no-caret-down"><i class="fas fa-table"></i> Project Report Tables</a>
+            <a href="#navmenu3" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle no-caret-down"><i class="fas fa-table"></i> Tables</a>
             <ul class="collapse list-unstyled" id="navmenu3">
                 <li><a class="dropdown-item" href="{% url 'project_list1' %}"><i class="fas fa-th-list"></i> Project List</a></li>
                 <li><a class="dropdown-item" href="/report"><i class="fas fa-comment-alt"></i> Status Report List</a></li>

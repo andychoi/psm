@@ -35,7 +35,7 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display_links = ('id', 'name', 'email')
     search_fields = ('id', 'name', 'email', 'CBU__name', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
     ordering = ('CBU', 'dept', 'team', 'name', )
-    readonly_fields = ('created_on', 'created_by', 'updated_on', 'updated_by')
+    readonly_fields = ('created_at', 'created_by', 'updated_on', 'updated_by')
     autocomplete_fields = ( 'user', 'team', )
     fieldsets = (  # Edition form
          (None, {'fields': (('user', 'name', 'email') , ('is_psmadm', ), 
@@ -44,7 +44,7 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
                             # ('job', 'department', 'manager', 'mobile', ),
                             # ('image',), 
                             )}),
-        (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by', 'proxy_name', 'migrated')), 'classes': ('collapse',)}),
+        (_('More...'), {'fields': (('created_at', 'created_by'), ('updated_on', 'updated_by', 'proxy_name', 'migrated')), 'classes': ('collapse',)}),
     )
     list_filter = (
         ('CBU', RelatedDropdownFilter),
@@ -198,13 +198,13 @@ class ProfileCBUAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display_links = ('id', 'user', 'name')
     search_fields = ('id', 'name', 'email', 'CBU__name', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
     ordering = ('CBU', 'name', )
-    readonly_fields = ('created_on', 'created_by', 'updated_on', 'updated_by')
+    readonly_fields = ('created_at', 'created_by', 'updated_on', 'updated_by')
     autocomplete_fields = ( 'user',  )
     fieldsets = (  # Edition form
          (None, {'fields': (('name', 'email', ) ,
                             ('CBU', 'is_external', 'notes' ),
                             )}),
-        (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by'), ('user',)), 'classes': ('collapse',)}),
+        (_('More...'), {'fields': (('created_at', 'created_by'), ('updated_on', 'updated_by'), ('user',)), 'classes': ('collapse',)}),
     )
     list_filter = (
         ('CBU', RelatedDropdownFilter),

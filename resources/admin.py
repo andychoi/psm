@@ -29,12 +29,12 @@ class ResourcePlanAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display_links = ('staff',)
     list_editable = ('status',)
     ordering = ('staff',)
-    readonly_fields = ('created_on', 'updated_on', 'created_by', 'updated_by')
+    readonly_fields = ('created_at', 'updated_on', 'created_by', 'updated_by')
     search_fields = ('staff', )     #TO-RE search line item
 
     fieldsets = (      # Edition form
         (None,  {'fields': ( ('staff', 'year', 'status', ) )  }),
-            (_('More...'), {'fields': (('created_on', 'created_by'), ('updated_on', 'updated_by'),), 'classes': ('collapse',)}),
+            (_('More...'), {'fields': (('created_at', 'created_by'), ('updated_on', 'updated_by'),), 'classes': ('collapse',)}),
     )
     def get_fieldsets(self, request, obj=None):
         fieldsets = super().get_fieldsets(request, obj)

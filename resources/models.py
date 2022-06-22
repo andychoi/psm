@@ -79,7 +79,7 @@ class ResourcePlan(models.Model):
     status = models.IntegerField(choices=PUBLISH, default=0) 
 
     # auto_now_add=True
-    created_on = models.DateField(_("created at"), default=date.today, editable=False)
+    created_at = models.DateField(_("created at"), default=date.today, editable=False)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="rp_created_by", null=True, on_delete=models.SET_NULL)
     updated_on = models.DateTimeField(_("last updated"), auto_now=True, editable=False)
     updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="rp_updated_by", null=True, on_delete=models.SET_NULL)

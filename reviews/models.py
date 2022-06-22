@@ -35,7 +35,7 @@ class Review(models.Model):
     # attachment=models.FileField(_("attachment"), upload_to='reviews', null=True, blank=True)
     # dept = models.ForeignKey(Dept, blank=True, null=True, on_delete=models.PROTECT)
 
-    created_on = models.DateField(_("created at"), auto_now_add=True, editable=False)
+    created_at = models.DateField(_("created at"), auto_now_add=True, editable=False)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="rev_created_by", null=True, on_delete=models.SET_NULL)
     updated_on = models.DateTimeField(_("last updated"), auto_now=True, editable=False)
     updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="rev_updated_by", null=True, on_delete=models.SET_NULL)

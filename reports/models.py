@@ -13,8 +13,8 @@ from django.core.exceptions import ValidationError
 # from multi_email_field.fields import MultiEmailField
 
 from common.utils import md2 
-from common.models import CBU, Dept, Div, PUBLISH, STATUS, STATES
-from psm.models import Status, State, Project
+from common.models import CBU, Dept, Div, PUBLISH, Status, STATUS, STATE2, State2 
+from psm.models import Project
 
 
 # import ast
@@ -129,7 +129,7 @@ class ReportRisk(models.Model):
     plan = models.TextField(_("Mitigation Plan"))
 
     status = models.CharField(_("status"), max_length=20, choices=STATUS, default=Status.NA.value)
-    state = models.CharField(_("State"), max_length=20, choices=STATES, default=State.TODO.value)
+    state = models.CharField(_("State"), max_length=20, choices=STATE2, default=State2.OPEN.value)
     report_on = models.DateField(_("Reporting On"), default=datetime.now, blank=False)
     deadline = models.DateField(_("deadline"), null=True, blank=True)
 

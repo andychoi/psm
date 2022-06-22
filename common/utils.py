@@ -55,16 +55,16 @@ STATES = (
 STATE_VALID  = { State.BACKLOG.value, State.TODO.value, State.DOING.value, State.HOLD.value, State.DONE.value }
 STATE_OPEN = { State.BACKLOG.value, State.TODO.value, State.DOING.value, State.HOLD.value,  }
 
-# class State3(enum.Enum):
-#     OPEN    = '00-Open'
-#     CLOSE   = '10-Close'
-#     CANCEL  = '90-Cancel'
-# # from django.contrib.auth.models import (BaseUserManager, AbstractBaseUser)
-# STATE3 = (
-#     (State.OPEN.value, _('Open')),
-#     (State.CLOSE.value, _('Close')),
-#     (State.CANCEL.value, _('Cancel')),
-# )
+class State2(enum.Enum):
+    OPEN    = '00-Open'
+    CLOSE   = '10-Close'
+    CANCEL  = '90-Cancel'
+# from django.contrib.auth.models import (BaseUserManager, AbstractBaseUser)
+STATE2 = (
+    (State2.OPEN.value, _('Open')),
+    (State2.CLOSE.value, _('Close')),
+    (State2.CANCEL.value, _('Cancel')),
+)
 
 class Priority(enum.Enum):
     """

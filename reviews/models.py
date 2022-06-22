@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from datetime import date
 
 from common.models import CBU, Dept, Div
-from common.utils import DECISION3, STATUS, Status, PRIORITIES, Priority, REQTYPES, ReqTypes, DECISIONS, Decision
+from common.utils import ACTION3, STATUS, Status, PRIORITIES, Priority, REQTYPES, ReqTypes, ACTIONS, Action
 from psm.models import Project
 
 # Create your models here.
@@ -19,13 +19,13 @@ class Review(models.Model):
     title = models.CharField(max_length=200)
 
     # related = models.ManyToManyField( to='common.Dept', related_name='related_depts')
-    state = models.CharField(_("Request Sent to PROC?"), max_length=10, choices=DECISION3, null=True, blank=True)
+    state = models.CharField(_("Request Sent to PROC?"), max_length=10, choices=ACTION3, null=True, blank=True)
     req_content = models.TextField(_("Review request"), null=True, blank=True)
     proc_start = models.DateField(_("DESIRED start date"), null=True, blank=True)
     onboaddt = models.DateField(_("DESIRED onboarding date"), null=True, blank=True)
 
     priority = models.CharField(_("priority"), max_length=20, choices=PRIORITIES, default=Priority.NORMAL.value)
-    status = models.CharField(_("Progress Status"), max_length=20, choices=DECISIONS, default=Decision.NEW.value)
+    status = models.CharField(_("Progress Status"), max_length=20, choices=ACTIONS, default=Action.NEW.value)
     is_escalated = models.BooleanField(_("Escalated?"), default=False)
     reviewer = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="rev_reviewer", null=True, blank=True, on_delete=models.SET_NULL)
     res_content = models.TextField(_("Review result"), null=True, blank=True)

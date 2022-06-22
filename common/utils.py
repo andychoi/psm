@@ -11,22 +11,24 @@ ROLES = (
     ("USER", "USER"),
 )
 
-class Decision(enum.Enum):
+class Action(enum.Enum):
     NEW = '00-New'
     ASSIGNED = '10-Assigned'
     PENDING  = '20-Pending'
     REVIEW   = '30-Reviewing'
     ACCEPTED = '50-Accepted'
-    REJECTED = '60-Rejected'
-    DUPL     = '70-Duplicate'
-DECISIONS = (
-    (Decision.NEW.value,      _('New')),
-    (Decision.ASSIGNED.value, _('Assigned')),
-    (Decision.PENDING.value,  _('Pending')),
-    (Decision.REVIEW.value,   _('Reviewing')),
-    (Decision.ACCEPTED.value, _('Accepted')),
-    (Decision.REJECTED.value, _('Rejected')),
-    (Decision.DUPL.value,     _('Duplicate'))
+    COMPLETED= '60-Completed'
+    REJECTED = '70-Rejected'
+    DUPL     = '80-Duplicate'
+ACTIONS = (
+    (Action.NEW.value,       _('New')),
+    (Action.ASSIGNED.value,  _('Assigned')),
+    (Action.PENDING.value,   _('Pending')),
+    (Action.REVIEW.value,    _('Reviewing')),
+    (Action.ACCEPTED.value,  _('Accepted')),
+    (Action.COMPLETED.value, _('Completed')),
+    (Action.REJECTED.value,  _('Rejected')),
+    (Action.DUPL.value,      _('Duplicate'))
 )
 # this way is possible... no translation
             # (ReqTypes.PRO.value, 'ReqType - ' + ReqTypes.PRO.value[3:]),
@@ -153,14 +155,14 @@ PRJCATE = (
     (PrjCate.ASS.value, _('Assessment/Audit')),
 )
 
-class Decision3(enum.Enum):
+class Action3(enum.Enum):
     TBD = '0-TBD'
     YES = '1-Yes'
     NO  = '2-No'
-DECISION3 = (
-    (Decision3.TBD.value, _('TBD')),
-    (Decision3.YES.value, _('Yes')),
-    (Decision3.NO.value, _('No')),
+ACTION3 = (
+    (Action3.TBD.value, _('TBD')),
+    (Action3.YES.value, _('Yes')),
+    (Action3.NO.value, _('No')),
 )
 
 class ReqTypes(enum.Enum):

@@ -10,7 +10,7 @@ from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from django.contrib import messages
 
-from common.models import Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, Decision3, DECISION3, PrjCate, PRJCATE
+from common.models import Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, Action3, ACTION3, PrjCate, PRJCATE
 from common.models import CBU, Div, Dept, Team
 from common.models import WBS, VERSIONS, Versions
 from users.models import Profile, ProfileCBU
@@ -185,9 +185,9 @@ class Project(models.Model):
     recipients_to = models.TextField(_("Recipients (to)"), max_length=1000, blank=True, null=True)
     recipients_cc = models.TextField(_("Recipients (cc)"), max_length=1000, blank=True, null=True)
 
-    req_pro = models.CharField(_("Procurement Review Needed?"), max_length=20, choices=DECISION3, default='00-TBD', blank=True)
-    req_sec = models.CharField(_("Info Security Review Needed?"), max_length=20, choices=DECISION3, default='00-TBD', blank=True)
-    req_inf = models.CharField(_("Infra Architecure Review Needed?"), max_length=20, choices=DECISION3, default='00-TBD', blank=True)
+    req_pro = models.CharField(_("Procurement Review Needed?"), max_length=20, choices=ACTION3, default='00-TBD', blank=True)
+    req_sec = models.CharField(_("Info Security Review Needed?"), max_length=20, choices=ACTION3, default='00-TBD', blank=True)
+    req_inf = models.CharField(_("Infra Architecure Review Needed?"), max_length=20, choices=ACTION3, default='00-TBD', blank=True)
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='prj_created_by', verbose_name=_('created by'),
                                    on_delete=models.SET_NULL, null=True)

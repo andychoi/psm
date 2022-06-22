@@ -50,7 +50,7 @@ from .tables import ProjectPlanTable
 from reports.models import Report, ReportRisk
 # from .forms import ProjectPlanForm
 
-from common.models import Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, Decision3, DECISION3, WBS, VERSIONS, Versions
+from common.models import Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, Action3, ACTION3, WBS, VERSIONS, Versions
 from users.models import Profile
 # for charting
 from .utils.charts import get_year_dict, generate_color_palette, colorPalette, colorPrimary, colorSuccess, colorDanger, months

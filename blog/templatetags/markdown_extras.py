@@ -13,10 +13,11 @@ register = template.Library()
 # def markdown(content):
 #     return md.markdown(content, extensions=['markdown.extensions.fenced_code'])
 
+# {{ var|md2:"bar" }}
 @register.filter()
 @stringfilter
 def md2(content, tag='psm-md2'):
     # tag2 = tag if tag else 'psm-md2'
-    return "<div class='{{tag}}'>" + markdown2.markdown(content, extras=["cuddled-lists", "break-on-newline", "tables"]) + "</div><!--md2-->" 
+    return f"<div class='{tag}'>" + markdown2.markdown(content, extras=["cuddled-lists", "break-on-newline", "tables"]) + "</div><!--md2-->" 
 
 

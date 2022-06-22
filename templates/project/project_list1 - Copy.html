@@ -1,28 +1,59 @@
-{% extends "theme/root.html" %}
+{% extends "base_wide.html" %}
 {% load static %}
 
 {% block head_script %}
     <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.css">
-    <!-- <link href="/static/theme/assets/vendor/datatables/datatables.min.css" rel="stylesheet"> -->
     <link href="{% static 'css/tablelist.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
 	<div class="container-fluid mt-1">  <!-- container-float margin top 3 -->
-
-        <!-- <form id="filterForm">
-            <label for="year">Choose a year:</label>
-            <select name="year" id="year"></select>
-            <input type="submit" value="Load" name="_load">
-        </form> -->
-
+		<div class="row">
+			<div class="col-2">
+				<h4 class="font-weight-bold"><button class="btn btn-primary" type="button"  data-bs-toggle="collapse"  href="#collapseFilter" 
+                    role="button" aria-expanded="false" aria-controls="collapseFilter">PROJECT DASHBOARD</button></h4>                        
+		  	</div>
+		  	<!-- div class="col-4 text-nowrap float-end" >
+			<p class="text-end m-0 small"></p>
+			</div-->
+		    <div class="col-10">
+                <div class="collapse show float-end" id="collapseFilter">
+                    <form class="row row-cols-lg-auto g-3 align-items-center form-control-sm">
+                            <label><!-- Local filters:--></label>
+                            {% for filterItem in filterItems %}
+                            <div class="col-auto">
+                                <label  class="form-group label" for='sel_{{ filterItem.qId }}'>{{ filterItem.text }}</label>        
+                                <select class="form-select"  id='sel_{{ filterItem.qId }}' onchange="updateData()">
+                                    <option value=''>ALL</option>
+                                    {% for pItem in filterItem.items %}<option value={{ pItem.id }}>{{ pItem.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% endfor %}
+                    
+                    </form>                    
+                </div>
+            </div>
+        </div>
         <div class="row">
+            <!-- Filter  div class="input-group"> <span class="input-group-addon">Filter</span>
+                <input id="filter" type="text" class="form-control" placeholder="Type here...">
+            </div -->
+            <!-- https://examples.bootstrap-table.com/#extensions/export.html#view-source -->
+            <!--div id="toolbar" class="select">
+                <select class="form-control">
+                  <option value="">Export Basic</option>
+                  <option value="all">Export All</option>
+                  <option value="selected">Export Selected</option>
+                </select>
+              </div-->
               
-        <!-- table-sm : smaller padding -->
-        {% if project_list %}
-        <table data-toggle="table" data-pagination="true" data-page-size="25" data-page-list="[10, 25, 50, 100, all]"
+            <!-- table-sm : smaller padding -->
+            {% if project_list %}
+            <table data-toggle="table" data-pagination="true" data-page-size="25" data-page-list="[10, 25, 50, 100, all]"
                 data-search="true" data-filter-control="true" data-show-search-clear-button="false" data-show-refresh="false"
                 data-show-export="true" data-toolbar="#toolbar" data-show-toggle="true" data-show-columns="true"
+                data-export-data-type="all" 
                 id="table" class="table table-striped table-bordered table-sm small">
                 <thead class="table-light">
                 <tr>
@@ -124,43 +155,15 @@
 {% endblock content %}
 
 
-<!-- Other script here -->
-{% block script_body %}
-    <!-- <script src="/static/theme/assets/vendor/datatables/datatables.min.js"></script>
-    <script src="/static/theme/assets/js/initiate-datatables.js"></script>
-    <script>    //for data table...
-        $(document).ready(function () {
-            $('#table').DataTable();
-        });
-    </script> -->
-{% endblock %}
+{% block script_body %} 
+    <!-- Optional JavaScript; choose one of the two! -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.js"></script>
 
-<!-- nav filter script -->
-{% block script_nav %} 
-
-<script>
-  $(document).ready(function() {
-    $.ajax({
-      url: "/project/year-options/",
-      type: "GET",
-      dataType: "json",
-      success: (jsonResponse) => {
-        // Load all the options
-        jsonResponse.options.forEach(option => {
-          $("#year").append(new Option(option, option));
-        });
-        // Load data for the first option
-        // loadAllCharts($("#year").children().first().val());
-      },
-      error: () => console.log("Failed to fetch chart filter options!")
-    });
-  });    
-</script>
-
-    {% if filterItems %}
     <script>
         // set preselected values
-        {% for filterItem in filterItems %}$('#sel_{{filterItem.qId}}').val("{{ filterItem.selected }}");
+        {% for filterItem in filterItems %}
+            $('#sel_{{filterItem.qId}}').val("{{ filterItem.selected }}");
         {% endfor %}
 
         function updateData() {
@@ -168,14 +171,15 @@
             var qs = [];
             var tmp = '';
 
-            {% for filterItem in filterItems %} tmp = $('#sel_{{filterItem.qId}}').val(); if (tmp != '') qs.push('{{filterItem.qId}}=' + tmp);
+            {% for filterItem in filterItems %}
+                tmp = $('#sel_{{filterItem.qId}}').val();
+                if (tmp != '') qs.push('{{filterItem.qId}}=' + tmp);
             {% endfor %}
 
             if (qs.length > 0) {
                 q = "?" + qs.join("&");
-            }            
+            }
             window.location.href = window.location.pathname + q;
         }
     </script>    
-    {% endif %}
 {% endblock %}

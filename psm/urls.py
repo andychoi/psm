@@ -23,7 +23,7 @@ urlpatterns = [
 	
 	
 	path('project/list1', views.projectList1View.as_view(), name='project_list1'),
-	path('project/list1-old', views.projectList1View_old.as_view(), name='project_list1-old'),
+	# path('project/list1-old', views.projectList1View_old.as_view(), name='project_list1-old'),
 	path('project/list2', views.projectList2View.as_view(), name='project_list2'),
 	# path('project-list2/', views.project_list2, name='project_list2'),
 

@@ -129,7 +129,7 @@ def get_year_options(request):
 class projectList1View(PermissionRequiredMixin, generic.ListView):
     permission_required = 'psm.view_project'
 
-    template_name = 'project/project_list1_new.html'
+    template_name = 'project/project_list1.html'
     model = Project
     paginate_by = 500    #FIXME
     context_object_name = 'project_list'    
@@ -276,8 +276,8 @@ class projectList1View(PermissionRequiredMixin, generic.ListView):
 #     project_filter = ProjectFilter(request.GET, queryset=project_list)
 #     return render(request, 'project/project_list2.html', {'filter': project_filter })    
 
-class projectList1View_old(projectList1View):   
-    template_name = 'project/project_list1.html'    #old template
+# class projectList1View_old(projectList1View):   
+#     template_name = 'project/project_list1.html'    #old template
 
 class projectList2View(projectList1View):
     template_name = 'project/project_list2.html'

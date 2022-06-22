@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block child_css %}
+{% block head_script %}
     <link href="{% static 'css/markdown2_reference.css' %}" rel="stylesheet">
 {% endblock %}
 
@@ -276,7 +276,7 @@ Markdown
 {% endblock content %}
 
 
-{% block child_js_above_files %} 
+{% block script_body %} 
 <!-- https://embed.plnkr.co/atyuBnVNktl8YSfdfPJT/preview -->
 <!-- https://github.com/markedjs/marked -->
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>

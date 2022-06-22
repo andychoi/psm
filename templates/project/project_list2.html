@@ -1,54 +1,18 @@
-{% extends "base_wide.html" %}
+{% extends "theme/root.html" %}
 {% load humanize %}
 {% load static %}
 
-{% block child_css %}
+{% block head_script %}
     <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.css">
+    <!-- <link href="/static/theme/assets/vendor/datatables/datatables.min.css" rel="stylesheet"> -->
     <link href="{% static 'css/tablelist.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
 	<div class="container-fluid mt-1">  <!-- container-float margin top 3 -->
 		<div class="row">
-			<div class="col-2">
-				<h4 class="font-weight-bold"><button class="btn btn-outline-primary" type="button"  data-bs-toggle="collapse"  href="#collapseFilter" 
-                    role="button" aria-expanded="false" aria-controls="collapseFilter">PROJECT LIST</button></h4>                        
-		  	</div>
-		  	<!-- div class="col-4 text-nowrap float-end" >
-			<p class="text-end m-0 small"></p>
-			</div-->
-		    <div class="col-10">
-                <div class="collapse show float-end" id="collapseFilter">
-                    <form class="row row-cols-lg-auto g-3 align-items-center form-control-sm">
-                            <label><!-- Local filters:--></label>
-                            {% for filterItem in filterItems %}
-                            <div class="col-auto">
-                                <label  class="form-group label" for='sel_{{ filterItem.qId }}'>{{ filterItem.text }}</label>        
-                                <select class="form-select"  id='sel_{{ filterItem.qId }}' onchange="updateData()">
-                                    <option value=''>ALL</option>
-                                    {% for pItem in filterItem.items %}
-                                    <option value={{ pItem.id }}>{{ pItem.name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            {% endfor %}
-                    
-                    </form>                    
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <!-- Filter  div class="input-group"> <span class="input-group-addon">Filter</span>
-                <input id="filter" type="text" class="form-control" placeholder="Type here...">
-            </div -->
-            <!-- https://examples.bootstrap-table.com/#extensions/export.html#view-source -->
-            <!--div id="toolbar" class="select">
-                <select class="form-control">
-                  <option value="">Export Basic</option>
-                  <option value="all">Export All</option>
-                  <option value="selected">Export Selected</option>
-                </select>
-              </div-->
+            <h4 class="font-weight-bold">Project List </h4>
+		  	<!-- move filter to nav -->
               
             <!-- table-sm : smaller padding -->
             {% if project_list %}
@@ -144,8 +108,11 @@
 
 {% endblock content %}
 
+{% block script_body %}
+{% endblock %}
 
-{% block child_js_above_files %} 
+<!-- nav filter script -->
+{% block script_nav %} 
     <!-- Optional JavaScript; choose one of the two! -->
     <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
     <script src="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.js"></script>

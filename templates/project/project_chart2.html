@@ -1,6 +1,6 @@
 {% extends "base_wide.html" %}
 
-{% block child_css %}
+{% block head_script %}
 <!-- <script src="https://code.highcharts.com/highcharts.js"></script> -->
 
 <!-- <script src="https://code.highcharts.com/gantt/highcharts-gantt.js"></script>
@@ -57,7 +57,7 @@
 <!-- container-float margin top 3 -->
 {% endblock content %}
 
-{% block child_js_above_files %} 
+{% block script_body %} 
 <script>
     var tChartData = [];
     var tMaxItem = 200;

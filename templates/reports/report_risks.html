@@ -1,12 +1,14 @@
-{% extends "base_wide.html" %}
+{% extends "theme/root.html" %}
+{% load static %}
 
-{% block child_css %}
+{% block head_script %}
 <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.css">
+<link href="{% static 'css/tablelist.css' %}" rel="stylesheet">
 {% endblock %}
 
 
 {% block content %}
-<div class="container-fluid">
+<div class="container-fluid mt-1">
 <!-- Search Form -->
 <!-- <form class="form-inline my-2 my-lg-0 pb-2">
     <input class="form-control mr-sm-2" name="q" type="search" placeholder="Search" aria-label="Search" style="width: 400px">
@@ -66,7 +68,7 @@
             <td>{{ risk.risk_md2|safe }}</td> 
             <td>{{ risk.plan_md2|safe }}<!--|linebreaks--></td> 
             
-            <td><a href="/admin/psm/project/{{ risk.project.pk }}">{{ risk.project }}</a></td> 
+            <td><a href="{% url 'project_detail' risk.project.pk %}">{{ risk.project }}</a></td> 
 
             <td class="text-center"> 
             {%   if risk.project.status_o|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
@@ -101,7 +103,7 @@
 
 
 
-{% block child_js_above_files %} 
+{% block script_body %} 
 <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>    
 <script src="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.js"></script>
 <!--script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"

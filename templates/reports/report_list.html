@@ -1,6 +1,6 @@
-{% extends "base_wide.html" %}
+{% extends "theme/root.html" %}
 
-{% block child_css %}
+{% block head_script %}
 <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.css">
 {% endblock %}
 
@@ -52,7 +52,7 @@
             <td>{{ report.updated_on|date:'Y-m-d' }}</td>               
             <td><a class="" href="/admin/reports/report/{{ report.pk }}">Edit</a> </td> 
             <td>{{ report.updated_by }}</td> 
-            <td><a href="/admin/psm/project/{{ report.project.pk }}">{{ report.project }}</a></td> 
+            <td><a href="{% url 'project_detail' report.project.pk %}">{{ report.project }}</a></td> 
             <td class="text-center"> 
             {%   if report.status_o|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
             {% elif report.status_o|slice:'0:1' == '2' %}<i class="text-warning bi-exclamation-circle"></i>
@@ -85,7 +85,7 @@
 
 
 
-{% block child_js_above_files %} 
+{% block script_body %}
 <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>    
 <script src="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.js"></script>
 <!--script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"

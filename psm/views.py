@@ -352,7 +352,7 @@ class projectIndexView(generic.ListView):
             q['scope'] = 'my'
             context['scope'] = 'my'    # my, dept, blank=all
         else:
-            q.pop('scope')
+            q.pop('scope', None)
             q.pop('pm', None)
             context['scope'] = ''    # my, dept, blank=all
 

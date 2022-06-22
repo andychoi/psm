@@ -21,13 +21,15 @@
       | <span {% if scope != 'my' %}class="text-small text-muted"{% endif %} ><a href="{{ url_dp }}"> My Dept</a></span>
     </p>
 
+    {% if not user.is_superuser %}
     <div class="alert alert-primary d-flex align-items-center" role="alert">
       <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill"/></svg>
       <div>
         please navigate top/left hamberger menu to run charts/table report <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
     </div>
-        <!-- <p>please navigate top/left hamberger menu to run charts/table report</p> -->
+    {% endif %}
+    <!-- <p>please navigate top/left hamberger menu to run charts/table report</p> -->
 
     <div class="row m-2 " data-masonry='{"percentPosition": true }' >
 

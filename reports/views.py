@@ -5,9 +5,12 @@ from django.db.models import Q
 # from django_filters import FilterSet
 from django.views import generic
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.shortcuts import get_object_or_404
 
-from common.utils import Status
+from common.utils import State2
 from .models import Report, Milestone, ReportRisk
+from psm.models import Project
+from django.core.paginator import Paginator
 
 # https://medium.com/@ksarthak4ever/django-class-based-views-vs-function-based-view-e74b47b2e41b
 # class based vs. function based views
@@ -81,13 +84,35 @@ class reportEmail(reportDetail):
 # -> https://stackoverflow.com/questions/42250375/django-passing-multiple-objects-to-templates-but-nothing-in-there
 
 
-class reportRisks(PermissionRequiredMixin, generic.ListView):
-	permission_required = 'reports.view_reportrisk'
-	queryset = ReportRisk.objects.filter(~Q(status=Status.COMPLETED.value)).order_by('-id')
+class reportRisks(generic.ListView):
+	# permission_required = 'reports.view_reportrisk'
 	template_name = 'reports/report_risks.html'
-	paginate_by = 10
+	paginate_by = 50
 	context_object_name = 'report_risks'
-    
+	queryset = ReportRisk.objects.filter(state=State2.OPEN.value).order_by('-id')
+
+class reportRisksProject(generic.ListView):
+	# permission_required = 'reports.view_reportrisk'
+	template_name = 'reports/report_risks.html'
+	paginate_by = 50
+	context_object_name = 'report_risks'
+	
+	def get_queryset(self):
+		self.project = get_object_or_404(Project, id=self.kwargs['project'])
+		return ReportRisk.objects.filter(project=self.project, state=State2.OPEN.value).order_by('-id')
+
+# def reportRisks(request, project=None):
+# 	permission_required = 'reports.view_reportrisk'	
+# 	if project:
+# 		qs = ReportRisk.objects.filter(Q(project__id=project) & Q(state=State2.OPEN.value)).order_by('-id')
+# 	else:
+# 		qs = ReportRisk.objects.filter(state=State2.OPEN.value).order_by('-id')
+# 	paginator = Paginator(qs, 50)
+# 	page = request.GET.get('page')
+# 	page_obj = paginator.get_page(page)
+# 	context = {'qs': qs, 'report_risks': page_obj}
+
+# 	return render(request, 'reports/report_risks.html', context)
 
 # pass id attribute from urls
 def test_view(request): #, id):

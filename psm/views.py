@@ -38,7 +38,7 @@ from django_filters.views import FilterView
 
 # Create your views here.
 # importing models and libraries
-from common.models import Div, Dept, CBU
+from common.models import Div, Dept, CBU, State2
 from common.utils import PHASE, PHASE_OPEN, PHASE_CLOSE, PHASE_BACKLOG, PHASE_WORK, PRIORITIES, PRJTYPE, VERSIONS
 from common.utils import VERSION_QUEUE, VERSION_DONE, STATE_OPEN, STATE_VALID
 from .models import Project, Program, ProjectPlan
@@ -127,21 +127,24 @@ def get_year_options(request):
         'options': options,
     })
 
+# - how to provide my project for PM, HOD
 class projectIndexView(generic.ListView):
     template_name = 'project/index.html'
     context_object_name = 'project_list'    
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs) #dict
-        context['latest_update'] =  Project.objects.all().order_by('-updated_on')[:10]
+        context['latest_update'] =  Project.objects.order_by('-updated_on')[:10]
         context['oldest_update'] =  Project.objects.filter(Q(state__in=STATE_OPEN)).order_by('updated_on')[:10]
         context['latest_report'] =  Report.objects.all().order_by('-created_at')[:10]
-        context['latest_risk'] =    ReportRisk.objects.all().order_by('-created_at')[:10]
-        context['latest_request'] = ProjectPlan.objects.filter(Q(version__in=VERSION_QUEUE) & ~Q(released=False)).order_by('created_at')[:10]
+
+        context['latest_risk'] =    ReportRisk.objects.filter(state=State2.OPEN.value).order_by('created_at')[:5] 
+        context['latest_request'] = ProjectPlan.objects.filter(Q(version__in=VERSION_QUEUE) & ~Q(released=False)).order_by('-created_at')[:5]
         return context
 
     def get_queryset(self):
-        return Project.objects.filter().order_by('-created_at')[:10]
+        q =  {k:v for k, v in self.request.GET.items() if v and hasattr(Project, k.split('__')[0] ) }
+        return Project.objects.filter(**q).order_by('-created_at')[:5]
       
 
 #----------------------------------------------------------------------------------------------------
@@ -632,7 +635,7 @@ class projectDetail(PermissionRequiredMixin, generic.DetailView):
     def get_context_data(self, **kwargs):
         reports = Report.objects.filter(project__in=Project.objects.filter(code=self.object.code))
         planprj = ProjectPlan.objects.filter(id=self.object.ref_plan.id) if self.object.ref_plan else None
-        risk_count = ReportRisk.objects.filter(project=self.object, ).count()
+        risk_count = ReportRisk.objects.filter(project=self.object, state=State2.OPEN.value ).count()
         context = {"reports": reports, "planprj" : planprj, 'risk_count': risk_count }
         return super().get_context_data(**context)
 

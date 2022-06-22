@@ -52,7 +52,8 @@ STATES = (
     (State.DONE.value, _('Done')),
     (State.CANCEL.value, _('Canceled'))
 )
-STATE_ACTIVE = { State.BACKLOG.value, State.TODO.value, State.DOING.value, State.HOLD.value, State.DONE.value }
+STATE_VALID  = { State.BACKLOG.value, State.TODO.value, State.DOING.value, State.HOLD.value, State.DONE.value }
+STATE_OPEN = { State.BACKLOG.value, State.TODO.value, State.DOING.value, State.HOLD.value,  }
 
 class Priority(enum.Enum):
     """
@@ -172,6 +173,9 @@ class Versions(enum.Enum):
     V12 = '12'
     V20 = '20-BAP_final'
     V21 = '21-Unplanned'
+VERSION_QUEUE = ( Versions.V10.value, Versions.V11.value, Versions.V12.value,  )
+VERSION_DONE  = ( Versions.V20.value, Versions.V21.value,   )
+
 VERSIONS = (
     (Versions.V10.value, _('10-Request')),
     (Versions.V11.value, _('11-Review 1')),

@@ -1,39 +1,38 @@
 {% extends "theme/root.html" %}
 {% load static %}
+{% load humanize %}
 
 {% block head_script %}
     <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.css">
     <!-- <link href="/static/theme/assets/vendor/datatables/datatables.min.css" rel="stylesheet"> -->
     <link href="{% static 'css/tablelist.css' %}" rel="stylesheet">
+    <style>
+        .table { font-size: small; }
+    </style>
 {% endblock %}
 
 {% block content %}
-	<div class="container">
+	<div class="container-fluid">
 
-        <h5>Report Home</h5>
-        <p>please navigate top/left hamberger menu to run charts/table report</p>
+    <h5>Report Home</h5>
+    <p>please navigate top/left hamberger menu to run charts/table report</p>
 
-        <div class="col-md-6 col-lg-6">
+    <div class="row m-2 " data-masonry='{"percentPosition": true }' >
+
+        <div class="col-md-4 col-lg-4">
           <div class="card">
               <div class="card-header">Latest Major/Small Project</div>
               <div class="card-body">
                   <div class="table-responsive">
                       <table class="table table-striped">
-                          <thead>
-                              <tr>
-                                  <th>CBU</th>
-                                  <th>Title</th>
-                                  <th>PM</th>
-                                  <th>Created</th>
-                              </tr>
-                          </thead>
+                          <thead><tr><th>CBU</th><th>Title</th><!--th>PM</th--><th>Created</th></tr></thead>
                           <tbody>
                             {% for p in latest_update %}
                               <tr>
                                   <th scope="row">{{ p.CBU_str }}</th>
                                   <td>{{ p.title }}</td>
-                                  <td>{{ p.pm }}</td>
-                                  <td>{{ p.created_at|date:"M d, Y" }}</td>
+                                  <!-- <td>{{ p.pm }}</td> -->
+                                  <td>{{ p.created_at|naturalday }}<!--|date:"m/d/y"--></td>
                               </tr>
                             {% endfor %}
                           </tbody>
@@ -43,7 +42,100 @@
           </div><!-- card -->
         </div>
 
-		
+        <div class="col-md-4 col-lg-4">
+          <div class="card">
+              <div class="card-header">Top 10 oldest update (open project)</div>
+              <div class="card-body">
+                  <div class="table-responsive">
+                      <table class="table table-striped">
+                          <thead><tr><!--th>CBU</th--><th>Title</th><th>PM</th><th>Updated</th></tr></thead>
+                          <tbody>
+                            {% for p in latest_update %}
+                              <tr>
+                                  <!-- <th scope="row">{{ p.CBU_str }}</th> -->
+                                  <td>{{ p.title }}</td>
+                                  <td>{{ p.pm }}</td>
+                                  <td>{{ p.updated_on|naturalday }}<!--|date:"m/d/y"--></td>
+                              </tr>
+                            {% endfor %}
+                          </tbody>
+                      </table>
+                  </div>
+              </div>                           
+          </div><!-- card -->
+        </div>
+
+
+        <div class="col-md-4 col-lg-4">
+          <div class="card">
+              <div class="card-header">Latest Status Report</div>
+              <div class="card-body">
+                  <div class="table-responsive">
+                      <table class="table table-striped">
+                          <thead><tr><!--th>CBU</th--><th>Title</th><th>PM</th><th>Created</th></tr></thead>
+                          <tbody>
+                            {% for r in latest_report %}
+                              <tr>
+                                  <!-- <th scope="row">{{ p.CBU_str }}</th> -->
+                                  <td>{{ r.project.title }}</td>
+                                  <td>{{ r.project.pm }}</td>
+                                  <td>{{ r.created_at|naturalday }}<!--|date:"m/d/y"--></td>
+                              </tr>
+                            {% endfor %}
+                          </tbody>
+                      </table>
+                  </div>
+              </div>                           
+          </div><!-- card -->
+        </div>
+
+        <div class="col-md-4 col-lg-4">
+          <div class="card">
+              <div class="card-header">Latest Risk Report</div>
+              <div class="card-body">
+                  <div class="table-responsive">
+                      <table class="table table-striped">
+                          <thead><tr><th>CBU</th><th>Title</th><!--th>PM</th--><th>Created</th></tr></thead>
+                          <tbody>
+                            {% for r in latest_risk %}
+                              <tr>
+                                  <th scope="row">{{ r.project.CBU_str }}</th>
+                                  <td>{{ r.project.title }}</td>
+                                  <!-- <td>{{ p.pm }}</td> -->
+                                  <td>{{ r.created_at|naturalday }}<!--|date:"m/d/y"--></td>
+                              </tr>
+                            {% endfor %}
+                          </tbody>
+                      </table>
+                  </div>
+              </div>                           
+          </div><!-- card -->
+        </div>
+
+        <div class="col-md-4 col-lg-4">
+          <div class="card">
+              <div class="card-header">Project Request - aging top 10</div>
+              <div class="card-body">
+                  <div class="table-responsive">
+                      <table class="table table-striped">
+                          <thead><tr><th>CBU</th><th>Title</th><!--th>PM</th--><th>Created</th></tr></thead>
+                          <tbody>
+                            {% for r in latest_request %}
+                              <tr>
+                                  <th scope="row">{{ r.CBU_str }}</th>
+                                  <td>{{ r.title }}</td>
+                                  <!-- <td>{{ p.pm }}</td> -->
+                                  <td>{{ r.created_at|naturalday }}<!--|date:"m/d/y"--></td>
+                              </tr>
+                            {% endfor %}
+                          </tbody>
+                      </table>
+                  </div>
+              </div>                           
+          </div><!-- card -->
+        </div>
+        
+    </div>
 	</div>
 
 {% endblock content %}

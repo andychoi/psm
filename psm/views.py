@@ -1,4 +1,5 @@
 import json
+from platform import release
 from django.http import JsonResponse
 from urllib.request import Request
 from django.http import HttpRequest
@@ -38,10 +39,11 @@ from django_filters.views import FilterView
 # Create your views here.
 # importing models and libraries
 from common.models import Div, Dept, CBU
-from common.utils import PHASE, PHASE_OPEN, PHASE_CLOSE, PHASE_BACKLOG, PHASE_WORK, STATE_ACTIVE, PRIORITIES, PRJTYPE, VERSIONS
+from common.utils import PHASE, PHASE_OPEN, PHASE_CLOSE, PHASE_BACKLOG, PHASE_WORK, PRIORITIES, PRJTYPE, VERSIONS
+from common.utils import VERSION_QUEUE, VERSION_DONE, STATE_OPEN, STATE_VALID
 from .models import Project, Program, ProjectPlan
 from .tables import ProjectPlanTable
-from reports.models import Report
+from reports.models import Report, ReportRisk
 # from .forms import ProjectPlanForm
 
 from common.models import Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, State3, STATE3, WBS, VERSIONS, Versions
@@ -131,9 +133,11 @@ class projectIndexView(generic.ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs) #dict
-        context['latest_update'] = Project.objects.all().order_by('-updated_on')[:10]
-        context['latest_report'] = Report.objects.all().order_by('-created_at')[:10]
-        context['latest_request'] = ProjectPlan.objects.filter(version=10).order_by('-created_at')[:10]
+        context['latest_update'] =  Project.objects.all().order_by('-updated_on')[:10]
+        context['oldest_update'] =  Project.objects.filter(Q(state__in=STATE_OPEN)).order_by('updated_on')[:10]
+        context['latest_report'] =  Report.objects.all().order_by('-created_at')[:10]
+        context['latest_risk'] =    ReportRisk.objects.all().order_by('-created_at')[:10]
+        context['latest_request'] = ProjectPlan.objects.filter(Q(version__in=VERSION_QUEUE) & ~Q(released=False)).order_by('created_at')[:10]
         return context
 
     def get_queryset(self):
@@ -259,7 +263,7 @@ class projectList1View(PermissionRequiredMixin, generic.ListView):
 
         ltmp = self.request.GET.get('cbu', '')
         if ltmp:
-            qs = qs.filter(CBUs__id=ltmp)
+            qs = qs.filter(CBU__id=ltmp)
 
         # ltmp = self.request.GET.get('pri', '')
         # if ltmp:
@@ -422,7 +426,7 @@ def project_chart_sample1_json(request):
 """
 
 #-----------------------------------------------------------------------------------
-# example: groupby = CBUs__name,
+# example: groupby = CBU__name,
 # return in qs or json
 #-----------------------------------------------------------------------------------
 def get_project_metrics(request, year=date.today().year, groupby='year' ):
@@ -434,13 +438,13 @@ def get_project_metrics(request, year=date.today().year, groupby='year' ):
         except FieldDoesNotExist:
             groupby = 'year'   #default_field
 
-    qs = Project.objects.filter(year=year)  #, state__in=STATE_ACTIVE)
+    qs = Project.objects.filter(year=year)  #, state__in=STATE_VALID)
 
     # readme: https://docs.djangoproject.com/en/4.0/ref/models/conditional-expressions/
     # string gte, lte... not working -> use "in" instead
     # sequence is important for F calculation
     # zero if None
-    # caution: many-to-many, count/sum/avg per each, CBUs__name
+    # caution: many-to-many, count/sum/avg per each, CBU__name
     metrics = {
         'completed'    : Count('pk', filter=Q(phase__in=PHASE_CLOSE)),
         # 'completed'    : Count(Case( When(phase__in=PHASE_CLOSE, then=1), output_field=IntegerField(), default=0)), -> not working
@@ -482,7 +486,7 @@ def get_project_metrics(request, year=date.today().year, groupby='year' ):
 def get_project_stat_api(request, year=date.today().year, groupby='year', mstr=None, res='json'):
     """
         Example: 
-        http://localhost:8000/project/json/get_project_stat_api/2022/CBUs__name/?dept__name=ERP
+        http://localhost:8000/project/json/get_project_stat_api/2022/CBU__name/?dept__name=ERP
         http://localhost:8000/project/json/get_project_stat_api/2023/phase/total,completed/
         http://localhost:8000/project/json/get_project_stat_api/2022/year/?dept__name=ERP
         http://localhost:8000/project/json/get_project_stat_api/2022/year/
@@ -704,7 +708,7 @@ class projectPlanListView(PermissionRequiredMixin, generic.ListView):
 
         context['filterItems'].append( {
             # "key": "CBU", "text": "CBU", "qId": "cbu", "selected": self.request.GET.get('cbu', '')
-            "key": "CBU", "text": "CBU", "qId": "CBUs__name", "selected": self.request.GET.get('CBUs__name', '')
+            "key": "CBU", "text": "CBU", "qId": "CBU__name", "selected": self.request.GET.get('CBU__name', '')
             , "items": CBU.objects.filter(is_active=True)
         } )
 
@@ -766,7 +770,7 @@ class projectPlanListView(PermissionRequiredMixin, generic.ListView):
         #     qs = qs.filter(version=VERSIONS[int(ltmp)][0])
         # ltmp = self.request.GET.get('cbu', '')
         # if ltmp:
-        #     qs = qs.filter(CBUs__id=ltmp)
+        #     qs = qs.filter(CBU__id=ltmp)
         # ltmp = self.request.GET.get('pri', '')
         # if ltmp:
         #     qs = qs.filter(priority=PRIORITIES[int(ltmp)][0])

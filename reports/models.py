@@ -43,7 +43,7 @@ class Report(models.Model):
     project = models.ForeignKey('psm.Project', on_delete=models.CASCADE, blank=True, null=True)
     # title field using charfield constraint with unique constraint
     title = models.CharField(max_length=200)
-    # CBUs = models.ManyToManyField(CBU, blank=True, null=True)
+    # CBU = models.ManyToManyField(CBU, blank=True, null=True)
     # CBU = models.ForeignKey(CBU, blank=True, null=True, on_delete=models.PROTECT)
     # dept = models.ForeignKey(Dept, blank=True, null=True, on_delete=models.PROTECT)
 

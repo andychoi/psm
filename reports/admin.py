@@ -102,7 +102,7 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
     ordering = ('-id',)
     autocomplete_fields = [ 'project' ]
     readonly_fields = ('project_link', 'created_at', 'updated_on', 'created_by', 'updated_by')
-    #'CBUs', 'dept', 
+    #'CBU', 'dept', 
     search_fields = ('title', 'project__title', 'content_a', 'content_p', 'issue', 'created_by__profile__name', 'updated_by__profile__name',
                     )
 
@@ -120,7 +120,7 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
                             ('status_o', 'status_t', 'status_b', 'status_s', 'progress' ), 
                             ('content_a', 'content_p', 'issue'), ),  "classes": ("stack_labels",)}),
             (_('More...'), {'fields': (('created_at', 'created_by'), ('updated_on', 'updated_by'),
-                        # ('CBUs','dept',)
+                        # ('CBU','dept',)
             ), 'classes': ('collapse',)}),
     )
 
@@ -136,7 +136,7 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
 
     list_filter = (
         ('project', RelatedDropdownFilter),
-        ('project__CBUs', RelatedDropdownFilter),
+        ('project__CBU', RelatedDropdownFilter),
         ('project__dept', RelatedDropdownFilter),
         ('project__dept__div', RelatedDropdownFilter),
         # ('div', RelatedDropdownFilter),
@@ -179,8 +179,8 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
     formatted_updated.short_description = 'Updated'
 
     def cbu_list(self, obj):
-        return " ,".join(p.name for p in obj.project.CBUs.all())
-    cbu_list.short_description = 'CBUs'
+        return " ,".join(p.name for p in obj.project.CBU.all())
+    cbu_list.short_description = 'CBU'
 
     def get_dept(self, obj):
         return obj.project.dept
@@ -256,7 +256,7 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
         new._state.adding = True           
         new.save()  #adding
         # update many-to-many after save
-        # new.CBUs.set(obj.project.CBUs.all())
+        # new.CBU.set(obj.project.CBU.all())
         # new.save()
         # clone milestones
         old_ms = Milestone.objects.filter(report=old_id)
@@ -282,8 +282,8 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
 
         #FIXME manytomany : queryset list(q1) == list(q2)
         #needs to have "id" before many-to-many relations can be used
-        # if (not obj.CBUs.exists()): 
-        #     obj.CBUs.set(obj.project.CBUs.all())
+        # if (not obj.CBU.exists()): 
+        #     obj.CBU.set(obj.project.CBU.all())
         #     obj.save()
 
 
@@ -383,7 +383,7 @@ class ReportRiskAdmin(ImportExportMixin, admin.ModelAdmin):
 
     list_filter = (
         ('project', RelatedDropdownFilter),
-        ('project__CBUs', RelatedDropdownFilter),  #FIXME many to many OK
+        ('project__CBU', RelatedDropdownFilter),  #FIXME many to many OK
         ('project__dept__div', RelatedDropdownFilter),
         ('project__dept', RelatedDropdownFilter),
         ('state', UnionFieldListFilter),
@@ -413,8 +413,8 @@ class ReportRiskAdmin(ImportExportMixin, admin.ModelAdmin):
     formatted_reporton.short_description = 'Report On'
 
     def cbu_list(self, obj):
-        return " ,".join(p.name for p in obj.project.CBUs.all())
-    cbu_list.short_description = 'CBUs'
+        return " ,".join(p.name for p in obj.project.CBU.all())
+    cbu_list.short_description = 'CBU'
 
     def get_dept(self, obj):
         return obj.project.dept

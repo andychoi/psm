@@ -29,7 +29,7 @@ from import_export.widgets import ManyToManyWidget, ForeignKeyWidget
 
 class ReviewResource(resources.ModelResource):
     # pm_name     = fields.Field(attribute='project.pm',     widget=ForeignKeyWidget(Profile, 'name'))
-    cbu_names   = fields.Field(attribute='CBUs',   widget=ManyToManyWidget(model=CBU, separator=',', field='name'), )
+    cbu_names   = fields.Field(attribute='CBU',   widget=ManyToManyWidget(model=CBU, separator=',', field='name'), )
 
     class Meta:
         model = Review
@@ -62,9 +62,9 @@ class ReviewAdmin(ImportExportMixin, admin.ModelAdmin):
     Custom_fields = ('project_link', 'created_at', 'updated_on', 'created_by', 'updated_by')
     search_fields = ('title', 'project__title', 'req_content', 'res_content',  )
     list_editable = ("status", "is_escalated", "state")
-    autocomplete_fields = ('reviewer', 'project', 'CBUs')
+    autocomplete_fields = ('reviewer', 'project', 'CBU')
     fieldsets = (               # Edition form
-                (None, {'fields':   (('project', 'CBUs'),  ('title', 'reqtype',  ),('req_content',), ('proc_start', 'onboaddt', 'state', ), ('status', 'is_escalated', 'priority'), ( 'res_content','reviewer',),   
+                (None, {'fields':   (('project', 'CBU'),  ('title', 'reqtype',  ),('req_content',), ('proc_start', 'onboaddt', 'state', ), ('status', 'is_escalated', 'priority'), ( 'res_content','reviewer',),   
                             ), "classes": ("stack_labels",)}),
                 (_('More...'), {'fields': (('created_at', 'created_by'), ('updated_on', 'updated_by')), 'classes': ('collapse',)}),
     )
@@ -81,11 +81,11 @@ class ReviewAdmin(ImportExportMixin, admin.ModelAdmin):
     list_filter = (
         ('reqtype', DropdownFilter),
         ('priority', DropdownFilter),
-        ('CBUs', RelatedDropdownFilter),
+        ('CBU', RelatedDropdownFilter),
         ('project',             RelatedDropdownFilter),
         ('project__dept__div',  RelatedDropdownFilter),
         ('project__dept',       RelatedDropdownFilter),
-        # ('project__CBUs',       RelatedDropdownFilter),
+        # ('project__CBU',       RelatedDropdownFilter),
         ('status',              DropdownFilter),
         'updated_on',
     )

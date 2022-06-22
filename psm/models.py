@@ -119,7 +119,7 @@ class Project(models.Model):
     is_agile = models.BooleanField(_("Agile project"), default=False)
     # is_unplanned = models.BooleanField(_("Unplanned project"), default=False)
 
-    CBUs  = models.ManyToManyField(CBU, blank=True)
+    CBU  = models.ManyToManyField(CBU, blank=True)
     CBUpm = models.ForeignKey(Profile, related_name='cbu_pm', verbose_name=_('CBU PM'), on_delete=models.PROTECT, null=True, blank=True)
     team = models.ForeignKey(Team, blank=True, null=True, on_delete=models.SET_NULL)
     dept = models.ForeignKey(Dept, blank=True, null=True, on_delete=models.SET_NULL)
@@ -207,7 +207,7 @@ class Project(models.Model):
         return f'{self.year % 100}-{"{:04d}".format(self.pk)}' if (self.code is None) and (not self.pk is None) else f'{self.code}{"*" if self.cf else ""}'    
     @property
     def CBU_str(self):
-        return " ,".join(p.name for p in self.CBUs.all())
+        return " ,".join(p.name for p in self.CBU.all())
     @property
     def strategy_str(self):
         return " ,".join(p.name for p in self.strategy.all())
@@ -231,10 +231,10 @@ class Project(models.Model):
 
     def save(self, *args, **kwargs):
         send_email = (self.pk is None)          #and (not self.proxy_name == 'ProjectPlan')
-        if not send_email and self.CBUs.exists():   #FIXME many-to-many
+        if not send_email and self.CBU.exists():   #FIXME many-to-many
             old_Project_data = Project.objects.get(pk=self.pk)
             # many-to-many compare FIXME
-            if list(old_Project_data.CBUs.all()) != list(self.CBUs.all()):
+            if list(old_Project_data.CBU.all()) != list(self.CBU.all()):
                 send_email = True
 
         super().save(*args, **kwargs)
@@ -368,7 +368,7 @@ class ProjectPlan(models.Model):
     is_agile = models.BooleanField(_("Agile project"), default=False)
     # is_unplanned = models.BooleanField(_("Unplanned project"), default=False)
 
-    CBUs  = models.ManyToManyField(CBU, blank=True)
+    CBU  = models.ManyToManyField(CBU, blank=True)
     CBUpm = models.ForeignKey(Profile, related_name='req_cbu_pm', verbose_name=_('CBU PM'), on_delete=models.SET_NULL, null=True, blank=True)
     team = models.ForeignKey(Team, blank=True, null=True, on_delete=models.SET_NULL)
     dept = models.ForeignKey(Dept, blank=True, null=True, on_delete=models.SET_NULL)
@@ -425,7 +425,7 @@ class ProjectPlan(models.Model):
         # return self.code if not self.code is None else prefix + f'{self.year % 100}-{"{:04d}".format(self.pk)}'    
     @property
     def CBU_str(self):
-        return " ,".join(p.name for p in self.CBUs.all())
+        return " ,".join(p.name for p in self.CBU.all())
     @property
     def strategy_str(self):
         # this is not working... FIXME 

@@ -51,7 +51,7 @@ def _project_list(request):
 
         ltmp = request.GET.get('cbu', '')
         if len(ltmp) > 0 and ltmp:
-            qs = qs.filter(CBUs__id=ltmp)
+            qs = qs.filter(CBU__id=ltmp)
 
         # ltmp = request.GET.get('pri', '')
         # if ltmp:

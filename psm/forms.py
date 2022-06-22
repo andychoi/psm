@@ -10,7 +10,7 @@
 # class ProjectPlanForm(ModelForm):
 #     class Meta:
 #         model = Project
-#         fields = [  'title', 'pm', 'year', 'CBUs',
+#         fields = [  'title', 'pm', 'year', 'CBU',
 #                     'asis', 'img_asis', 'tobe', 'img_tobe',
 #                     'description', 'consider', 
 #                     'quali', 'quant', 'est_cost', 'resource',
@@ -36,7 +36,7 @@
 #                 Column('year',     css_class='form-group col-md-2 mb-0'),
 #                 Column('pm',       css_class='form-group col-md-4 mb-0'),
 #             ),
-#             'CBUs',
+#             'CBU',
 #             Row(
 #                 Column('asis',     css_class='form-group col-md-6 mb-0 prj-main'),
 #                 Column('tobe',     css_class='form-group col-md-6 mb-0 prj-main'),

@@ -247,16 +247,16 @@ class Project(models.Model):
         # backfill planning dates
         if not self.p_launch and self.p_close:
             self.p_launch = previous_working_day(self.p_close, 1)
-            self.save()
+            self.save(update_fields='p_launch')
         if not self.p_plan_e and self.p_design_b:
             self.p_plan_e = previous_working_day(self.p_design_b, 1)
-            self.save()
+            self.save(update_fields='p_plan')
         if not self.p_design_e and self.p_uat_b:
             self.p_design_e = previous_working_day(self.p_uat_b, 1)
-            self.save()
+            self.save(update_fields='p_design')
         if not self.p_uat_e and self.p_launch:
             self.p_uat_e = previous_working_day(self.p_launch, 1)
-            self.save()
+            self.save(update_fields='p_uat_e')
 
 
         if send_email:
@@ -303,6 +303,8 @@ class Project(models.Model):
                 emails_to.append(self.CBUpm.email)
             if settings.PROJECT_SEND_EMAILS_TO_ASSIGNED and self.pm and self.pm.email:
                 emails_to.append(self.pm.email)
+                if self.pm.dept.head.email:
+                    emails_to.append(self.pm.dept.head.email)
         
         if len(emails_to):
             logger.info("[Project #%s] Sending Project creation email to: %s", self.code, emails_to)
@@ -313,6 +315,8 @@ class Project(models.Model):
                 "CBU_PM": self.CBUpm if self.CBUpm else '(Not assigned yet)',
                 "title": self.title,
                 "description": self.description or '-',
+                "objective": self.objective or '-',
+                "url": f'https://psm.{settings.DOMAIN}/project/{self.id}/',
                 "sign": settings.SITE_HEADER,
             }
 

@@ -17,8 +17,8 @@
     <!-- FIXME get parameters... merge -->
     <p><span class="fs-4"> Dashboard for {{ year }} </span>
       <span><a href="{% url 'project_index' %}"> All </a></span> 
-      | <span {% if scope != 'my' %}class="text-small text-muted"{% endif %} ><a href="{{ url }}"> My Project</a></span>
-      | <span {% if scope != 'my' %}class="text-small text-muted"{% endif %} ><a href="{{ url_dp }}"> My Dept</a></span>
+      | <span {% if scope != 'my' %}class="text-small text-muted"{% endif %} ><a href="{% url 'project_index' %}?pm={{ user.profile.id }}&scope=my"> My Project</a></span>
+      | <span {% if scope != 'my' %}class="text-small text-muted"{% endif %} ><a href="{% url 'project_index' %}?pm={{ user.profile.id }}&scope=dp"> My Dept</a></span>
     </p>
 
     {% if not user.is_superuser %}

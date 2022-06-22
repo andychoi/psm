@@ -58,7 +58,30 @@
                     <!-- </div> -->
                 </div>
             </li>
-            <li class="nav-item"><a class="nav-item nav-link"  href="/project/">Reports</a></li>
+            <!-- <li class="nav-item"><a class="nav-item nav-link"  href="/project/">Reports</a></li> -->
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink3" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Reports
+                </a>
+                <ul class="dropdown-menu my-menu-3" aria-labelledby="navbarDropdownMenuLink3">
+      
+                  <li><a class="dropdown-item" href="{% url 'project_index' %}"><i class="fas fa-bullseye"></i> Report Home</a></li>
+                  <div class="dropdown-divider"></div>
+                  <li><a class="dropdown-item" href="{% url 'project_dashboard' %}"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+                  <li><a class="dropdown-item" href="{% url 'project_chart_1' %}"><i class="fas fa-angle-right"></i>Gantt chart</a></li>
+                  <li><a class="dropdown-item" href="{% url 'project_chart_2' %}"><i class="fas fa-angle-right"></i>Gantt chart (pilot1)</a></li>
+              {% if user.is_superuser %}            
+                      <li><a class="dropdown-item" href="{% url 'project_chart_3' %}"><i class="fas fa-angle-right"></i>Chart (pilot)</a></li>
+              {% endif %}
+                  <div class="dropdown-divider"></div>
+                  <li><a class="dropdown-item" href="{% url 'project_list1' %}"><i class="fas fa-th-list"></i> Project List</a></li>
+                  <li><a class="dropdown-item" href="/report"><i class="fas fa-comment-alt"></i> Status Report List</a></li>
+                  <div class="dropdown-divider"></div>
+                  <li><a class="dropdown-item" href="/report/risks"><i class="fas fa-exclamation-circle"></i> Risk Report List</a></li>
+                </ul>
+              </li>
+    
+
 
         </ul>
 

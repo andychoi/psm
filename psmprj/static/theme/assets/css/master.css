@@ -111,6 +111,22 @@ body {
     border-bottom: 1px solid rgba(101, 109, 119, .16);
 }
 
+/* .nav-item { margin-left: 5px; margin-right: 5px; } */
+.navbar-nav {
+    display: flex;
+    justify-content: space-between;
+  }
+  .navbar-nav .nav-link {
+    margin-right: 5px;
+    margin-left: 5px;
+    height: 100%;
+    align-items:center;
+    display:flex !important;
+  }
+  .nav-link{
+    color: #1d1c1c;
+  }  
+
 /*------------------------------------------------------------------
 [3. Navigation / #navbar] - see /components/navbar/navbar-dropdown.css
 */

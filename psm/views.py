@@ -46,7 +46,7 @@ from .tables import ProjectPlanTable
 from reports.models import Report, ReportRisk
 # from .forms import ProjectPlanForm
 
-from common.models import Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, State3, STATE3, WBS, VERSIONS, Versions
+from common.models import Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, Decision3, DECISION3, WBS, VERSIONS, Versions
 # for charting
 from .utils.charts import get_year_dict, generate_color_palette, colorPalette, colorPrimary, colorSuccess, colorDanger, months
 
@@ -632,7 +632,8 @@ class projectDetail(PermissionRequiredMixin, generic.DetailView):
     def get_context_data(self, **kwargs):
         reports = Report.objects.filter(project__in=Project.objects.filter(code=self.object.code))
         planprj = ProjectPlan.objects.filter(id=self.object.ref_plan.id) if self.object.ref_plan else None
-        context = {"reports": reports, "planprj" : planprj }
+        risk_count = ReportRisk.objects.filter(project=self.object, ).count()
+        context = {"reports": reports, "planprj" : planprj, 'risk_count': risk_count }
         return super().get_context_data(**context)
 
 

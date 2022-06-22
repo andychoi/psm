@@ -13,7 +13,7 @@ from django.utils.html import mark_safe
 
 # Register your models here.
 from .models import Review, ReviewLog
-from psm.models import Project, STATE3, State3
+from psm.models import Project, DECISION3, Decision3
 from common.models import CBU, ReqTypes, REQTYPES
 from users.models import Profile
 # permission https://django-guardian.readthedocs.io/en/stable/userguide/admin-integration.html

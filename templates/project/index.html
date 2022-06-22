@@ -30,7 +30,7 @@
                             {% for p in latest_update %}
                               <tr>
                                   <th scope="row">{{ p.CBU_str }}</th>
-                                  <td>{{ p.title }}</td>
+                                  <td><a href="{% url 'project_detail' pk=p.id %}">{{ p.title }}</a></td>
                                   <!-- <td>{{ p.pm }}</td> -->
                                   <td>{{ p.created_at|naturalday }}<!--|date:"m/d/y"--></td>
                               </tr>
@@ -53,7 +53,7 @@
                             {% for p in latest_update %}
                               <tr>
                                   <!-- <th scope="row">{{ p.CBU_str }}</th> -->
-                                  <td>{{ p.title }}</td>
+                                  <td><a href="{% url 'project_detail' p.id %}">{{ p.title }}</a></td>
                                   <td>{{ p.pm }}</td>
                                   <td>{{ p.updated_on|naturalday }}<!--|date:"m/d/y"--></td>
                               </tr>
@@ -77,7 +77,7 @@
                             {% for r in latest_report %}
                               <tr>
                                   <!-- <th scope="row">{{ p.CBU_str }}</th> -->
-                                  <td>{{ r.project.title }}</td>
+                                  <td><a href="{% url 'project_detail' r.project.id %}">{{ r.project.title }}</a></td>
                                   <td>{{ r.project.pm }}</td>
                                   <td>{{ r.created_at|naturalday }}<!--|date:"m/d/y"--></td>
                               </tr>
@@ -100,7 +100,7 @@
                             {% for r in latest_risk %}
                               <tr>
                                   <th scope="row">{{ r.project.CBU_str }}</th>
-                                  <td>{{ r.project.title }}</td>
+                                  <td><a href="{% url 'project_detail' r.project.id %}">{{ r.project.title }}</a></td>
                                   <!-- <td>{{ p.pm }}</td> -->
                                   <td>{{ r.created_at|naturalday }}<!--|date:"m/d/y"--></td>
                               </tr>
@@ -120,12 +120,12 @@
                       <table class="table table-striped">
                           <thead><tr><th>CBU</th><th>Title</th><!--th>PM</th--><th>Created</th></tr></thead>
                           <tbody>
-                            {% for r in latest_request %}
+                            {% for pp in latest_request %}
                               <tr>
-                                  <th scope="row">{{ r.CBU_str }}</th>
-                                  <td>{{ r.title }}</td>
+                                  <th scope="row">{{ pp.CBU_str }}</th>
+                                  <td><a href="{% url 'project_plan_detail' pp.id %}">{{ pp.title }}</a></td>
                                   <!-- <td>{{ p.pm }}</td> -->
-                                  <td>{{ r.created_at|naturalday }}<!--|date:"m/d/y"--></td>
+                                  <td>{{ pp.created_at|naturalday }}<!--|date:"m/d/y"--></td>
                               </tr>
                             {% endfor %}
                           </tbody>

@@ -21,7 +21,7 @@ from django.utils.html import format_html
 from django.utils.html import mark_safe
 from psmprj.utils.dates import previous_working_day
 
-from common.models import State3, ReqTypes, Versions, CBU, State, Phase
+from common.models import Decision3, ReqTypes, Versions, CBU, State, Phase
 from .models import Project, ProjectPlan,  ProjectDeliverable, ProjectDeliverableType, Strategy, Program
 from reviews.models import  Review
 from django.contrib.admin import AdminSite

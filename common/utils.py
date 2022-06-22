@@ -42,7 +42,7 @@ class State(enum.Enum):
     DOING   = '20-doing'
     HOLD    = '30-hold'
     DONE    = '40-done'
-    CANCEL  = '50-cancel'
+    CANCEL  = '90-cancel'
 # from django.contrib.auth.models import (BaseUserManager, AbstractBaseUser)
 STATES = (
     (State.BACKLOG.value, _('Backlog')),
@@ -54,6 +54,17 @@ STATES = (
 )
 STATE_VALID  = { State.BACKLOG.value, State.TODO.value, State.DOING.value, State.HOLD.value, State.DONE.value }
 STATE_OPEN = { State.BACKLOG.value, State.TODO.value, State.DOING.value, State.HOLD.value,  }
+
+# class State3(enum.Enum):
+#     OPEN    = '00-Open'
+#     CLOSE   = '10-Close'
+#     CANCEL  = '90-Cancel'
+# # from django.contrib.auth.models import (BaseUserManager, AbstractBaseUser)
+# STATE3 = (
+#     (State.OPEN.value, _('Open')),
+#     (State.CLOSE.value, _('Close')),
+#     (State.CANCEL.value, _('Cancel')),
+# )
 
 class Priority(enum.Enum):
     """
@@ -142,14 +153,14 @@ PRJCATE = (
     (PrjCate.ASS.value, _('Assessment/Audit')),
 )
 
-class State3(enum.Enum):
+class Decision3(enum.Enum):
     TBD = '0-TBD'
     YES = '1-Yes'
     NO  = '2-No'
-STATE3 = (
-    (State3.TBD.value, _('TBD')),
-    (State3.YES.value, _('Yes')),
-    (State3.NO.value, _('No')),
+DECISION3 = (
+    (Decision3.TBD.value, _('TBD')),
+    (Decision3.YES.value, _('Yes')),
+    (Decision3.NO.value, _('No')),
 )
 
 class ReqTypes(enum.Enum):

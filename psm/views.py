@@ -482,6 +482,8 @@ def get_project_metrics(request, year=date.today().year, groupby='year' ):
 
     qs = Project.objects.filter(year=year)  #, state__in=STATE_VALID)
 
+    print (qs[0].CBU, qs[0].dept)
+
     # readme: https://docs.djangoproject.com/en/4.0/ref/models/conditional-expressions/
     # string gte, lte... not working -> use "in" instead
     # sequence is important for F calculation
@@ -493,7 +495,7 @@ def get_project_metrics(request, year=date.today().year, groupby='year' ):
         'not_complete' : Count('pk', filter=~Q(phase__in=PHASE_CLOSE) & ~Q(state=State.CANCEL.value)),
         'in_progress'  : Count('pk', filter=~Q(phase__in=PHASE_WORK) & ~Q(state=State.CANCEL.value)),
         'not_started'  : Count('pk', filter=~Q(phase__in=PHASE_BACKLOG) & ~Q(state=State.CANCEL.value)),
-        'canceled'     : Count('pk', filter=Q(state=State.CANCEL.value), default=0),
+        'canceled'     : Count('pk', filter=Q(state=State.CANCEL.value)),
         'total'        : Count('pk'),
         'total_net'    : F('total') - F('canceled'),
         'complete_pct' : Case(When(total_net=0, then=0), default=F('completed') * 100 / F('total_net') ),

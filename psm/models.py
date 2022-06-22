@@ -375,7 +375,7 @@ class ProjectPlan(models.Model):
 
     released    = models.ForeignKey("Project", related_name='released_prj', on_delete=models.SET_NULL, null=True, blank=True)
 
-    version     = models.CharField(max_length=20, choices=VERSIONS, null=True, )
+    version     = models.CharField(max_length=20, choices=VERSIONS, default=Versions.V10.value )
     asis        = models.TextField(_("As-Is"), max_length=2000, null=True, )
     tobe        = models.TextField(_("To-Be"), max_length=2000, null=True, )
     objective   = models.TextField(_("Objective"), max_length=2000, null=True, )

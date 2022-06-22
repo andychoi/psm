@@ -25,8 +25,8 @@
                     </a>
                     <!-- dropdown with ul dropdown-menu <div class="dropdown-menu dropdown-menu-end nav-link-menu" aria-labelledby="nav1"> -->
                             <ul class="dropdown-menu nav-list" aria-labelledby="nav1">
-                            <li><a class="dropdown-item" href="/admin/psm/projectplan/add/"><i class="fas fa-list"></i> Create Project Request / BAP</a></li>
-                            <li><a class="dropdown-item" href="/admin/psm/projectplan"><i class="fas fa-list"></i> Manage Project Request / BAP</a></li>
+                            <li><a class="dropdown-item" href="/admin/psm/projectplan/add/"><i class="fas fa-list"></i> Create Project Request </a></li>
+                            <li><a class="dropdown-item" href="/admin/psm/projectplan"><i class="fas fa-list"></i> Manage Project Request </a></li>
                             <div class="dropdown-divider"></div>
                             <li><a class="dropdown-item" href="{% url 'project_plan_index' %}"><i class="fas fa-list"></i> Project Demand List</a></li>
                         </ul>
@@ -43,6 +43,7 @@
                         <ul class="dropdown-menu nav-list">
                             <li><a class="dropdown-item" href="/admin/psm/project/add/">Register Project</a></li>
                             <li><a class="dropdown-item" href="/admin/psm/project/?year={% now 'Y' %}">Manage Project - FY{% now 'Y' %}</a></li>
+                            <li><a class="dropdown-item" href="{% url 'project_list1' %}">Project list</a></li>
                             <div class="dropdown-divider"></div>
                             <li><a class="dropdown-item" href="/admin/reports/report/add/">Create Project Status Report</a></li>
                             <li><a class="dropdown-item" href="/admin/reports/report">Manage Status Report</a></li>

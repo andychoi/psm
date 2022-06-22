@@ -138,16 +138,23 @@ def get_filter_options(self, context, plan=False):
     context['filterItems'] = []
     
     get_def_year = date.today().year if not self.request.GET.get('year', '') else self.request.GET.get('year', '') 
-    context['filterItems'].append( { "key": "YEAR", "text": "Year", "qId": "year", "selected": get_def_year
-    , "items": map( lambda x: {"id": x['year'], "name": x['year']}, Project.objects.values('year').distinct().order_by('-year') )
-    } )
 
     if plan:
+        context['filterItems'].append( { "key": "YEAR", "text": "Year", "qId": "year", "selected": get_def_year
+        , "items": map( lambda x: {"id": x['year'], "name": x['year']}, ProjectPlan.objects.values('year').distinct().order_by('-year') )
+        } )
+
         context['filterItems'].append( {
             "key": "VERSION", "text": "Version", "qId": "version", "selected": self.request.GET.get('version', '')
             , "items": [{"id": x[0], "name" : x[1]} for i, x in enumerate(VERSIONS)]
         } )        
 
+    else:
+        context['filterItems'].append( { "key": "YEAR", "text": "Year", "qId": "year", "selected": get_def_year
+        , "items": map( lambda x: {"id": x['year'], "name": x['year']}, Project.objects.values('year').distinct().order_by('-year') )
+        } )
+
+    #TODO based on actual or master based??
     context['filterItems'].append( {
     "key": "DIV", "text": "Div", "qId": "div", "selected": self.request.GET.get('div', ''), "items": Div.objects.all()
     } )

@@ -547,10 +547,11 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
 
     @admin.action(description="Duplicate selected record", permissions=['change'])
     def duplicate_project(self, request, queryset):
-        for object in queryset:
-            object.id = None
-            object.title = object.title + " copied"
-            object.save()
+        for obj in queryset:
+            # new = Project.objects.get(pk=obj.pk)
+            obj.id = None
+            obj.title += " (copy)"
+            obj.save()      #FIXME CBU - many-to-many is empty... why??
             messages.add_message(request, messages.INFO, ' is copied/saved')
 
     @admin.action(description="Request procurement(ITPC)", permissions=['change'])

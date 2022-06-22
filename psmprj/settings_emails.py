@@ -40,20 +40,21 @@ PROJECT_SEND_EMAILS_TO_CBUS = env.bool('PROJECT_SEND_EMAILS_TO_CBUS', False)
 PSM_EMAIL_WITHOUT_URL = '''\
 New project #{id} created.
 
-Title:
-{title}
+Title: {title}
 
-Assigned:
-{PM}
+Assigned: {PM}
 
-CBU:
-{CBU}
+CBU: {CBU}
 
-CBU PM:
-{CBU_PM}
+CBU PM: {CBU_PM}
 
 Description:
 {description}
+
+Objective:
+{objective}
+
+Link to project profile: {url}
 
 Please note: Do NOT reply to this email. This email is sent from an unattended mailbox.
 Replies will not be read.

@@ -6,7 +6,7 @@
 
 
 {% block content %}
-<div class="container-fluid">
+<div class="container-fluid mt-1">
 <!-- Search Form -->
 <!-- <form class="form-inline my-2 my-lg-0 pb-2">
     <input class="form-control mr-sm-2" name="q" type="search" placeholder="Search" aria-label="Search" style="width: 400px">
@@ -21,13 +21,13 @@
 </form>         -->
 
 {% if object_list %}
-    <div class="col m-2" id="report-list">
+    <!-- <div class="col m-2" id="report-list"> -->
 
       <table data-toggle="table" data-pagination="true" data-page-size="25" data-page-list="[10, 25, 50, 100, all]"
       data-search="true" data-filter-control="true" data-show-search-clear-button="false" data-show-refresh="false"
       data-toolbar="#toolbar" data-show-toggle="true" data-show-columns="true"
       id="table" class="col table table-striped table-bordered table-sm small">
-      <thead class="table-light">
+      <thead class="table-primary">
       <tr>
           <th data-sortable="true" scope="col">CBU</th>
           <th data-sortable="true" scope="col">Title</th>
@@ -42,8 +42,6 @@
       </tr>
       </thead>
       <tbody>
-
-
         {% for report in report_list %}
           <tr>
             <td>{{ report.project.CBU_str }}</td> 
@@ -70,7 +68,7 @@
           </tr>
         {% endfor %}
         </tbody></table>
-    </div>
+    <!-- </div> -->
 
     {% include "includes/pagination.html" %}
 

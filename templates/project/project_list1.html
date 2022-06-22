@@ -18,14 +18,14 @@
         </form> -->
 
         <div class="row">
-              
+                      
         <!-- table-sm : smaller padding -->
         {% if project_list %}
         <table data-toggle="table" data-pagination="true" data-page-size="25" data-page-list="[10, 25, 50, 100, all]"
-                data-search="true" data-filter-control="true" data-show-search-clear-button="false" data-show-refresh="false"
-                data-show-export="true" data-toolbar="#toolbar" data-show-toggle="true" data-show-columns="true"
-                id="table" class="table table-striped table-bordered table-sm small">
-                <thead class="table-light">
+        data-search="true" data-filter-control="true" data-show-search-clear-button="false" data-show-refresh="false"
+        data-toolbar="#toolbar" data-show-toggle="true" data-show-columns="true"
+        id="table" class="col table table-striped table-hover table-bordered table-sm small">
+                <thead class="table-primary">
                 <tr>
                     <th data-sortable="true" class="text-center" scope="col">CBU</th>
                     <th data-sortable="true" class="text-center" scope="col">Project</th>
@@ -113,7 +113,7 @@
                 </div>
             </div>
 
-            </div>
+            <!-- </div> -->
         {% else %}
             <p>No records found!!! :(</p>
         {% endif %}
@@ -125,39 +125,18 @@
 {% endblock content %}
 
 
-<!-- Other script here -->
+
 {% block script_body %}
-    <!-- <script src="/static/theme/assets/vendor/datatables/datatables.min.js"></script>
-    <script src="/static/theme/assets/js/initiate-datatables.js"></script>
-    <script>    //for data table...
-        $(document).ready(function () {
-            $('#table').DataTable();
-        });
-    </script> -->
+<script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>    
+<script src="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.js"></script>
+<!--script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+  integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
+</script-->
 {% endblock %}
+
 
 <!-- nav filter script -->
 {% block script_nav %} 
-
-<script>
-  $(document).ready(function() {
-    $.ajax({
-      url: "/project/year-options/",
-      type: "GET",
-      dataType: "json",
-      success: (jsonResponse) => {
-        // Load all the options
-        jsonResponse.options.forEach(option => {
-          $("#year").append(new Option(option, option));
-        });
-        // Load data for the first option
-        // loadAllCharts($("#year").children().first().val());
-      },
-      error: () => console.log("Failed to fetch chart filter options!")
-    });
-  });    
-</script>
-
     {% if filterItems %}
     <script>
         // set preselected values

@@ -1,4 +1,6 @@
 import json
+import urllib
+import copy
 from platform import release
 from django.http import JsonResponse
 from urllib.request import Request
@@ -324,8 +326,6 @@ class projectIndexView(generic.ListView):
 
         scope = self.request.GET.get('scope', '')
         pm = self.request.GET.get('pm', '')
-        context['scope'] = scope    # my, dept, blank=all
-        context['pm'] = pm          # my own project view
         # url https://stackoverflow.com/questions/6453652/how-to-add-the-current-query-string-to-an-url-in-a-django-template
         # updated = self.request.GET.copy()
         # updated.update(kwargs)
@@ -334,13 +334,31 @@ class projectIndexView(generic.ListView):
             profile = get_object_or_404(Profile, id=pm)
     
         q =  {k:v for k, v in self.request.GET.items() if v and hasattr(Project, k.split('__')[0] ) }
+        q_dp = copy.deepcopy(q) 
+        q_dp.pop('scope', None)    # clean without scope
+        q_dp['scope'] = 'dp'
+
         if scope == 'dp' and pm:
             if profile.dept is None:
                 messages.add_message(self.request, messages.INFO, ' user profile has no department, showing personal view')
+                q['scope'] = 'my'
+                context['scope'] = 'my'    # my, dept, blank=all
             else:
                 q['dept'] = profile.dept.id
-                q.pop('pm')
-                # context['url'] = q.urlencode()
+                q['scope'] = 'dp'
+                q.pop('pm', None)
+                context['scope'] = 'dp'    # my, dept, blank=all
+        elif pm:
+            q['scope'] = 'my'
+            context['scope'] = 'my'    # my, dept, blank=all
+        else:
+            q.pop('scope')
+            q.pop('pm', None)
+            context['scope'] = ''    # my, dept, blank=all
+
+        if q:
+            context['url'] = f'{self.request.path}?{urllib.parse.urlencode(q)}'
+            context['url_dp'] = f'{self.request.path}?{urllib.parse.urlencode(q_dp)}'
 
         q =  {k:v for k, v in self.request.GET.items() if v and hasattr(Project, k.split('__')[0] ) }
         context['project_list'] = Project.objects.filter(**q).order_by('-created_at')[:5]

@@ -250,10 +250,10 @@ class Project(models.Model):
             self.save(update_fields='p_launch')
         if not self.p_plan_e and self.p_design_b:
             self.p_plan_e = previous_working_day(self.p_design_b, 1)
-            self.save(update_fields='p_plan')
+            self.save(update_fields='p_plan_e')
         if not self.p_design_e and self.p_uat_b:
             self.p_design_e = previous_working_day(self.p_uat_b, 1)
-            self.save(update_fields='p_design')
+            self.save(update_fields='p_design_e')
         if not self.p_uat_e and self.p_launch:
             self.p_uat_e = previous_working_day(self.p_launch, 1)
             self.save(update_fields='p_uat_e')

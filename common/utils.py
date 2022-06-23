@@ -116,7 +116,7 @@ PHASE = (
     (Phase.PLANNING.value, _('Planning')),
     (Phase.DESIGN.value, _('Design')),
     (Phase.DEVELOP.value, _('Development')),
-    (Phase.TESTING, _('Testing')),
+    (Phase.TESTING.value, _('Testing')),
     (Phase.LAUNCH.value, _('Launch')),        
     (Phase.COMPLETED.value, _('Completed')),        
     (Phase.CLOSED.value, _('Closed')),

@@ -432,7 +432,7 @@ var chart = Highcharts.ganttChart('gantt_chart', {
                     remove: updateRemoveButtonStatus
                 }
             }
-        }
+        },
     },
 
     yAxis: {
@@ -463,6 +463,10 @@ var chart = Highcharts.ganttChart('gantt_chart', {
         },
         linkedTo: 0
     }],
+
+    credits: {
+                enabled: false
+    },
 
     tooltip: {
         xDateFormat: '%a %b %d'

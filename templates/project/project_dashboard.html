@@ -276,167 +276,136 @@ function loadAllCharts(year) {
 
 </script> -->
 <script>
-    $(function() {
-        // Create the chart
-        chart = new Highcharts.Chart({
-          credits: {
-            enabled: false
-          },
-          chart: {
-              renderTo: 'chart_1',
-              type: 'pie',
-              backgroundColor: 'transparent'
-          },
+    var tOption1 = {
+      credits: {
+        enabled: false
+      },
+      chart: {
+          type: 'pie',
+          backgroundColor: 'transparent'
+      },
+      title: {
+          // text: 'Projects by State'
+      },
+      yAxis: {
           title: {
-              text: 'Projects by State'
-          },
-          yAxis: {
-              title: {
-                  text: 'Total percent market share'
-              }
-          },
-          plotOptions: {
-              pie: {
-                  shadow: false
-              }
-          },
-          tooltip: {
-              formatter: function() {
-                  return '<b>'+ this.point.name +'</b>: '+ this.y +' %';
-              }
-          },
-          series: [{
-              name: 'Browsers',
-              data: [["Firefox",6],["MSIE",4],["Chrome",7]],
-              size: '90%',
-              innerSize: '60%',
-              showInLegend:true,
-              dataLabels: {
-                  enabled: false
-              }
-          }]
-        });
+              // text: 'Total percent market share'
+          }
+      },
+      plotOptions: {
+          pie: {
+              shadow: false
+          }
+      },
+      tooltip: {
+          formatter: function() {
+              return '<b>'+ this.point.name +'</b>: '+ this.y +' %';
+          }
+      },
+      series: [{
+          // name: 'Browsers',
+          // data: [["Firefox",6],["MSIE",4],["Chrome",7]],
+          data: [],
+          size: '90%',
+          innerSize: '60%',
+          showInLegend: true,
+          dataLabels: {
+              enabled: false
+          }
+      }]
+    };
 
-        Highcharts.chart('chart_2', {
-          credits: {
-            enabled: false
-          },
-          chart: {
-            type: 'column',
-            backgroundColor: 'transparent'
-          },
+    var tOption2 = {
+      credits: {
+        enabled: false
+      },
+      chart: {
+        type: 'column',
+        backgroundColor: 'transparent'
+      },
+      title: {
+        // text: 'Project counts by CBU'
+      },
+      xAxis: {        
+        // categories: ['Apples', 'Oranges', 'Pears', 'Grapes', 'Bananas']
+      },
+      yAxis: {
+        min: 0,
+        title: {
+          // text: 'Total fruit consumption'
+        },
+        stackLabels: {
+          enabled: true,
+          style: {
+            fontWeight: 'bold',
+            color: ( // theme
+              Highcharts.defaultOptions.title.style &&
+              Highcharts.defaultOptions.title.style.color
+            ) || 'gray',
+            textOutline: 'none'
+          }
+        }
+      },
+      legend: {
+        verticalAlign: 'top',
+      },
+      tooltip: {
+        headerFormat: '<b>{point.x}</b><br/>',
+        pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+      },
+      plotOptions: {
+        column: {
+          stacking: 'normal',
+          dataLabels: {
+            enabled: true
+          }
+        }
+      },
+      series: []
+    };    
+
+    var tOption3 = {
+      credits: {
+        enabled: false
+      },
+      chart: {
+          type: 'pie',
+          backgroundColor: 'transparent'
+      },
+      title: {
+          // text: 'Projects by Phase'
+      },
+      yAxis: {
           title: {
-            text: 'Project counts by CBU'
-          },
-          xAxis: {
-            categories: ['Apples', 'Oranges', 'Pears', 'Grapes', 'Bananas']
-          },
-          yAxis: {
-            min: 0,
-            title: {
-              text: 'Total fruit consumption'
-            },
-            stackLabels: {
-              enabled: true,
-              style: {
-                fontWeight: 'bold',
-                color: ( // theme
-                  Highcharts.defaultOptions.title.style &&
-                  Highcharts.defaultOptions.title.style.color
-                ) || 'gray',
-                textOutline: 'none'
-              }
-            }
-          },
-          legend: {
-            // align: 'right',
-            // x: -30,
-            verticalAlign: 'top',
-            // y: 25,
-            // floating: false,
-            // backgroundColor:
-            //     Highcharts.defaultOptions.legend.backgroundColor || 'white',
-            // borderColor: '#CCC',
-            // borderWidth: 1,
-            // shadow: false
-          },
-          tooltip: {
-            headerFormat: '<b>{point.x}</b><br/>',
-            pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
-          },
-          plotOptions: {
-            column: {
-              stacking: 'normal',
-              dataLabels: {
-                enabled: true
-              }
-            }
-          },
-          series: [{
-              name: 'John',
-              data: [5, 3, 4, 7, 2]
-            }, {
-              name: 'Jane',
-              data: [2, 2, 3, 2, 1]
-            }, {
-              name: 'Joe',
-              data: [3, 4, 4, 2, 5]
-          }]
-        });            
-
-
-
-        new Highcharts.Chart({
-          credits: {
-            enabled: false
-          },
-          chart: {
-              renderTo: 'chart_3',
-              type: 'pie',
-              backgroundColor: 'transparent'
-          },
-          title: {
-              text: 'Projects by Phase'
-          },
-          yAxis: {
-              title: {
-                  text: 'Total percent market share'
-              }
-          },
-          plotOptions: {
-              pie: {
-                  shadow: false,
-                  dataLabels: {
+              // text: 'Total percent market share'
+          }
+      },
+      plotOptions: {
+          pie: {
+            shadow: false,
+            dataLabels: {
               enabled: true,
               distance: -25,
               format: '<b>{point.name}</b><br>{point.percentage:.1f} %',
               style: {
-                // format: '<b>{point.name}</b><br>{point.percentage:.1f} %',
-                // format: '<b>{point.percentage:.1f} %</b>',
-              //     fontWeight: 'bold',
-              //     color: 'white'
                 fontSize: '0.5rem'
               }
-          },                    
-              }
-          },
-          tooltip: {
-              formatter: function() {
-                  return '<b>'+ this.point.name +'</b>: '+ this.y +' %';
-              }
-          },
-          series: [{
-              name: 'Browsers',
-              data: [["Firefox",6],["MSIE",4],["Chrome",7]],
-              size: '90%',
-              innerSize: '60%',
-              // showInLegend: true,
-              // dataLabels: {
-                  // enabled: false
-              // }
-          }]
-        });
-    });      
+            },                    
+          }
+      },
+      tooltip: {
+        formatter: function() {
+            return '<b>'+ this.point.name +'</b>: '+ this.y +' %';
+        }
+      },
+      series: [{
+          // name: 'Browsers',
+          // data: [["Firefox",6],["MSIE",4],["Chrome",7]],
+          data: [],
+          size: '90%',
+          innerSize: '60%',
+      }]
+    };    
 </script>
 {% endblock %}
 
@@ -444,25 +413,104 @@ function loadAllCharts(year) {
 {% block script_nav %} 
 <!-- nav filter script -->
 <script>
+    var tPhaseMetaData = {};
     // set preselected values
     {% for filterItem in filterItems %}
         $('#sel_{{filterItem.qId}}').val("{{ filterItem.selected }}");
+        {% if filterItem.qId == 'phase' %}
+          {% for pItem in filterItem.items %}
+            tPhaseMetaData['{{pItem.id}}'] = '{{pItem.name}}';
+          {% endfor %}
+        {% endif %}
     {% endfor %}
 
-    function updateData() {
-        var q = "";
-        var qs = [];
-        var tmp = '';
-
+    function getParams() {
+        var tParams = {};
         {% for filterItem in filterItems %}
-            tmp = $('#sel_{{filterItem.qId}}').val();
-            if (tmp != '') qs.push('{{filterItem.qId}}=' + tmp);
+            var tmp = $('#sel_{{filterItem.qId}}').val();
+            if (tmp != '') tParams['{{filterItem.qId}}'] = tmp;
         {% endfor %}
-
-        if (qs.length > 0) {
-            q = "?" + qs.join("&");
-        }
-        window.location.href = window.location.pathname + q;
+        return tParams;
     }
+
+    var tRawData = [];
+    function updateData() {
+        var tUrl = '/api/1.0/projects';
+        var tParams = getParams();        
+        if (Object.keys(tParams).length > 0) {
+            tUrl += '?' + new URLSearchParams(tParams).toString(); 
+        }
+        fetch(tUrl)
+        .then(response => response.json())
+        .then((res)=>{
+          console.log(res);
+          res.sort((pA, pB) => { return pA.id - pB.id; });
+          tRawData = res;
+
+          // updateChart();
+          var tPhaseData = [];
+          var tPhaseMap = {};
+          var tStateData = [];
+          var tStateMap = {};
+          var tCBUDataMap = {};
+
+          var tCntTotal = tRawData.length;
+          var tCntCompleted = 0;
+          var tCntCanceled = 0;
+          var tCntOpen = 0;
+          tRawData.forEach(function(pDat) {
+            tCBUDataMap[pDat.CBU_str] || (tCBUDataMap[pDat.CBU_str] = {completed: 0, cancel: 0, open: 0});
+
+            if (pDat.phase === "70-Completed" || pDat.phase === "80-Closed") {
+              tCntCompleted ++;
+              tCBUDataMap[pDat.CBU_str].completed ++;
+            } 
+            else if (pDat.state === "90-cancel") {
+              tCntCanceled ++;
+              tCBUDataMap[pDat.CBU_str].cancel ++;
+            }
+            else {
+              tCntOpen ++;
+              tCBUDataMap[pDat.CBU_str].open ++;
+            }
+
+            tPhaseMap[pDat.phase] || (tPhaseMap[pDat.phase] = 0);
+            tPhaseMap[pDat.phase] ++;
+
+            tStateMap[pDat.state] || (tStateMap[pDat.state] = 0);
+            tStateMap[pDat.state] ++;
+          });
+          $("#v_project_total").text(tRawData.length);
+          $("#v_project_completed").text(tCntCompleted);
+          $("#v_project_cancel").text(tCntCanceled);
+          $("#v_project_open").text(tCntOpen);
+
+          Object.keys(tPhaseMap).forEach((pKey)=>{
+            tPhaseData.push([tPhaseMetaData[pKey], tPhaseMap[pKey]]);
+          });
+          Object.keys(tStateMap).forEach((pKey)=>{
+            tStateData.push([pKey.split("-").pop(), tStateMap[pKey]]);
+          });
+
+          var tCBUList = [];
+          var tSeriesData = [];
+          tSeriesData.push({name: 'Completed', data: []});
+          tSeriesData.push({name: 'Cancel', data: []});
+          tSeriesData.push({name: 'Open', data: []});
+          Object.keys(tCBUDataMap).forEach((pKey)=>{
+            tCBUList.push(pKey);
+            tSeriesData[0].data.push( tCBUDataMap[pKey].completed );
+            tSeriesData[1].data.push( tCBUDataMap[pKey].cancel );
+            tSeriesData[2].data.push( tCBUDataMap[pKey].open );
+          });
+
+          new Highcharts.Chart('chart_2', Object.assign({}, tOption2, {title: {text: 'Project counts by CBU'}, xAxis: {categories: tCBUList}, series: tSeriesData}));
+          // new Highcharts.Chart('chart_1', Object.assign({}, tOption1, {title: {text: 'Projects by State'}, series: [{ data: tStateData, size: '90%', innerSize: '60%', showInLegend: true, dataLabels: { enabled: false } }]}));
+          // new Highcharts.Chart('chart_3', Object.assign({}, tOption3, {title: {text: 'Projects by Phase'}, series: [{ data: tPhaseData, size: '90%', innerSize: '60%', showInLegend: true, dataLabels: { enabled: false } }]}));
+          new Highcharts.Chart('chart_1', Object.assign({}, tOption3, {title: {text: 'Projects by State'}, series: [{ data: tStateData, size: '90%', innerSize: '60%' }]}));
+          new Highcharts.Chart('chart_3', Object.assign({}, tOption3, {title: {text: 'Projects by Phase'}, series: [{ data: tPhaseData, size: '90%', innerSize: '60%' }]}));
+        });
+    }
+    updateData();
 </script>
 {% endblock %}

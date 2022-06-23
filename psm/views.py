@@ -507,8 +507,6 @@ def get_project_metrics(request, year=date.today().year, groupby='year' ):
 
     qs = Project.objects.filter(year=year)  #, state__in=STATE_VALID)
 
-    print (qs[0].CBU, qs[0].dept)
-
     # readme: https://docs.djangoproject.com/en/4.0/ref/models/conditional-expressions/
     # string gte, lte... not working -> use "in" instead
     # sequence is important for F calculation

@@ -134,9 +134,9 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
     class Media:
         css = { 'all': ('psm/css/custom_admin.css',), }
 
-    search_fields = ('id', 'title', 'asis', 'tobe', 'objective', 'consider', 'pm__name', 'CBUpm__name', 'CBUs__name')
-    list_display = ('version', 'pjcode',  'title', 'pm', 'dept', 'CBU_str', 'est_cost', 'view' )    #CBU many to many
-    list_display_links = ('pjcode', 'title')
+    search_fields = ('id', 'code', 'title', 'asis', 'tobe', 'objective', 'consider', 'pm__name', 'CBUpm__name', 'CBUs__name')
+    list_display = ('version', 'code',  'title', 'pm', 'dept', 'CBU_str', 'est_cost', 'view' )    #CBU many to many
+    list_display_links = ('code', 'title')
     list_editable = ("version", )
     list_filter = (
         ('year',        DropdownFilter),
@@ -346,8 +346,8 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         'all': ('psm/css/custom_admin.css',),
     }    
     search_fields = ('id', 'title', 'description', 'objective', 'resolution', 'code', 'wbs__wbs', 'es', 'ref', 'program__name', 'strategy__name', 'pm__name', 'CBUpm__name', 'CBUs__name')     #FIXME many to many
-    list_display = ('year', 'pjcode', 'title', 'dept', 'progress', 'phase', 'state', 'CBU_str', 'view', 'ITPC' )    #CBU many to many
-    list_display_links = ('pjcode', 'title')
+    list_display = ('year', 'code', 'title', 'dept', 'progress', 'phase', 'state', 'CBU_str', 'view', 'ITPC' )    #CBU many to many
+    list_display_links = ('code', 'title')
     list_editable = ("phase", 'state',)
     list_filter = ('pm', 'dept', 'phase', 'state', 'CBU_str', )    #CBU many to many
     list_filter = (
@@ -524,19 +524,19 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
 
             if Project.objects.filter(year=(obj.year+1), code=obj.code).exists():
                 messages.add_message(request, messages.ERROR, f'{obj.code} "{obj.title}" is already carryfoward done')
-                break
+                continue
             if obj.a_close and obj.a_close.year == obj.year:
                 messages.add_message(request, messages.ERROR, f'{obj.code} "{obj.title}" is already closed in {obj.year}')
-                break
+                continue
             if obj.p_close.year <= obj.year:
                 messages.add_message(request, messages.ERROR, f'{obj.code} "{obj.title}" is planned to complete in {obj.year}. Please check project planned schedule')
-                break
+                continue
             if obj.state in [State.CANCEL.value, State.DONE.value ]:
                 messages.add_message(request, messages.ERROR, f'{obj.code} "{obj.title}" is cancel/complete state')
-                break
+                continue
             if obj.phase in [ Phase.COMPLETED.value, Phase.CLOSED.value ]: 
                 messages.add_message(request, messages.ERROR, f'{obj.code} "{obj.title}" is completed/closed phase')
-                break
+                continue
             
             obj.id = None   #same project code
             obj.year = obj.year + 1

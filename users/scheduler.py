@@ -22,7 +22,7 @@ def assign_staff_role():
                 try:
                     user_group = Group.objects.get(name=settings.DEFAULT_AUTH_GROUP)
                 except:
-                    break    
+                    continue    
                 u.groups.add(user_group) 
         else:
             if u.groups.all().filter(name=settings.DEFAULT_AUTH_GROUP).exists():    

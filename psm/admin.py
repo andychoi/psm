@@ -323,11 +323,14 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
 
 # ----------------------------------------------------------------------------------------------------------------
 class ProjectResource(resources.ModelResource):
-    cbu_names=fields.Field(attribute='CBUs', widget=ManyToManyWidget(model=CBU, separator=',', field='name'), )
+    pm_name     = fields.Field(attribute='pm',     widget=ForeignKeyWidget(Profile, 'name'))
+    cbupm_name  = fields.Field(attribute='CBUpm',  widget=ForeignKeyWidget(Profile, 'name'))
+    cbu_names       = fields.Field(attribute='CBUs',    widget=ManyToManyWidget(model=CBU, separator=',', field='name'), )
+    strategy_names  = fields.Field(attribute='strategy',widget=ManyToManyWidget(model=Strategy, separator=',', field='name'), )
     class Meta:
         model = Project
         fields = ( 'id', 'year', 'code', 'cf', 'title', 'description', 'objective', 'phase', 'state', 'progress', 'ref_plan__code',
-            'pm', 'pm__name',  'CBUs', 'cbu_names', 'strategy', 'strategy__name', 'program', 'program__name','type', 'category', 'priority', 
+            'pm', 'pm_name',  'CBUs', 'cbu_names', 'CBUpm', 'cbupm_name', 'strategy', 'strategy_names', 'program', 'program__name','type', 'category', 'priority', 
             'est_cost', 'app_budg', 'dept', 'dept__name', 'dept__div', 'dept__div__name', 
             'p_ideation','p_plan_b','p_kickoff','p_design_b','p_dev_b','p_uat_b','p_launch','p_close',
             'a_plan_b','a_kickoff','a_design_b','a_dev_b','a_uat_b','a_launch','a_close',

@@ -32,7 +32,7 @@ from django_object_actions import DjangoObjectActions
 
 class ReviewResource(resources.ModelResource):
     # pm_name     = fields.Field(attribute='project.pm',     widget=ForeignKeyWidget(Profile, 'name'))
-    cbu_names   = fields.Field(attribute='CBU',   widget=ManyToManyWidget(model=CBU, separator=',', field='name'), )
+    cbu_names   = fields.Field(attribute='CBUs',   widget=ManyToManyWidget(model=CBU, separator=',', field='name'), )
 
     class Meta:
         model = Review

@@ -74,22 +74,18 @@
           id="table" class="col table table-striped table-hover table-bordered table-sm small">
           <thead class="table-primary">
             <tr>
-              <th data-sortable="true" scope="col">HAEA Dept.</th>
-              <th data-sortable="true" scope="col">Progress</th>
-              <th data-sortable="true" scope="col">Budget</th>
-              <th data-sortable="true" scope="col">Total Project</th>
-              <th data-sortable="true" scope="col">Incomplete</th>
-              <th data-sortable="true" scope="col">Plan</th>
-              <th data-sortable="true" scope="col">Actual</th>
-              <th data-sortable="true" scope="col">To-do</th>
-              <th data-sortable="true" scope="col">Complete</th>
-              <th data-sortable="true" class="text-center" scope="col">CBU</th>
-              <th data-sortable="true" class="text-center" scope="col">Project</th>
-              <th data-sortable="true" scope="col">Project-Name</th>
+              <th data-field="dept" data-sortable="true" scope="col">HAEA Dept.</th>
+              <th data-field="progress" data-sortable="true" scope="col">Progress</th>
+              <th data-field="total" data-sortable="true" scope="col">Total</th>
+              <th data-field="completed" data-sortable="true" scope="col">Completed</th>
+              <th data-field="remaining" data-sortable="true" scope="col">Remaining</th>
+              <th data-field="future" data-sortable="true" scope="col">Future</th>
+              <th data-field="onTrack" data-sortable="true" scope="col">On Track</th>
+              <th data-field="late" data-sortable="true" scope="col">Late</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
+            <!-- <tr>
               <td scope="col">123</td>
               <td scope="col">123</td>
               <td scope="col">123</td>
@@ -118,7 +114,7 @@
               <td scope="col">125</td>
               <td scope="col">125</td>
               <td scope="col">125</td>
-            </tr>
+            </tr> -->
           </tbody>
         </table>
 
@@ -424,6 +420,11 @@ function loadAllCharts(year) {
         {% endif %}
     {% endfor %}
 
+    function convertDate(pYYYYMMDD) {
+        let tData = pYYYYMMDD.split("-");
+        return Date.UTC(Number.parseInt(tData[0]), Number.parseInt(tData[1]) - 1, Number.parseInt(tData[2]));
+    }
+
     function getParams() {
         var tParams = {};
         {% for filterItem in filterItems %}
@@ -432,6 +433,14 @@ function loadAllCharts(year) {
         {% endfor %}
         return tParams;
     }
+
+    var isProejctFuture = (pProjectItem) => {
+      return (!pProjectItem.p_kickoff || (!pProjectItem.a_kickoff && Date.now() < convertDate(pProjectItem.p_kickoff)));
+    };
+
+    var isProejctLate = (pProjectItem) => {
+      return false;
+    };
 
     var tRawData = [];
     function updateData() {
@@ -453,6 +462,7 @@ function loadAllCharts(year) {
           var tStateData = [];
           var tStateMap = {};
           var tCBUDataMap = {};
+          var tDeptDataMap = {};
 
           var tCntTotal = 0;
           var tCntCompleted = 0;
@@ -462,21 +472,38 @@ function loadAllCharts(year) {
           .filter(function(pDat) {
             return (pDat.state !== "90-cancel");
           })
-          .forEach(function(pDat) {
-              tCntTotal ++;
-              tCBUDataMap[pDat.CBU_str] || (tCBUDataMap[pDat.CBU_str] = {completed: 0, cancel: 0, open: 0});
+          .forEach(function(pDat) {            
+              var tDeptObj = (pDat.dept || {});
+              var tDeptId = tDeptObj.id || 0;
+              tDeptDataMap[tDeptId] || (tDeptDataMap[tDeptId] = {dept: tDeptObj.name, progress: 0, progressElapsed: 0, progressPeriod: 0, total: 0, completed: 0, late: 0, onTrack: 0, remaining: 0, future: 0});
 
+              tCBUDataMap[pDat.CBU_str] || (tCBUDataMap[pDat.CBU_str] = {completed: 0, cancel: 0, open: 0});
+            
+              tCntTotal ++;
+              tDeptDataMap[tDeptId].total ++;
               if (pDat.cf === true) {
                 tCntCanceled ++;
-                tCBUDataMap[pDat.CBU_str].cancel ++;
+                // tCBUDataMap[pDat.CBU_str].cancel ++;
+                tCBUDataMap[pDat.CBU_str].open ++;
               }
               else if (pDat.phase === "70-Completed" || pDat.phase === "80-Closed") {
                 tCntCompleted ++;
                 tCBUDataMap[pDat.CBU_str].completed ++;
+                tDeptDataMap[tDeptId].completed ++;
               } 
               else {
                 tCntOpen ++;
                 tCBUDataMap[pDat.CBU_str].open ++;
+                tDeptDataMap[tDeptId].remaining ++;
+                if (isProejctFuture(pDat)) {
+                  tDeptDataMap[tDeptId].future ++;
+                } 
+                else if (isProejctLate(pDat)) {
+                  tDeptDataMap[tDeptId].late ++;
+                } 
+                else {
+                  tDeptDataMap[tDeptId].onTrack ++;
+                }
               }
 
               tPhaseMap[pDat.phase] || (tPhaseMap[pDat.phase] = 0);
@@ -500,13 +527,13 @@ function loadAllCharts(year) {
           var tCBUList = [];
           var tSeriesData = [];
           tSeriesData.push({name: 'Completed', data: []});
-          tSeriesData.push({name: 'C/F', data: []});
+          // tSeriesData.push({name: 'C/F', data: []});
           tSeriesData.push({name: 'Open', data: []});
           Object.keys(tCBUDataMap).forEach((pKey)=>{
             tCBUList.push(pKey);
             tSeriesData[0].data.push( tCBUDataMap[pKey].completed );
-            tSeriesData[1].data.push( tCBUDataMap[pKey].cancel );
-            tSeriesData[2].data.push( tCBUDataMap[pKey].open );
+            // tSeriesData[1].data.push( tCBUDataMap[pKey].cancel );
+            tSeriesData[1].data.push( tCBUDataMap[pKey].open );
           });
 
           new Highcharts.Chart('chart_2', Object.assign({}, tOption2, {title: {text: 'Project counts by CBU'}, xAxis: {categories: tCBUList}, series: tSeriesData}));
@@ -514,6 +541,8 @@ function loadAllCharts(year) {
           // new Highcharts.Chart('chart_3', Object.assign({}, tOption3, {title: {text: 'Projects by Phase'}, series: [{ data: tPhaseData, size: '90%', innerSize: '60%', showInLegend: true, dataLabels: { enabled: false } }]}));
           new Highcharts.Chart('chart_1', Object.assign({}, tOption3, {title: {text: 'Projects by State'}, series: [{ data: tStateData, size: '90%', innerSize: '60%' }]}));
           new Highcharts.Chart('chart_3', Object.assign({}, tOption3, {title: {text: 'Projects by Phase'}, series: [{ data: tPhaseData, size: '90%', innerSize: '60%' }]}));
+
+          $("#table").bootstrapTable("load", Object.values(tDeptDataMap));
         });
     }
     updateData();

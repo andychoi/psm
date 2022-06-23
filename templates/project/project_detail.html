@@ -475,37 +475,37 @@ var chart = Highcharts.ganttChart('gantt_chart', {
     series: [{
         name: 'Project 1',
         data: [{
-          start: convertDate('{{ project.p_plan_b }}'),
-            end: convertDate('{{ project.p_plan_e }}'),
+          start: convertDate('{{ project.a_plan_b }}'),
+            end: convertDate('{{ project.a_plan_e }}'),
             name: 'Planning',
             y: 0,
         }, {
-          start: convertDate('{{ project.p_kickoff }}'),
+          start: convertDate('{{ project.a_kickoff }}'),
             name: 'Kick Off',
             milestone: true,
             y: 0
         }, {          
-          start: convertDate('{{ project.p_design_b }}'),
-            end: convertDate('{{ project.p_design_e }}'),
+          start: convertDate('{{ project.a_design_b }}'),
+            end: convertDate('{{ project.a_design_e }}'),
             name: 'Design',
             y: 0
         }, {
-          start: convertDate('{{ project.p_dev_b }}'),
-            end: convertDate('{{ project.p_dev_e }}'),
+          start: convertDate('{{ project.a_dev_b }}'),
+            end: convertDate('{{ project.a_dev_e }}'),
             name: 'Develop',
             y: 0
         }, {
-          start: convertDate('{{ project.p_uat_b }}'),
-            end: convertDate('{{ project.p_uat_e }}'),
+          start: convertDate('{{ project.a_uat_b }}'),
+            end: convertDate('{{ project.a_uat_e }}'),
             name: 'UAT',
             y: 0
         }, {
-          start: convertDate('{{ project.p_launch }}'),
+          start: convertDate('{{ project.a_launch }}'),
             name: 'Launch',
             milestone: true,
             y: 0
         }, {  
-          start: convertDate('{{ project.p_close }}'),
+          start: convertDate('{{ project.a_close }}'),
             name: 'Close',
             milestone: true,
             y: 0

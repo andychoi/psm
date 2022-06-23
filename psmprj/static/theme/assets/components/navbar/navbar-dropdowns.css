@@ -1,5 +1,5 @@
 /*------------------------------------------------------------------
-* Bootstrap Simple Admin Template
+* PSM 2.0
 * Version: 3.0
 * Author: Alexis Luna
 * Website: https://github.com/alexis-luna/bootstrap-simple-admin-template

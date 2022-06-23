@@ -32,6 +32,8 @@
                     <th data-sortable="true" class="text-center" scope="col">CBU</th>
                     <th data-sortable="true" class="text-center" scope="col">Project</th>
                     <th data-sortable="true" scope="col">Project-Name</th>
+                    <th data-sortable="true" scope="col" data-visible="false">Est.Cost$</th>
+                    <th data-sortable="true" scope="col" data-visible="false">Approved$</th>                    
                     <th class="text-center" scope="col">Progress</th>
                     <th data-sortable="true" scope="col">Phase</th>
                     <th data-sortable="true" scope="col" data-visible="false">State</th>
@@ -64,6 +66,9 @@
                     <td class="text-center">{{ p.CBU_str }}</td>
                     <td class="text-center" scope="row"><a href="{% url 'project_detail' p.id %}">{{ p.pjcode }}</a></td>
                     <td class="text-left">{{ p.title }}</td>
+                    <td class="text-end">{% if p.est_cost %}{{ p.est_cost|intcomma }}{% else %}0{% endif %}</td>
+                    <td class="text-end">{% if p.app_budg %}{{ p.app_budg|intcomma }}{% else %}0{% endif %}</td>
+
                     <td class="text-center">
                         <div class="progress">
                             <div class="progress-bar" role="progressbar" style="width: {{ p.progress }}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{{ p.progress }}%</div>

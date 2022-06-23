@@ -1,11 +1,12 @@
 {% load static %}
 <!-- includes/nav.html -->
-<nav class="navbar navbar-expand-lg navbar-white bg-white fixed-top bd-navbar-nav">
+<nav class="navbar navbar-expand-lg navbar-white bg-white fixed-top bd-navbar-nav" >
   <div class="container-fluid">
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
       data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
   </button>
+
 
   <!-- collapsible wrapper -->
   <div class="collapse navbar-collapse" id="navbarSupportedContent" >
@@ -13,132 +14,23 @@
         <img src="{% static 'img/PSM-logos_white_resized.png' %}" alt="PSM" height="32" loading="lazy">
       </a>
 
-      <!--left links-->
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        
-        <li class="nav-item"><a class="nav-item nav-link" href="{% url 'home' %}">Home</a></li>
+  
+      {% include "includes/nav-left.html" %}
 
-        <li class="nav-item dropdown"> <div class="nav-dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Project Demand
-          </a>
+      <ul class="nav navbar-nav ms-auto ">
 
-          <ul class="dropdown-menu my-menu-1" aria-labelledby="navbarDropdownMenuLink1">
-            <li><a class="dropdown-item" href="/admin/psm/projectplan/add/">Create Project Request </a></li>
-            <li><a class="dropdown-item" href="/admin/psm/projectplan">Manage Project Request </a></li>
-            <li><a class="dropdown-item" href="{% url 'project_list1' %}">Project list </a></li>
-            <div class="dropdown-divider"></div>
-            <li><a class="dropdown-item" href="{% url 'project_plan_index' %}">Project Demand List</a></li>
-          </ul>
-        </div></li>  
-
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Project Administration
-          </a>
-          <ul class="dropdown-menu my-menu-2" aria-labelledby="navbarDropdownMenuLink2">
-            <li><a class="dropdown-item" href="/admin/psm/project/add/">Register Project</a></li>
-            <li><a class="dropdown-item" href="/admin/psm/project/?year={% now 'Y' %}">Manage Project</a></li>
-            <div class="dropdown-divider"></div>
-            <li><a class="dropdown-item" href="/admin/reports/report/add/">Create Project Status Report</a></li>
-            <li><a class="dropdown-item" href="/admin/reports/report">Manage Status Report</a></li>
-            <div class="dropdown-divider"></div>
-            <li><a class="dropdown-item" href="/admin/reports/reportrisk">Manage Project Risk Report</a></li>
-            <li><a class="dropdown-item" href="/admin/reviews/review">Manage ITPC</a></li>
-            <div class="dropdown-divider"></div>
-            <li><a class="dropdown-item" href="/admin/psm/program">Register Program</a></li>
-            <div class="dropdown-divider"></div>
-            <li><a class="dropdown-item" href="/admin">Admin - Home</a></li>
-          </ul>
-        </li>
-
-        <!-- <li class="nav-item"><a class="nav-item nav-link"  href="/project/">Reports</a></li> -->
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink3" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Reports
-          </a>
-          <ul class="dropdown-menu my-menu-3" aria-labelledby="navbarDropdownMenuLink3">
-
-            <li><a class="dropdown-item" href="{% url 'project_index' %}"><i class="fas fa-bullseye"></i> Report Home</a></li>
-            <div class="dropdown-divider"></div>
-            <li><a class="dropdown-item" href="{% url 'project_dashboard' %}"><i class="fas fa-chart-line"></i> Dashboard (pilot)</a></li>
-            <div class="dropdown-divider"></div>
-            <li><a class="dropdown-item" href="{% url 'project_chart_1' %}"><i class="fas fa-angle-right"></i>Gantt chart (type1)</a></li>
-            <li><a class="dropdown-item" href="{% url 'project_chart_2' %}"><i class="fas fa-angle-right"></i>Gantt chart (type2)</a></li>
-        {% if user.is_superuser %}            
-                <li><a class="dropdown-item" href="{% url 'project_chart_3' %}"><i class="fas fa-angle-right"></i>Chart (pilot)</a></li>
-        {% endif %}
-            <div class="dropdown-divider"></div>
-            <li><a class="dropdown-item" href="{% url 'project_list1' %}"><i class="fas fa-th-list"></i> Project List</a></li>
-            <li><a class="dropdown-item" href="/report"><i class="fas fa-comment-alt"></i> Status Report List</a></li>
-            <div class="dropdown-divider"></div>
-            <li><a class="dropdown-item" href="/report/risks"><i class="fas fa-exclamation-circle"></i> Risk Report List</a></li>
-          </ul>
-        </li>
-
-        
-      </ul>
-      <!-- Navbar Right Side -->
-      <ul class="navbar-nav">
-
-        {% if user.is_superuser %}
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink9" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            System Admin
-          </a>
-          <ul class="dropdown-menu my-menu-2" aria-labelledby="navbarDropdownMenuLink9">
-            <li><a class="dropdown-item" href="/admin/users/profilecbu/">Manage Profile CBU</a></li>
-            <li><a class="dropdown-item" href="/admin/users/profile/">Manage Profile</a></li>
-            <li><a class="dropdown-item" href="/admin/auth/user/">Manage User</a></li>
-            <div class="dropdown-divider"></div>
-            <li><a class="dropdown-item" href="/admin/blog/post/">Manage Post</a></li>
-            <li><a class="dropdown-item" href="/admin/blog/ticket/">Manage Tickets</a></li>
-            <div class="dropdown-divider"></div>
-            <li><a class="dropdown-item" href="/admin">Admin - Home</a></li>
-          </ul>
-        </li>
-        {% endif %}
-
-
-
-
-        <li class="nav-item " style="vertical-align: middle;">
-          <form class="form-inline" style="vertical-align: middle;">
-            <div class=" d-flex align-items-center justify-content-center">
-                <input class="form-control form-control-sm" name="q" type="search" placeholder="Search Posts">
-            </div>
-            <!-- <div class="col-auto">
-                <button type="submit" class="btn btn-outline-warning mb-3" value="Search">Search</button>
-            </div> -->
-          </form>
-        </li>
-
-
-        {% if not user.is_authenticated %}
-          <li class="nav-item"><a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
+          <li class="nav-item " style="vertical-align: middle;">
+            <form class="form-inline" style="vertical-align: middle;">
+              <div class=" d-flex align-items-center justify-content-center">
+                  <input class="form-control form-control-sm  mt-1" name="q" type="search" placeholder="Search Posts">
+              </div>
+              <!-- <div class="col-auto">
+                  <button type="submit" class="btn btn-outline-warning mb-3" value="Search">Search</button>
+              </div> -->
+            </form>
           </li>
-          <!-- <li class="nav-item"><a class="nav-item nav-link" href="{% url 'register' %}">Register</a></li> -->
-        
-        {% else %}
-    
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink9" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="fas fa-user"></i> <span>{{ user.get_username }}</span>
-            </a>
-            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink9">
-              {% if user.is_authenticated %}
-                <a class="dropdown-item" href="{% url 'about' %}">About</a>
-                <a class="dropdown-item" href="/admin/blog/ticket">Bug tracker</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="{% url 'profile' %}">Profile</a>
-                <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
-              {% else %}
-                <a class="dropdown-item" href="{% url 'login' %}">Login</a>
-                <a class="dropdown-item" href="{% url 'register' %}">Register</a>
-              {% endif %}
-            </div>
-          </li>
-        {% endif %}
+
+      {% include "includes/nav-right.html" %}
 
       </ul> <!--right side-->
 

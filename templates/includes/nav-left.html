@@ -1,0 +1,77 @@
+
+        <!--left links-->
+        <ul class="nav navbar-nav me-auto mb-2 mb-lg-0">
+
+          <li class="nav-item"><a class="nav-item nav-link"  href="/">Home</a></li>
+
+          <li class="nav-item dropdown">
+              <!-- <div class="nav-dropdown"> -->
+                  <a href="#" id="nav1" class="nav-item nav-link dropdown-toggle  text-secondary" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fa fa-calendar"></i><span> Project Demand</span>
+                  </a>
+                  <!-- dropdown with ul dropdown-menu <div class="dropdown-menu dropdown-menu-end nav-link-menu" aria-labelledby="nav1"> -->
+                          <ul class="dropdown-menu nav-list" aria-labelledby="nav1">
+                          <li><a class="dropdown-item" href="/admin/psm/projectplan/add/"><i class="bi bi-clipboard-data"></i> Create Project Request </a></li>
+                          <li><a class="dropdown-item" href="/admin/psm/projectplan"><i class="bi bi-collection"></i> Manage Project Request </a></li>
+                          <div class="dropdown-divider"></div>
+                          <li><a class="dropdown-item" href="{% url 'project_plan_index' %}"><i class="fas fa-list"></i> Project Demand List</a></li>
+                      </ul>
+                  <!-- </div> -->
+              <!-- </div> -->
+          </li>
+
+          <li class="nav-item dropdown">
+              <!-- <div class="nav-dropdown"> -->
+                  <a href="#" id="nav2" class="nav-link dropdown-toggle text-primary"  role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      <i class="fas fa-file-alt"></i><span> Project Administration</span>
+                  </a>
+                  <!-- <div class="dropdown-menu dropdown-menu-end nav-link-menu"> -->
+                      <ul class="dropdown-menu nav-list" aria-labelledby="nav2">
+                          <li><a class="dropdown-item" href="/admin/psm/project/add/"><i class="bi bi-kanban"></i> Register Project</a></li>
+                          <li><a class="dropdown-item" href="/admin/psm/project/?year={% now 'Y' %}">Manage Project - FY{% now 'Y' %}</a></li>
+                          <li><a class="dropdown-item" href="{% url 'project_list1' %}">Project list</a> </li>
+                          <div class="dropdown-divider"></div>
+                          <li><a class="dropdown-item" href="/admin/reports/report/add/"><i class="bi bi-chat-left-quote-fill"></i> Create Project Status Report</a></li>
+                          <li><a class="dropdown-item" href="/admin/reports/report">Manage Status Report</a></li>
+                          <div class="dropdown-divider"></div>
+                          <li><a class="dropdown-item" href="/admin/reports/reportrisk">Manage Project Risk Report</a></li>
+                          <li><a class="dropdown-item" href="/admin/reviews/review">Manage ITPC</a></li>
+                          <div class="dropdown-divider"></div>
+                          <li><a class="dropdown-item" href="/admin/psm/program">Register Program</a></li>
+                          <div class="dropdown-divider"></div>
+                          <li><a class="dropdown-item" href="/admin/common/wbs">Manage WBS</a></li>
+
+                          {% if user.profile.is_psmadm or user.is_superuser %}
+                              <li><a class="dropdown-item" href="/admin">Admin - Home</a></li>
+                          {% endif %}
+                          
+                      </ul>
+                  <!-- </div> -->
+              <!-- </div> -->
+          </li>
+          <!-- <li class="nav-item"><a class="nav-item nav-link"  href="/project/">Reports</a></li> -->
+          <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle  text-primary" href="#" id="nav3" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-chart-line"></i><span> Reports</span>
+              </a>
+              <ul class="dropdown-menu my-menu-3" aria-labelledby="nav3">
+    
+                <li><a class="dropdown-item" href="{% url 'project_index' %}"><i class="fas fa-bullseye"></i> Report Home</a></li>
+                <div class="dropdown-divider"></div>
+                <li><a class="dropdown-item" href="{% url 'project_dashboard' %}"><i class="fas fa-chart-line"></i> Dashboard (pilot)</a></li>
+                <div class="dropdown-divider"></div>
+                <li><a class="dropdown-item" href="{% url 'project_chart_1' %}"><i class="fas fa-angle-right"></i>Gantt chart (type1)</a></li>
+                <li><a class="dropdown-item" href="{% url 'project_chart_2' %}"><i class="fas fa-angle-right"></i>Gantt chart (type2)</a></li>
+            {% if user.is_superuser %}            
+                    <li><a class="dropdown-item" href="{% url 'project_chart_3' %}"><i class="fas fa-angle-right"></i>Chart (pilot)</a></li>
+            {% endif %}
+                <div class="dropdown-divider"></div>
+                <li><a class="dropdown-item" href="{% url 'project_list1' %}"><i class="fas fa-th-list"></i> Project List</a></li>
+                <li><a class="dropdown-item" href="/report"><i class="fas fa-comment-alt"></i> Status Report List</a></li>
+                <li><a class="dropdown-item" href="/report/risks"><i class="fas fa-exclamation-circle"></i> Risk Report List</a></li>
+              </ul>
+            </li>
+  
+
+
+      </ul>

@@ -481,7 +481,8 @@ class ProjectPlan(models.Model):
 
         if self.code is None:
             prefix = 'BAP-' if self.version == Versions.V20.value else ('UNP-' if self.version == Versions.V21.value else 'REQ-')
-            self.code = prefix + f'{self.year % 100}-{"{:04d}".format(self.pk)}'    
+            next_code = Project.objects.filter(year = self.year).count() + 1
+            self.code = prefix + f'{self.year % 100}-{"{:04d}".format(next_code)}'    
             self.save()
 
     def clean(self):

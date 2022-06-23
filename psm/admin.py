@@ -578,12 +578,19 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
                 messages.add_message(request, messages.ERROR, f'{obj.code} "{obj.title}" is completed/closed phase')
                 continue
             
+            old = Project.objects.get(pk=obj.pk) 
+            
             obj.id = None   #same project code
             obj.year = obj.year + 1
             obj.cf = True   #carryforward 
-
             obj.save()
-            messages.add_message(request, messages.INFO, f'{obj} is processed')
+
+            # many-to-many copy object... this is the way to do
+            obj.CBUs.set(old.CBUs.all())    
+            obj.strategy.set(old.strategy.all())    
+            obj.save() 
+            # new.CBUs =obj.CBUs mark_safe("released to actual project to <a href='/admin/psm/project/%s'>%s</a>" % (new_proj.id, new_proj.pjcode) )
+            messages.add_message(request, messages.INFO, mark_safe("released to actual project to <a href='/admin/psm/project/%s'>%s</a>" % (obj.id, obj.pjcode) ))
 
     @admin.action(description="Duplicate selected record", permissions=['change'])
     def duplicate_project(self, request, queryset):

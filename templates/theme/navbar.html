@@ -1,10 +1,9 @@
 {% load static %}
 <!-- navbar navigation component -->
-<nav class="navbar navbar-expand-lg navbar-white bg-white">
+<nav class="navbar navbar-expand-lg navbar-light bg-light bd-navbar-nav">
     <button type="button" id="sidebarCollapse" class="btn btn-light">
         <i class="fas fa-bars"></i><span></span>
     </button>
-
 
 
 
@@ -40,8 +39,8 @@
                         <i class=""></i> <span>Project Administration</span> <i style="font-size: .8em;" class="fas fa-caret-down"></i>
                     </a>
                     <!-- <div class="dropdown-menu dropdown-menu-end nav-link-menu"> -->
-                        <ul class="dropdown-menu nav-list">
-                            <li><a class="dropdown-item" href="/admin/psm/project/add/">Register Project</a></li>
+                        <ul class="dropdown-menu nav-list" aria-labelledby="nav2">
+                            <li><a class="dropdown-item" href="/admin/psm/project/add/"><i class="bi bi-kanban"></i> Register Project</a></li>
                             <li><a class="dropdown-item" href="/admin/psm/project/?year={% now 'Y' %}">Manage Project - FY{% now 'Y' %}</a></li>
                             <li><a class="dropdown-item" href="{% url 'project_list1' %}">Project list</a> </li>
                             <div class="dropdown-divider"></div>
@@ -60,10 +59,10 @@
             </li>
             <!-- <li class="nav-item"><a class="nav-item nav-link"  href="/project/">Reports</a></li> -->
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink3" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a class="nav-link dropdown-toggle" href="#" id="nav3" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                   Reports
                 </a>
-                <ul class="dropdown-menu my-menu-3" aria-labelledby="navbarDropdownMenuLink3">
+                <ul class="dropdown-menu my-menu-3" aria-labelledby="nav3">
       
                   <li><a class="dropdown-item" href="{% url 'project_index' %}"><i class="fas fa-bullseye"></i> Report Home</a></li>
                   <div class="dropdown-divider"></div>
@@ -87,57 +86,64 @@
 
 
         <!--Right links-->
-        <ul class="nav navbar-nav ms-auto">
-            {% if user.is_superuser %}
+        <ul class="nav navbar-nav ms-auto ">
+            {% if user.profile.is_psmadm or user.is_superuser %}
             <li class="nav-item dropdown">
-                <div class="nav-dropdown">
-                    <a href="#" id="nav1" class="nav-item nav-link dropdown-toggle text-secondary" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-link"></i> <span>System Admin</span> <i style="font-size: .8em;" class="fas fa-caret-down"></i>
+                <!-- <div class="nav-dropdown"> -->
+                    <a href="#" id="nav4" class="nav-item nav-link dropdown-toggle text-secondary" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-link"></i> <span>System Admin</span>
                     </a>
                     <!-- <div class="dropdown-menu dropdown-menu-end nav-link-menu" aria-labelledby="nav1"> -->
-                        <ul class="dropdown-menu nav-list" >
+                        <ul class="dropdown-menu nav-list" aria-labelledby="nav4">
                             <li><a class="dropdown-item" href="/admin/users/profilecbu/">Manage Profile CBU</a></li>
                             <li><a class="dropdown-item" href="/admin/users/profile/">Manage Profile</a></li>
                             <li><a class="dropdown-item" href="/admin/auth/user/">Manage User</a></li>
                             <div class="dropdown-divider"></div>
+                            <li><a class="dropdown-item"  href="/post/new/">New Post</a></li>
                             <li><a class="dropdown-item" href="/admin/blog/post/">Manage Post</a></li>
                             <li><a class="dropdown-item" href="/admin/blog/ticket/">Manage Tickets</a></li>
                             <div class="dropdown-divider"></div>
                             <li><a class="dropdown-item" href="/admin">Admin - Home</a></li>
                         </ul>
                     <!-- </div> -->
-                </div>
+                <!-- </div> -->
             </li>
             {% endif %}
 
+            <li class="nav-item" >
+                  <form class="form-inline" method="GET" action="{% url 'project_search' %}" >
+                    <!-- <div class="form-group""> -->
+                        <input class="form-control form-control-sm mt-2" style="display:flex;" name="q" type="search" placeholder="Search Project" value="{{request.GET.title}}">
+                        <!-- <button class="btn btn btn-outline-info my-2 my-sm-0" type="submit"> Search </button> -->
+                    <!-- </div> -->
+                  </form>
+            </li>            
             <!-- <li class="nav-item dropdown"><a class="nav-item nav-link"  href="/post/new/">New Post</a></li> -->
 
             {% if not user.is_authenticated %}
             <li class="nav-item"><a class="nav-item nav-link" href="{% url 'login' %}">Login</a></li>
             <li class="nav-item"><a class="nav-item nav-link" href="{% url 'register' %}">Register</a></li>
-            {% endif %}
+            {% else %}
 
             <li class="nav-item dropdown">
-                <div class="nav-dropdown">
-                    <a href="#" id="nav2" class="nav-item nav-link dropdown-toggle text-secondary" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-user"></i> <span>TBD</span> <i style="font-size: .8em;" class="fas fa-caret-down"></i>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-end nav-link-menu">
-                        <ul class="nav-list">
-                            {% if user.is_authenticated %}
-                            <li><a class="dropdown-item" href="{% url 'about' %}">About</a></li>
-                            <li><a class="dropdown-item" href="/admin/blog/ticket">Bug tracker</a></li>
-                            <li><div class="dropdown-divider"></div>
-                            <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
-                            <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
-                          {% else %}
-                            <li><a class="dropdown-item" href="{% url 'login' %}">Login</a></li>
-                            <li><a class="dropdown-item" href="{% url 'register' %}">Register</a></li>
-                          {% endif %}
-                        </ul>
-                    </div>
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink9" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fas fa-user"></i> <span>{{ user.get_username }}</span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink9">
+                  {% if user.is_authenticated %}
+                    <a class="dropdown-item" href="{% url 'about' %}"><i class="bi bi-info-circle"></i> About</a>
+                    <a class="dropdown-item" href="/admin/blog/ticket"><i class="bi bi-bug"></i> Bug tracker</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{% url 'profile' %}"><i class="bi bi-person-circle"></i> Profile</a>
+                    <a class="dropdown-item" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a>
+                  {% else %}
+                    <a class="dropdown-item" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-left"></i> Login</a>
+                    <a class="dropdown-item" href="{% url 'register' %}">Register</a>
+                  {% endif %}
                 </div>
-            </li>
+              </li>
+            {% endif %}
+            
         </ul>
 
 

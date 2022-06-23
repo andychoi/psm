@@ -1,0 +1,182 @@
+{% extends "theme/root.html" %}
+{% load humanize %}
+{% load static %}
+
+{% block head_script %}
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.css">
+    <!-- <link href="/static/theme/assets/vendor/datatables/datatables.min.css" rel="stylesheet"> -->
+    <link href="{% static 'css/tablelist.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+	<div class="container-fluid mt-1">  <!-- container-float margin top 3 -->
+
+        <!-- <form id="filterForm">
+            <label for="year">Choose a year:</label>
+            <select name="year" id="year"></select>
+            <input type="submit" value="Load" name="_load">
+        </form> -->
+
+        <div class="row">
+        <div id="toolbar" >
+            <h5>PROJECT LIST</h5>
+        </div>
+        <!-- table-sm : smaller padding -->
+        {% if project_list %}
+        <table data-toggle="table" data-pagination="true" data-page-size="25" data-page-list="[10, 25, 50, 100, all]"
+        data-search="true" data-filter-control="true" data-show-search-clear-button="false" data-show-refresh="false"
+        data-toolbar="#toolbar" data-show-toggle="true" data-show-columns="true"
+        id="table" class="col table table-striped table-hover table-bordered table-sm small">
+                <thead class="table-primary">
+                <tr>
+                    <th data-sortable="true" class="text-center" scope="col">CBU</th>
+                    <th data-sortable="true" class="text-center" scope="col">Project</th>
+                    <th data-sortable="true" scope="col">Project-Name</th>
+                    <th class="text-center" scope="col">Progress</th>
+                    <th data-sortable="true" scope="col">Phase</th>
+                    <th data-sortable="true" scope="col" data-visible="false">State</th>
+                    <th data-sortable="true" scope="col">HAEA PM</th>
+                    <th data-sortable="true" scope="col">HAEA Dept</th>
+                    <th data-sortable="true" scope="col" data-visible="false">P-Start</th>
+                    <th data-sortable="true" scope="col" >P-Lanunch</th>                    
+                    <th data-sortable="true" scope="col" data-visible="false">A-Start</th>
+                    <th data-sortable="true" scope="col" data-visible="false">ITSC</th>
+                    <th data-sortable="true" scope="col" data-visible="false">SOW</th>
+                    <th data-sortable="true" scope="col" data-visible="false">PO</th>
+                    <th data-sortable="true" scope="col">Initiation</th>
+                    <th data-sortable="true" scope="col">Design</th>
+                    <th data-sortable="true" scope="col">Develop</th>
+                    <th data-sortable="true" scope="col">Test</th>
+                    <th data-sortable="true" scope="col">Launch</th>
+                    <th data-sortable="true" scope="col">Overall</th>
+                    <th data-sortable="true" scope="col" data-visible="false">Schedule</th>
+                    <th data-sortable="true" scope="col" data-visible="false">Scope</th>
+                    <th data-sortable="true" scope="col" data-visible="false">Budget</th>
+                    <th data-sortable="false" scope="col" data-visible="false">Resolution</th>
+                    <th data-sortable="true" scope="col" data-visible="false">HOD</th>                    
+                    <th data-sortable="false" >E</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for p in project_list %}
+                <tr> <!-- https://getbootstrap.com/docs/4.1/components/badge/ https://icons.getbootstrap.com/ <i class="bi-class-name"></i> -->
+                     <!-- p.status_t|slice:"0:1" -->
+                    <td class="text-center">{{ p.CBU_str }}</td>
+                    <td class="text-center" scope="row"><a href="{% url 'project_detail' p.id %}">{{ p.pjcode }}</a></td>
+                    <td class="text-left">{{ p.title }}</td>
+                    <td class="text-center">
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: {{ p.progress }}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{{ p.progress }}%</div>
+                        </div>
+                    </td>
+                    <td>{{ p.phase|slice:'3:' }}</td>
+                    <td>{{ p.state|slice:'3:' }}</td>
+                    <td>{{ p.pm.name }}</td>
+                    <td>{{ p.dept }}</td>
+                    <td>{{ p.p_plan_b }}</td>
+                    <td>{{ p.p_launch }}</td>
+                    <td>{{ p.a_plan_b }}</td>
+                    <!--td>{{ p.CBUpm.name }}</td-->
+                    <td class="text-center">{% if p.cbu_req %} <i class="text-success bi-check-square-fill"> {% else %} <i class="text-success bi-dash-square-dotted"> </i> {% endif %}</td>
+                    <td class="text-center">{% if p.cbu_sow %}   <i class="text-success bi-check-square-fill"> {% else %} <i class="text-success bi-dash-square-dotted"> </i> {% endif %}</td>
+                    <td class="text-center">{% if p.cbu_po %}      <i class="text-success bi-check-square-fill"> {% else %} <i class="text-success bi-dash-square-dotted"> </i> {% endif %}</td>
+
+                    <td class="text-center">{% if p.a_plan_e %} <i class="text-success bi-check-square-fill"> {% else %} <i class="text-success bi-dash-square-dotted"> </i> {% endif %}</td>
+                    <td class="text-center">{% if p.a_design_e %}   <i class="text-success bi-check-square-fill"> {% else %} <i class="text-success bi-dash-square-dotted"> </i> {% endif %}</td>
+                    <td class="text-center">{% if p.a_dev_e %}      <i class="text-success bi-check-square-fill"> {% else %} <i class="text-success bi-dash-square-dotted"> </i> {% endif %}</td>
+                    <td class="text-center">{% if p.a_uat_e  %}     <i class="text-success bi-check-square-fill"> {% else %} <i class="text-success bi-dash-square-dotted"> </i> {% endif %}</td>
+                    <td class="text-center">{% if p.a_launch %}     <i class="text-success bi-check-square-fill"> {% else %} <i class="text-success bi-dash-square-dotted"> </i> {% endif %}</td>
+    
+                    <td class="text-center">
+                        {%   if p.status_o|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
+                        {% elif p.status_o|slice:'0:1' == '2' %}<i class="text-warning bi-exclamation-circle"></i>
+                        {% elif p.status_o|slice:'0:1' == '3' %}<i class="text-danger  bi-exclamation-circle-fill"></i>
+                        {% elif p.status_o|slice:'0:1' == '9' %}<i class="text-primary bi-circle-fill"></i>
+                        {% else %}<i class="text-secondary  bi-dash-circle-dotted"></i>
+                        {% endif %}</td>
+                        <td class="text-center">
+                        {%   if p.status_t|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
+                        {% elif p.status_t|slice:'0:1' == '2' %}<i class="text-warning bi-exclamation-circle"></i>
+                        {% elif p.status_t|slice:'0:1' == '3' %}<i class="text-danger  bi-exclamation-circle-fill"></i>
+                        {% elif p.status_t|slice:'0:1' == '9' %}<i class="text-primary bi-circle-fill"></i>
+                        {% else %}<i class="text-secondary  bi-dash-circle-dotted"></i>
+                        {% endif %}</td>
+                    <td class="text-center">
+                        {%   if p.status_s|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
+                        {% elif p.status_s|slice:'0:1' == '2' %}<i class="text-warning bi-exclamation-circle"></i>
+                        {% elif p.status_s|slice:'0:1' == '3' %}<i class="text-danger  bi-exclamation-circle-fill"></i>
+                        {% elif p.status_s|slice:'0:1' == '9' %}<i class="text-primary bi-circle-fill"></i>
+                        {% else %}<i class="text-secondary  bi-dash-circle-dotted"></i>
+                        {% endif %}</td>
+                    <td class="text-center">
+                        {%   if p.status_b|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
+                        {% elif p.status_b|slice:'0:1' == '2' %}<i class="text-warning bi-exclamation-circle"></i>
+                        {% elif p.status_b|slice:'0:1' == '3' %}<i class="text-danger  bi-exclamation-circle-fill"></i>
+                        {% elif p.status_b|slice:'0:1' == '9' %}<i class="text-primary bi-circle-fill"></i>
+                        {% else %}<i class="text-secondary  bi-dash-circle-dotted"></i>
+                        {% endif %}</td>
+
+                    <td class="text-begin">{{ p.resolution }}</td>
+                    <td class="text-begin">{{ p.dept.head }}</td>
+    
+                    <td class="text-center"><a href="/admin/psm/project/{{ p.id }}"><i class="bi bi-pencil"></i></a></td>
+                </tr>						
+                {% endfor %}	
+                </tbody>
+            </table>
+            <div class="row">
+                <div class="col" ><div class="float-start inline">Pagination from server: 
+                    {# .... **Now the pagination section** .... #}
+                    {% include "includes/pagination.html" %}
+                </div></div>
+
+                <div class="col float-end"><p class="text-end text-muted small m-0 "><i class="text-success bi-check-circle-fill"></i>Good | <i class="text-warning bi-exclamation-circle"></i>Issue | <i class="text-danger  bi-exclamation-circle-fill"></i>Roadblocks | <i class="text-primary bi-circle-fill"></i>Complete | <i class="text-secondary  bi-dash-circle-dotted"></i>Not started</p>
+                </div>
+            </div>
+
+            <!-- </div> -->
+        {% else %}
+            <p>No records found!!! :(</p>
+        {% endif %}
+        {# .... **More content, footer, etc.** .... #}
+
+		</div>		
+	</div>
+
+{% endblock content %}
+
+
+
+{% block script_body %}
+<script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>    
+<script src="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.js"></script>
+<!--script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+  integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
+</script-->
+{% endblock %}
+
+
+<!-- nav filter script -->
+{% block script_nav %} 
+    {% if filterItems %}
+    <script>
+        // set preselected values
+        {% for filterItem in filterItems %}$('#sel_{{filterItem.qId}}').val("{{ filterItem.selected }}");
+        {% endfor %}
+
+        function updateData() {
+            var q = "";
+            var qs = [];
+            var tmp = '';
+
+            {% for filterItem in filterItems %} tmp = $('#sel_{{filterItem.qId}}').val(); if (tmp != '') qs.push('{{filterItem.qId}}=' + tmp);
+            {% endfor %}
+
+            if (qs.length > 0) {
+                q = "?" + qs.join("&");
+            }            
+            window.location.href = window.location.pathname + q;
+        }
+    </script>    
+    {% endif %}
+{% endblock %}

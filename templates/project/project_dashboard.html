@@ -75,46 +75,16 @@
           <thead class="table-primary">
             <tr>
               <th data-field="dept" data-sortable="true" scope="col">HAEA Dept.</th>
-              <th data-field="progress" data-sortable="true" scope="col">Progress</th>
-              <th data-field="total" data-sortable="true" scope="col">Total</th>
-              <th data-field="completed" data-sortable="true" scope="col">Completed</th>
-              <th data-field="remaining" data-sortable="true" scope="col">Remaining</th>
-              <th data-field="future" data-sortable="true" scope="col">Future</th>
-              <th data-field="onTrack" data-sortable="true" scope="col">On Track</th>
-              <th data-field="late" data-sortable="true" scope="col">Late</th>
+              <th data-field="progress" data-align="right" data-sortable="true" scope="col">Progress</th>
+              <th data-field="total" data-align="right" data-sortable="true" scope="col">Total</th>
+              <th data-field="completed" data-align="right" data-sortable="true" scope="col">Completed</th>
+              <th data-field="remaining" data-align="right" data-sortable="true" scope="col">Remaining</th>
+              <th data-field="future" data-align="right" data-sortable="true" scope="col">Future</th>
+              <th data-field="onTrack" data-align="right" data-sortable="true" scope="col">On Track</th>
+              <th data-field="late" data-align="right" data-sortable="true" scope="col">Late</th>
             </tr>
           </thead>
           <tbody>
-            <!-- <tr>
-              <td scope="col">123</td>
-              <td scope="col">123</td>
-              <td scope="col">123</td>
-              <td scope="col">123</td>
-            </tr>
-            <tr>
-              <td scope="col">125</td>
-              <td scope="col">125</td>
-              <td scope="col">125</td>
-              <td scope="col">125</td>
-            </tr>
-            <tr>
-              <td scope="col">125</td>
-              <td scope="col">125</td>
-              <td scope="col">125</td>
-              <td scope="col">125</td>
-            </tr>
-            <tr>
-              <td scope="col">125</td>
-              <td scope="col">125</td>
-              <td scope="col">125</td>
-              <td scope="col">125</td>
-            </tr>
-            <tr>
-              <td scope="col">125</td>
-              <td scope="col">125</td>
-              <td scope="col">125</td>
-              <td scope="col">125</td>
-            </tr> -->
           </tbody>
         </table>
 
@@ -439,7 +409,56 @@ function loadAllCharts(year) {
     };
 
     var isProejctLate = (pProjectItem) => {
-      return false;
+      var tPlanDate = 0;
+      var tActualDate = 0;
+      if (pProjectItem.phase) {
+        var tStateCode = pProjectItem.phase.split("-")[0];
+
+        switch(tStateCode) {
+          case "00":
+            break;
+          case "10":
+            break;
+          case "20":
+            if (pProjectItem.p_plan_e) {
+              tPlanDate = convertDate(pProjectItem.p_plan_e);
+              tActualDate = (pProjectItem.a_plan_e) ? convertDate(pProjectItem.a_plan_e) : Date.now();
+            }
+            break;
+          case "30":  // design
+            if (pProjectItem.p_design_e) {
+              tPlanDate = convertDate(pProjectItem.p_design_e);
+              tActualDate = (pProjectItem.a_design_e) ? convertDate(pProjectItem.a_design_e) : Date.now();
+            }
+            break;
+          case "40":  // dev
+            if (pProjectItem.p_dev_e) {
+              tPlanDate = convertDate(pProjectItem.p_dev_e);
+              tActualDate = (pProjectItem.a_dev_e) ? convertDate(pProjectItem.a_dev_e) : Date.now();
+            }
+            break;
+          case "50":  // test
+            if (pProjectItem.p_uat_e) {
+              tPlanDate = convertDate(pProjectItem.p_uat_e);
+              tActualDate = (pProjectItem.a_uat_e) ? convertDate(pProjectItem.a_uat_e) : Date.now();
+            }
+            break;
+          case "60":  // launch
+          case "70":  // completed
+            if (pProjectItem.p_launch) {
+              tPlanDate = convertDate(pProjectItem.p_launch);
+              tActualDate = (pProjectItem.a_launch) ? convertDate(pProjectItem.a_launch) : Date.now();
+            }
+            break;
+          case "80":  // close
+            if (pProjectItem.p_close) {
+              tPlanDate = convertDate(pProjectItem.p_close);
+              tActualDate = (pProjectItem.a_close) ? convertDate(pProjectItem.a_close) : Date.now();
+            }
+            break;
+        }
+      }
+      return tPlanDate < tActualDate;
     };
 
     var tRawData = [];
@@ -475,7 +494,7 @@ function loadAllCharts(year) {
           .forEach(function(pDat) {            
               var tDeptObj = (pDat.dept || {});
               var tDeptId = tDeptObj.id || 0;
-              tDeptDataMap[tDeptId] || (tDeptDataMap[tDeptId] = {dept: tDeptObj.name, progress: 0, progressElapsed: 0, progressPeriod: 0, total: 0, completed: 0, late: 0, onTrack: 0, remaining: 0, future: 0});
+              tDeptDataMap[tDeptId] || (tDeptDataMap[tDeptId] = {dept: tDeptObj.name, progress: 0, progressCnt: 0, progressTotal: 0, progressElapsed: 0, progressPeriod: 0, total: 0, completed: 0, late: 0, onTrack: 0, remaining: 0, future: 0});
 
               tCBUDataMap[pDat.CBU_str] || (tCBUDataMap[pDat.CBU_str] = {completed: 0, cancel: 0, open: 0});
             
@@ -490,6 +509,8 @@ function loadAllCharts(year) {
                 tCntCompleted ++;
                 tCBUDataMap[pDat.CBU_str].completed ++;
                 tDeptDataMap[tDeptId].completed ++;
+                tDeptDataMap[tDeptId].progressCnt ++;
+                tDeptDataMap[tDeptId].progressTotal += pDat.progress;
               } 
               else {
                 tCntOpen ++;
@@ -504,6 +525,8 @@ function loadAllCharts(year) {
                 else {
                   tDeptDataMap[tDeptId].onTrack ++;
                 }
+                tDeptDataMap[tDeptId].progressCnt ++;
+                tDeptDataMap[tDeptId].progressTotal += pDat.progress;
               }
 
               tPhaseMap[pDat.phase] || (tPhaseMap[pDat.phase] = 0);
@@ -534,6 +557,11 @@ function loadAllCharts(year) {
             tSeriesData[0].data.push( tCBUDataMap[pKey].completed );
             // tSeriesData[1].data.push( tCBUDataMap[pKey].cancel );
             tSeriesData[1].data.push( tCBUDataMap[pKey].open );
+          });
+
+          Object.keys(tDeptDataMap).forEach((pKey)=>{
+            // Number(.toFixed(1))
+            tDeptDataMap[pKey].progress = (1.0 * tDeptDataMap[pKey].progressTotal / tDeptDataMap[pKey].progressCnt).toFixed(1) + "%";
           });
 
           new Highcharts.Chart('chart_2', Object.assign({}, tOption2, {title: {text: 'Project counts by CBU'}, xAxis: {categories: tCBUList}, series: tSeriesData}));

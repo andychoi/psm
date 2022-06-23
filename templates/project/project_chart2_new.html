@@ -1,6 +1,20 @@
 {% extends "theme/root.html" %}
 {% load static %}
 
+{% block head_script %}
+<style>
+    .ideation  { background-color:#fff100; }
+    .preplan   { background-color:#009e49; color:white; }
+    .planning  { background-color:#3ef1d4; }
+    .design    { background-color:#ff8c00; }
+    .develop   { background-color:#00188f; color:white; }
+    .testing   { background-color:#68217a; color:white; }
+    .launch    { background-color:#e81123; color:white; }
+    .complete  { background-color:#0f52ba; color:white; }
+    .closed    { background-color:#202928; color:white; }
+</style>
+{% endblock %}
+
 {% block content %}
 
 <div id="container">
@@ -19,6 +33,22 @@
     <div class="row">
         <div id="chart_area"></div>
     </div>
+
+    <div class="row">
+        <p class="text-end small">
+                Color:
+                <span class="ps-1 pe-1 ideation">ideation </span>
+                <span class="ps-1 pe-1 preplan">pre-plan</span>
+                <span class="ps-1 pe-1 planning">planning </span>
+                <span class="ps-1 pe-1 design ">design 	</span>
+                <span class="ps-1 pe-1 develop">develop 	</span>
+                <span class="ps-1 pe-1 testing">testing 	</span>
+                <span class="ps-1 pe-1 launch">launch 	</span>
+                <span class="ps-1 pe-1 complete">complete</span>
+                <span class="ps-1 pe-1 closed ">closed 	</span>
+        </p>
+    </div>
+
 </div>
 <!-- <div id="content_root" class="container-fluid mt-1"></div>   -->
 <!-- container-float margin top 3 -->

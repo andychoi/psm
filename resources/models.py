@@ -91,6 +91,7 @@ class ResourcePlanItem(models.Model):
 
     rp = models.ForeignKey(ResourcePlan, on_delete=models.CASCADE)
     project = models.ForeignKey('psm.Project', on_delete=models.SET_NULL, blank=True, null=True)
+    resource = models.ForeignKey(Resource, on_delete=models.SET_NULL)
     m01 = models.IntegerField(default = 0, validators = [MinValueValidator(0), MaxValueValidator(100)])
     m02 = models.IntegerField(default = 0, validators = [MinValueValidator(0), MaxValueValidator(100)])
     m03 = models.IntegerField(default = 0, validators = [MinValueValidator(0), MaxValueValidator(100)])

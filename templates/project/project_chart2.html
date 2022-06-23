@@ -20,6 +20,16 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <style>
     .testclass {font-size: 10rem;}
+
+    .ideation  { background-color:#fff100; }
+    .preplann  { background-color:#009e49; }
+    .planning  { background-color:#00b294; }
+    .design    { background-color:#ff8c00; }
+    .develop   { background-color:#00188f; }
+    .testing   { background-color:#68217a; }
+    .launch    { background-color:#e81123; }
+    .complete  { background-color:#0f52ba; }
+    .closed    { background-color:#202928; }
 </style>
 {% endblock %}
 
@@ -52,6 +62,23 @@
     </div>
     <!-- chart area -->
     <div id="chart_area"></div>
+
+    <div>
+        <table>
+            <tr>
+                <td class="ideation">ideation <td>
+                <td class="preplan">pre-plan<td>
+                <td class="planning">planning <td>
+                <td class="design ">design 	<td>
+                <td class="develop">develop 	<td>
+                <td class="testing">testing 	<td>
+                <td class="launch">launch 	<td>
+                <td class="complete">complete<td>
+                <td class="closed ">closed 	<td>
+            </tr>
+        </table>
+    </div>
+    
 </div>
 <!-- <div id="content_root" class="container-fluid mt-1"></div>   -->
 <!-- container-float margin top 3 -->
@@ -225,7 +252,11 @@
             }
         },
 
-        series: []
+        series: [],
+
+        credits: {
+            enabled: false
+        },
     };
 
     function getParams() {

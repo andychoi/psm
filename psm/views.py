@@ -292,8 +292,6 @@ class projectChartView2_new(projectList1View):
 class projectDashboard(projectList1View):
     template_name = 'project/project_dashboard.html'
 
-class projectChartView2_new(projectList1View):
-    template_name = 'project/project_chart2_new.html'
 
 class projectChartView3(projectList1View):
     template_name = 'project/project_chart-test-w-json.html'

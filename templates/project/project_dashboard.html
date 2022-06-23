@@ -45,7 +45,7 @@
               <div class="infoBlockValue" id="v_project_total">0</div>
             </div>
             <div class="infoBlock">
-              <div class="infoBlockTitle">Cancel, C/F</div>
+              <div class="infoBlockTitle">C/F</div>
               <div class="infoBlockValue" id="v_project_cancel">0</div>
             </div>
             <div class="infoBlock">
@@ -454,31 +454,36 @@ function loadAllCharts(year) {
           var tStateMap = {};
           var tCBUDataMap = {};
 
-          var tCntTotal = tRawData.length;
+          var tCntTotal = 0;
           var tCntCompleted = 0;
           var tCntCanceled = 0;
           var tCntOpen = 0;
-          tRawData.forEach(function(pDat) {
-            tCBUDataMap[pDat.CBU_str] || (tCBUDataMap[pDat.CBU_str] = {completed: 0, cancel: 0, open: 0});
+          tRawData
+          .filter(function(pDat) {
+            return (pDat.state !== "90-cancel");
+          })
+          .forEach(function(pDat) {
+              tCntTotal ++;
+              tCBUDataMap[pDat.CBU_str] || (tCBUDataMap[pDat.CBU_str] = {completed: 0, cancel: 0, open: 0});
 
-            if (pDat.phase === "70-Completed" || pDat.phase === "80-Closed") {
-              tCntCompleted ++;
-              tCBUDataMap[pDat.CBU_str].completed ++;
-            } 
-            else if (pDat.state === "90-cancel") {
-              tCntCanceled ++;
-              tCBUDataMap[pDat.CBU_str].cancel ++;
-            }
-            else {
-              tCntOpen ++;
-              tCBUDataMap[pDat.CBU_str].open ++;
-            }
+              if (pDat.cf === true) {
+                tCntCanceled ++;
+                tCBUDataMap[pDat.CBU_str].cancel ++;
+              }
+              else if (pDat.phase === "70-Completed" || pDat.phase === "80-Closed") {
+                tCntCompleted ++;
+                tCBUDataMap[pDat.CBU_str].completed ++;
+              } 
+              else {
+                tCntOpen ++;
+                tCBUDataMap[pDat.CBU_str].open ++;
+              }
 
-            tPhaseMap[pDat.phase] || (tPhaseMap[pDat.phase] = 0);
-            tPhaseMap[pDat.phase] ++;
+              tPhaseMap[pDat.phase] || (tPhaseMap[pDat.phase] = 0);
+              tPhaseMap[pDat.phase] ++;
 
-            tStateMap[pDat.state] || (tStateMap[pDat.state] = 0);
-            tStateMap[pDat.state] ++;
+              tStateMap[pDat.state] || (tStateMap[pDat.state] = 0);
+              tStateMap[pDat.state] ++;
           });
           $("#v_project_total").text(tRawData.length);
           $("#v_project_completed").text(tCntCompleted);
@@ -495,7 +500,7 @@ function loadAllCharts(year) {
           var tCBUList = [];
           var tSeriesData = [];
           tSeriesData.push({name: 'Completed', data: []});
-          tSeriesData.push({name: 'Cancel', data: []});
+          tSeriesData.push({name: 'C/F', data: []});
           tSeriesData.push({name: 'Open', data: []});
           Object.keys(tCBUDataMap).forEach((pKey)=>{
             tCBUList.push(pKey);

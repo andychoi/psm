@@ -82,7 +82,7 @@
               <table class="table table-borderless" >
                 <tr><td>State</td><td>{{ project.state|slice:'3:' }}</td></tr>
                 <tr><td>Phase</td><td>{{ project.phase|slice:'3:' }}</td></tr>
-                <tr><td>Complete%</td><td>{{ project.complete }}%</td></tr>
+                <tr><td>Complete%</td><td>{{ project.progress }}%</td></tr>
                 <tr><td>Health</td><td>
                   Overall
                   {%   if project.status_o|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
@@ -151,7 +151,7 @@
             <h5 class="card-title">Schedule Actual/Plan (pilot)</h5>
             <div class="row ms-2 media">
               <div id="gantt_chart"></div>
-              <table class="table">
+              <table class="table small">
                 <thead>
                   <tr>
                     <th scope="col">Phase</th>
@@ -473,7 +473,7 @@ var chart = Highcharts.ganttChart('gantt_chart', {
     },
 
     series: [{
-        name: 'Project 1',
+        name: '{{ project.title }}',
         data: [{
           start: convertDate('{{ project.a_plan_b }}'),
             end: convertDate('{{ project.a_plan_e }}'),

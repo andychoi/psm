@@ -271,7 +271,7 @@ class projectList1View(PermissionRequiredMixin, generic.ListView):
 
         ltmp = self.request.GET.get('cbu', '')
         if ltmp:
-            qs = qs.filter(CBU__id=ltmp)
+            qs = qs.filter(CBUs__id=ltmp)
 
         ltmp = self.request.GET.get('prg', '')
         if ltmp:

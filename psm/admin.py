@@ -110,7 +110,7 @@ class ProjectDeliverableInline(admin.TabularInline):
 class ProjectPlanResource(resources.ModelResource):
     pm_name     = fields.Field(attribute='pm',     widget=ForeignKeyWidget(Profile, 'name'))
     cbupm_name  = fields.Field(attribute='CBUpm',  widget=ForeignKeyWidget(Profile, 'name'))
-    cbu_names       = fields.Field(attribute='CBU',    widget=ManyToManyWidget(model=CBU, separator=',', field='name'), )
+    cbu_names       = fields.Field(attribute='CBUs',    widget=ManyToManyWidget(model=CBU, separator=',', field='name'), )
     strategy_names  = fields.Field(attribute='strategy',widget=ManyToManyWidget(model=Strategy, separator=',', field='name'), )
     class Meta:
         model = ProjectPlan
@@ -134,14 +134,14 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
     class Media:
         css = { 'all': ('psm/css/custom_admin.css',), }
 
-    search_fields = ('id', 'title', 'asis', 'tobe', 'objective', 'consider', 'pm__name', 'CBUpm__name', 'CBU__name')
+    search_fields = ('id', 'title', 'asis', 'tobe', 'objective', 'consider', 'pm__name', 'CBUpm__name', 'CBUs__name')
     list_display = ('version', 'pjcode',  'title', 'pm', 'dept', 'CBU_str', 'est_cost', 'view' )    #CBU many to many
     list_display_links = ('pjcode', 'title')
     list_editable = ("version", )
     list_filter = (
         ('year',        DropdownFilter),
         ('version',     UnionFieldListFilter),
-        ('CBU',        RelatedDropdownFilter),   
+        ('CBUs',        RelatedDropdownFilter),   
         ('dept',        RelatedDropdownFilter),
         ('dept__div',   RelatedDropdownFilter),
         ('team',        RelatedDropdownFilter),
@@ -149,12 +149,12 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
     )
     ordering = ['version', '-id']  #Project_PRIORITY_FIELDS
     readonly_fields = ('created_at', 'updated_on', 'created_by', 'image_tag_asis', 'image_tag_tobe', 'released' )
-    autocomplete_fields = ['pm', 'CBU', 'strategy', 'CBUpm', 'program', 'team']
+    autocomplete_fields = ['pm', 'CBUs', 'strategy', 'CBUpm', 'program', 'team']
     plan_fields = [ ('title', 'year', 'version' ), 
                     ('type', 'category', 'priority'), 
                     ('strategy', 'program', 'is_agile'),
                     ('pm', 'team'),
-                    ('CBU', 'CBUpm'),
+                    ('CBUs', 'CBUpm'),
                     ('asis', 'img_asis', 'image_tag_asis'),
                     ('tobe', 'img_tobe', 'image_tag_tobe'),
                     ('objective', 'consider'),
@@ -323,11 +323,11 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
 
 # ----------------------------------------------------------------------------------------------------------------
 class ProjectResource(resources.ModelResource):
-    cbu_names=fields.Field(attribute='CBU', widget=ManyToManyWidget(model=CBU, separator=',', field='name'), )
+    cbu_names=fields.Field(attribute='CBUs', widget=ManyToManyWidget(model=CBU, separator=',', field='name'), )
     class Meta:
         model = Project
         fields = ( 'id', 'year', 'code', 'cf', 'title', 'description', 'objective', 'phase', 'state', 'progress', 'ref_plan__code',
-            'pm', 'pm__name',  'CBU', 'cbu_names', 'strategy', 'strategy__name', 'program', 'program__name','type', 'category', 'priority', 
+            'pm', 'pm__name',  'CBUs', 'cbu_names', 'strategy', 'strategy__name', 'program', 'program__name','type', 'category', 'priority', 
             'est_cost', 'app_budg', 'dept', 'dept__name', 'dept__div', 'dept__div__name', 
             'p_ideation','p_plan_b','p_kickoff','p_design_b','p_dev_b','p_uat_b','p_launch','p_close',
             'a_plan_b','a_kickoff','a_design_b','a_dev_b','a_uat_b','a_launch','a_close',
@@ -345,7 +345,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         css = {
         'all': ('psm/css/custom_admin.css',),
     }    
-    search_fields = ('id', 'title', 'description', 'objective', 'resolution', 'code', 'wbs__wbs', 'es', 'ref', 'program__name', 'strategy__name', 'pm__name', 'CBUpm__name', 'CBU__name')     #FIXME many to many
+    search_fields = ('id', 'title', 'description', 'objective', 'resolution', 'code', 'wbs__wbs', 'es', 'ref', 'program__name', 'strategy__name', 'pm__name', 'CBUpm__name', 'CBUs__name')     #FIXME many to many
     list_display = ('year', 'pjcode', 'title', 'pm', 'dept', 'phase', 'state', 'CBU_str', 'view', 'ITPC' )    #CBU many to many
     list_display_links = ('pjcode', 'title')
     list_editable = ("phase", 'state',)
@@ -355,7 +355,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         ('year', DropdownFilter),
         ('phase', UnionFieldListFilter),
         ('state', UnionFieldListFilter),
-        ('CBU', RelatedDropdownFilter),   #FIXME many to many
+        ('CBUs', RelatedDropdownFilter),   #FIXME many to many
         ('dept', RelatedDropdownFilter),
         ('dept__div', RelatedDropdownFilter), #FIXME dept__div not working
         ('program', RelatedDropdownFilter),
@@ -370,14 +370,14 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     )
     ordering = ['-id']  #Project_PRIORITY_FIELDS
     readonly_fields = ('cf', 'created_at', 'updated_on', 'created_by', 'lstrpt',  'link', )
-    autocomplete_fields = ['pm', 'CBU', 'strategy', 'CBUpm', 'program', 'ref_plan']
+    autocomplete_fields = ['pm', 'CBUs', 'strategy', 'CBUpm', 'program', 'ref_plan']
 
     fieldsets = (               # Edition form
         (None,  {'fields': (('title', 'type', 'category', 'year', ), 
                             ('state', 'phase', 'progress', 'priority'), 
                             ('status_o', 'status_t', 'status_b', 'status_s', 'lstrpt', 'resolution'), 
                             ), "classes": ("stack_labels",)}),
-        (_('Detail...'),  {'fields': (('strategy', 'program', 'is_agile'), ('CBU', 'CBUpm', 'ref'),('pm', 'dept', ), 
+        (_('Detail...'),  {'fields': (('strategy', 'program', 'is_agile'), ('CBUs', 'CBUpm', 'ref'),('pm', 'dept', ), 
                             ( 'est_cost', 'app_budg', 'wbs', 'es', 'is_internal' ), ('description', 'objective'),  ('ref_plan',),
                                        ), 'classes': ('collapse',)}),
         (_('Schedule...'),  {'fields': (('p_ideation',),('p_plan_b','p_plan_e','p_kickoff','p_design_b','p_design_e','p_dev_b','p_dev_e','p_uat_b','p_uat_e','p_launch','p_close'),
@@ -403,7 +403,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         if obj is None:
             fieldsets = (      # Creation form
                 (None, {'fields': (('title', 'type', 'year'), ('strategy', 'program','is_agile'), 
-                            ('CBU', 'CBUpm', 'ref', ), ('pm', 'dept', ), 
+                            ('CBUs', 'CBUpm', 'ref', ), ('pm', 'dept', ), 
                             ( 'est_cost', 'app_budg', 'wbs', 'es',  ),
                             ('state', 'phase', 'progress', 'priority'), ('description', 'objective'),  ('ref_plan',),
                             ('p_ideation', 'p_plan_b','p_plan_e','p_kickoff','p_design_b','p_design_e','p_dev_b','p_dev_e','p_uat_b','p_uat_e','p_launch','p_close'),
@@ -434,7 +434,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     formatted_updated.short_description = 'Updated'
 
     def cbu_list(self, obj):
-        return " ,".join(p.name for p in obj.CBU.all())
+        return " ,".join(p.name for p in obj.CBUs.all())
     cbu_list.short_description = 'CBU'
 
     #not working...https://stackoverflow.com/questions/46892851/django-simple-history-displaying-changed-fields-in-admin

@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
+from holidays import NO
 from import_export.admin import ImportExportMixin
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter, DropdownFilter, ChoiceDropdownFilter
 
@@ -57,7 +58,8 @@ class ReviewAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     resource_class = ReviewResource
 
     def project_dept(self, obj):
-        return obj.project.dept
+        return obj.project.dept if not obj.project is None else ""
+
     list_display = ('formatted_rtype', 'project_view', 'title', 'proc_start', 'onboaddt', 'priority', 'is_escalated', 'project_dept', 'pm', 'state', 'status', 'CBU_names', 'formatted_updated',)
     list_display_links = ('title', 'formatted_updated')
     ordering = ('-id',)
@@ -65,9 +67,9 @@ class ReviewAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     Custom_fields = ('project_link', 'created_at', 'updated_on', 'created_by', 'updated_by')
     search_fields = ('title', 'project__title', 'req_content', 'res_content',  )
     list_editable = ("status", "is_escalated", "state")
-    autocomplete_fields = ('reviewer', 'project', 'CBU')
+    autocomplete_fields = ('reviewer', 'project')
     fieldsets = (               # Edition form
-                (None, {'fields':   (('project', 'CBU'),  ('title', 'reqtype',  ),('req_content',), ('proc_start', 'onboaddt', 'state', ), ('status', 'is_escalated', 'priority'), ( 'res_content','reviewer',),   
+                (None, {'fields':   (('project', 'CBUs'),  ('title', 'reqtype',  ),('req_content',), ('proc_start', 'onboaddt', 'state', ), ('status', 'is_escalated', 'priority'), ( 'res_content','reviewer',),   
                             ), "classes": ("stack_labels",)}),
                 (_('More...'), {'fields': (('created_at', 'created_by'), ('updated_on', 'updated_by')), 'classes': ('collapse',)}),
     )
@@ -84,7 +86,7 @@ class ReviewAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     list_filter = (
         ('reqtype', DropdownFilter),
         ('priority', DropdownFilter),
-        ('CBU', RelatedDropdownFilter),
+        ('CBUs', RelatedDropdownFilter),
         ('project',             RelatedDropdownFilter),
         ('project__dept__div',  RelatedDropdownFilter),
         ('project__dept',       RelatedDropdownFilter),

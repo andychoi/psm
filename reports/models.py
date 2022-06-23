@@ -40,7 +40,7 @@ from psm.models import Project
 # creating an django model class
 class Report(models.Model):
 
-    project = models.ForeignKey('psm.Project', on_delete=models.CASCADE, blank=True, null=True)
+    project = models.ForeignKey('psm.Project', on_delete=models.CASCADE, blank=False, null=True)
     # title field using charfield constraint with unique constraint
     title = models.CharField(max_length=200)
     # CBU = models.ManyToManyField(CBU, blank=True, null=True)
@@ -120,7 +120,7 @@ class Milestone(models.Model):
 # creating an django model class
 class ReportRisk(models.Model):
 
-    project = models.ForeignKey('psm.Project', on_delete=models.CASCADE, blank=True, null=True)
+    project = models.ForeignKey('psm.Project', on_delete=models.CASCADE, blank=False, null=True)
     title = models.CharField(max_length=200, null=True, blank=True)
     owner = models.CharField(max_length=200, null=True, blank=True)
 

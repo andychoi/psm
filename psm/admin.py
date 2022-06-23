@@ -398,7 +398,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     ITPC.short_description = 'ITPC'
 
     def view(self, obj):
-        count = Review.objects.filter(project=obj).count()
+        # count = Report.objects.filter(project=obj).count()
         return mark_safe(f"<a class='btn btn-outline-success p-1 btn-sm adminlist' style='color:#000' href='/project/{obj.id}'>View</a>")
 
     def get_fieldsets(self, request, obj=None):
@@ -420,7 +420,44 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     
     # easier option for admin-actions: https://pypi.org/project/django-object-actions/
     # https://docs.djangoproject.com/en/4.0/ref/contrib/admin/#overriding-vs-replacing-an-admin-template
-    change_form_template = 'admin/psm/project/change_form.html'
+    # object actions - method #1
+    # change_form_template = 'admin/psm/project/change_form.html'
+    # object-function
+    # 
+    change_actions = ('project_view','report_add', 'report_list', 'risk_add', 'risk_list', 'itpc')
+
+    def project_view(self, request, obj):
+        return HttpResponseRedirect(f'/project/{obj.id}')
+    project_view.label = 'View'
+    def report_add(self, request, obj):
+        return HttpResponseRedirect(f'/admin/reports/report/add/?project__id={obj.id}')
+    report_add.label = '++Report'
+    def report_list(self, request, obj):
+        return HttpResponseRedirect(f'/admin/reports/report/?project__id={obj.id}')
+    report_list.label = 'Report list'
+    def risk_add(self, request, obj):
+        return HttpResponseRedirect(f'/admin/reports/reportrisk/add/?project__id={obj.id}')
+    risk_add.label = '++Risk'
+    def risk_list(self, request, obj):
+        return HttpResponseRedirect(f'/admin/reports/reportrisk/?project__id={obj.id}')
+    risk_list.label = 'Risk list'
+    def itpc(self, request, obj):
+        return HttpResponseRedirect(f'/admin/reviews/review/?project__id={obj.id}')
+    itpc.label = 'ITPC'
+    # <li><a href="/admin/reports/report/add/?project__id={{original.pk}}" class="status-report">Add Report+</a></li>
+    # <li><a href="/admin/reports/report/?project__id__exact={{original.pk}}" class="status-report">Status Reports</a></li>
+    # <li><a href="/admin/reports/reportrisk/add/?project__id={{original.pk}}" class="risk-report">Add Risk+</a></li>
+    # <li><a href="/admin/reports/reportrisk/?project__id__exact={{original.pk}}" class="risk-report">Risks</a></li>
+    # <li><a href="/admin/reviews/review/?project__id__exact={{original.pk}}" class="project-review">Reviews</a></li>
+    # <!-- <li><a href="/reports/?project__id__exact={{original.pk}}" class="historylink">Reviews</a></li> -->
+
+    # <li>
+    #     <a href="{% url opts|admin_urlname:'history' original.pk|admin_urlquote %}" class="historylink">{% translate "History" %}</a>
+    # </li>
+    # {% if has_absolute_url %}
+    #     <li>
+    #         <a href="{% url 'admin:view_on_site' content_type_id original.pk %}" class="viewsitelink">{% translate "View on site" %}</a>
+    #     </li>
 
     # https://stackoverflow.com/questions/19542295/overridding-django-admins-object-tools-bar-for-one-model
     # change_list_template = 'admin/psm/project/change_list.html'
@@ -574,11 +611,11 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     
 # https://adriennedomingus.medium.com/adding-custom-views-or-templates-to-django-admin-740640cc6d42
 
-    # default filter to exclude closed ticket
-    def changelist_view(self, request, extra_context=None):
 # FIXME - TODO
-        # if len(request.GET) == 0:
-        #     get_param = "state_filter=30-on_hold%2C20-doing%2C10-to-do%2C00-backlog"
-        #     return redirect("{url}?{get_parms}".format(url=request.path, get_parms=get_param))
-        return super(ProjectAdmin, self).changelist_view(request, extra_context=extra_context)
+    # default filter to exclude closed ticket
+    # def changelist_view(self, request, extra_context=None):
+    #     # if len(request.GET) == 0:
+    #     #     get_param = "state_filter=30-on_hold%2C20-doing%2C10-to-do%2C00-backlog"
+    #     #     return redirect("{url}?{get_parms}".format(url=request.path, get_parms=get_param))
+    #     return super(ProjectAdmin, self).changelist_view(request, extra_context=extra_context)
 

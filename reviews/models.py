@@ -14,7 +14,7 @@ from psm.models import Project
 class Review(models.Model):
 
     reqtype = models.CharField(_("Review Type"), max_length=40, choices=REQTYPES, default=ReqTypes.PRO.value)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, blank=True, null=True)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, blank=False, null=True)
 
     title = models.CharField(max_length=200)
 
@@ -30,7 +30,7 @@ class Review(models.Model):
     reviewer = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="rev_reviewer", null=True, blank=True, on_delete=models.SET_NULL)
     res_content = models.TextField(_("Review result"), null=True, blank=True)
 
-    CBU  = models.ManyToManyField(CBU, blank=True)
+    CBUs  = models.ManyToManyField(CBU, blank=True)
 
     # attachment=models.FileField(_("attachment"), upload_to='reviews', null=True, blank=True)
     # dept = models.ForeignKey(Dept, blank=True, null=True, on_delete=models.PROTECT)
@@ -54,15 +54,15 @@ class Review(models.Model):
 
     @property
     def CBU_names(self):
-        return " ,".join(p.name for p in self.CBU.all())
+        return " ,".join(p.name for p in self.CBUs.all())
 
 	# used while managing models from terminal
     def __str__(self):
         return self.title
 
     def save(self, *args, **kwargs):
-        if self.pk and not self.CBU:   #needs to have a value for field "id" before this many-to-many relationship can be used.
-            self.CBU = self.project.CBU
+        if self.pk and not self.CBUs:   #needs to have a value for field "id" before this many-to-many relationship can be used.
+            self.CBUs = self.project.CBUs
         super().save(*args, **kwargs)        
 
     # @property

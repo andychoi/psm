@@ -136,7 +136,7 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
 
     list_filter = (
         ('project', RelatedDropdownFilter),
-        ('project__CBU', RelatedDropdownFilter),
+        ('project__CBUs', RelatedDropdownFilter),
         ('project__dept', RelatedDropdownFilter),
         ('project__dept__div', RelatedDropdownFilter),
         # ('div', RelatedDropdownFilter),
@@ -179,7 +179,7 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
     formatted_updated.short_description = 'Updated'
 
     def cbu_list(self, obj):
-        return " ,".join(p.name for p in obj.project.CBU.all())
+        return " ,".join(p.name for p in obj.project.CBUs.all())
     cbu_list.short_description = 'CBU'
 
     def get_dept(self, obj):
@@ -383,7 +383,7 @@ class ReportRiskAdmin(ImportExportMixin, admin.ModelAdmin):
 
     list_filter = (
         ('project', RelatedDropdownFilter),
-        ('project__CBU', RelatedDropdownFilter),  #FIXME many to many OK
+        ('project__CBUs', RelatedDropdownFilter),  #FIXME many to many OK
         ('project__dept__div', RelatedDropdownFilter),
         ('project__dept', RelatedDropdownFilter),
         ('state', UnionFieldListFilter),

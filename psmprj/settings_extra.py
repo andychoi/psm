@@ -22,4 +22,5 @@ en_formats.DATE_FORMAT = 'Y-m-d'
 # USE_THOUSAND_SEPARATOR = True
 
 DOMAIN = env('DOMAIN', 'abc.local')
+APP_URL = env('APP_URL', 'psm.localhost')
 SCHEDULER = env.bool('SCHEDULER', False)

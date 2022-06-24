@@ -25,6 +25,7 @@ EMAIL_HOST_USER = env('EMAIL_HOST_USER', 'YOUREMAIL@localhost')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', 'PASS')
 
 DEFAULT_FROM_EMAIL=env('DEFAULT_FROM_EMAIL', 'no-reply-psm@localhost')
+EMAIL_PSM_ADMIN=env('EMAIL_PSM_ADMIN', 'psm.admin@localhost')
 EMAIL_TEST_RECEIVER=env('EMAIL_TEST_RECEIVER', 'system-sender@localhost')
 
 # Project App related settings and templates
@@ -78,6 +79,23 @@ Description:
 
 Order URL:
 {url}
+
+Please note: Do NOT reply to this email. This email is sent from an unattended mailbox.
+Replies will not be read.
+
+---
+{sign}
+'''
+
+PSM_EMAIL_REPORT_REMINDER = '''\
+No weekly status report is created in last 10 days.
+
+Project: {pjcode} {title}
+PM: {pm}
+Lastest reporting date: {lstrpt}
+Planned planning start: {plan_start}
+
+Project URL: {url}
 
 Please note: Do NOT reply to this email. This email is sent from an unattended mailbox.
 Replies will not be read.

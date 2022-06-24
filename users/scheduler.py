@@ -65,16 +65,27 @@ def project_backfill_dates():
 def late_reminder():
     for p in Project.objects.filter(year=datetime.today().year, phase__in=PHASE_WORK):
         r = Report.objects.filter(project=p).order_by('created_at').first()
-        reqdt = r.created_at if r else p.p_kickoff if p.p_kickoff else p.p_plan_b
+        reqdt = r.created_at if r else p.p_plan_b   #p.p_kickoff if p.p_kickoff else p.p_plan_b
         date_delta = (date.today() - reqdt).days
         if date_delta > 10:
-            email_template = settings.PSM_EMAIL_WITHOUT_URL
+
+            vals = {
+                "id": p.id,
+                "pjcode": p.pjcode,
+                "pm": str(p.pm),
+                "lstrpt": p.lstrpt,
+                "title": p.title,
+                'plan_start': p.p_plan_b,
+                "url": f'{settings.APP_URL}/project/{p.id}/',
+                "sign": settings.SITE_HEADER,
+            }
+            email_template = settings.PSM_EMAIL_REPORT_REMINDER           
             try:
                 send_mail(
-                    'test reminder',
-                    'mail content', 
+                    f'{settings.EMAIL_SUBJECT_PREFIX} Project status report reminder -{p}',
+                    email_template.format(**vals),
                     settings.APP_EMAIL,
-                    'andychoi@autoeveramerica.com',
+                    [ settings.EMAIL_PSM_ADMIN if settings.EMAIL_DEV else p.pm.email if p.pm else p.dept.head.profile.email if p.dept.head else settings.EMAIL_PSM_ADMIN ],
                 )
             except Exception as e:
                 logger.warning("[Project #%s] Error trying to send the Project creation email - %s: %s",

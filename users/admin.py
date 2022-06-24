@@ -40,7 +40,7 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
     fieldsets = (  # Edition form
          (None, {'fields': (('user', 'name', 'email') , ('is_psmadm', ), 
                             ('dept', 'team'), 
-                            ('notes' ),
+                            ('notes', 'CBU' ),
                             # ('job', 'department', 'manager', 'mobile', ),
                             # ('image',), 
                             )}),

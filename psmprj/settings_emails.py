@@ -60,7 +60,7 @@ Link to project profile: {url}
 Please note: Do NOT reply to this email. This email is sent from an unattended mailbox.
 Replies will not be read.
 
----
+---------------------------------------------------------------------------------------
 {sign}
 '''
 
@@ -100,8 +100,8 @@ Project URL: {url}
 Please note: Do NOT reply to this email. This email is sent from an unattended mailbox.
 Replies will not be read.
 
----
-{sign}
+---------------------------------------------------------------------------------------
+{sign} | For further question, please contact project planning team.
 '''
 
 # Task App related 

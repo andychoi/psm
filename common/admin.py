@@ -34,7 +34,7 @@ class DivAdmin(ImportExportMixin, admin.ModelAdmin):
 # Register your models here.
 @admin.register(Dept)
 class DeptAdmin(ImportExportMixin, admin.ModelAdmin):
-    list_display = ('id', 'name', 'head', 'div', 'is_active')
+    list_display = ('id', 'name', 'head', 'div', 'is_active', 'pm_count')
     list_display_links = ('id', 'name')
     search_fields = ('id', 'name', 'head__name')    
     autocomplete_fields = ('head',)
@@ -44,7 +44,7 @@ class DeptAdmin(ImportExportMixin, admin.ModelAdmin):
         
 @admin.register(Team)
 class TeamAdmin(ImportExportMixin, admin.ModelAdmin):
-    list_display = ('id', 'name', 'head', 'dept', 'is_active')
+    list_display = ('id', 'name', 'head', 'dept', 'is_active', 'pm_count')
     list_display_links = ('id', 'name')
     search_fields = ('id', 'name', 'head__name')
     autocomplete_fields = ('head',)

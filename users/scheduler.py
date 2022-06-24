@@ -9,10 +9,12 @@ from django.contrib.auth.models import User, Group
 from django.conf import settings
 from .models import Profile
 from psm.models import Project
+from common.models import Dept, Team
+from django.db.models import Q
 from django.db.models import Count  #, F, Q, Sum, Avg
 from psmprj.utils.dates import previous_working_day
 from reports.models import Report
-from common.utils import PHASE_WORK
+from common.utils import PHASE_WORK, PHASE_OPEN, Phase, State, STATE_OPEN
 from psmprj.utils.mail import send_mail_async as send_mail
 import logging
 logger = logging.getLogger(__name__)
@@ -40,11 +42,20 @@ def project_pm_count():
     # queryset count groupby
     pm_qs = Project.objects.values('pm').annotate(pm_count=Count('pk'))
     cbupm_qs = Project.objects.values('CBUpm').annotate(pm_count=Count('pk'))
+    
+    dept_qs = Project.objects.values('dept').filter(year = date.today().year).annotate(pm_count=Count('pk'))
+    team_qs = Project.objects.values('team').filter(year = date.today().year).annotate(pm_count=Count('pk'))
 
     for item in pm_qs:
         Profile.objects.filter(id=item['pm']).update(pm_count=item['pm_count'])
     for item in cbupm_qs:
         Profile.objects.filter(id=item['CBUpm']).update(pm_count=item['pm_count'])
+
+    for item in dept_qs:
+        Dept.objects.filter(id=item['dept']).update(pm_count=item['pm_count'])
+    for item in team_qs:
+        Team.objects.filter(id=item['team']).update(pm_count=item['pm_count'])
+
     # for k, v in pm_dict.items():
 
 def project_backfill_dates():
@@ -61,6 +72,12 @@ def project_backfill_dates():
         if not p.p_uat_e and p.p_launch:
             p.p_uat_e = previous_working_day(p.p_launch, 1)
             p.save()    #update_fields='p_uat_e')
+
+def project_state_from_progress():
+    for p in Project.objects.filter(Q(progress=100) & ( Q(phase__in=PHASE_OPEN) | Q(state__in=STATE_OPEN))):
+            p.phase = Phase.CLOSED.value
+            p.state = State.DONE.value
+            p.save()    
 
 def late_reminder():
     for p in Project.objects.filter(year=datetime.today().year, phase__in=PHASE_WORK):
@@ -104,6 +121,8 @@ def start():
     scheduler.add_job(project_pm_count, 'interval', hours=24, id='project_pm_count', jobstore='default', replace_existing=True,)
     scheduler.add_job(project_backfill_dates, 'interval', hours=24, id='project_backfill_dates', jobstore='default', replace_existing=True,)
     scheduler.add_job(late_reminder, 'interval', hours=168, id='late_reminder', jobstore='default', replace_existing=True,)
+    scheduler.add_job(project_state_from_progress, 'interval', hours=168, id='project_state_from_progress', jobstore='default', replace_existing=True,)
+
 
     register_events(scheduler)
     scheduler.start()

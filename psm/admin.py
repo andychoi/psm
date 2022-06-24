@@ -11,6 +11,7 @@ from django.core.exceptions import ValidationError
 from import_export.admin import ImportExportMixin
 from import_export import resources, fields
 from import_export.widgets import ManyToManyWidget, ForeignKeyWidget
+from datetime import date
 
 from adminfilters.multiselect import UnionFieldListFilter
 from django.contrib.admin import FieldListFilter
@@ -379,7 +380,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         
 #        'deadline'
     )
-    ordering = ['-id']  #Project_PRIORITY_FIELDS
+    ordering = ['phase', 'code']  #Project_PRIORITY_FIELDS
     readonly_fields = ('cf', 'created_at', 'updated_on', 'created_by', 'lstrpt',  'link', )
     autocomplete_fields = ['pm', 'CBUs', 'strategy', 'CBUpm', 'program', 'ref_plan']
 
@@ -633,9 +634,9 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
 
 # FIXME - TODO
     # default filter to exclude closed ticket
-    # def changelist_view(self, request, extra_context=None):
-    #     # if len(request.GET) == 0:
-    #     #     get_param = "state_filter=30-on_hold%2C20-doing%2C10-to-do%2C00-backlog"
-    #     #     return redirect("{url}?{get_parms}".format(url=request.path, get_parms=get_param))
-    #     return super(ProjectAdmin, self).changelist_view(request, extra_context=extra_context)
+    def changelist_view(self, request, extra_context=None):
+        if len(request.GET) == 0:
+            get_param = f"year={ date.today().year }"   #state_filter=30-on_hold%2C20-doing%2C10-to-do%2C00-backlog"
+            return redirect("{url}?{get_parms}".format(url=request.path, get_parms=get_param))
+        return super(ProjectAdmin, self).changelist_view(request, extra_context=extra_context)
 

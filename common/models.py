@@ -27,6 +27,8 @@ class Dept(models.Model):
     head = models.ForeignKey('users.Profile', related_name='dept_head', verbose_name=_('Dept head'), on_delete=models.SET_NULL, null=True, blank=True)
     div = models.ForeignKey(Div, on_delete=models.SET_NULL, null=True, blank=True)
     is_active = models.BooleanField(default=True)
+    pm_count  = models.SmallIntegerField(_('PM counts'), default=0)
+
     def __str__(self):
         return self.name
 
@@ -36,6 +38,7 @@ class Team(models.Model):
     description = models.TextField(null=True, blank=True)
     dept = models.ForeignKey(Dept, on_delete=models.SET_NULL, null=True, blank=True)
     is_active = models.BooleanField(default=True)
+    pm_count  = models.SmallIntegerField(_('PM counts'), default=0)
 #    users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="user_teams")
 
     class Meta:

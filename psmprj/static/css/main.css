@@ -1,6 +1,6 @@
 body {
   background: #fafafa;
-  color: #234332; 
+  color: #0c1a27; 
   margin-top: 5rem;
 }
 
@@ -15,15 +15,15 @@ body {
 
 #main-content { margin-top: 0.5em; background-color: #fafafa; }
 
-.bg-steel {   background-color: #5f788a; }
+.bg-steel {   background-color: #9ec2e2; }
 
 .site-header .navbar-nav .nav-link {
-  color: #c5aa6a;
+  color: #0c1a27;
 }
 
 .site-header .navbar-nav .nav-link:hover {
   color: #ffffff;
-  background-color: #c5aa6a;  
+  background-color: #8ab5dc;  
 }
 
 .site-header .navbar-nav .nav-link.active {

@@ -49,7 +49,7 @@
         <div class="card w-100 card-main">
           <div class="card-body">
             <h5 class="card-title">As-Is</h5>
-            <div class="row ms-2 media">
+            <!-- <div class="row ms-2 media"> -->
                 
                   {% if project.img_asis %}
                   {% thumbnail project.img_asis "x300" crop="center" as asis %}
@@ -58,7 +58,7 @@
                   </div><div class="row">
                   {% endif %}
                 <p class="card-text">{{ project.asis }}</p>
-            </div>
+            <!-- </div> -->
           </div>
         </div>
       </div><!--1st-->
@@ -67,7 +67,7 @@
         <div class="card w-100 card-main">
           <div class="card-body">
             <h5 class="card-title">To-be</h5>
-            <div class="row ms-2 media">
+            <!-- <div class="row ms-2 media"> -->
               {% if project.img_tobe %}
               {% thumbnail project.img_tobe "x300" crop="center" as tobe %}
               <img src="{{ tobe.url }}" width="{ tobe.width }" height="{ tobe.height }" alt="tobe" class="mb-3">
@@ -75,7 +75,7 @@
               </div><div class="row">
             {% endif %}
               <p class="card-text">{{ project.tobe }}</p>
-            </div>
+            <!-- </div> -->
           </div>
         </div>  
       </div><!--2nd-->

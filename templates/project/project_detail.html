@@ -32,7 +32,10 @@
 
 <div class="container-fluid">
   <div class="row m-2">
-    <div class="col d-flex align-items-start">Project code : <b>{{ project.pjcode }}</b> <a href="/admin/psm/project/{{ project.id }}"><i class="bi bi-pencil"></i></a></div>
+    <div class="col d-flex align-items-start">Project code : <b>{{ project.pjcode }}</b>
+      <span class="ms-3"> <a href="/admin/psm/project/{{ project.id }}"><i class="bi bi-pencil"></i></a> </span>
+      <span class="ms-3"> <a href="/admin/reports/report/add/?project__id={{ project.id }}"><i class="bi bi-chat-left-quote-fill"></i></a> </span>
+    </div>
     <div class="col d-flex justify-content-end">Project year : <b>{{ project.year }}</b></div>
   </div>
   
@@ -55,9 +58,9 @@
         <div class="card w-100">
           <div class="card-body">
             <h5 class="card-title">Description</h5>
-            <div class="row ms-2 media">
+            <!-- <div class="row ms-2 media"> -->
                 <p class="card-text">{{ project.description|md2|safe }}</p>
-            </div>
+            <!-- </div> -->
           </div>
         </div>
       </div><!--1st-->
@@ -66,9 +69,9 @@
         <div class="card w-100 ">
           <div class="card-body">
             <h5 class="card-title">Objectives</h5>
-            <div class="row ms-2 media">
+            <!-- <div class="row ms-2 media"> -->
               <p class="card-text">{{ project.objective|md2|safe }}</p>
-            </div>
+            <!-- </div> -->
           </div>
         </div>  
       </div><!--2nd-->
@@ -78,7 +81,7 @@
         <div class="card w-100 ">
           <div class="card-body">
             <h5 class="card-title">Status{% if risk_count > 0 %} <a href="{% url 'report_risks' %}"> <span class="badge rounded-pill bg-danger"> {{  risk_count  }} </span></a> {% endif %}</h5>
-            <div class="row ms-2 media">
+            <!-- <div class="row ms-2 media"> -->
               <table class="table table-borderless" >
                 <tr><td>State</td><td>{{ project.state|slice:'3:' }}</td></tr>
                 <tr><td>Phase</td><td>{{ project.phase|slice:'3:' }}</td></tr>
@@ -116,7 +119,7 @@
                 <tr><td>Last report</td><td>{{ project.lstrpt }}</td></tr>
                 <tr><td>PM memo</td><td>{{ project.resolution }}</td></tr>
               </table>  
-            </div>
+            <!-- </div> -->
           </div>
         </div>
       </div><!--1st-->
@@ -125,7 +128,7 @@
         <div class="card w-100 ">
           <div class="card-body">
             <h5 class="card-title">Project Info</h5>
-            <div class="row ms-2 media">
+            <!-- <div class="row ms-2 media"> -->
               <table class="table table-borderless" >
                 <tr><td>HAEA Dept.</td><td>{{ project.dept }}</td></tr>
                 <tr><td>CBU</td><td>{{ project.CBU_str }}</td></tr>
@@ -140,7 +143,7 @@
                 <tr><td>Related Program</td><td>{{ project.program }}</td></tr>
                 <tr><td>Reference Plan</td><td>{% if project.ref_plan %}<a href="/project-plan/{{ project.ref_plan.id }}/">{{ project.ref_plan }}</a>{% else %}None{% endif %}</td></tr>
               </table>  
-              </div>
+              <!-- </div> -->
           </div>
         </div>  
       </div><!--2nd-->
@@ -149,7 +152,7 @@
         <div class="card w-100 ">
           <div class="card-body">
             <h5 class="card-title">Schedule Actual/Plan (pilot)</h5>
-            <div class="row ms-2 media">
+            <!-- <div class="row ms-2 media"> -->
               <div id="gantt_chart"></div>
               <table class="table small">
                 <thead>
@@ -167,7 +170,7 @@
                   <tr><td>UAT </td><td>   {{ project.a_uat_b|date:"m/d/y" }} - {{ project.a_uat_e|date:"m/d/y" }}</td><td>{{ project.p_uat_b|date:"m/d/y" }} - {{ project.p_uat_e|date:"m/d/y" }}</td> </tr>
                   <tr><td>Launch, Close</td><td> {{ project.a_launch|date:"m/d/y" }} , {{ project.a_close|date:"m/d/y" }} </td><td>{{ project.p_launch|date:"m/d/y" }} , {{ project.p_close|date:"m/d/y" }}</td></tr>
                 </tbody></table>
-              </div>
+              <!-- </div> -->
           </div>
         </div>  
       </div><!--2nd-->
@@ -178,7 +181,7 @@
         <div class="card w-100 card-main">
           <div class="card-body">
             <h5 class="card-title">Timeline</h5>
-            <div class="row ms-3 mt-3 media">
+            <!-- <div class="row ms-3 mt-3 media"> -->
                   <!-- https://stackoverflow.com/questions/15300314/django-template-using-set-all -->
                   <!-- https://mdbootstrap.com/docs/standard/extended/timeline/ -->
                   <ul class="timeline-with-icons">
@@ -219,7 +222,7 @@
                   {% endfor %}
                   </ul>
 
-            </div>
+            <!-- </div> -->
           </div>
         </div>  
       </div><!--3rd col-->

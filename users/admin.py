@@ -100,6 +100,12 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
 
     actions = ['update_pm_count', 'sync_user_master', 'set_staff', 'remove_staff']
 
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if 'delete_selected' in actions and not self.user.is_superuser :
+            del actions['delete_selected']
+        return actions
+
     @admin.action(description='Set as staff', permissions=['change'])
     def set_staff(self, request, queryset):
         for obj in queryset:
@@ -218,9 +224,17 @@ class ProfileCBUAdmin(ImportExportMixin, admin.ModelAdmin):
                         )}),
             )
         return fieldsets
-    actions = ['update_pm_count', ]
-    @admin.action(description='Update PM count')
-    def update_pm_count(self, request, queryset):
-        for obj in queryset:
-            obj.pm_count = Project.objects.filter(CBUpm=obj).count()
-            obj.save()        
+
+    # move to batch scheduler
+    # actions = ['update_pm_count', ]
+    # @admin.action(description='Update PM count')
+    # def update_pm_count(self, request, queryset):
+    #     for obj in queryset:
+    #         obj.pm_count = Project.objects.filter(CBUpm=obj).count()
+    #         obj.save()        
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if 'delete_selected' in actions and not self.user.is_superuser :
+            del actions['delete_selected']
+        return actions

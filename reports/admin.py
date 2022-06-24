@@ -438,6 +438,12 @@ class ReportRiskAdmin(ImportExportMixin, admin.ModelAdmin):
             qr.save()
             messages.add_message(request, messages.INFO, 'Report is copied/saved')
 
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if 'delete_selected' in actions and not self.user.is_superuser :
+            del actions['delete_selected']
+        return actions
+
     # FIXME TODO
     # return to callback URL if page comes from project
     # https://stackoverflow.com/questions/1339845/redirect-on-admin-save

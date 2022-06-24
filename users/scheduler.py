@@ -1,3 +1,5 @@
+from django.contrib import messages
+from datetime import datetime, date
 from apscheduler.schedulers.background import BackgroundScheduler
 from django_apscheduler.jobstores import DjangoJobStore, register_events
 from django.utils import timezone
@@ -8,6 +10,8 @@ from django.conf import settings
 from .models import Profile
 from psm.models import Project
 from django.db.models import Count  #, F, Q, Sum, Avg
+from psmprj.utils.dates import previous_working_day
+from reports.models import Report
 
 # This is the function you want to schedule - add as many as you want and then register them in the start() function below
 # def deactivate_expired_accounts():
@@ -39,6 +43,28 @@ def project_pm_count():
         Profile.objects.filter(id=item['CBUpm']).update(pm_count=item['pm_count'])
     # for k, v in pm_dict.items():
 
+def project_backfill_dates():
+    for p in Project.objects.all():
+        if not p.p_launch and p.p_close:
+            p.p_launch = previous_working_day(p.p_close, 1)
+            p.save(update_fields='p_launch')
+        if not p.p_plan_e and p.p_design_b:
+            p.p_plan_e = previous_working_day(p.p_design_b, 1)
+            p.save(update_fields='p_plan_e')
+        if not p.p_design_e and p.p_uat_b:
+            p.p_design_e = previous_working_day(p.p_uat_b, 1)
+            p.save(update_fields='p_design_e')
+        if not p.p_uat_e and p.p_launch:
+            p.p_uat_e = previous_working_day(p.p_launch, 1)
+            p.save(update_fields='p_uat_e')
+
+def late_reminder():
+    for p in Project.objects.filter(year=datetime.today().year):
+        r = Report.objects.filter(project=p).order_by('created_at')[:1]
+        time_between_insertion = datetime.now().date - r.created_at
+        if time_between_insertion > 10:
+            pass
+
 
 # https://github.com/jcass77/django-apscheduler
 def start():
@@ -50,6 +76,8 @@ def start():
     # scheduler.add_job(deactivate_expired_accounts, 'interval', hours=24, id='clean_accounts', jobstore='default', replace_existing=True,)
     scheduler.add_job(assign_staff_role, 'interval', hours=24, id='assign_staff_role', jobstore='default', replace_existing=True,)
     scheduler.add_job(project_pm_count, 'interval', hours=24, id='project_pm_count', jobstore='default', replace_existing=True,)
+    scheduler.add_job(project_pm_count, 'interval', hours=24, id='project_backfill_dates', jobstore='default', replace_existing=True,)
+    scheduler.add_job(project_pm_count, 'interval', hours=24, id='late_reminder', jobstore='default', replace_existing=True,)
 
     register_events(scheduler)
     scheduler.start()

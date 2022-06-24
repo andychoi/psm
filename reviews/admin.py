@@ -206,3 +206,9 @@ class ReviewAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     def redirect_to_import(self, request, obj):
         return HttpResponseRedirect(reverse('admin:%s_%s_import' % self.get_model_info()))
     redirect_to_export.label = "Import"
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if 'delete_selected' in actions and not self.user.is_superuser :
+            del actions['delete_selected']
+        return actions

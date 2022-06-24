@@ -285,6 +285,12 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
         return HttpResponseRedirect(reverse('admin:%s_%s_import' % self.get_model_info()))
     redirect_to_export.label = "Import"
 
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if 'delete_selected' in actions and not self.user.is_superuser :
+            del actions['delete_selected']
+        return actions
+
     # TODO - permission override
     def has_change_permission(self, request, obj=None):
         if obj :
@@ -617,6 +623,11 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         return HttpResponseRedirect(reverse('admin:%s_%s_import' % self.get_model_info()))
     redirect_to_export.label = "Import"
 
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if 'delete_selected' in actions and not self.user.is_superuser :
+            del actions['delete_selected']
+        return actions
     
 # https://adriennedomingus.medium.com/adding-custom-views-or-templates-to-django-admin-740640cc6d42
 

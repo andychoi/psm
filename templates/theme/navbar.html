@@ -14,7 +14,7 @@
 
         <ul class="nav navbar-nav ms-auto ">
             <li class="nav-item" >
-                <form class="form-inline" method="GET" action="{% url 'project_search' %}" >
+                <form class="form-inline" method="GET" action="{% url 'project_search' %}" >{% csrf_token %}
                 <!-- <div class="form-group""> -->
                     <input class="form-control form-control-sm mt-1" style="display:flex;" name="q" type="search" placeholder="Search Project" value="{{request.GET.title}}">
                     <!-- <button class="btn btn btn-outline-info my-2 my-sm-0" type="submit"> Search </button> -->

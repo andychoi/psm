@@ -80,7 +80,7 @@ class PostDetailView(DetailView):
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
-    fields = ['title', 'content', 'image', 'featured', 'private', 'status', 'tags']
+    fields = ['title', 'content', 'image', 'category', 'featured', 'private', 'status', 'tags']
     # template_name = 'blog/post_form.html'
     success_url = '/'
 
@@ -88,7 +88,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 # https://stackoverflow.com/questions/6989762/what-does-test-func-and-view-func-do-in-python-django
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
-    fields = ['title', 'content', 'image', 'featured', 'private', 'status', 'tags']
+    fields = ['title', 'content', 'image', 'category', 'featured', 'private', 'status', 'tags']
     # template_name = 'blog/post_form.html'
 
     def form_valid(self, form):

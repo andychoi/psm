@@ -159,7 +159,7 @@
                                 <div class="card-header">Basic Form</div>
                                 <div class="card-body">
                                     <h5 class="card-title">Lorem ipsum dolor sit amet consectetur.</h5>
-                                    <form accept-charset="utf-8">
+                                    <form accept-charset="utf-8">{% csrf_token %}
                                         <div class="mb-3">
                                             <label for="email" class="form-label">Email</label>
                                             <input type="email" name="email" placeholder="Email Address" class="form-control" required>
@@ -180,7 +180,7 @@
                                 <div class="card-header">Horizontal Form</div>
                                 <div class="card-body">
                                     <h5 class="card-title">Lorem ipsum dolor sit amet consectetur.</h5>
-                                    <form accept-charset="utf-8">
+                                    <form accept-charset="utf-8">{% csrf_token %}
                                         <div class="mb-3 row">
                                             <label class="col-sm-2 form-label" for="email">Email</label>
                                             <div class="col-sm-10">
@@ -209,7 +209,7 @@
                                 <div class="card-header">Inline Form</div>
                                 <div class="card-body">
                                     <h5 class="card-title">Example inline form</h5>
-                                    <form accept-charset="utf-8">
+                                    <form accept-charset="utf-8">{% csrf_token %}
                                         <div class="row g-2">
                                             <div class="col">
                                                 <label for="name" class="form-label sr-only">Name</label>
@@ -242,7 +242,7 @@
                                           </div>
                                           <div class="modal-body text-start">
                                             <p>Lorem ipsum dolor sit amet consectetur.</p>
-                                            <form accept-charset="utf-8">
+                                            <form accept-charset="utf-8">{% csrf_token %}
                                                 <div class="mb-3">
                                                     <label for="email" class="form-label">Email</label>
                                                     <input type="email" name="email" placeholder="Email Address" class="form-control">
@@ -270,7 +270,7 @@
                                 <div class="card-header">Form Validation</div>
                                 <div class="card-body">
                                     <h5 class="card-title">Example form with inline field validations</h5>
-                                    <form class="needs-validation" novalidate accept-charset="utf-8">
+                                    <form class="needs-validation" novalidate accept-charset="utf-8">{% csrf_token %}
                                         <div class="row g-2">
                                             <div class="mb-3 col-md-6">
                                                 <label for="email" class="form-label">Email</label>
@@ -336,7 +336,7 @@
                                 <div class="card-header">All form elements</div>
                                 <div class="card-body">
                                     <h5 class="card-title"></h5>
-                                    <form class="">
+                                    <form class="">{% csrf_token %}
                                         <div class="mb-3 row">
                                             <label class="col-sm-2">Normal</label>
                                             <div class="col-sm-10">

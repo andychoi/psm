@@ -17,7 +17,7 @@
 {% block content %}
 
 <div class="container mt-5">
-  <form method="POST" action=""><div class="form-group">
+  <form method="POST" action="">{% csrf_token %}
     <!-- form.name_of_field|as_crispy_field -->
     {% csrf_token %}
     {{form|crispy}}

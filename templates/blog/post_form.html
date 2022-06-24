@@ -13,8 +13,7 @@
 {% block content %}
 <div class="content-section">
     <!-- file upload : enctype multipart/form-data -->
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
+    <form method="POST" enctype="multipart/form-data">{% csrf_token %}
         <fieldset class="form-group  mb-3">
             <legend class="border-bottom">Create Post</legend>
             {{ form|crispy }}

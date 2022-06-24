@@ -10,7 +10,7 @@
 {% block content %}
 	<div class="container">
 
-        <form id="filterForm">
+        <form id="filterForm">{% csrf_token %}
             <label for="year">Choose a year:</label>
             <select name="year" id="year"></select>
             <input type="submit" value="Load" name="_load">

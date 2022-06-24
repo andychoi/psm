@@ -277,3 +277,10 @@ if SAP:
 #https://github.com/jcass77/django-apscheduler
 # https://stackoverflow.com/questions/62525295/how-to-use-python-to-schedule-tasks-in-a-django-application
 APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
+
+if ENV == "PROD":
+    SECURE_HSTS_SECONDS = 0
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+    SECURE_HSTS_PRELOAD = False    
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True

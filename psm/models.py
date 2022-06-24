@@ -144,7 +144,7 @@ class Project(models.Model):
     priority = models.CharField(_("priority"), max_length=20, choices=PRIORITIES, default=Priority.NORMAL.value)
 
     est_cost = models.DecimalField(_("Est. cost"), decimal_places=0, max_digits=12, blank=True, null=True)
-    app_budg = models.DecimalField(_("Approved budget"), decimal_places=0, max_digits=12, blank=True, null=True)
+    budget = models.DecimalField(_("Approved budget"), decimal_places=0, max_digits=12, blank=True, null=True)
     wbs = models.ForeignKey(WBS, blank=True, null=True, on_delete=models.PROTECT, verbose_name=_('WBS (SAP)'))
     es = models.CharField(_("ES#"), blank=True, null=True, max_length=30)
     ref = models.CharField(_("Reference"), blank=True, null=True, max_length=100)

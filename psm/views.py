@@ -525,8 +525,8 @@ def get_project_metrics(request, year=date.today().year, groupby='year' ):
         'est_cost_sum' : Coalesce( Sum('est_cost', filter=~Q(state=State.CANCEL.value), output_field=IntegerField(), default=0), 0),
         'cnc_cost_sum' : Coalesce( Sum('est_cost', filter=Q(state=State.CANCEL.value),  output_field=IntegerField(), default=0), 0),  
         # for same field, causing another line
-        'app_budg_sum' : Coalesce( Sum('app_budg', filter=~Q(state=State.CANCEL.value), output_field=IntegerField(), default=0), 0),
-        # 'app_budg_sum' : Coalesce( Sum(  'app_budg', output_field=IntegerField()), 0 ),
+        'budget_sum' : Coalesce( Sum('budget', filter=~Q(state=State.CANCEL.value), output_field=IntegerField(), default=0), 0),
+        # 'budget_sum' : Coalesce( Sum(  'budget', output_field=IntegerField()), 0 ),
     }
 
     # generic way - Filter the request for non-empty values and then use dictionary expansion to do the query.

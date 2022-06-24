@@ -108,8 +108,8 @@ class ProjectDeliverableInline(admin.TabularInline):
 
 # ----------------------------------------------------------------------------------------------------------------
 class ProjectPlanResource(resources.ModelResource):
-    pm_name     = fields.Field(attribute='pm',     widget=ForeignKeyWidget(Profile, 'name'))
-    cbupm_name  = fields.Field(attribute='CBUpm',  widget=ForeignKeyWidget(Profile, 'name'))
+    # pm_name     = fields.Field(attribute='pm',     widget=ForeignKeyWidget(Profile, 'name'))
+    # cbupm_name  = fields.Field(attribute='CBUpm',  widget=ForeignKeyWidget(Profile, 'name'))
     cbu_names       = fields.Field(attribute='CBUs',    widget=ManyToManyWidget(model=CBU, separator=',', field='name'), )
     strategy_names  = fields.Field(attribute='strategy',widget=ManyToManyWidget(model=Strategy, separator=',', field='name'), )
     class Meta:
@@ -118,9 +118,9 @@ class ProjectPlanResource(resources.ModelResource):
             # 'pm', 'pm__name',  
             # 'CBUpm', 'CBUpm__name',  
             # 'CBU', 'cbu_names', 
-            'pm_name', 'cbupm_name', 'cbu_names',  
-            'strategy_names', 'program', 
-            'est_cost', 'resource', 'type', 'category', 'priority', 'dept', 'dept__name', 'dept__div', 'dept__div__name',  
+            'pm__name', 'CBUpm__name', 'cbu_names',  
+            'strategy_names', 'program__name', 
+            'est_cost', 'resource', 'type', 'category', 'priority', 'dept', 'dept__name', 'team__name', 'dept__div', 'dept__div__name',  
             'p_ideation','p_plan_b','p_kickoff','p_design_b','p_dev_b','p_uat_b','p_launch','p_close',
         )
         export_order = fields
@@ -325,18 +325,18 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
 
 # ----------------------------------------------------------------------------------------------------------------
 class ProjectResource(resources.ModelResource):
-    pm_name     = fields.Field(attribute='pm',     widget=ForeignKeyWidget(Profile, 'name'))
-    cbupm_name  = fields.Field(attribute='CBUpm',  widget=ForeignKeyWidget(Profile, 'name'))
+    # pm_name     = fields.Field(attribute='pm',     widget=ForeignKeyWidget(Profile, 'name'))
+    # cbupm_name  = fields.Field(attribute='CBUpm',  widget=ForeignKeyWidget(Profile, 'name'))
     cbu_names       = fields.Field(attribute='CBUs',    widget=ManyToManyWidget(model=CBU, separator=',', field='name'), )
     strategy_names  = fields.Field(attribute='strategy',widget=ManyToManyWidget(model=Strategy, separator=',', field='name'), )
     class Meta:
         model = Project
         fields = ( 'id', 'year', 'code', 'cf', 'title', 'description', 'objective', 'phase', 'state', 'progress', 'ref_plan__code',
-            'pm', 'pm_name',  'CBUs', 'cbu_names', 'CBUpm', 'cbupm_name', 'strategy', 'strategy_names', 'program', 'program__name','type', 'category', 'priority', 
-            'est_cost', 'app_budg', 'dept', 'dept__name', 'dept__div', 'dept__div__name', 
+            'pm', 'pm__name',  'CBUs', 'cbu_names', 'CBUpm__name', 'strategy', 'strategy_names', 'program', 'program__name','type', 'category', 'priority', 
+            'est_cost', 'budget', 'dept', 'dept__name', 'dept__div', 'dept__div__name', 'team__name', 
             'p_ideation','p_plan_b','p_kickoff','p_design_b','p_dev_b','p_uat_b','p_launch','p_close',
             'a_plan_b','a_kickoff','a_design_b','a_dev_b','a_uat_b','a_launch','a_close',
-            'wbs__wbs', 'es', 'ref', 'cbu_req','cbu_sow','cbu_po', 'status_o', 'status_t', 'status_b', 'status_s', 
+            'wbs__wbs', 'es', 'ref', 'cbu_req','cbu_sow','cbu_po', 'status_o', 'status_t', 'status_b', 'status_s', 'resolution'
         )
         export_order = fields
 # ----------------------------------------------------------------------------------------------------------------
@@ -383,7 +383,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
                             ('status_o', 'status_t', 'status_b', 'status_s', 'lstrpt', 'resolution'), 
                             ), "classes": ("stack_labels",)}),
         (_('Detail...'),  {'fields': (('strategy', 'program', 'is_agile'), ('CBUs', 'CBUpm', 'ref'),('pm', 'dept', ), 
-                            ( 'est_cost', 'app_budg', 'wbs', 'es', 'is_internal' ), ('description', 'objective'),  ('ref_plan',),
+                            ( 'est_cost', 'budget', 'wbs', 'es', 'is_internal' ), ('description', 'objective'),  ('ref_plan',),
                                        ), 'classes': ('collapse',)}),
         (_('Schedule...'),  {'fields': (('p_ideation',),('p_plan_b','p_plan_e','p_kickoff','p_design_b','p_design_e','p_dev_b','p_dev_e','p_uat_b','p_uat_e','p_launch','p_close'),
                                         ('a_plan_b','a_plan_e','a_kickoff','a_design_b','a_design_e','a_dev_b','a_dev_e','a_uat_b','a_uat_e','a_launch','a_close'),
@@ -409,7 +409,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
             fieldsets = (      # Creation form
                 (None, {'fields': (('title', 'type', 'year'), ('strategy', 'program','is_agile'), 
                             ('CBUs', 'CBUpm', 'ref', ), ('pm', 'dept', ), 
-                            ( 'est_cost', 'app_budg', 'wbs', 'es',  ),
+                            ( 'est_cost', 'budget', 'wbs', 'es',  ),
                             ('state', 'phase', 'progress', 'priority'), ('description', 'objective'),  ('ref_plan',),
                             ('p_ideation', 'p_plan_b','p_plan_e','p_kickoff','p_design_b','p_design_e','p_dev_b','p_dev_e','p_uat_b','p_uat_e','p_launch','p_close'),
                             # ('req_pro','req_sec','req_inf'), 

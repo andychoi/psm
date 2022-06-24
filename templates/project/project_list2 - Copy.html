@@ -86,7 +86,7 @@
                     <td class="text-center">{{ p.CBU_str }}</td>
                     <td class="text-left">{{ p.title }}</td>
                     <td class="text-end">{% if p.est_cost %}{{ p.est_cost|intcomma }}{% else %}0{% endif %}</td>
-                    <td class="text-end">{% if p.app_budg %}{{ p.app_budg|intcomma }}{% else %}0{% endif %}</td>
+                    <td class="text-end">{% if p.budget %}{{ p.budget|intcomma }}{% else %}0{% endif %}</td>
                     <td class="text-center">{{ p.p_plan_b }}</td>
                     <td class="text-center">{{ p.p_launch }}</td>
                     <!--td>{{ p.CBUpm.name }}</td-->

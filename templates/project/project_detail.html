@@ -138,7 +138,7 @@
                 <tr><td>Project Catgory</td><td>{{ project.category|slice:'3:' }}</td></tr>
                 <tr><td>Agile project?</td><td>{{ project.is_agile }}</td></tr>
                 <tr><td>Est.cost</td><td>{{ project.est_cost }}</td></tr>
-                <tr><td>Approved budget</td><td>{{ project.app_budg }}</td></tr>
+                <tr><td>Approved budget</td><td>{{ project.budget }}</td></tr>
                 <tr><td>Related Strategy</td><td>{{ project.strategy_str }}</td></tr>
                 <tr><td>Related Program</td><td>{{ project.program }}</td></tr>
                 <tr><td>Reference Plan</td><td>{% if project.ref_plan %}<a href="/project-plan/{{ project.ref_plan.id }}/">{{ project.ref_plan }}</a>{% else %}None{% endif %}</td></tr>

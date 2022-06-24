@@ -11,21 +11,21 @@
 {% block content %}
 	<div class="container-fluid mt-1">  <!-- container-float margin top 3 -->
 
-        <!-- <form id="filterForm">
-            <label for="year">Choose a year:</label>
-            <select name="year" id="year"></select>
-            <input type="submit" value="Load" name="_load">
-        </form> -->
-
         <div class="row">
         <div id="toolbar" >
             <h5>PROJECT LIST</h5>
+            <!-- <select class="form-control">
+                <option value="">Export Basic</option>
+                <option value="all">Export All</option>
+                <option value="selected">Export Selected</option>
+              </select>             -->
         </div>
         <!-- table-sm : smaller padding -->
         {% if project_list %}
         <table data-toggle="table" data-pagination="true" data-page-size="25" data-page-list="[10, 25, 50, 100, all]"
         data-search="true" data-filter-control="true" data-show-search-clear-button="false" data-show-refresh="false"
         data-toolbar="#toolbar" data-show-toggle="true" data-show-columns="true"
+        data-show-export="true"
         id="table" class="col table table-striped table-hover table-bordered table-sm small">
                 <thead class="table-primary">
                 <tr>
@@ -67,7 +67,7 @@
                     <td class="text-center" scope="row"><a href="{% url 'project_detail' p.id %}">{{ p.pjcode }}</a></td>
                     <td class="text-left">{{ p.title }}</td>
                     <td class="text-end">{% if p.est_cost %}{{ p.est_cost|intcomma }}{% else %}0{% endif %}</td>
-                    <td class="text-end">{% if p.app_budg %}{{ p.app_budg|intcomma }}{% else %}0{% endif %}</td>
+                    <td class="text-end">{% if p.budget %}{{ p.budget|intcomma }}{% else %}0{% endif %}</td>
 
                     <td class="text-center">
                         <div class="progress">
@@ -153,11 +153,15 @@
 
 
 {% block script_body %}
+<script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/tableExport.min.js"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/libs/jsPDF/jspdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/libs/jsPDF-AutoTable/jspdf.plugin.autotable.js"></script> -->
+
 <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>    
 <script src="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.js"></script>
-<!--script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-  integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
-</script-->
+<script src="https://unpkg.com/bootstrap-table@1.20.2/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"> -->
+
 {% endblock %}
 
 

@@ -74,10 +74,11 @@ def project_backfill_dates():
             p.save()    #update_fields='p_uat_e')
 
 def project_state_from_progress():
-    for p in Project.objects.filter(Q(progress=100) & ( Q(phase__in=PHASE_OPEN) | Q(state__in=STATE_OPEN))):
+    # for p in Project.objects.filter(Q(progress=100) & ( Q(phase__in=PHASE_OPEN) | Q(state__in=STATE_OPEN))):
+    for p in Project.objects.filter(Q(progress=100) & ( ~Q(phase=Phase.CLOSED.value) | ~Q(state=State.DONE.value))):
             p.phase = Phase.CLOSED.value
             p.state = State.DONE.value
-            p.save()    
+            # p.save()    
 
 def late_reminder():
     for p in Project.objects.filter(year=datetime.today().year, phase__in=PHASE_WORK):

@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from import_export.admin import ImportExportMixin
+from django.contrib import messages
 
 from .models import CBU, Div, Dept, Team, WBS
 
@@ -147,6 +148,10 @@ class WBSAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
     def import_func(modeladmin, request, queryset):        
         timezone = pytz.timezone("America/Los_Angeles")
 
+        if not settings.SAP:
+            messages.warning(request, "SAP connection is not enabled in setting")
+            return
+            
         data = {}
         with Connection(**settings.SAP_CONN_WBS) as conn:
             try:

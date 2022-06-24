@@ -12,6 +12,10 @@ from psm.models import Project
 from django.db.models import Count  #, F, Q, Sum, Avg
 from psmprj.utils.dates import previous_working_day
 from reports.models import Report
+from common.utils import PHASE_WORK
+from psmprj.utils.mail import send_mail_async as send_mail
+import logging
+logger = logging.getLogger(__name__)
 
 # This is the function you want to schedule - add as many as you want and then register them in the start() function below
 # def deactivate_expired_accounts():
@@ -44,29 +48,40 @@ def project_pm_count():
     # for k, v in pm_dict.items():
 
 def project_backfill_dates():
-    for p in Project.objects.all():
+    for p in Project.objects.filter(year = date.today().year):
         if not p.p_launch and p.p_close:
             p.p_launch = previous_working_day(p.p_close, 1)
-            p.save(update_fields='p_launch')
+            p.save()    #update_fields='p_launch')   error...why?
         if not p.p_plan_e and p.p_design_b:
             p.p_plan_e = previous_working_day(p.p_design_b, 1)
-            p.save(update_fields='p_plan_e')
+            p.save()    #update_fields='p_plan_e')
         if not p.p_design_e and p.p_uat_b:
             p.p_design_e = previous_working_day(p.p_uat_b, 1)
-            p.save(update_fields='p_design_e')
+            p.save()    #update_fields='p_design_e')
         if not p.p_uat_e and p.p_launch:
             p.p_uat_e = previous_working_day(p.p_launch, 1)
-            p.save(update_fields='p_uat_e')
+            p.save()    #update_fields='p_uat_e')
 
 def late_reminder():
-    for p in Project.objects.filter(year=datetime.today().year):
-        r = Report.objects.filter(project=p).order_by('created_at')[:1]
-        time_between_insertion = datetime.now().date - r.created_at
-        if time_between_insertion > 10:
-            pass
-
+    for p in Project.objects.filter(year=datetime.today().year, phase__in=PHASE_WORK):
+        r = Report.objects.filter(project=p).order_by('created_at').first()
+        reqdt = r.created_at if r else p.p_kickoff if p.p_kickoff else p.p_plan_b
+        date_delta = (date.today() - reqdt).days
+        if date_delta > 10:
+            email_template = settings.PSM_EMAIL_WITHOUT_URL
+            try:
+                send_mail(
+                    'test reminder',
+                    'mail content', 
+                    settings.APP_EMAIL,
+                    'andychoi@autoeveramerica.com',
+                )
+            except Exception as e:
+                logger.warning("[Project #%s] Error trying to send the Project creation email - %s: %s",
+                               p.pk, e.__class__.__name__, str(e))
 
 # https://github.com/jcass77/django-apscheduler
+# https://apscheduler.readthedocs.io/en/latest/userguide.html
 def start():
     scheduler = BackgroundScheduler()
     scheduler.add_jobstore(DjangoJobStore(), "default")
@@ -76,8 +91,8 @@ def start():
     # scheduler.add_job(deactivate_expired_accounts, 'interval', hours=24, id='clean_accounts', jobstore='default', replace_existing=True,)
     scheduler.add_job(assign_staff_role, 'interval', hours=24, id='assign_staff_role', jobstore='default', replace_existing=True,)
     scheduler.add_job(project_pm_count, 'interval', hours=24, id='project_pm_count', jobstore='default', replace_existing=True,)
-    scheduler.add_job(project_pm_count, 'interval', hours=24, id='project_backfill_dates', jobstore='default', replace_existing=True,)
-    scheduler.add_job(project_pm_count, 'interval', hours=24, id='late_reminder', jobstore='default', replace_existing=True,)
+    scheduler.add_job(project_backfill_dates, 'interval', hours=24, id='project_backfill_dates', jobstore='default', replace_existing=True,)
+    scheduler.add_job(late_reminder, 'interval', hours=168, id='late_reminder', jobstore='default', replace_existing=True,)
 
     register_events(scheduler)
     scheduler.start()

@@ -287,7 +287,7 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
 
     def get_actions(self, request):
         actions = super().get_actions(request)
-        if 'delete_selected' in actions and not self.user.is_superuser :
+        if 'delete_selected' in actions and not request.user.is_superuser :
             del actions['delete_selected']
         return actions
 
@@ -625,7 +625,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
 
     def get_actions(self, request):
         actions = super().get_actions(request)
-        if 'delete_selected' in actions and not self.user.is_superuser :
+        if 'delete_selected' in actions and not request.user.is_superuser :
             del actions['delete_selected']
         return actions
     

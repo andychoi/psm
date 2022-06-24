@@ -1,90 +1,64 @@
-{% extends "base_wide.html" %}
+{% extends "theme/root.html" %}
+{% load static %}
 
 {% block head_script %}
-<!-- <script src="https://code.highcharts.com/highcharts.js"></script> -->
-
-<!-- <script src="https://code.highcharts.com/gantt/highcharts-gantt.js"></script>
-<script src="https://code.highcharts.com/gantt/modules/exporting.js"></script>
-<script src="https://code.highcharts.com/gantt/modules/accessibility.js"></script> -->
-<!-- <script src="https://blacklabel.github.io/custom_events/js/customEvents.js"></script> -->
-
-<script src="/static/libs/highcharts/gantt/highcharts-gantt.js"></script>
-<script src="/static/libs/highcharts/gantt/modules/exporting.js"></script>
-<script src="/static/libs/highcharts/gantt/modules/accessibility.js"></script>
-<script src="/static/libs/highcharts/gantt/modules/customEvents.js"></script>
-
-<!-- <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script> -->
-<!-- <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script> -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <style>
-    .testclass {font-size: 10rem;}
-
     .ideation  { background-color:#fff100; }
-    .preplann  { background-color:#009e49; }
-    .planning  { background-color:#00b294; }
+    .preplan   { background-color:#009e49; color:white; }
+    .planning  { background-color:#3ef1d4; }
     .design    { background-color:#ff8c00; }
-    .develop   { background-color:#00188f; }
-    .testing   { background-color:#68217a; }
-    .launch    { background-color:#e81123; }
-    .complete  { background-color:#0f52ba; }
-    .closed    { background-color:#202928; }
+    .develop   { background-color:#00188f; color:white; }
+    .testing   { background-color:#68217a; color:white; }
+    .launch    { background-color:#e81123; color:white; }
+    .complete  { background-color:#0f52ba; color:white; }
+    .closed    { background-color:#202928; color:white; }
 </style>
 {% endblock %}
 
 {% block content %}
+
 <div id="container">
-    <!-- filter area -->
     <div style="display: flex; justify-content: space-between;">
         <div>
-            <h3>Gantt Chart</h3>
+            <h4>Gantt Chart</h4>
         </div>
         <div id="chart_filter_ctrl" style="height: 2rem; display: flex;">
             <label>Max Display Item:</label>
             <input type="number" min="1" max="200" id="input_max_item" style="width: 100px; text-align: end; margin: 0 3px;"></input>
             <button onclick="applyMaxItem()" id="btn_set_max_item" class="btn btn-sm btn-secondary">Apply</button>
-            <button onclick="toggleFilter()" id="btn_toggle_filter" class="btn btn-sm btn-link"></button>
+            <!-- <button onclick="toggleFilter()" id="btn_toggle_filter" class="btn btn-sm btn-link"></button> -->
         </div>
     </div>
-    <div id="chart_fiter" class="row p-3">
-        {% for filterItem in filterItems %}
-        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
-            <label  class="form-group label" for='sel_{{ filterItem.qId }}'>{{ filterItem.text }}</label>        
-            <select class="form-select"  id='sel_{{ filterItem.qId }}' onchange="updateData()">
-                <option value=''>ALL</option>
-                {% for pItem in filterItem.items %}
-                <option value="{{ pItem.id }}">{{ pItem.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        {% endfor %}
-    </div>
-    <!-- chart area -->
-    <div id="chart_area"></div>
 
-    <div>
-        <table>
-            <tr>
-                <td class="ideation">ideation <td>
-                <td class="preplan">pre-plan<td>
-                <td class="planning">planning <td>
-                <td class="design ">design 	<td>
-                <td class="develop">develop 	<td>
-                <td class="testing">testing 	<td>
-                <td class="launch">launch 	<td>
-                <td class="complete">complete<td>
-                <td class="closed ">closed 	<td>
-            </tr>
-        </table>
+    <div class="row">
+        <div id="chart_area"></div>
     </div>
-    
+
+    <div class="row">
+        <p class="text-end small">
+                Color:
+                <span class="ps-1 pe-1 ideation">ideation </span>
+                <span class="ps-1 pe-1 preplan">pre-plan</span>
+                <span class="ps-1 pe-1 planning">planning </span>
+                <span class="ps-1 pe-1 design ">design 	</span>
+                <span class="ps-1 pe-1 develop">develop </span>
+                <span class="ps-1 pe-1 testing">testing </span>
+                <span class="ps-1 pe-1 launch">launch 	</span>
+                <span class="ps-1 pe-1 complete">complete</span>
+                <span class="ps-1 pe-1 closed ">closed 	</span>
+        </p>
+    </div>
+
 </div>
 <!-- <div id="content_root" class="container-fluid mt-1"></div>   -->
 <!-- container-float margin top 3 -->
 {% endblock content %}
 
-{% block script_body %} 
+{% block script_body %}
+<script src="/static/libs/highcharts/gantt/highcharts-gantt.js"></script>
+<script src="/static/libs/highcharts/gantt/modules/exporting.js"></script>
+<script src="/static/libs/highcharts/gantt/modules/accessibility.js"></script>
+<script src="/static/libs/highcharts/gantt/modules/customEvents.js"></script>
 <script>
     var tChartData = [];
     var tMaxItem = 200;
@@ -134,6 +108,9 @@
         // title: {
         //     text: 'Projects'
         // },
+        credits: {
+            enabled: false
+        },
         colors: [],
         xAxis: {
             currentDateIndicator: true,
@@ -245,18 +222,12 @@
         },
 
         plotOptions: {
-            line: {
-                marker: {
-                    enabled: false
-                }
+            credits: {
+                enabled: false
             }
         },
 
-        series: [],
-
-        credits: {
-            enabled: false
-        },
+        series: []
     };
 
     function getParams() {
@@ -281,7 +252,7 @@
         switch(pStateStr.split('-')[0]) {
             case '00': return '#fff100';
             case '10': return '#009e49';
-            case '20': return '#00b294';
+            case '20': return '#3ef1d4';
             case '30': return '#ff8c00';
             case '40': return '#00188f';
             case '50': return '#68217a';
@@ -306,7 +277,7 @@
         var tColors = [];
         tChartData.forEach((pItem, pIdx) => {
             if (tCounter++ < tMaxItem) {                
-                tColors.push(getColor(pItem.state));
+                tColors.push(getColor(pItem.phase));
 
                 var tCategory = "[" + pItem.CBU_str + "] " + pItem.title;
                 tCategories.push(tCategory);

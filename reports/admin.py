@@ -413,7 +413,7 @@ class ReportRiskAdmin(ImportExportMixin, admin.ModelAdmin):
     formatted_reporton.short_description = 'Report On'
 
     def cbu_list(self, obj):
-        return " ,".join(p.name for p in obj.project.CBU.all())
+        return " ,".join(p.name for p in obj.project.CBUs.all())
     cbu_list.short_description = 'CBU'
 
     def get_dept(self, obj):

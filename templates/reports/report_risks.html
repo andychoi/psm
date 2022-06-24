@@ -30,6 +30,7 @@
       <table data-toggle="table" data-pagination="true" data-page-size="25" data-page-list="[10, 25, 50, 100, all]"
       data-search="true" data-filter-control="true" data-show-search-clear-button="false" data-show-refresh="false"
       data-toolbar="#toolbar" data-show-toggle="true" data-show-columns="true" data-escape="false"
+      data-show-export="true"
       id="table" class="col table table-striped table-bordered table-sm small">
       <thead class="table-light">
       <tr>
@@ -108,7 +109,10 @@
 {% block script_body %} 
 <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>    
 <script src="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.js"></script>
-<!--script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-  integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
-</script-->
+
+<script src="https://unpkg.com/bootstrap-table@1.20.2/dist/extensions/export/bootstrap-table-export.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/tableExport.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/libs/jsPDF/jspdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/libs/jsPDF-AutoTable/jspdf.plugin.autotable.js"></script>
+
 {% endblock %}

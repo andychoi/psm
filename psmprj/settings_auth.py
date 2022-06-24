@@ -47,9 +47,6 @@ AUTH_LDAP_MIRROR_GROUPS = False
 # env.list("AUTH_LDAP_MIRROR_GROUPS")
 # AUTH_LDAP_MIRROR_GROUPS = True
 #default auth group to be assigned for new user 
-DEFAULT_AUTH_GROUP  = env('DEFAULT_AUTH_GROUP', "staff")
-
-
 
 # from decouple import config
 # # values you got from step 2 from your Mirosoft app

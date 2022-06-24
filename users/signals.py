@@ -3,6 +3,8 @@ from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from .models import Profile
+from django.conf import settings
+from django.contrib.auth.models import User, Group
 
 # https://stackoverflow.com/questions/62252925/how-to-use-django-signals-using-singnals-py
 
@@ -26,6 +28,15 @@ def create_profile(sender, instance, created, **kwargs):
             else:
                 if not Profile.objects.filter(user=instance).exists() and Profile.objects.filter(email=instance.email).count() == 1:
                     Profile.objects.filter(email=instance.email).update(user = instance)
+
+        if instance.is_staff == True:
+            if not instance.groups.filter(name=settings.DEFAULT_AUTH_GROUP).exists():    
+                try:
+                    user_group = Group.objects.get(name=settings.DEFAULT_AUTH_GROUP)
+                except:
+                    pass    
+                if user_group: 
+                    instance.groups.add(user_group) 
 
 # try to create profile double time: by signal and by form.
 # use get_or_create instead of create

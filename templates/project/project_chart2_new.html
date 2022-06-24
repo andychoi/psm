@@ -252,7 +252,7 @@
         switch(pStateStr.split('-')[0]) {
             case '00': return '#fff100';
             case '10': return '#009e49';
-            case '20': return '#00b294';
+            case '20': return '#3ef1d4';
             case '30': return '#ff8c00';
             case '40': return '#00188f';
             case '50': return '#68217a';
@@ -277,7 +277,7 @@
         var tColors = [];
         tChartData.forEach((pItem, pIdx) => {
             if (tCounter++ < tMaxItem) {                
-                tColors.push(getColor(pItem.state));
+                tColors.push(getColor(pItem.phase));
 
                 var tCategory = "[" + pItem.CBU_str + "] " + pItem.title;
                 tCategories.push(tCategory);

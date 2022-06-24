@@ -165,27 +165,6 @@
 <!-- <script src="https://cdn.jsdelivr.net/gh/bbbootstrap/libraries@main/jquery.table2excel.min.js"></script> -->
 <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"> -->
 
-<script>
-$(function() {
-        $("#table").click(function(e){
-          var table = $("#htmltable");
-          if(table && table.length){
-            $(table).table2excel({
-              exclude: ".noExl",
-              name: "Excel Document Name",
-              filename: "BBBootstrap" + new Date().toISOString().replace(/[\-\:\.]/g, "") + ".xls",
-              fileext: ".xls",
-              exclude_img: true,
-              exclude_links: true,
-              exclude_inputs: true,
-              preserveColors: false
-            });
-          }
-        });
-        
-      });
-
-</script>    
 {% endblock %}
 
 

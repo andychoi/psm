@@ -75,10 +75,10 @@ def project_backfill_dates():
 
 def project_state_from_progress():
     # for p in Project.objects.filter(Q(progress=100) & ( Q(phase__in=PHASE_OPEN) | Q(state__in=STATE_OPEN))):
-    for p in Project.objects.filter(Q(progress=100) & ( ~Q(phase=Phase.CLOSED.value) | ~Q(state=State.DONE.value))):
+    for p in Project.objects.filter(progress=100).filter(Q(phase__in=PHASE_OPEN) | Q(state__in=STATE_OPEN)):
         p.phase = Phase.CLOSED.value
         p.state = State.DONE.value
-        # p.save()    
+        p.save()    
 
 def late_reminder():
     for p in Project.objects.filter(year=datetime.today().year, phase__in=PHASE_WORK):
@@ -97,13 +97,19 @@ def late_reminder():
                 "url": f'{settings.APP_URL}/project/{p.id}/',
                 "sign": settings.SITE_HEADER,
             }
-            email_template = settings.PSM_EMAIL_REPORT_REMINDER           
+            email_template = settings.PSM_EMAIL_REPORT_REMINDER
+            if settings.EMAIL_DEV:
+                email_receiver = [ settings.EMAIL_PSM_ADMIN ]   
+            else:
+                email_receiver = [ p.pm.email if p.pm else p.dept.head.profile.email if p.dept.head else settings.EMAIL_PSM_ADMIN ]
+                if p.dept.head:
+                    email_receiver.append(p.dept.head.profile.email) 
             try:
                 send_mail(
                     f'{settings.EMAIL_SUBJECT_PREFIX} Project status report reminder -{p}',
                     email_template.format(**vals),
                     settings.APP_EMAIL,
-                    [ settings.EMAIL_PSM_ADMIN if settings.EMAIL_DEV else p.pm.email if p.pm else p.dept.head.profile.email if p.dept.head else settings.EMAIL_PSM_ADMIN ],
+                    email_receiver,
                 )
             except Exception as e:
                 logger.warning("[Project #%s] Error trying to send the Project creation email - %s: %s",

@@ -199,7 +199,7 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
         return form
 
 
-    actions = ['move_to_final_version', 'move_to_11_version', 'move_to_12_version', 'transfer_to_actual' ]
+    actions = ['move_to_final_version', 'move_to_11_version', 'move_to_12_version', 'release_to_actual_batch' ]
     def queryset_update_version(self, request, queryset, version):
         updated = queryset.update(version=version)
         self.message_user(request, ngettext(
@@ -231,6 +231,8 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
         for obj in queryset:
             if obj.version in [ Versions.V20.value, Versions.V21.value ]:
                 self.copy_to_project(request, obj)
+            else:
+                messages.add_message(request, messages.ERROR, "You can release from BAP or UPN" )
 
     # object action FIXME
     change_actions = ('release_to_actual',)

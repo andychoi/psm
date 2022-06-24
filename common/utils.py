@@ -184,8 +184,8 @@ class Versions(enum.Enum):
     V10 = '10-Initial'
     V11 = '11'
     V12 = '12'
-    V20 = '20-BAP_final'
-    V21 = '21-Unplanned'
+    V20 = '20-BAP (planned)'
+    V21 = '21-NEW (Unplanned)'
 VERSION_QUEUE = ( Versions.V10.value, Versions.V11.value, Versions.V12.value,  )
 VERSION_DONE  = ( Versions.V20.value, Versions.V21.value,   )
 
@@ -193,8 +193,8 @@ VERSIONS = (
     (Versions.V10.value, _('10-Request')),
     (Versions.V11.value, _('11-Review 1')),
     (Versions.V12.value, _('12-Review 2')),
-    (Versions.V20.value, _('20-BAP_final')),
-    (Versions.V21.value, _('21-Unplanned')),
+    (Versions.V20.value, _('20-BAP(planned)')),
+    (Versions.V21.value, _('21-NEW(unplanned)')),
 )
 
 PUBLISH = (

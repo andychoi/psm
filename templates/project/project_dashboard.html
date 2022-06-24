@@ -24,6 +24,14 @@
         font-weight: bold;
         color: #389;
       }
+      .tableWrapper {
+        margin-top: -2rem;
+      }
+      .tableGroupSelection {
+        width: 15rem;
+        position: relative;
+        top: 3rem;        
+      }
     </style>
 {% endblock %}
 
@@ -68,26 +76,33 @@
           </div>
         </div>
 
-        <table data-toggle="table" data-pagination="true" data-page-size="25" data-page-list="[10, 25, 50, 100, all]"
-          data-search="true" data-filter-control="true" data-show-search-clear-button="false" data-show-refresh="false"
-          data-toolbar="#toolbar" data-show-toggle="true" data-show-columns="true"
-          id="table" class="col table table-striped table-hover table-bordered table-sm small">
-          <thead class="table-primary">
-            <tr>
-              <th data-field="dept" data-sortable="true" scope="col">HAEA Dept.</th>
-              <th data-field="progress" data-align="right" data-sortable="true" scope="col">Progress</th>
-              <th data-field="total" data-align="right" data-sortable="true" scope="col">Total</th>
-              <th data-field="completed" data-align="right" data-sortable="true" scope="col">Completed</th>
-              <th data-field="remaining" data-align="right" data-sortable="true" scope="col">Remaining</th>
-              <th data-field="issue" data-align="right" data-sortable="true" scope="col">Issue</th>
-              <th data-field="onTrack" data-align="right" data-sortable="true" scope="col">On Track</th>
-              <th data-field="late" data-align="right" data-sortable="true" scope="col">Late</th>
-              <th data-field="future" data-align="right" data-sortable="true" scope="col">Future</th>
-            </tr>
-          </thead>
-          <tbody>
-          </tbody>
-        </table>
+        <div class="tableWrapper">
+          <select class="form-control selcls tableGroupSelection" id="tableGroup" onChange="setTableData()">
+            <option value="dept">Dept.</option>
+            <option value="cbu">CBU</option>
+            <option value="type">Type</option>
+          </select>
+          <table data-toggle="table" data-pagination="true" data-page-size="25" data-page-list="[10, 25, 50, 100, all]"
+            data-search="true" data-filter-control="true" data-show-search-clear-button="false" data-show-refresh="false"
+            data-toolbar="#toolbar" data-show-toggle="true" data-show-columns="true"
+            id="table" class="col table table-striped table-hover table-bordered table-sm small">
+            <thead class="table-primary">
+              <tr>
+                <th data-field="group" data-sortable="true" scope="col" id="table_group"></th>
+                <th data-field="progress" data-align="right" data-sortable="true" scope="col">Progress</th>
+                <th data-field="total" data-align="right" data-sortable="true" scope="col">Total</th>
+                <th data-field="completed" data-align="right" data-sortable="true" scope="col">Completed</th>
+                <th data-field="remaining" data-align="right" data-sortable="true" scope="col">Remaining</th>
+                <th data-field="issue" data-align="right" data-sortable="true" scope="col">Issue</th>
+                <th data-field="onTrack" data-align="right" data-sortable="true" scope="col">On Track</th>
+                <th data-field="late" data-align="right" data-sortable="true" scope="col">Late</th>
+                <th data-field="future" data-align="right" data-sortable="true" scope="col">Future</th>
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+        </div>
 
         <!-- 2nd row -->
         <!-- <div class="row">
@@ -472,6 +487,80 @@ function loadAllCharts(year) {
     };
 
     var tRawData = [];
+
+    function setTableData() {
+        var tGroupDataMap = {};
+        var tGroupSelectedKey = $('#tableGroup').val();
+        var tGroupText = "";
+        switch(tGroupSelectedKey) {
+          case 'dept':  tGroupText = 'Dept.';   break;
+          case 'cbu':   tGroupText = 'CBU';     break;
+          case 'type':  tGroupText = 'Type';    break;
+        }
+
+        tRawData
+        .filter(function(pDat) {
+          return (pDat.state !== "90-cancel");
+        })
+        .forEach(function(pDat) {          
+          var tGroupId = 0;
+          var tGroupName = "";
+          
+          switch(tGroupSelectedKey) {
+            case 'dept':
+              var tDeptObj = (pDat.dept || {});
+              tGroupName = tDeptObj.name;
+              tGroupId = tDeptObj.id || 0;
+              break;
+            case 'cbu':
+              tGroupName = pDat.CBU_str;
+              tGroupId = pDat.CBU_str;
+              break;
+            case 'type':
+              tGroupName = pDat.type.split("-").pop();
+              tGroupId = pDat.type;
+              break;
+          }
+
+          tGroupDataMap[tGroupId] || (tGroupDataMap[tGroupId] = {group: tGroupName, progress: 0, progressCnt: 0, progressTotal: 0, progressElapsed: 0, progressPeriod: 0, total: 0, completed: 0, late: 0, onTrack: 0, remaining: 0, future: 0, issue: 0});
+
+          tGroupDataMap[tGroupId].total ++;
+          if (pDat.cf === true) {
+            // do nothing
+          }
+          else if (pDat.phase === "70-Completed" || pDat.phase === "80-Closed") {
+            tGroupDataMap[tGroupId].completed ++;
+            tGroupDataMap[tGroupId].progressCnt ++;
+            tGroupDataMap[tGroupId].progressTotal += pDat.progress;
+          } 
+          else {
+            tGroupDataMap[tGroupId].remaining ++;
+            if (isProejctFuture(pDat)) {
+              tGroupDataMap[tGroupId].future ++;
+            } 
+            else if (isProejctLate(pDat)) {
+              tGroupDataMap[tGroupId].late ++;
+            } 
+            else {
+              tGroupDataMap[tGroupId].onTrack ++;
+            }
+            if (hasProejctIssue(pDat)) {
+              tGroupDataMap[tGroupId].issue ++;
+            }
+            tGroupDataMap[tGroupId].progressCnt ++;
+            tGroupDataMap[tGroupId].progressTotal += pDat.progress;
+          }
+        });
+
+        Object.keys(tGroupDataMap).forEach((pKey)=>{
+          // tGroupDataMap[pKey].progress = (1.0 * tGroupDataMap[pKey].progressTotal / tGroupDataMap[pKey].progressCnt).toFixed(1) + "%";
+          tGroupDataMap[pKey].progress = (100.0 * tGroupDataMap[pKey].completed / tGroupDataMap[pKey].total).toFixed(1) + "%";
+        });
+
+        $("#table thead tr th:first-child div:first-child").html(tGroupText);
+        $("#table").bootstrapTable("load", Object.values(tGroupDataMap).sort((pA, pB)=>{ return pA.group && pA.group.localeCompare(pB.group); }));
+    }
+
     function updateData() {
         var tUrl = '/api/1.0/projects';
         var tParams = getParams();        
@@ -491,7 +580,7 @@ function loadAllCharts(year) {
           var tStateData = [];
           var tStateMap = {};
           var tCBUDataMap = {};
-          var tDeptDataMap = {};
+          // var tDeptDataMap = {};
 
           var tCntTotal = 0;
           var tCntCompleted = 0;
@@ -502,14 +591,9 @@ function loadAllCharts(year) {
             return (pDat.state !== "90-cancel");
           })
           .forEach(function(pDat) {            
-              var tDeptObj = (pDat.dept || {});
-              var tDeptId = tDeptObj.id || 0;
-              tDeptDataMap[tDeptId] || (tDeptDataMap[tDeptId] = {dept: tDeptObj.name, progress: 0, progressCnt: 0, progressTotal: 0, progressElapsed: 0, progressPeriod: 0, total: 0, completed: 0, late: 0, onTrack: 0, remaining: 0, future: 0, issue: 0});
-
               tCBUDataMap[pDat.CBU_str] || (tCBUDataMap[pDat.CBU_str] = {completed: 0, cancel: 0, open: 0});
             
               tCntTotal ++;
-              tDeptDataMap[tDeptId].total ++;
               if (pDat.cf === true) {
                 tCntCanceled ++;
                 // tCBUDataMap[pDat.CBU_str].cancel ++;
@@ -518,28 +602,10 @@ function loadAllCharts(year) {
               else if (pDat.phase === "70-Completed" || pDat.phase === "80-Closed") {
                 tCntCompleted ++;
                 tCBUDataMap[pDat.CBU_str].completed ++;
-                tDeptDataMap[tDeptId].completed ++;
-                tDeptDataMap[tDeptId].progressCnt ++;
-                tDeptDataMap[tDeptId].progressTotal += pDat.progress;
               } 
               else {
                 tCntOpen ++;
                 tCBUDataMap[pDat.CBU_str].open ++;
-                tDeptDataMap[tDeptId].remaining ++;
-                if (isProejctFuture(pDat)) {
-                  tDeptDataMap[tDeptId].future ++;
-                } 
-                else if (isProejctLate(pDat)) {
-                  tDeptDataMap[tDeptId].late ++;
-                } 
-                else {
-                  tDeptDataMap[tDeptId].onTrack ++;
-                }
-                if (hasProejctIssue(pDat)) {
-                  tDeptDataMap[tDeptId].issue ++;
-                }
-                tDeptDataMap[tDeptId].progressCnt ++;
-                tDeptDataMap[tDeptId].progressTotal += pDat.progress;
               }
 
               tPhaseMap[pDat.phase] || (tPhaseMap[pDat.phase] = 0);
@@ -572,11 +638,6 @@ function loadAllCharts(year) {
             tSeriesData[1].data.push( tCBUDataMap[pKey].open );
           });
 
-          Object.keys(tDeptDataMap).forEach((pKey)=>{
-            // Number(.toFixed(1))
-            // tDeptDataMap[pKey].progress = (1.0 * tDeptDataMap[pKey].progressTotal / tDeptDataMap[pKey].progressCnt).toFixed(1) + "%";
-            tDeptDataMap[pKey].progress = (100.0 * tDeptDataMap[pKey].completed / tDeptDataMap[pKey].total).toFixed(1) + "%";
-          });
 
           new Highcharts.Chart('chart_2', Object.assign({}, tOption2, {title: {text: 'Project counts by CBU'}, xAxis: {categories: tCBUList}, series: tSeriesData}));
           // new Highcharts.Chart('chart_1', Object.assign({}, tOption1, {title: {text: 'Projects by State'}, series: [{ data: tStateData, size: '90%', innerSize: '60%', showInLegend: true, dataLabels: { enabled: false } }]}));
@@ -584,9 +645,10 @@ function loadAllCharts(year) {
           new Highcharts.Chart('chart_1', Object.assign({}, tOption3, {title: {text: 'Projects by State'}, series: [{ data: tStateData, size: '90%', innerSize: '60%' }]}));
           new Highcharts.Chart('chart_3', Object.assign({}, tOption3, {title: {text: 'Projects by Phase'}, series: [{ data: tPhaseData, size: '90%', innerSize: '60%' }]}));
 
-          $("#table").bootstrapTable("load", Object.values(tDeptDataMap));
+          setTableData();
         });
     }
+    $('#tableGroup').val('dept');
     updateData();
 </script>
 {% endblock %}

@@ -19,7 +19,7 @@ from rest_framework import permissions
 from rest_framework import generics
 from rest_framework import routers, serializers, viewsets
 from .serializers import ProjectSerializer
-from datetime import date
+from datetime import date, datetime, timedelta
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import get_object_or_404
 
@@ -43,7 +43,7 @@ from django_filters.views import FilterView
 # Create your views here.
 # importing models and libraries
 from common.models import Div, Dept, CBU, State2
-from common.utils import PHASE, PHASE_OPEN, PHASE_CLOSE, PHASE_BACKLOG, PHASE_WORK, PRIORITIES, PRJTYPE, VERSIONS
+from common.utils import STATE_WORK, PHASE, PHASE_OPEN, PHASE_CLOSE, PHASE_BACKLOG, PHASE_WORK, PRIORITIES, PRJTYPE, VERSIONS
 from common.utils import VERSION_QUEUE, VERSION_DONE, STATE_OPEN, STATE_VALID
 from .models import Project, Program, ProjectPlan
 from .tables import ProjectPlanTable
@@ -359,10 +359,14 @@ class projectIndexView(generic.ListView):
         # context['url_my'] = f'{self.request.path}?{urllib.parse.urlencode(q_my)}'
         # context['url_dp'] = f'{self.request.path}?{urllib.parse.urlencode(q_dp)}'
 
-        context['project_list'] = Project.objects.filter(**q).order_by('-created_at')[:100]
+        context['new_project'] = Project.objects.filter(**q).order_by('-created_at')[:100]
         context['latest_update'] =  Project.objects.filter(**q).order_by('-updated_on')[:100]
-        context['oldest_update'] =  Project.objects.filter(**q).filter(Q(state__in=STATE_OPEN)).order_by('updated_on')[:100]
-        context['latest_request'] = ProjectPlan.objects.filter(Q(version__in=VERSION_QUEUE) & ~Q(released=False)).order_by('-created_at')[:100]
+
+        time_threshold = datetime.now() - timedelta(days=15)
+        context['oldest_update'] =  Project.objects.filter(**q).filter(updated_on__lt=time_threshold).filter(state__in=STATE_WORK,phase__in=PHASE_WORK).order_by('updated_on')[:100]        
+        # context['oldest_update'] =  Project.objects.filter(**q).filter(state__in=STATE_WORK,phase__in=PHASE_WORK).order_by('updated_on')[:100]        
+
+        context['project_request'] = ProjectPlan.objects.filter(Q(version__in=VERSION_QUEUE) & ~Q(released=False)).order_by('created_at')[:100]
 
         q2 =  {k:v for k, v in self.request.GET.items() if v and hasattr(Report, k.split('__')[0] ) }
         if scope == 'dp' and pm:

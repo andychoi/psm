@@ -252,80 +252,50 @@ class Chart:
         if self.chart_type == 'stackedBar':
             elements['type'] = 'bar'
             self.options['scales'] = {
-                        'xAxes': [
-                            {'stacked': 'true'}
-                        ], 
-                        'yAxes': [
-                            {'stacked': 'true'}
-                        ]
+                        'x': {'stacked': 'true'}, 
+                        'y': {'stacked': 'true'}                        
                     }
 
         if self.chart_type == 'bar':
             elements['type'] = 'bar'
             self.options['scales'] = {
-                        'xAxes': [
-                            {
-                                'ticks': {
-                                    'beginAtZero': 'true'
-                                }
-                            }
-                        ], 
-                        'yAxes': [
-                            {
-                                'ticks': {
-                                    'beginAtZero': 'true'
-                                }
-                            }
-                        ]
+                        'x': {
+                            'beginAtZero': 'true'
+                        },
+                        'y':{
+                            'beginAtZero': 'true'
+                        }
                     }
 
         if self.chart_type == 'groupedBar':
             elements['type'] = 'bar'
             self.options['scales'] = {
-                        'xAxes': [
-                            {
-                                'ticks': {
-                                    'beginAtZero': 'true'
-                                }
-                            }
-                        ], 
-                        'yAxes': [
-                            {
-                                'ticks': {
-                                    'beginAtZero': 'true'
-                                }
-                            }
-                        ]
+                        'x': {
+                            'beginAtZero': 'true'
+                        },
+                        'y':{
+                            'beginAtZero': 'true'
+                        }
                     }
         
         if self.chart_type == 'horizontalBar':
-            elements['type'] = 'horizontalBar'
+            elements['type'] = 'bar'
+            self.options['indexAxis']  = 'y'
             self.options['scales'] = {
-                        'xAxes': [
-                            {
-                                'ticks': {
-                                    'beginAtZero': 'true'
-                                }
-                            }
-                        ], 
-                        'yAxes': [
-                            {
-                                'ticks': {
-                                    'beginAtZero': 'true'
-                                }
-                            }
-                        ]
+                        'x':{
+                            'beginAtZero': 'true'
+                        },
+                        'y':{
+                            'beginAtZero': 'true'
+                        }
                     }
 
         if self.chart_type == 'stackedHorizontalBar':
-            elements['type'] = 'horizontalBar'
+            elements['type'] = 'bar'
+            self.options['indexAxis']  = 'y'
             self.options['scales'] = {
-                        'xAxes': [
-                            {'stacked': 'true'}
-                        ], 
-                        'yAxes': [
-                            {'stacked': 'true'}
-                        ]
+                        'x': {'stacked': 'true'}, 
+                        'y': {'stacked': 'true'}            
                     }
 
         if self.chart_type == 'doughnut':

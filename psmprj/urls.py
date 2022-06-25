@@ -48,6 +48,7 @@ urlpatterns = [
     path('', include('blog.urls')),
     path('', include('reports.urls')),
     path('', include('psm.urls')),
+    path('', include('data.urls')),
     # path('', include('resources.urls')),
 
 

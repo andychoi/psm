@@ -82,3 +82,4 @@ cython==0.29.30
 pyrfc==2.5.0
 django-apscheduler
 pandas
+palettable

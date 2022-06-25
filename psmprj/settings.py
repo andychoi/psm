@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'mtasks',
     'reports',
     'reviews',
+    'data',
 
     # 'resources',
     

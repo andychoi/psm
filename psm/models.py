@@ -194,6 +194,7 @@ class Project(models.Model):
     created_at = models.DateTimeField(_("created at"), auto_now_add=True,   editable=False)
     updated_on = models.DateTimeField(_("updated_on"), auto_now=True,       editable=False)
     last_accessed = models.DateTimeField(blank=True, null=True)
+    counts = models.IntegerField(default=1)  # for analytics purpose
 
     attachment=models.FileField(_("attachment"), upload_to='project/%Y', null=True, blank=True)
 
@@ -398,6 +399,7 @@ class ProjectPlan(models.Model):
                                    on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(_("created at"), auto_now_add=True,   editable=False)
     updated_on = models.DateTimeField(_("updated_on"), auto_now=True,       editable=False)
+    counts = models.IntegerField(default=1)  # for analytics purpose
 
     def __str__(self):
         return self.title if self.pk is None else "[%s] %s" % (self.code, self.title)            

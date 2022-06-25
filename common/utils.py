@@ -56,6 +56,7 @@ STATES = (
 )
 STATE_VALID  = { State.BACKLOG.value, State.TODO.value, State.DOING.value, State.HOLD.value, State.DONE.value }
 STATE_OPEN = { State.BACKLOG.value, State.TODO.value, State.DOING.value, State.HOLD.value,  }
+STATE_WORK = { State.TODO.value, State.DOING.value,  }
 
 class State2(enum.Enum):
     OPEN    = '00-Open'

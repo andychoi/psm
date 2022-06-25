@@ -58,6 +58,7 @@ class Profile(ProxySuper): #models.Model):
 
     class Meta:
         # app_label = 'auth'  #circular dependency... FIXME
+        # ordering = ['-CBU', 'name']
         permissions = [ ('admin', 'Can admin user'),
         ]        
 

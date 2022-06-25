@@ -82,22 +82,24 @@
             <option value="cbu">CBU</option>
             <option value="type">Type</option>
           </select>
+          <!-- data-show-export="true" -->
+          <!-- data-show-toggle="true"  -->
+          <!-- data-search="true" data-filter-control="true" data-show-search-clear-button="false" data-show-refresh="false" -->
           <table data-toggle="table" data-pagination="true" data-page-size="25" data-page-list="[10, 25, 50, 100, all]"
-            data-search="true" data-filter-control="true" data-show-search-clear-button="false" data-show-refresh="false"
-            data-toolbar="#toolbar" data-show-toggle="true" data-show-columns="true"
-            data-show-export="true"
+            data-toolbar="#toolbar" 
+            data-show-columns="true"
             id="table" class="col table table-striped table-hover table-bordered table-sm small">
             <thead class="table-primary">
               <tr>
-                <th data-field="group" data-sortable="true" scope="col" id="table_group"></th>
-                <th data-field="progress" data-align="right" data-sortable="true" scope="col">Progress</th>
-                <th data-field="total" data-align="right" data-sortable="true" scope="col">Total</th>
-                <th data-field="completed" data-align="right" data-sortable="true" scope="col">Completed</th>
-                <th data-field="remaining" data-align="right" data-sortable="true" scope="col">Remaining</th>
-                <th data-field="issue" data-align="right" data-sortable="true" scope="col">Issue</th>
-                <th data-field="onTrack" data-align="right" data-sortable="true" scope="col">On Track</th>
-                <th data-field="late" data-align="right" data-sortable="true" scope="col">Late</th>
-                <th data-field="future" data-align="right" data-sortable="true" scope="col">Future</th>
+                <th class="col-3" data-field="group" data-sortable="true" scope="col" id="table_group"></th>
+                <th class="col-1" data-field="progress" data-align="right" data-sortable="true" scope="col">Progress</th>
+                <th class="col-1" data-field="total" data-align="right" data-sortable="true" scope="col">Total</th>
+                <th class="col-1" data-field="completed" data-align="right" data-sortable="true" scope="col">Completed</th>
+                <th class="col-1" data-field="remaining" data-align="right" data-sortable="true" scope="col">Remaining</th>
+                <th class="col-1" data-field="issue" data-align="right" data-sortable="true" scope="col">Issue</th>
+                <th class="col-1" data-field="onTrack" data-align="right" data-sortable="true" scope="col">On Track</th>
+                <th class="col-1" data-field="late" data-align="right" data-sortable="true" scope="col">Late</th>
+                <th class="col-1" data-field="future" data-align="right" data-sortable="true" scope="col">Future</th>
               </tr>
             </thead>
             <tbody>
@@ -560,7 +562,9 @@ function loadAllCharts(year) {
 
         Object.keys(tGroupDataMap).forEach((pKey)=>{
           // tGroupDataMap[pKey].progress = (1.0 * tGroupDataMap[pKey].progressTotal / tGroupDataMap[pKey].progressCnt).toFixed(1) + "%";
-          tGroupDataMap[pKey].progress = (100.0 * tGroupDataMap[pKey].completed / tGroupDataMap[pKey].total).toFixed(1) + "%";
+          progress_pctr = (100.0 * tGroupDataMap[pKey].completed / tGroupDataMap[pKey].total).toFixed(1);
+          tGroupDataMap[pKey].progress = "<div class='progress'><div class='progress-bar' role='progressbar' style='width:" + progress_pctr + "%;' aria-valuenow='" + progress_pctr + " aria-valuemin='0' aria-valuemax='100'>" + progress_pctr + "% </div>" + progress_pctr + "</div>" ;
+            //tGroupDataMap[pKey].progress = (100.0 * tGroupDataMap[pKey].completed / tGroupDataMap[pKey].total).toFixed(1) + "%";
         });
 
         $("#table thead tr th:first-child div:first-child").html(tGroupText);

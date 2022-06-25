@@ -27,20 +27,20 @@
                   </a>
                   <!-- <div class="dropdown-menu dropdown-menu-end nav-link-menu"> -->
                       <ul class="dropdown-menu nav-list" aria-labelledby="nav2">
-                          <li><a class="dropdown-item" href="/admin/psm/project/add/"><i class="bi bi-kanban"></i> Register Project</a></li>
-                          <li><a class="dropdown-item" href="/admin/psm/project/?year={% now 'Y' %}">Manage Project - FY{% now 'Y' %}</a></li>
-                          <li><a class="dropdown-item" href="{% url 'project_list1' %}">Project list</a> </li>
+                          <li><a class="dropdown-item" href="/admin/psm/project/add/"><i class="bi bi-file-earmark-plus"></i> Register Project</a></li>
+                          <li><a class="dropdown-item" href="/admin/psm/project/?year={% now 'Y' %}">Manage Project - {% now 'Y' %}</a></li>
+                          <li><a class="dropdown-item" href="{% url 'project_list1' %}"><i class="bi bi-list-task"></i>Project list</a> </li>
                           <div class="dropdown-divider"></div>
                           <li><a class="dropdown-item" href="/admin/reports/report/add/"><i class="bi bi-chat-left-quote-fill"></i> Create Project Status Report</a></li>
                           <li><a class="dropdown-item" href="/admin/reports/report">Manage Status Report</a></li>
                           <div class="dropdown-divider"></div>
-                          <li><a class="dropdown-item" href="/admin/reports/reportrisk">Manage Project Risk Report</a></li>
-                          <li><a class="dropdown-item" href="/admin/reviews/review">Manage ITPC</a></li>
+                          <li><a class="dropdown-item" href="/admin/reports/reportrisk"><i class="bi bi-radioactive"></i> Manage Project Risk Report</a></li>
+                          <li><a class="dropdown-item" href="/admin/reviews/review"><i class="bi bi-bag"></i>Manage ITPC</a></li>
                           <div class="dropdown-divider"></div>
                           <li><a class="dropdown-item" href="/admin/psm/program">Register Program</a></li>
                           <div class="dropdown-divider"></div>
-                          <li><a class="dropdown-item" href="/admin/common/wbs">Manage WBS</a></li>
-                          <li><a class="dropdown-item" href="/admin/users/profilecbu">Manage CBU contacts</a></li>
+                          <li><a class="dropdown-item" href="/admin/common/wbs"><i class="bi bi-currency-dollar"></i>Manage WBS</a></li>
+                          <li><a class="dropdown-item" href="/admin/users/profilecbu"><i class="bi bi-person"></i>Manage CBU contacts</a></li>
 
                           {% if user.profile.is_psmadm or user.is_superuser %}
                               <li><a class="dropdown-item" href="/admin">Admin - Home</a></li>
@@ -57,14 +57,14 @@
               </a>
               <ul class="dropdown-menu my-menu-3" aria-labelledby="nav3">
     
-                <li><a class="dropdown-item" href="{% url 'project_index' %}"><i class="fas fa-bullseye"></i> Project Portfolio Quick Overview</a></li>
+                <li><a class="dropdown-item" href="{% url 'project_index' %}"><i class="fas fa-bullseye"></i> Project Portfolio Quickview</a></li>
                 <div class="dropdown-divider"></div>
-                <li><a class="dropdown-item" href="{% url 'project_dashboard' %}"><i class="fas fa-chart-line"></i> Project Portfolio Dashboard (pilot)</a></li>
+                <li><a class="dropdown-item" href="{% url 'project_dashboard' %}"><i class="fas fa-chart-line"></i> Project Portfolio Dashboard </a></li>
                 <div class="dropdown-divider"></div>
-                <li><a class="dropdown-item" href="{% url 'project_chart_1' %}"><i class="fas fa-angle-right"></i>Gantt chart (type1)</a></li>
-                <li><a class="dropdown-item" href="{% url 'project_chart_2' %}"><i class="fas fa-angle-right"></i>Gantt chart (type2)</a></li>
+                <li><a class="dropdown-item" href="{% url 'project_chart_1' %}"><i class="bi bi-bar-chart-steps"></i>Gantt chart (type1)</a></li>
+                <li><a class="dropdown-item" href="{% url 'project_chart_2' %}"><i class="bi bi-bar-chart-steps"></i>Gantt chart (type2)</a></li>
             {% if user.is_superuser %}            
-                    <li><a class="dropdown-item" href="{% url 'project_chart_3' %}"><i class="fas fa-angle-right"></i>Chart (pilot)</a></li>
+                    <li><a class="dropdown-item" href="{% url 'project_chart_3' %}"><i class="bi bi-clipboard-data"></i>Chart (pilot)</a></li>
             {% endif %}
                 <div class="dropdown-divider"></div>
                 <li><a class="dropdown-item" href="{% url 'project_list1' %}"><i class="fas fa-th-list"></i> Project List</a></li>

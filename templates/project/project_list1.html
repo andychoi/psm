@@ -64,7 +64,7 @@
                 <tr> <!-- https://getbootstrap.com/docs/4.1/components/badge/ https://icons.getbootstrap.com/ <i class="bi-class-name"></i> -->
                      <!-- p.status_t|slice:"0:1" -->
                     <td class="text-center">{{ p.CBU_str }}</td>
-                    <td class="text-center" scope="row"><a href="{% url 'project_detail' p.id %}">{{ p.pjcode }}</a></td>
+                    <td class="text-center" scope="row"><a target="_blank" href="{% url 'project_detail' p.id %}">{{ p.pjcode }}</a></td>
                     <td class="text-left">{{ p.title }}</td>
                     <td class="text-end">{% if p.est_cost %}{{ p.est_cost|intcomma }}{% else %}0{% endif %}</td>
                     <td class="text-end">{% if p.budget %}{{ p.budget|intcomma }}{% else %}0{% endif %}</td>
@@ -124,7 +124,7 @@
                     <td class="text-begin">{{ p.resolution }}</td>
                     <td class="text-begin">{{ p.dept.head }}</td>
     
-                    <td class="text-center"><a href="/admin/psm/project/{{ p.id }}"><i class="bi bi-pencil"></i></a></td>
+                    <td class="text-center"><a target="_blank" href="/admin/psm/project/{{ p.id }}"><i class="bi bi-pencil"></i></a></td>
                 </tr>						
                 {% endfor %}	
                 </tbody>

@@ -359,10 +359,10 @@ class projectIndexView(generic.ListView):
         # context['url_my'] = f'{self.request.path}?{urllib.parse.urlencode(q_my)}'
         # context['url_dp'] = f'{self.request.path}?{urllib.parse.urlencode(q_dp)}'
 
-        context['project_list'] = Project.objects.filter(**q).order_by('-created_at')[:5]
-        context['latest_update'] =  Project.objects.filter(**q).order_by('-updated_on')[:10]
-        context['oldest_update'] =  Project.objects.filter(**q).filter(Q(state__in=STATE_OPEN)).order_by('updated_on')[:10]
-        context['latest_request'] = ProjectPlan.objects.filter(Q(version__in=VERSION_QUEUE) & ~Q(released=False)).order_by('-created_at')[:5]
+        context['project_list'] = Project.objects.filter(**q).order_by('-created_at')[:100]
+        context['latest_update'] =  Project.objects.filter(**q).order_by('-updated_on')[:100]
+        context['oldest_update'] =  Project.objects.filter(**q).filter(Q(state__in=STATE_OPEN)).order_by('updated_on')[:100]
+        context['latest_request'] = ProjectPlan.objects.filter(Q(version__in=VERSION_QUEUE) & ~Q(released=False)).order_by('-created_at')[:100]
 
         q2 =  {k:v for k, v in self.request.GET.items() if v and hasattr(Report, k.split('__')[0] ) }
         if scope == 'dp' and pm:
@@ -370,7 +370,7 @@ class projectIndexView(generic.ListView):
                 q2['project__dept'] = profile.dept.id
         elif pm:
                 q2['project__pm'] = profile.id
-        context['latest_report'] =  Report.objects.filter(**q2).order_by('-created_at')[:10]
+        context['latest_report'] =  Report.objects.filter(**q2).order_by('-created_at')[:100]
 
         q3 =  {k:v for k, v in self.request.GET.items() if v and hasattr(ReportRisk, k.split('__')[0] ) }
         if scope == 'dp' and pm:
@@ -378,7 +378,7 @@ class projectIndexView(generic.ListView):
                 q3['project__dept'] = profile.dept.id
         elif pm:
                 q3['project__pm'] = profile.id
-        context['latest_risk'] =    ReportRisk.objects.filter(state=State2.OPEN.value).order_by('created_at')[:5] 
+        context['latest_risk'] =    ReportRisk.objects.filter(state=State2.OPEN.value).order_by('created_at')[:100] 
 
         get_filter_options(self, context)
 

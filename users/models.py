@@ -64,6 +64,9 @@ class Profile(ProxySuper): #models.Model):
     # @property
     # def username(self):
     #     return self.name
+    @property
+    def sname(self):
+        return self.name.split(',')[1] if len(self.name.split(','))>1 else self.name
 
     @property
     def u_div(self):

@@ -53,7 +53,7 @@
               <div class="infoBlockValue" id="v_project_total">0</div>
             </div>
             <div class="infoBlock">
-              <div class="infoBlockTitle">C/F</div>
+              <div class="infoBlockTitle">Cancel</div>
               <div class="infoBlockValue" id="v_project_cancel">0</div>
             </div>
             <div class="infoBlock">
@@ -94,9 +94,10 @@
                 <th class="col-3" data-field="group" data-sortable="true" scope="col" id="table_group"></th>
                 <th class="col-1" data-field="progress" data-align="right" data-sortable="true" scope="col">Progress</th>
                 <th class="col-1" data-field="total" data-align="right" data-sortable="true" scope="col">Total</th>
+                <th class="col-1" data-field="cancel" data-align="right" data-sortable="true" data-visible="true" scope="col">Cancel</th>
                 <th class="col-1" data-field="completed" data-align="right" data-sortable="true" scope="col">Completed</th>
                 <th class="col-1" data-field="remaining" data-align="right" data-sortable="true" scope="col">Remaining</th>
-                <th class="col-1" data-field="issue" data-align="right" data-sortable="true" scope="col">Issue</th>
+                <th class="col-1" data-field="risk" data-align="right" data-sortable="true" scope="col">Risk</th>
                 <th class="col-1" data-field="onTrack" data-align="right" data-sortable="true" scope="col">On Track</th>
                 <th class="col-1" data-field="late" data-align="right" data-sortable="true" scope="col">Late</th>
                 <th class="col-1" data-field="future" data-align="right" data-sortable="true" scope="col">Future</th>
@@ -428,7 +429,7 @@ function loadAllCharts(year) {
         return tParams;
     }
 
-    var hasProejctIssue = (pProjectItem) => {
+    var hasProjectRisk = (pProjectItem) => {
       var tStatusCode = null;
       if (pProjectItem.status_o) {
         tStatusCode = pProjectItem.status_o.split("-")[0];
@@ -507,9 +508,9 @@ function loadAllCharts(year) {
         }
 
         tRawData
-        .filter(function(pDat) {
-          return (pDat.state !== "90-cancel");
-        })
+        // .filter(function(pDat) {
+        //   return (pDat.state !== "90-cancel");
+        // })
         .forEach(function(pDat) {          
           var tGroupId = 0;
           var tGroupName = "";
@@ -530,11 +531,12 @@ function loadAllCharts(year) {
               break;
           }
 
-          tGroupDataMap[tGroupId] || (tGroupDataMap[tGroupId] = {group: tGroupName, progress: 0, progressCnt: 0, progressTotal: 0, progressElapsed: 0, progressPeriod: 0, total: 0, completed: 0, late: 0, onTrack: 0, remaining: 0, future: 0, issue: 0});
+          tGroupDataMap[tGroupId] || (tGroupDataMap[tGroupId] = {group: tGroupName, progress: 0, progressCnt: 0, progressTotal: 0, progressElapsed: 0, progressPeriod: 0, total: 0, cancel: 0, completed: 0, late: 0, onTrack: 0, remaining: 0, future: 0, risk: 0});
 
           tGroupDataMap[tGroupId].total ++;
-          if (pDat.cf === true) {
+          if (pDat.state === "90-cancel") { //cf === true) {
             // do nothing
+            tGroupDataMap[tGroupId].cancel ++;
           }
           else if (pDat.phase === "70-Completed" || pDat.phase === "80-Closed") {
             tGroupDataMap[tGroupId].completed ++;
@@ -552,8 +554,8 @@ function loadAllCharts(year) {
             else {
               tGroupDataMap[tGroupId].onTrack ++;
             }
-            if (hasProejctIssue(pDat)) {
-              tGroupDataMap[tGroupId].issue ++;
+            if (hasProjectRisk(pDat)) {
+              tGroupDataMap[tGroupId].risk ++;
             }
             tGroupDataMap[tGroupId].progressCnt ++;
             tGroupDataMap[tGroupId].progressTotal += pDat.progress;
@@ -563,7 +565,7 @@ function loadAllCharts(year) {
         Object.keys(tGroupDataMap).forEach((pKey)=>{
           // tGroupDataMap[pKey].progress = (1.0 * tGroupDataMap[pKey].progressTotal / tGroupDataMap[pKey].progressCnt).toFixed(1) + "%";
           progress_pctr = (100.0 * tGroupDataMap[pKey].completed / tGroupDataMap[pKey].total).toFixed(1);
-          tGroupDataMap[pKey].progress = "<div class='progress'><div class='progress-bar' role='progressbar' style='width:" + progress_pctr + "%;' aria-valuenow='" + progress_pctr + " aria-valuemin='0' aria-valuemax='100'>" + progress_pctr + "% </div>" + progress_pctr + "</div>" ;
+          tGroupDataMap[pKey].progress = "<div class='progress'><div class='progress-bar' role='progressbar' style='width:" + progress_pctr + "%;' aria-valuenow='" + progress_pctr + " aria-valuemin='0' aria-valuemax='100'>" + progress_pctr + "% </div></div>" ;
             //tGroupDataMap[pKey].progress = (100.0 * tGroupDataMap[pKey].completed / tGroupDataMap[pKey].total).toFixed(1) + "%";
         });
 
@@ -602,17 +604,20 @@ function loadAllCharts(year) {
           var tCntOpen = 0;
           tRawData
           .filter(function(pDat) {
-            return (pDat.state !== "90-cancel");
+            // return (pDat.state !== "90-cancel");
+            return true;
           })
           .forEach(function(pDat) {            
               tCBUDataMap[pDat.CBU_str] || (tCBUDataMap[pDat.CBU_str] = {completed: 0, cancel: 0, open: 0});
             
               tCntTotal ++;
-              if (pDat.cf === true) {
+              // if (pDat.cf === true) {
+              if (pDat.state === "90-cancel") {  //State.CANCEL") {
                 tCntCanceled ++;
                 // tCBUDataMap[pDat.CBU_str].cancel ++;
                 tCBUDataMap[pDat.CBU_str].open ++;
               }
+              // else if (pDat.phase === "70-Completed" || pDat.phase === "80-Closed") {
               else if (pDat.phase === "70-Completed" || pDat.phase === "80-Closed") {
                 tCntCompleted ++;
                 tCBUDataMap[pDat.CBU_str].completed ++;

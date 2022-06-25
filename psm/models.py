@@ -130,10 +130,10 @@ class Project(models.Model):
 
     ref_plan    = models.ForeignKey("ProjectPlan", on_delete=models.SET_NULL, null=True, blank=True)
 
-    status_o = models.CharField(_("status overall"), max_length=20, choices=STATUS, default=Status.NA.value)
-    status_t = models.CharField(_("status schedule"), max_length=20, choices=STATUS, default=Status.NA.value)
-    status_b = models.CharField(_("status budget"), max_length=20, choices=STATUS, default=Status.NA.value)
-    status_s = models.CharField(_("status scope"), max_length=20, choices=STATUS, default=Status.NA.value)
+    status_o = models.CharField(_("Overall Health"), max_length=20, choices=STATUS, default=Status.NA.value)
+    status_t = models.CharField(_("Schedule status"), max_length=20, choices=STATUS, default=Status.NA.value)
+    status_b = models.CharField(_("Budget status"), max_length=20, choices=STATUS, default=Status.NA.value)
+    status_s = models.CharField(_("Scope status"), max_length=20, choices=STATUS, default=Status.NA.value)
     resolution = models.TextField(_("PM Memo"), max_length=2000, null=True, blank=True)
     #settings.AUTH_USER_MODEL - user directory...
     pm = models.ForeignKey(Profile, related_name='project_manager', verbose_name=_('HAEA PM'),

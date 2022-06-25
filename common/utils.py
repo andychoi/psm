@@ -102,7 +102,7 @@ STATUS = (
 
 class Phase(enum.Enum):
     IDEATION =  '00-Ideation'
-    PRE_PLAN =  '10-Pre-Planning'
+    PRE_PLAN =  '10-Pre_Planning'
     PLANNING =  '20-Planning'
     DESIGN =    '30-Design'
     DEVELOP =   '40-Develop'
@@ -112,7 +112,7 @@ class Phase(enum.Enum):
     CLOSED =    '80-Closed'
 PHASE = (
     (Phase.IDEATION.value, _('Ideation')),
-    (Phase.PRE_PLAN.value, _('Pre-Planning')),
+    (Phase.PRE_PLAN.value, _('Pre_Planning')),
     (Phase.PLANNING.value, _('Planning')),
     (Phase.DESIGN.value, _('Design')),
     (Phase.DEVELOP.value, _('Development')),

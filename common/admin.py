@@ -91,7 +91,7 @@ from django_object_actions import DjangoObjectActions
 
 @admin.register(WBS)
 class WBSAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
-    list_display = ('id', 'wbs', 'name', 'cbu', 'status', 'formatted_budget')
+    list_display = ('id', 'wbs', 'name', 'is_sub', 'cbu', 'status', 'formatted_budget')
     list_display_links = ('wbs', 'name')
     search_fields = ('id', 'wbs', 'name')
 

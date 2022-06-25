@@ -534,7 +534,11 @@ function loadAllCharts(year) {
           tGroupDataMap[tGroupId] || (tGroupDataMap[tGroupId] = {group: tGroupName, progress: 0, progressCnt: 0, progressTotal: 0, progressElapsed: 0, progressPeriod: 0, total: 0, cancel: 0, completed: 0, late: 0, onTrack: 0, remaining: 0, future: 0, risk: 0});
 
           tGroupDataMap[tGroupId].total ++;
-          if (pDat.state === "90-cancel") { //cf === true) {
+          if (pDat.is_internal === 1) { //internal project exclude
+            // do nothing
+            tGroupDataMap[tGroupId].total --;
+          }
+          else if (pDat.state === "90-cancel") { //cf === true) {
             // do nothing
             tGroupDataMap[tGroupId].cancel ++;
           }
@@ -604,8 +608,8 @@ function loadAllCharts(year) {
           var tCntOpen = 0;
           tRawData
           .filter(function(pDat) {
-            // return (pDat.state !== "90-cancel");
-            return true;
+            return (pDat.is_internal == 0); //exclude internal project
+            // return true;
           })
           .forEach(function(pDat) {            
               tCBUDataMap[pDat.CBU_str] || (tCBUDataMap[pDat.CBU_str] = {completed: 0, cancel: 0, open: 0});
@@ -617,7 +621,6 @@ function loadAllCharts(year) {
                 // tCBUDataMap[pDat.CBU_str].cancel ++;
                 tCBUDataMap[pDat.CBU_str].open ++;
               }
-              // else if (pDat.phase === "70-Completed" || pDat.phase === "80-Closed") {
               else if (pDat.phase === "70-Completed" || pDat.phase === "80-Closed") {
                 tCntCompleted ++;
                 tCBUDataMap[pDat.CBU_str].completed ++;

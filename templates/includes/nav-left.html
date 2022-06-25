@@ -7,14 +7,14 @@
           <li class="nav-item dropdown">
               <!-- <div class="nav-dropdown"> -->
                   <a href="#" id="nav1" class="nav-item nav-link dropdown-toggle  text-secondary" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fa fa-calendar"></i><span class="ms-1"> Project Demand</span>
+                    <i class="bi bi-window-plus"></i><span class="ms-1"> Project Demand</span>
                   </a>
                   <!-- dropdown with ul dropdown-menu <div class="dropdown-menu dropdown-menu-end nav-link-menu" aria-labelledby="nav1"> -->
                           <ul class="dropdown-menu nav-list" aria-labelledby="nav1">
-                          <li><a class="dropdown-item" href="/admin/psm/projectplan/add/"><i class="bi bi-clipboard-data"></i> Create Project Request </a></li>
-                          <li><a class="dropdown-item" href="/admin/psm/projectplan"><i class="bi bi-collection"></i> Manage Project Request </a></li>
+                          <li><a class="dropdown-item" href="/admin/psm/projectplan/add/"><i class="pe-2 bi bi-clipboard-data"></i> Create Project Request </a></li>
+                          <li><a class="dropdown-item" href="/admin/psm/projectplan"><i class="pe-2 bi bi-collection"></i> Manage Project Request </a></li>
                           <div class="dropdown-divider"></div>
-                          <li><a class="dropdown-item" href="{% url 'project_plan_index' %}"><i class="fas fa-list"></i> Project Demand List</a></li>
+                          <li><a class="dropdown-item" href="{% url 'project_plan_index' %}"><i class="pe-2 bi bi-card-checklist"></i> Project Demand List</a></li>
                       </ul>
                   <!-- </div> -->
               <!-- </div> -->
@@ -23,29 +23,24 @@
           <li class="nav-item dropdown">
               <!-- <div class="nav-dropdown"> -->
                   <a href="#" id="nav2" class="nav-link dropdown-toggle text-primary"  role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      <i class="fas fa-file-alt"></i><span class="ms-1">  Project Administration</span>
+                      <i class="bi bi-pencil-square"></i><span class="ms-1">  Project Administration</span>
                   </a>
                   <!-- <div class="dropdown-menu dropdown-menu-end nav-link-menu"> -->
                       <ul class="dropdown-menu nav-list" aria-labelledby="nav2">
-                          <li><a class="dropdown-item" href="/admin/psm/project/add/"><i class="bi bi-file-earmark-plus"></i> Register Project</a></li>
-                          <li><a class="dropdown-item" href="/admin/psm/project/?year={% now 'Y' %}">Manage Project - {% now 'Y' %}</a></li>
-                          <li><a class="dropdown-item" href="{% url 'project_list1' %}"><i class="bi bi-list-task"></i>Project list</a> </li>
+                          <li><a class="dropdown-item" href="/admin/psm/project/add/"><i class="pe-2 bi bi-file-earmark-plus"></i> Register Project</a></li>
+                          <li><a class="dropdown-item" href="/admin/psm/project/?year={% now 'Y' %}"><i class="pe-2 bi bi-file-ruled"></i>Manage Project - {% now 'Y' %}</a></li>
+                          <li><a class="dropdown-item" href="{% url 'project_list1' %}"><i class="pe-2 bi bi-list-task"></i>Project list</a> </li>
                           <div class="dropdown-divider"></div>
-                          <li><a class="dropdown-item" href="/admin/reports/report/add/"><i class="bi bi-chat-left-quote-fill"></i> Create Project Status Report</a></li>
-                          <li><a class="dropdown-item" href="/admin/reports/report">Manage Status Report</a></li>
+                          <li><a class="dropdown-item" href="/admin/reports/report/add/"><i class="pe-2 bi bi-chat-left-quote-fill"></i> Create Project Status Report</a></li>
+                          <li><a class="dropdown-item" href="/admin/reports/report"><i class="pe-2 bi-list-task"></i>Manage Status Report</a></li>
                           <div class="dropdown-divider"></div>
-                          <li><a class="dropdown-item" href="/admin/reports/reportrisk"><i class="bi bi-radioactive"></i> Manage Project Risk Report</a></li>
-                          <li><a class="dropdown-item" href="/admin/reviews/review"><i class="bi bi-bag"></i>Manage ITPC</a></li>
+                          <li><a class="dropdown-item" href="/admin/reports/reportrisk"><i class="pe-2 bi bi-megaphone-fill"></i> Manage Project Risk Report</a></li>
+                          <li><a class="dropdown-item" href="/admin/reviews/review"><i class="pe-2 bi bi-cart-plus"></i>Manage ITPC</a></li>
                           <div class="dropdown-divider"></div>
-                          <li><a class="dropdown-item" href="/admin/psm/program">Register Program</a></li>
+                          <li><a class="dropdown-item" href="/admin/psm/program"><i class="pe-2 bi bi-columns"></i>Manage Program</a></li>
                           <div class="dropdown-divider"></div>
-                          <li><a class="dropdown-item" href="/admin/common/wbs"><i class="bi bi-currency-dollar"></i>Manage WBS</a></li>
-                          <li><a class="dropdown-item" href="/admin/users/profilecbu"><i class="bi bi-person"></i>Manage CBU contacts</a></li>
-
-                          {% if user.profile.is_psmadm or user.is_superuser %}
-                              <li><a class="dropdown-item" href="/admin">Admin - Home</a></li>
-                          {% endif %}
-
+                          <li><a class="dropdown-item" href="/admin/common/wbs"><i class="pe-2 bi bi-currency-dollar"></i>Manage WBS(SAP)</a></li>
+                          <li><a class="dropdown-item" href="/admin/users/profilecbu"><i class="pe-2 bi bi-person"></i>Manage CBU contacts</a></li>
                       </ul>
                   <!-- </div> -->
               <!-- </div> -->
@@ -53,23 +48,23 @@
           <!-- <li class="nav-item"><a class="nav-item nav-link"  href="/project/">Reports</a></li> -->
           <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle  text-primary" href="#" id="nav3" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fas fa-chart-line"></i><span class="ms-1">  Reports</span>
+                <i class="bi bi-bar-chart-line"></i><span class="ms-1">  Reports</span>
               </a>
               <ul class="dropdown-menu my-menu-3" aria-labelledby="nav3">
     
-                <li><a class="dropdown-item" href="{% url 'project_index' %}"><i class="fas fa-bullseye"></i> Project Portfolio Quickview</a></li>
+                <li><a class="dropdown-item" href="{% url 'project_index' %}"><i class="pe-2 bi bi-layout-wtf"></i> Project Portfolio Quickview</a></li>
                 <div class="dropdown-divider"></div>
-                <li><a class="dropdown-item" href="{% url 'project_dashboard' %}"><i class="fas fa-chart-line"></i> Project Portfolio Dashboard </a></li>
+                <li><a class="dropdown-item" href="{% url 'project_dashboard' %}"><i class="pe-2 bi bi-speedometer"></i> Project Portfolio Dashboard </a></li>
                 <div class="dropdown-divider"></div>
-                <li><a class="dropdown-item" href="{% url 'project_chart_1' %}"><i class="bi bi-bar-chart-steps"></i>Gantt chart (type1)</a></li>
-                <li><a class="dropdown-item" href="{% url 'project_chart_2' %}"><i class="bi bi-bar-chart-steps"></i>Gantt chart (type2)</a></li>
+                <li><a class="dropdown-item" href="{% url 'project_chart_1' %}"><i class="pe-2 bi bi-bar-chart-steps"></i>Gantt chart (type1)</a></li>
+                <li><a class="dropdown-item" href="{% url 'project_chart_2' %}"><i class="pe-2 bi bi-bar-chart-steps"></i>Gantt chart (type2)</a></li>
             {% if user.is_superuser %}            
-                    <li><a class="dropdown-item" href="{% url 'project_chart_3' %}"><i class="bi bi-clipboard-data"></i>Chart (pilot)</a></li>
+                    <li><a class="dropdown-item" href="{% url 'project_chart_3' %}"><i class="pe-2 bi bi-clipboard-data"></i>Chart (pilot)</a></li>
             {% endif %}
                 <div class="dropdown-divider"></div>
-                <li><a class="dropdown-item" href="{% url 'project_list1' %}"><i class="fas fa-th-list"></i> Project List</a></li>
-                <li><a class="dropdown-item" href="/report"><i class="fas fa-comment-alt"></i> Status Report List</a></li>
-                <li><a class="dropdown-item" href="/report/risks"><i class="fas fa-exclamation-circle"></i> Risk Report List</a></li>
+                <li><a class="dropdown-item" href="{% url 'project_list1' %}"><i class="pe-2 bi bi-signpost"></i> Project List</a></li>
+                <li><a class="dropdown-item" href="/report"><i class="pe-2 bi bi-journal-check"></i> Status Report List</a></li>
+                <li><a class="dropdown-item" href="/report/risks"><i class="pe-2 bi bi-flag"></i> Risk Report List</a></li>
               </ul>
             </li>
   

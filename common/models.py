@@ -96,6 +96,7 @@ class WBS(models.Model):
     name = models.CharField(max_length=200, blank=True, null=True, db_index=True)
     cbu = models.CharField(_("CBU"), max_length=20, blank=True, null=True, db_index=True)
     # models.ForeignKey(CBU, on_delete=models.SET_NULL, blank=True, null=True)
+    is_sub = models.BooleanField(_("Is sub-project?"), default=False)
     status = models.CharField(max_length=20, blank=True, null=True)
     budget = models.DecimalField(_("Budget"), decimal_places=0, max_digits=12, default=0, blank=True, null=True)
 
@@ -104,4 +105,4 @@ class WBS(models.Model):
     updated_on = models.DateTimeField(_("updated_on"), auto_now=True, editable=False)
 
     def __str__(self):
-        return self.wbs
+        return f"{self.wbs}{'*' if self.is_sub else ''}" 

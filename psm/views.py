@@ -160,11 +160,11 @@ def get_year_options(request):
     })
 
 
-def get_filter_options(self, context, plan=False):
+def get_filter_options(self, context, def_year=True, plan=False):
     # For side filter
     context['filterItems'] = []
     
-    get_def_year = date.today().year if not self.request.GET.get('year', '') else self.request.GET.get('year', '') 
+    get_def_year = '' if not def_year else date.today().year if not self.request.GET.get('year', '') else self.request.GET.get('year', '') 
 
     if plan:
         context['filterItems'].append( { "key": "YEAR", "text": "Year", "qId": "year", "selected": get_def_year

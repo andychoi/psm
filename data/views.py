@@ -18,13 +18,25 @@ class Dashboard(TemplateView):
         # get the data from the default method
         context = super().get_context_data(**kwargs)
 
-        get_filter_options(self, context, plan=False)
+        get_filter_options(self, context, def_year=False, plan=False)
 
         # create a charts context to hold all of the charts
         context['charts'] = []
 
         q =  {k:v for k, v in self.request.GET.items() if v and hasattr(Project, k.split('__')[0] ) }
         qs = Project.objects.filter(**q)
+        ltmp = self.request.GET.get('div', '')
+        if ltmp:
+            qs = qs.filter(dept__div__id=ltmp)
+
+        ltmp = self.request.GET.get('cbu', '')
+        if ltmp:
+            qs = qs.filter(CBUs__id=ltmp)
+
+        ltmp = self.request.GET.get('prg', '')
+        if ltmp:
+            qs = qs.filter(program__id=ltmp)
+
 
         df1 = qs_to_df(model=Project, qs=qs.filter(year__gte=2019,year__lte=2022),
             fields=['year', 'cf', 'CBUs__name', 'dept__div__name', 'type', 'counts', 'est_cost', 'budget'])

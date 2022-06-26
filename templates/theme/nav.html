@@ -3,7 +3,8 @@
         <img src="/static/img/PSM-logos_black.png" width="30" height="30" alt="PSM System" class="app-logo">PSM
     </div>
     <ul class="list-unstyled components text-secondary">
-        <li>
+
+        <!-- <li>
             <a href="/"><i class="fas fa-home"></i> Homepage</a>
         </li>
         <li><a class="dropdown-item" href="{% url 'project_index' %}"><i class="fas fa-bullseye"></i> Report Home</a></li>
@@ -13,9 +14,6 @@
                 <li><a class="dropdown-item" href="{% url 'project_dashboard' %}"><i class="fas fa-chart-line"></i> Dashboard</a></li>
                 <li><a class="dropdown-item" href="{% url 'project_chart_1' %}"><i class="fas fa-angle-right"></i>Gantt chart</a></li>
                 <li><a class="dropdown-item" href="{% url 'project_chart_2' %}"><i class="fas fa-angle-right"></i>Gantt chart (pilot1)</a></li>
-        {% if user.is_superuser %}            
-                <li><a class="dropdown-item" href="{% url 'project_chart_3' %}"><i class="fas fa-angle-right"></i>Chart (pilot)</a></li>
-        {% endif %}
             </ul>
         </li>
         <li>
@@ -26,11 +24,8 @@
                 <div class="dropdown-divider"></div>
                 <li><a class="dropdown-item" href="/report/risks"><i class="fas fa-exclamation-circle"></i> Risk Report List</a></li>
                 <div class="dropdown-divider"></div>
-                <!-- <li><a class="dropdown-item" href="{% url 'project_list2' %}"><i class="fas fa-flag"></i> Key project summary</a></li> -->
-                {% if user.is_superuser %}            
-                {% endif %}
             </ul>
-        </li>
+        </li> -->
 
         {% for filterItem in filterItems %}
         <li>

@@ -52,7 +52,8 @@ def qs_to_df(model, qs=None, fields=None, exclude=None, date_cols=None, **kwargs
     else:
         records = model.objects.filter(**kwargs).values_list(*fields)
 
-    df = pd.DataFrame(list(records), columns=fields)
+    # https://stackoverflow.com/questions/11697887/converting-django-queryset-to-pandas-dataframe
+    df = pd.DataFrame(list(records), columns=fields)  
 
     if date_cols:
         strftime = date_cols.pop(0)
@@ -157,6 +158,8 @@ class Chart:
     are listed
     """
     chart_type: str
+    title: str = ''
+    height: int = 0
     datasets: List = field(default_factory=list)
     labels: List = field(default_factory=list)
     chart_id: str = field(default_factory=generate_chart_id)
@@ -188,7 +191,7 @@ class Chart:
         for i in range(len(stacks)):
             self.datasets.append(
                 {
-                    'label': stacks[i],
+                    'label': stacks[i] if type(stacks[i]) != type(True) else f"'{stacks[i]}'" ,
                     'backgroundColor': self.palette[i],
                     'data': values[i],
                 }
@@ -236,10 +239,6 @@ class Chart:
 
         self.from_lists(values, labels, stacks)
     
-    def get_html(self):
-        code = f'<canvas id="{self.chart_id}"></canvas>'
-        return code
-
     def get_elements(self):
         elements = {
             'data': {
@@ -248,6 +247,13 @@ class Chart:
             },
             'options': self.options
         }
+        if self.title:
+            self.options['plugins'] = {
+                'title': {
+                    'display': 'true',
+                    'text': self.title
+                }
+            }
 
         if self.chart_type == 'stackedBar':
             elements['type'] = 'bar'
@@ -256,7 +262,7 @@ class Chart:
                         'y': {'stacked': 'true'}                        
                     }
 
-        if self.chart_type == 'bar':
+        elif self.chart_type == 'bar':
             elements['type'] = 'bar'
             self.options['scales'] = {
                         'x': {
@@ -267,7 +273,7 @@ class Chart:
                         }
                     }
 
-        if self.chart_type == 'groupedBar':
+        elif self.chart_type == 'groupedBar':
             elements['type'] = 'bar'
             self.options['scales'] = {
                         'x': {
@@ -278,7 +284,7 @@ class Chart:
                         }
                     }
         
-        if self.chart_type == 'horizontalBar':
+        elif self.chart_type == 'horizontalBar':
             elements['type'] = 'bar'
             self.options['indexAxis']  = 'y'
             self.options['scales'] = {
@@ -290,7 +296,7 @@ class Chart:
                         }
                     }
 
-        if self.chart_type == 'stackedHorizontalBar':
+        elif self.chart_type == 'stackedHorizontalBar':
             elements['type'] = 'bar'
             self.options['indexAxis']  = 'y'
             self.options['scales'] = {
@@ -298,17 +304,35 @@ class Chart:
                         'y': {'stacked': 'true'}            
                     }
 
-        if self.chart_type == 'doughnut':
+        elif self.chart_type == 'doughnut':
             elements['type'] = 'doughnut'
+            # self.options['maintainAspectRatio'] = 'false'
+            self.options['responsive'] = 'false'
         
-        if self.chart_type == 'polarArea':
+        elif self.chart_type == 'polarArea':
             elements['type'] = 'polarArea'
+            # self.options['maintainAspectRatio '] = 'false'
+            self.options['responsive'] = 'false'
         
-        if self.chart_type == 'radar':
+        elif self.chart_type == 'radar':
             elements['type'] = 'radar'
 
+        else:
+            elements['type'] = self.chart_type
+            self.options['interaction'] = {
+                        'intersect': 'false',
+            }
         return elements
     
+    def get_html(self):
+        # ratio 60:100
+        # code = f'<canvas id="{self.chart_id}" height=60 width=100></canvas>'
+        if self.height:
+            code = f'<canvas id="{self.chart_id}" height={self.height} width=100></canvas>'
+        else:
+            code = f'<canvas id="{self.chart_id}"></canvas>'
+        return code
+
     def get_js(self):
         code = f"""
             var chartElement = document.getElementById('{self.chart_id}').getContext('2d');

@@ -2,19 +2,25 @@
 {% load static %}
 
 {% block head_script %}
+<style>
+/* canvas { height: 80vh; } */
+/* .chart-container { height: 300px; } */
+</style>
 {% endblock %}
 
 
 {% block content %}
     <div class="container-fulid">
-        <div class="row mb-4 mt-4">
+        <div class="row m-2 " data-masonry='{"percentPosition": true }' >
 
             {% for chart in charts %}
             <div class="col-4">
                 <div class="card-deck">
                         <div class="card">
                             <div class="card-body">
-                                <div class="chart-container" style="height:150; width:150">
+                                <div class="chart-container">
+                                     <!-- style="position: relative; height:200px; width:80vw"> -->
+                                     <!-- style="height:120; width:150;"> -->
                                     {{ chart.html|safe }}
                                 </div>
                             </div>
@@ -46,4 +52,29 @@
         {{ chart.js|safe }}
     {% endfor %}
 </script>        
+{% endblock %}
+
+<!-- nav filter script -->
+{% block script_nav %} 
+    {% if filterItems %}
+    <script>
+        // set preselected values
+        {% for filterItem in filterItems %}$('#sel_{{filterItem.qId}}').val("{{ filterItem.selected }}");
+        {% endfor %}
+
+        function updateData() {
+            var q = "";
+            var qs = [];
+            var tmp = '';
+
+            {% for filterItem in filterItems %} tmp = $('#sel_{{filterItem.qId}}').val(); if (tmp != '') qs.push('{{filterItem.qId}}=' + tmp);
+            {% endfor %}
+
+            if (qs.length > 0) {
+                q = "?" + qs.join("&");
+            }            
+            window.location.href = window.location.pathname + q;
+        }
+    </script>    
+    {% endif %}
 {% endblock %}

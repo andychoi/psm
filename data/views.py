@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from django.views.generic import TemplateView
 from .methods import csv_to_db
-from .models import Purchase
+# from .models import Purchase
 from .charts import objects_to_df, qs_to_df, Chart
 from psm.models import Project
 from psm.views import get_filter_options
@@ -107,7 +107,7 @@ class Dashboard(TemplateView):
         # with dates in all situations so our method will convert them to strings
         # however we will need to identify the date columns and the format we want.
         # I am useing just month and year here.
-        df = objects_to_df(Purchase, date_cols=['%Y-%m', 'date'])
+        # df = objects_to_df(Purchase, date_cols=['%Y-%m', 'date'])
         # df = qs_to_df(model=Purchase, qs=Purchase.objects.filter(gender='Female'), date_cols=['%Y-%m', 'date'])
     
         

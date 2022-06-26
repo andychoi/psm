@@ -218,6 +218,15 @@ def get_filter_options(self, context, def_year=True, plan=False):
         , "items": Program.objects.filter(is_active=True)  # all()
     } )
 
+    context['filterItems'].append( {
+        "key": "CF", "text": "Carryforward?", "qId": "cf", "selected": self.request.GET.get('cf', '')
+        , "items": [ { 'id': True, 'name':'True'}, {'id':False, 'name':'False'} ]
+    } )
+
+    context['filterItems'].append( {
+        "key": "INT", "text": "Internal?", "qId": "is_internal", "selected": self.request.GET.get('is_internal', '')
+        , "items": [ { 'id': True, 'name':'True'}, {'id':False, 'name':'False'} ]
+    } )
 
 
 class projectList1View(PermissionRequiredMixin, generic.ListView):

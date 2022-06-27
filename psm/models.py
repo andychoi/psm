@@ -105,6 +105,8 @@ class Project(models.Model):
         indexes = [
             # models.Index(fields=Project_PRIORITY_FIELDS, name='mProjects_Project_priority_idx'),
         ]
+        permissions = [ ("access_project_cbu",     "Can access by CBU user)"),
+        ]
 
     code = models.CharField(_("Code"), max_length=18, null=True, blank=True) 
     cf   = models.BooleanField(_("carryforward?"),default=False)
@@ -412,9 +414,10 @@ class ProjectRequest(models.Model):
         return self.title if self.pk is None else "[%s] %s" % (self.code, self.title)            
 
     class Meta:
-        permissions = [ ("approve_projectrequest", "Can approve project plan"),
-                        ("projectrequest_ver-20",  "Can access version 20 (BAP approved)"),
-                        ("projectrequest_ver-21",  "Can access version 21 (Unplanned approved)"),
+        permissions = [ ("approve_projectrequest",     "Can approve project plan"),
+                        ("access_projectrequest_v20",  "Can access version 20 (BAP approved)"),
+                        ("access_projectrequest_v21",  "Can access version 21 (Unplanned approved)"),
+                        ("access_projectrequest_cbu",  "Can access by CBU user)"),
                         # ("transfer", "Can transfer project plan to actual project"),
         ]
 

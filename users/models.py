@@ -8,7 +8,11 @@ from common.proxy import ProxySuper,  ProxyManager
 # from PIL import Image  #performance issue https://placeholder.com/900x300
 
 #avoid circular import, use full name in model with ''. example='common.Team'
+"""
+    CBU is many-to-many, to use in permission; query filters report, 
+    permission: access_project_cbu, access_projectrequest_cbu
 
+"""
 class Profile(ProxySuper): #models.Model):
     proxy_name = models.CharField(max_length=20, default='Profile', blank=True, null=True)
 

@@ -412,9 +412,9 @@ class ProjectRequest(models.Model):
         return self.title if self.pk is None else "[%s] %s" % (self.code, self.title)            
 
     class Meta:
-        permissions = [ ("approve_projectplan", "Can approve project plan"),
-                        ("projectplan_ver-20",  "Can access version 20 (BAP approved)"),
-                        ("projectplan_ver-21",  "Can access version 21 (Unplanned approved)"),
+        permissions = [ ("approve_projectrequest", "Can approve project plan"),
+                        ("projectrequest_ver-20",  "Can access version 20 (BAP approved)"),
+                        ("projectrequest_ver-21",  "Can access version 21 (Unplanned approved)"),
                         # ("transfer", "Can transfer project plan to actual project"),
         ]
 

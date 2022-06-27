@@ -243,7 +243,7 @@ class ProjectRequestAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdm
 
     # 
     def copy_to_project(self, request, obj):
-        if not request.user.has_perm('psm.approve_projectplan'):
+        if not request.user.has_perm('psm.approve_projectrequest'):
             messages.add_message(request, messages.ERROR, "You don't have permission to release project" )
             return
         else:

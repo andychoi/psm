@@ -701,7 +701,7 @@ def get_kickoff_chart(request, year=date.today().year):
 # -----------------------------------------------------------------------------------
 # class based view for each Project
 class projectDetail(PermissionRequiredMixin, generic.DetailView):
-    permission_required = 'psm.view_projectplan'
+    permission_required = 'psm.view_projectrequest'
 
     model = Project
     template_name = "project/project_detail.html"
@@ -716,7 +716,7 @@ class projectDetail(PermissionRequiredMixin, generic.DetailView):
 
 
 class projectCreateView(PermissionRequiredMixin, generic.CreateView):
-    permission_required = 'psm.add_projectplan'
+    permission_required = 'psm.add_projectrequest'
     model = Project
     template_name = "project/project_detail.html"
     context_object_name = 'project'
@@ -754,7 +754,7 @@ class projectCreateView(PermissionRequiredMixin, generic.CreateView):
 
 # -----------------------------------------------------------------------------------
 class projectPlanListView(PermissionRequiredMixin, generic.ListView):
-    permission_required = 'psm.view_projectplan'
+    permission_required = 'psm.view_projectrequest'
 
     template_name = 'project/project_plan.html'
     model = ProjectRequest
@@ -826,7 +826,7 @@ class projectPlanChartView(projectPlanListView):
 
 
 class projectPlanDetailView(PermissionRequiredMixin, generic.DetailView):
-    permission_required = 'psm.view_projectplan'
+    permission_required = 'psm.view_projectrequest'
     model = ProjectRequest
     template_name = "project/project_plan_detail.html"
 

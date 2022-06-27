@@ -81,6 +81,7 @@ class ResourceAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
                 days = workdays_us(m, y=obj.year)    # if m <= 12 else obj.year+1)
                 setattr(obj, f, days)  # overwriting the old value
             obj.save()            
+            messages.add_message(request, messages.INFO, 'Capacity days are filled with company calendar')
 
     @admin.action(description="Copy to next year", permissions=['change'])
     def copy_to_next_year(self, request, queryset):

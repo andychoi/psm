@@ -12,9 +12,9 @@ from psm.models import Project
 from common.models import Dept, Team
 from django.db.models import Q
 from django.db.models import Count  #, F, Q, Sum, Avg
-from psmprj.utils.dates import previous_working_day
+from common.dates import previous_working_day
 from reports.models import Report
-from common.utils import PHASE_WORK, PHASE_OPEN, Phase, State, STATE_OPEN
+from common.codes import PHASE_WORK, PHASE_OPEN, Phase, State, STATE_OPEN
 from psmprj.utils.mail import send_mail_async as send_mail
 import logging
 logger = logging.getLogger(__name__)

@@ -4,12 +4,13 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
-from common.utils import PUBLISH
+from common.codes import PUBLISH
 from users.models import Profile
 from datetime import date
 from django.dispatch import receiver
 from django.db.models.signals import pre_save, post_save, post_delete
-from psmprj.utils.dates import workdays_us
+from common.dates import workdays_us
+from common.codes import SKILLLEVEL, SkillLevel
 
 # Create your models here.
 # https://mattsch.com/2021/05/28/django-django_tables2-and-bootstrap-table/
@@ -23,6 +24,23 @@ def min_year():
     return datetime.date.today().year - 4
 def max_value_current_year(value):
     return MaxValueValidator(current_year()+1)(value)
+
+
+class Skill(models.Model):
+    name = models.CharField(max_length=100, blank=False, null=False)
+    level = models.CharField(_("Skill level"), max_length=20, choices=SKILLLEVEL, default = SkillLevel.MID.value )
+    group = models.CharField(max_length=100, blank=False, null=False)
+    description = models.TextField(_("Description"), max_length=2000, null=True, )
+    is_active = models.BooleanField(default=True)
+
+    # auto_now_add=True
+    created_at = models.DateField(_("created at"), default=date.today, editable=False)
+    updated_on = models.DateTimeField(_("last updated"), auto_now=True, editable=False)
+    counts  = models.SmallIntegerField(_('Skill counts'), default=0)
+
+    def __str__(self):
+        return f"{self.name}{'*' if not self.is_active else ''}"
+
 
 class ResourceManager(models.Manager):
     def active(self):
@@ -38,6 +56,7 @@ class Resource(models.Model):
     # category = models.ForeignKey(Category, null=True, on_delete=models.SET_NULL)
     staff = models.ForeignKey(Profile, related_name='staff', on_delete=models.PROTECT, null=True, blank=False)
     year = models.PositiveSmallIntegerField(default=date.today().year)
+    skills = models.ManyToManyField(Skill, blank=True)
 
     # working days
     m01 = models.IntegerField( validators = [MinValueValidator(0), MaxValueValidator(31)], default=workdays_us(m=1))
@@ -53,7 +72,11 @@ class Resource(models.Model):
     m11 = models.IntegerField( validators = [MinValueValidator(0), MaxValueValidator(30)], default=workdays_us(m=11))
     m12 = models.IntegerField( validators = [MinValueValidator(0), MaxValueValidator(31)], default=workdays_us(m=12))
 
-    active = models.BooleanField(default=True)
+    active     = models.BooleanField(default=True)
+    created_at = models.DateField(_("created at"), default=date.today, editable=False)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="res_created_by", null=True, on_delete=models.SET_NULL)
+    updated_on = models.DateTimeField(_("last updated"), auto_now=True, editable=False)
+    updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="res_updated_by", null=True, on_delete=models.SET_NULL)
 
     objects = models.Manager()
     broswer = ResourceManager()
@@ -63,8 +86,10 @@ class Resource(models.Model):
     
     class Meta:
         verbose_name_plural = 'Resources'
-        unique_together = ('staff', 'year')
+        unique_together = ['staff', 'year']
 
+    def skill_names(self):
+        return " ,".join(p.name for p in self.skills.all())
 
     def save(self, *args, **kwargs):
         # self.final_value = self.discount_value if self.discount_value > 0 else self.value
@@ -96,7 +121,7 @@ class ProjectPlan(models.Model):
     updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="pp_updated_by", null=True, on_delete=models.SET_NULL)
 
     class Meta:
-        unique_together = ('project', 'year')
+        unique_together = ['project', 'year']
     def __str__(self):
         return f'{self.project} ({self.year})' 
 
@@ -112,7 +137,7 @@ class ResourcePlan(models.Model):
     updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="rp_updated_by", null=True, on_delete=models.SET_NULL)
 
     class Meta:
-        unique_together = ('staff', 'year')
+        unique_together = ['staff', 'year']
 
     def __str__(self):
         return f'{self.staff} ({self.year})' 
@@ -126,7 +151,7 @@ class RPPlanItem(models.Model):
     class Meta:
         verbose_name = _("Time Allocation")
         verbose_name_plural = _("Time Allocations")
-        unique_together = ('year', 'staff', 'project')
+        unique_together = [['year', 'staff', 'project']]
 
     pr = models.ForeignKey(ResourcePlan, on_delete=models.CASCADE, null=True, blank=True)
     pp = models.ForeignKey(ProjectPlan, on_delete=models.CASCADE, null=True, blank=True)

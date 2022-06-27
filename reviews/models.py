@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from datetime import date
 
 from common.models import CBU, Dept, Div
-from common.utils import ACTION3, STATUS, Status, PRIORITIES, Priority, REQTYPES, ReqTypes, ACTIONS, Action
+from common.codes import ACTION3, STATUS, Status, PRIORITIES, Priority, REQTYPES, ReqTypes, ACTIONS, Action
 from psm.models import Project
 
 # Create your models here.

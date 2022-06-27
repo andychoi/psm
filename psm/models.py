@@ -16,7 +16,7 @@ from common.models import WBS, VERSIONS, Versions
 from users.models import Profile, ProfileCBU
 
 from psmprj.utils.mail import send_mail_async as send_mail, split_combined_addresses
-from psmprj.utils.dates import previous_working_day
+from common.dates import previous_working_day
 from django.utils.html import mark_safe, escape
 from common.utils import md2
 from common.proxy import ObjectManager, ProxySuper, ProxyManager

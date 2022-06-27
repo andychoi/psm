@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from psm.models import Project
-from common.utils import PHASE, PRIORITIES, PRJTYPE
+from common.codes import PHASE, PRIORITIES, PRJTYPE
 from .serializers import ProjectSerializer
 
 from datetime import datetime, date

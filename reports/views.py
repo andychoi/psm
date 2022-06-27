@@ -7,7 +7,7 @@ from django.views import generic
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import get_object_or_404
 
-from common.utils import State2
+from common.codes import State2
 from .models import Report, Milestone, ReportRisk
 from psm.models import Project
 from django.core.paginator import Paginator

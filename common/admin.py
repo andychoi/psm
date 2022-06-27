@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from import_export.admin import ImportExportMixin
 from django.contrib import messages
 
-from .models import CBU, Div, Dept, Team, WBS
+from .models import CompanyHoliday, CBU, Div, Dept, Team, WBS
 
 from django.contrib.auth.models import Permission
 from django.contrib import admin
@@ -14,6 +14,21 @@ from django.conf import settings
 from django.utils import timezone
 from users.models import User
 import pytz
+
+@admin.register(CompanyHoliday) 
+class CompanyHolidayAdmin(admin.ModelAdmin):
+    list_display = ('year','state', 'holiday')    
+    list_filter = ('year', 'state', )
+
+    actions = ['copy_to_next_year']
+    @admin.action(description="Copy to next year", permissions=['change'])
+    def copy_to_next_year(self, request, queryset):
+        for obj in queryset:
+            obj.id = None
+            obj.year = obj.year + 1
+            obj.save()
+            messages.add_message(request, messages.INFO, ' is copied/saved')
+
 
 @admin.register(Permission) 
 class PermissionAdmin(admin.ModelAdmin):

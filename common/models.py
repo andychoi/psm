@@ -1,13 +1,34 @@
 from django.db import models
 from django.conf import settings
-from common.utils import *
+from common.codes import *
 from django.utils.translation import gettext_lazy as _
-
+import datetime
+from django.core.validators import MaxValueValidator, MinValueValidator
 # https://stackoverflow.com/questions/45309128/circular-dependency-error-in-django
 # from typing import TYPE_CHECKING
 # if TYPE_CHECKING:
 #     from users.models import Profile
 # from users.models import Profile
+
+# https://github.com/workalendar/workalendar
+# https://towardsdatascience.com/the-easiest-way-to-identify-holidays-in-python-58333176af4f
+from workalendar.europe import UnitedKingdom
+def year_choices():
+    return [(r,r) for r in range(2020, datetime.date.today().year+1)]
+def current_year():
+    return datetime.date.today().year
+def max_value_current_year(value):
+    return MaxValueValidator(current_year())(value)  
+
+class CompanyHoliday(models.Model):
+    year    = models.IntegerField(default=current_year, validators=[MinValueValidator(2020), max_value_current_year])
+    state   = models.CharField(max_length=2, default='CA')
+    holiday = models.DateField(blank=False)
+
+    def __str__(self):
+        return f'{self.year}-{self.state}-{self.holiday:%Y-%m-%d}'
+    class Meta:
+        unique_together = ('year', 'state', 'holiday')
 
 class Div(models.Model):
     class Meta:

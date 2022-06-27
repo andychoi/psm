@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.urls import reverse
 from django.template.defaultfilters import slugify  # new
 from django.conf import settings
-from common.utils import PUBLISH
+from common.codes import PUBLISH
 from common.utils import md2
 import enum
 from django.utils.translation import gettext_lazy as _

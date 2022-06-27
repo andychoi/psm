@@ -1,6 +1,8 @@
+# common/dates.py
 import holidays
 import datetime
 from datetime import timedelta, date
+from common.models import CompanyHoliday
 
 # TODO - need holiday calendar (country=US)
 #  - https://github.com/zurichat/zc_plugin_company_holiday_calendar
@@ -37,8 +39,9 @@ def previous_working_day(to_date, number_of_days=1):
 def workdays_us(m, y = date.today().year):
     # now = datetime.datetime.now()
 # TODO
-    # holidays = {datetime.date(y, 8, 14)} # you can add more here
-    us_holidays = holidays.US()  # this is a dict
+    cc_holidays = CompanyHoliday.objects.filter(year=y).values_list('holiday', flat=True)
+
+    us_holidays = holidays.US(subdiv='CA')  # this is a dict / FIXME CA and other region...
 
     businessdays = 0
     for i in range(1, 32):
@@ -47,6 +50,7 @@ def workdays_us(m, y = date.today().year):
         except(ValueError):
             break
         if thisdate.weekday() < 5 and thisdate not in us_holidays: # Monday == 0, Sunday == 6 
-            businessdays += 1
+            if not thisdate in cc_holidays:
+                businessdays += 1
 
     return businessdays

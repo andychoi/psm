@@ -20,7 +20,7 @@ from django import forms
 
 from django.utils.html import format_html
 from django.utils.html import mark_safe
-from psmprj.utils.dates import previous_working_day
+from common.dates import previous_working_day
 
 from common.models import Action3, ReqTypes, Versions, CBU, State, Phase
 from .models import Project, ProjectRequest,  ProjectDeliverable, ProjectDeliverableType, Strategy, Program

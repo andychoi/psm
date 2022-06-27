@@ -222,6 +222,7 @@ class Chart:
         ``fill_value`` is what to use for empty values
 
         """
+        
         pivot = pd.pivot_table(
             df,
             values=values,
@@ -233,9 +234,11 @@ class Chart:
 
         pivot = pivot.round(round_values)
         
-        values = pivot.values.tolist()
+        values = pivot.values.tolist() 
+        # values = np.array(values,float)  # FIXME Decimal field to Float
         labels = pivot.columns.tolist()
         stacks = pivot.index.tolist()
+
 
         self.from_lists(values, labels, stacks)
     

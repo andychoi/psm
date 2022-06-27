@@ -53,7 +53,7 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
     search_fields = ('id', 'name', 'email', 'CBU__name', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
     ordering = ('CBU__id', 'dept', 'team', 'name', )
     readonly_fields = ('created_at', 'created_by', 'updated_on', 'updated_by')
-    autocomplete_fields = ( 'user', 'team', )
+    autocomplete_fields = ( 'user', 'team', 'CBU' )
     fieldsets = (  # Edition form
          (None, {'fields': (('user', 'name',), ('email',) , ('CBU',), ('usertype', 'is_psmadm', ), 
                             ('dept', 'team'), 
@@ -226,12 +226,12 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
 @admin.register(ProfileCBU)
 class ProfileCBUAdmin(ImportExportMixin, admin.ModelAdmin):
     # list_display = ('id', 'user', 'name', 'email', 'dept', 'manager', 'u_div', 'CBU', 'is_active')
-    list_display = ('id', 'user', 'name', 'email', 'CBU', 'pm_count')
+    list_display = ('id', 'user', 'name', 'email', 'CBU_names', 'pm_count')
     list_display_links = ('id', 'user', 'name')
     search_fields = ('id', 'name', 'email', 'CBU__name', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
     ordering = ('CBU', 'name', )
     readonly_fields = ('created_at', 'created_by', 'updated_on', 'updated_by')
-    autocomplete_fields = ( 'user',  )
+    autocomplete_fields = ( 'user', 'CBU'  )
     fieldsets = (  # Edition form
          (None, {'fields': (('name', 'email', ) ,
                             ('CBU', 'is_external', 'notes' ),

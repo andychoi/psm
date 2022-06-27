@@ -14,7 +14,7 @@ from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter, Drop
 from import_export.admin import ImportExportMixin
 from django_object_actions import DjangoObjectActions
 
-from .models import Skill, Resource, ResourcePlan, ProjectPlan, RPPlanItem
+from .models import Skill, Resource, ResourcePlan, ProjectPlan, RPPlanItem, PPPlanItem
 from common.dates import workdays_us
 # Register your models here.
 
@@ -26,6 +26,12 @@ class SkillAdmin(ImportExportMixin, admin.ModelAdmin):
     ordering = ('name',)
     search_fields = ('name','group', 'description')
 
+"""
+TODO
+https://django-autocomplete-light.readthedocs.io/en/master/tutorial.html#overview
+TODO https://stackoverflow.com/questions/57800526/custom-dynamic-list-filter-with-django-simplelistfilter
+
+"""
 
 @admin.register(Resource)
 class ResourceAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
@@ -120,17 +126,17 @@ class ResourceAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
 """
 @admin.register(RPPlanItem)
 class RPPlanItemAdmin(ImportExportMixin, admin.ModelAdmin):
-    list_display = ( 'r_no', 'r_staff', 'project', 'p_no', 'p_proj', 'staff', 'year', 'm01', 'm02', 'm03', 'm04', 'm05', 'm06', 'm07', 'm08', 'm09', 'm10', 'm11', 'm12')
+    list_display = ( 'r_no', 'r_staff', 'project', 'staff', 'year', 'm01', 'm02', 'm03', 'm04', 'm05', 'm06', 'm07', 'm08', 'm09', 'm10', 'm11', 'm12', 'm13', 'm14', 'm15')
     list_display_links = ('year',)
 
-    readonly_fields = ('r_staff', 'p_proj', 'created_at', 'created_by', 'updated_on', 'updated_by', )
-    autocomplete_fields = ('pp', 'pr', 'project', 'staff')
+    readonly_fields = ('r_staff', 'created_at', 'created_by', 'updated_on', 'updated_by', )
+    autocomplete_fields = ('pr', 'project', 'staff')
     extra_field = forms.CharField()
 
     fieldsets = (      # Edition form
-                (None,  {'fields': ( ('r_staff', 'project',), ('p_proj', 'staff',), ( 'year',  ), 
+                (None,  {'fields': ( ('r_staff', 'project',), ('staff',), ( 'year',  ), 
                 # (None,  {'fields': ( ('project',), ('staff',), ( 'year', 'status', ), 
-                ('m01', 'm02', 'm03', 'm04', 'm05', 'm06', 'm07', 'm08', 'm09', 'm10', 'm11', 'm12') )}),
+                ('m01', 'm02', 'm03', 'm04', 'm05', 'm06', 'm07', 'm08', 'm09', 'm10', 'm11', 'm12', 'm13', 'm14', 'm15') )}),
                 (_('More...'), {'fields': ( ('created_at', 'created_by', 'updated_on', 'updated_by' )), 'classes': ('collapse',)}),
             )
 
@@ -138,8 +144,42 @@ class RPPlanItemAdmin(ImportExportMixin, admin.ModelAdmin):
         fieldsets = super().get_fieldsets(request, obj)
         if obj is None:
             fieldsets = (      # Creation form
-                (None,  {'fields': ( ('pr', 'pp'), ( 'year', ), 
-                ('m01', 'm02', 'm03', 'm04', 'm05', 'm06', 'm07', 'm08', 'm09', 'm10', 'm11', 'm12') )  }),
+                (None,  {'fields': ( ('pr', ), ( 'year', ), 
+                ('m01', 'm02', 'm03', 'm04', 'm05', 'm06', 'm07', 'm08', 'm09', 'm10', 'm11', 'm12', 'm13', 'm14', 'm15') )  }),
+            )
+        return fieldsets
+
+    # tip save_model
+    def save_model(self, request, obj, form, change):
+        if change is False:
+            obj.created_by = request.user
+            obj.updated_by = request.user
+        else:
+            obj.updated_by = request.user
+        super().save_model(request, obj, form, change)
+
+@admin.register(PPPlanItem)
+class PPPlanItemAdmin(ImportExportMixin, admin.ModelAdmin):
+    list_display = ( 'project', 'p_no', 'p_proj', 'staff', 'year', 'm01', 'm02', 'm03', 'm04', 'm05', 'm06', 'm07', 'm08', 'm09', 'm10', 'm11', 'm12', 'm13', 'm14', 'm15')
+    list_display_links = ('year',)
+
+    readonly_fields = ('p_proj', 'created_at', 'created_by', 'updated_on', 'updated_by', )
+    autocomplete_fields = ('pp', 'project', 'staff', 'skills')
+    extra_field = forms.CharField()
+
+    fieldsets = (      # Edition form
+                (None,  {'fields': ( ('project',), ('p_proj', 'staff',), ( 'year',  ), 
+                # (None,  {'fields': ( ('project',), ('staff',), ( 'year', 'status', ), 
+                ('m01', 'm02', 'm03', 'm04', 'm05', 'm06', 'm07', 'm08', 'm09', 'm10', 'm11', 'm12', 'm13', 'm14', 'm15') )}),
+                (_('More...'), {'fields': ( ('created_at', 'created_by', 'updated_on', 'updated_by' )), 'classes': ('collapse',)}),
+            )
+
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = super().get_fieldsets(request, obj)
+        if obj is None:
+            fieldsets = (      # Creation form
+                (None,  {'fields': ( ('pp',), ( 'year', ), 
+                ('m01', 'm02', 'm03', 'm04', 'm05', 'm06', 'm07', 'm08', 'm09', 'm10', 'm11', 'm12', 'm13', 'm14', 'm15') )  }),
             )
         return fieldsets
 
@@ -174,13 +214,13 @@ class ProjectPlanInlineFormSet(forms.models.BaseInlineFormSet):
         #             totals[k-1] += form.cleaned_data[v]
 
         # for v in totals:
-        #     if v > Resource.MAX_MM:
+        #     if v > Resource.MAX_MH:
         #         raise forms.ValidationError('Capacity exceed 100%')
 
 
 class ProjectPlanForm(forms.ModelForm):
     class Meta:
-        model = RPPlanItem
+        model = PPPlanItem
         exclude = ()
     
     # def clean_<field_name>(self):
@@ -195,7 +235,7 @@ class ProjectPlanForm(forms.ModelForm):
 
 
 class ProjectPlanInline(admin.TabularInline):
-    model = RPPlanItem
+    model = PPPlanItem
     form = ProjectPlanForm
     formset = ProjectPlanInlineFormSet  
     extra = 3
@@ -320,7 +360,7 @@ class ResourcePlanInlineFormSet(forms.models.BaseInlineFormSet):
                     totals[k-1] += form.cleaned_data[v]
 
         for v in totals:
-            if v > Resource.MAX_MM:
+            if v > Resource.MAX_MH:
                 raise forms.ValidationError('Capacity exceed 100%')
 
 
@@ -402,12 +442,7 @@ class ResourcePlanAdmin(admin.ModelAdmin):
 
         super().save_model(request, obj, form, change)
     
-    # tip access to own data, queryset - TODO for manager/HOD
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        if request.user.is_superuser or request.user.profile.is_psmadm:
-            return qs
-        return qs.filter(created_by=request.user)
+
 
     # tip save_model save_related
     # https://stackoverflow.com/questions/14931865/what-is-the-diff-between-save-model-and-save-formset-in-django-admin
@@ -468,6 +503,13 @@ class ResourcePlanAdmin(admin.ModelAdmin):
     #         # kwargs['disabled'] = True
     #     return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
+    # tip access to own data, queryset - TODO for manager/HOD
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser or request.user.profile.is_psmadm:
+            return qs
+        return qs.filter(created_by=request.user)
+        
     # list with default filter
     # TODO for manager/HOD, default to own plan (created_by)
     def changelist_view(self, request, extra_context=None):

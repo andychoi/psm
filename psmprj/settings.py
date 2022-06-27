@@ -31,34 +31,38 @@ ALLOWED_HOSTS = [ '*' ]
 # Application definition
 INSTALLED_APPS = [
     'apis',
-#    'jazzmin',
-    # 'mtasks.apps.MtasksConfig',
-    # 'CBU',
-    'common',
-    'psm',
-    'mtasks',
-    'reports',
-    'reviews',
-    'data',
+    'users.apps.UsersConfig',   # user extension (profile)
+    'blog.apps.BlogConfig',     # blog
+    'common',                   # common codes, utils, ...
+    'psm',                      # main module
+    'mtasks',                   # original task management (not used)
+    'reports',                  # reporting
+    'reviews',                  # reviews
+    'data',                     # analytics (pilot)
+    'resource',                 # resource management
 
-    'resource',
-    
-    # 'guardian',      # object level permission management; django default is class level 
-#    'river',        # simple workflow; not yet compatible with django 4.x
-    # blog
-    'users.apps.UsersConfig',
-    'blog.apps.BlogConfig',
-    'crispy_forms',
-    'django_tables2',
-    'sorl.thumbnail',
-    # 'django_filters'  ,   #bug with pagination
+    # 'guardian',               # object level permission management; django default is class level 
 
-    "django_apscheduler",
+    # 'river',                  # simple workflow; not yet compatible with django 4.x
+
+    'sorl.thumbnail',           # for blog thumnail
+    'crispy_forms',             # for user form and blog forms
+    'django_tables2',           # not used yet
+
+    # 'django_filters'  ,       #bug with pagination
+
+    "django_apscheduler",       # job scheduler
+    'django_object_actions',    # for object-action
 
     # 'multi_email_field',  #not compatible with django 4.x
-    'django_object_actions', 
     
-    "django.contrib.postgres",  # new for fulltext search
+    'import_export',
+
+    'adminfilters',         # https://github.com/mrsarm/django-adminfilters
+    'django_admin_listfilter_dropdown', # https://github.com/mrts/django-admin-list-filter-dropdown
+#    'jazzmin',                 # admin new UI
+    
+    # "django.contrib.postgres",  # new for fulltext search (need POC)
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -68,15 +72,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'django_extensions',    #debugging tool, jupyter
-    'import_export',
-    'django_admin_listfilter_dropdown',
-    'adminfilters',
 
-    # 'ckeditor',
-    # 'django_markdown',
-#    'django.contrib.sites',
-#    'microsoft_auth',
-#    'django_auth_adfs',
+    # 'ckeditor',           # working fine, but not used here...
+    # 'django_markdown',    # use different way markdown2
+    # 'django.contrib.sites',   # what is this for???
+
+#    'microsoft_auth',      # not working... need POC
+#    'django_auth_adfs',    # not working... need POC, LDAP used instead
 ]
 
 REST_ENABLED = env.bool('REST_ENABLED', False)

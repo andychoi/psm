@@ -4,7 +4,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
-from common.codes import PUBLISH
+from common.codes import PUBLISH, WCAL
 from users.models import Profile
 from datetime import date
 from django.dispatch import receiver
@@ -71,6 +71,7 @@ class Resource(models.Model):
     m10 = models.IntegerField( validators = [MinValueValidator(0), MaxValueValidator(31*8)], default=workdays_us(m=10))
     m11 = models.IntegerField( validators = [MinValueValidator(0), MaxValueValidator(30*8)], default=workdays_us(m=11))
     m12 = models.IntegerField( validators = [MinValueValidator(0), MaxValueValidator(31*8)], default=workdays_us(m=12))
+    wcal       = models.CharField(_("Region"), max_length=3, choices=WCAL, default='CA')   # working calendar, exceptional with *
 
     active     = models.BooleanField(default=True)
     created_at = models.DateField(_("created at"), default=date.today, editable=False)

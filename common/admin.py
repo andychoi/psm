@@ -9,6 +9,8 @@ from django.contrib.auth.models import Permission
 from django.contrib import admin
 
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
+
 from pyrfc import Connection
 from django.conf import settings
 from django.utils import timezone
@@ -16,9 +18,9 @@ from users.models import User
 import pytz
 
 @admin.register(CompanyHoliday) 
-class CompanyHolidayAdmin(admin.ModelAdmin):
-    list_display = ('year','state', 'holiday')    
-    list_filter = ('year', 'state', )
+class CompanyHolidayAdmin(ImportExportMixin, admin.ModelAdmin):
+    list_display = ('year','subdiv', 'holiday')    
+    list_filter = ('year', 'subdiv', )
 
     actions = ['copy_to_next_year']
     @admin.action(description="Copy to next year", permissions=['change'])
@@ -26,6 +28,7 @@ class CompanyHolidayAdmin(admin.ModelAdmin):
         for obj in queryset:
             obj.id = None
             obj.year = obj.year + 1
+            obj.holiday += relativedelta(years=1)
             obj.save()
             messages.add_message(request, messages.INFO, ' is copied/saved')
 

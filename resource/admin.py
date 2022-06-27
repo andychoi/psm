@@ -4,6 +4,7 @@ from django import forms
 from django.contrib import admin
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import ngettext
 from django.urls import reverse
 from django.utils.html import mark_safe
 from django.shortcuts import redirect
@@ -14,7 +15,7 @@ from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter, Drop
 from import_export.admin import ImportExportMixin
 from django_object_actions import DjangoObjectActions
 
-from .models import Skill, Resource, ResourcePlan, ProjectPlan, RPPlanItem, PPPlanItem
+from .models import Skill, Resource, ResourcePlan, ProjectPlan, RPPlanItem, PPPlanItem, ActualItem
 from common.dates import workdays_us
 # Register your models here.
 
@@ -35,9 +36,9 @@ TODO https://stackoverflow.com/questions/57800526/custom-dynamic-list-filter-wit
 
 @admin.register(Resource)
 class ResourceAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
-    list_display = ( 'staff', 'year', 'active', 'm01', 'm02', 'm03', 'm04', 'm05', 'm06', 'm07', 'm08', 'm09', 'm10', 'm11', 'm12', 'skill_names')
+    list_display = ( 'staff', 'year', 'wcal', 'active', 'm01', 'm02', 'm03', 'm04', 'm05', 'm06', 'm07', 'm08', 'm09', 'm10', 'm11', 'm12', 'skill_names')
     list_display_links = ('staff',)
-    list_editable = ('active','m01', 'm02', 'm03', 'm04', 'm05', 'm06', 'm07', 'm08', 'm09', 'm10', 'm11', 'm12')
+    list_editable = ('active', 'wcal', 'm01', 'm02', 'm03', 'm04', 'm05', 'm06', 'm07', 'm08', 'm09', 'm10', 'm11', 'm12')
     readonly_fields = ('created_at', 'created_by', 'updated_on', 'updated_by', )
     ordering = ('staff',)
     autocomplete_fields = ('skills',)
@@ -46,7 +47,7 @@ class ResourceAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         css = {"all": ("resource/css/custom_admin.css",)}
 
     fieldsets = (      # Edition form
-                (None,  {'fields': ( ('staff', 'year',), ('skills', 'active',),  
+                (None,  {'fields': ( ('staff', 'wcal', 'year',), ('skills', 'active',),  
                 ('m01', 'm02', 'm03', 'm04', 'm05', 'm06', 'm07', 'm08', 'm09', 'm10', 'm11', 'm12') )}),
                 (_('More...'), {'fields': ( ('created_at', 'created_by', 'updated_on', 'updated_by' )), 'classes': ('collapse',)}),
             )
@@ -55,7 +56,7 @@ class ResourceAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         fieldsets = super().get_fieldsets(request, obj)
         if obj is None:
             fieldsets = (      # Creation form
-                (None,  {'fields': ( ('staff', 'year',), ('skills', 'active',),  
+                (None,  {'fields': ( ('staff', 'wcal', 'year',), ('skills', 'active',),  
                 ('m01', 'm02', 'm03', 'm04', 'm05', 'm06', 'm07', 'm08', 'm09', 'm10', 'm11', 'm12') )  }),
             )
         return fieldsets
@@ -72,22 +73,17 @@ class ResourceAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     def fill_default_workdays(self, request, obj):
         months = [ [m, f'm{m:02d}'] for m in range(1, 13)]
         for m, f in months:
-            days = workdays_us(m, y=obj.year)    # if m <= 12 else obj.year+1)
-            setattr(obj, f, days)  # overwriting the old value        pass
+            hours = 8 * workdays_us(m, y=obj.year)    # if m <= 12 else obj.year+1)
+            setattr(obj, f, hours)  # overwriting the old value        pass
         obj.save()
 
-    # list function
     actions = ['fill_default_workdays_batch', 'copy_to_next_year']
-    
+    # list function    
     @admin.action(description='Fill from company calendar')
     def fill_default_workdays_batch(self, request, queryset):
         for obj in queryset:
-            months = [ [m, f'm{m:02d}'] for m in range(1, 13)]
-            for m, f in months:
-                days = workdays_us(m, y=obj.year)    # if m <= 12 else obj.year+1)
-                setattr(obj, f, days)  # overwriting the old value
-            obj.save()            
-            messages.add_message(request, messages.INFO, 'Capacity days are filled with company calendar')
+            self.fill_default_workdays(request, obj)    
+            messages.add_message(request, messages.INFO, 'Capacity hours are filled with company calendar')
 
     @admin.action(description="Copy to next year", permissions=['change'])
     def copy_to_next_year(self, request, queryset):
@@ -526,3 +522,30 @@ class ResourcePlanAdmin(admin.ModelAdmin):
         
         return super(ResourcePlanAdmin, self).changelist_view(request, extra_context=extra_context)
 
+"""
+    Actual time data
+"""
+@admin.register(ActualItem)
+class ActualItemAdmin(ImportExportMixin, admin.ModelAdmin):
+    list_display = ( 'project', 'staff', 'CBU', 'year', 'm01', 'm02', 'm03', 'm04', 'm05', 'm06', 'm07', 'm08', 'm09', 'm10', 'm11', 'm12')
+    list_display_links = ('year',)
+
+    readonly_fields = ('created_at', 'created_by', 'updated_on', 'updated_by', )
+    autocomplete_fields = ('project', 'staff')
+    extra_field = forms.CharField()
+
+    fieldsets = (      # Edition form
+                (None,  {'fields': ( ( 'project','staff',), ( 'year',  ), 
+                # (None,  {'fields': ( ('project',), ('staff',), ( 'year', 'status', ), 
+                ('m01', 'm02', 'm03', 'm04', 'm05', 'm06', 'm07', 'm08', 'm09', 'm10', 'm11', 'm12',) )}),
+                (_('More...'), {'fields': ( ('created_at', 'created_by', 'updated_on', 'updated_by' )), 'classes': ('collapse',)}),
+            )
+
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = super().get_fieldsets(request, obj)
+        if obj is None:
+            fieldsets = (      # Creation form
+                (None,  {'fields': ( ('project','staff' ), ( 'year', ), 
+                ('m01', 'm02', 'm03', 'm04', 'm05', 'm06', 'm07', 'm08', 'm09', 'm10', 'm11', 'm12',) )  }),
+            )
+        return fieldsets

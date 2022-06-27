@@ -214,3 +214,11 @@ SKILLLEVEL = (
     (SkillLevel.SENIOR.value,   _('Senior')),
     (SkillLevel.LEAD.value,     _('Lead')),
 )
+
+# working calendar per region
+WCAL = (
+	('CA',  "CA"),
+	('AL',  "AL"),
+	('GA',  "GA"),
+	('CA*', "HT"),
+)

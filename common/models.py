@@ -22,13 +22,13 @@ def max_value_current_year(value):
 
 class CompanyHoliday(models.Model):
     year    = models.IntegerField(default=current_year, validators=[MinValueValidator(2020), max_value_current_year])
-    state   = models.CharField(max_length=2, default='CA')
+    subdiv  = models.CharField(_("Region"), max_length=3, choices=WCAL, default='CA')   # working calendar, exceptional with *
     holiday = models.DateField(blank=False)
 
     def __str__(self):
-        return f'{self.year}-{self.state}-{self.holiday:%Y-%m-%d}'
+        return f'{self.year}-{self.subdiv}-{self.holiday:%Y-%m-%d}'
     class Meta:
-        unique_together = ('year', 'state', 'holiday')
+        unique_together = ('year', 'subdiv', 'holiday')
 
 class Div(models.Model):
     class Meta:

@@ -48,7 +48,7 @@ class UserAdmin(UserAdmin):
 @admin.register(Profile)
 class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
     # list_display = ('id', 'user', 'name', 'email', 'dept', 'manager', 'u_div', 'CBU', 'is_active')
-    list_display = ('id', 'user', 'name', 'email', 'dept', 'is_active', 'is_staff', 'proxy_name', 'pm_count', 'goto_user')
+    list_display = ('id', 'user', 'name', 'email', 'wcal', 'dept', 'is_active', 'is_staff', 'proxy_name', 'pm_count', 'goto_user')
     list_display_links = ('id', 'name', 'email')
     search_fields = ('id', 'name', 'email', 'CBU__name', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
     ordering = ('CBU__id', 'dept', 'team', 'name', )
@@ -56,7 +56,7 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
     autocomplete_fields = ( 'user', 'team', 'CBU' )
     fieldsets = (  # Edition form
          (None, {'fields': (('user', 'name',), ('email',) , ('CBU',), ('usertype', 'is_psmadm', ), 
-                            ('dept', 'team'), 
+                            ('wcal', 'dept', 'team'), 
                             ('notes', ),
                             # ('job', 'department', 'manager', 'mobile', ),
                             # ('image',), 
@@ -80,7 +80,7 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
         if obj is None:
             fieldsets = (      # Creation form
                  (None, {'fields': ('user', ('name',), ('email'), ('CBU',), ('usertype', 'is_psmadm', ), 
-                            ('dept', 'team',  ), 
+                            ('wcal', 'dept', 'team',  ), 
                             ('notes' ), 
                         )}),
             )

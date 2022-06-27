@@ -1,3 +1,4 @@
+from calendar import calendar
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
@@ -36,6 +37,8 @@ class Profile(ProxySuper): #models.Model):
     CBU    = models.ManyToManyField('common.CBU',  verbose_name=_('CBU'),  blank=False, null=True)
 
     usertype    = models.CharField(_("User Type"), choices=USERTYPE, max_length=10, null=True, blank=True)
+    wcal       = models.CharField(_("Region"), max_length=3, choices=WCAL, default='CA')   # working calendar, exceptional with *
+
     is_external = models.BooleanField(_("External user?"), default=False)
     is_psmadm   = models.BooleanField(_("PSM Admin?"), default=False)
 

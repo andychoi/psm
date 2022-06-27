@@ -39,7 +39,7 @@ def previous_working_day(to_date, number_of_days=1):
 def workdays_us(m, y = date.today().year):
     # now = datetime.datetime.now()
 # TODO
-    cc_holidays = CompanyHoliday.objects.filter(year=y).values_list('holiday', flat=True)
+    cc_holidays = [ CompanyHoliday.objects.filter(year=y).values_list('holiday', flat=True) ]
 
     us_holidays = holidays.US(subdiv='CA')  # this is a dict / FIXME CA and other region...
 

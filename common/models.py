@@ -12,7 +12,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 # https://github.com/workalendar/workalendar
 # https://towardsdatascience.com/the-easiest-way-to-identify-holidays-in-python-58333176af4f
-from workalendar.europe import UnitedKingdom
+# from workalendar.europe import UnitedKingdom
 def year_choices():
     return [(r,r) for r in range(2020, datetime.date.today().year+1)]
 def current_year():

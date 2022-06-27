@@ -1,0 +1,31 @@
+{% load static %}
+<!-- includes/nav.html -->
+<nav class="navbar navbar-expand-lg navbar-white bg-white fixed-top bd-navbar-nav" >
+  <div class="container-fluid">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+      data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+  </button>
+
+
+  <!-- collapsible wrapper -->
+  <div class="collapse navbar-collapse" id="navbarSupportedContent" >
+      <a class="navbar-brand" href="{% url 'home' %}"  data-bs-toggle="collapse" data-bs-target=".navbar-collapse.show">
+        <img src="{% static 'img/PSM-logos_white_resized.png' %}" alt="PSM" height="32" loading="lazy">
+      </a>
+
+  
+      {% include "includes/nav-left.html" %}
+
+      <ul class="nav navbar-nav ms-auto ">
+          <!-- template/admin/change_list.html -->
+          <li class="nav-item"><button onclick="toggle_filter()" class="btn btn-warning btn-sm" type="submit">Toggle Filter</button></li>
+          
+
+          {% include "includes/nav-right.html" %}
+
+      </ul> <!--right side-->
+
+    </div>
+  </div>
+  </nav>    

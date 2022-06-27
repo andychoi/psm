@@ -26,7 +26,24 @@ from .models import Profile, ProfileCBU
 #     list_display = ('proxy_name', 'id', 'user', 'name', 'email', 'dept', 'CBU', 'pm_count')
 #     search_fields = ('id', 'name', 'email', 'CBU__name', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
 #     list_display_links = ('id', 'name', 'email')
-    
+"""
+
+https://stackoverflow.com/questions/31430241/how-to-remove-the-functionality-of-changelist-filter-appearing-in-django-admin
+Example:
+from django.contrib.auth.admin import UserAdmin
+admin.site.unregister(User)
+
+@admin.register(User)
+class UserAdmin(UserAdmin):
+    model = User
+    list_filter = ()
+
+    def queryset(self, request):
+        qs = super(UserAdmin, self).queryset(request)
+        return qs.filter(is_staff=True)
+
+"""
+
 
 @admin.register(Profile)
 class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
@@ -53,6 +70,11 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
         'user__is_staff',
         'user__is_active'
     )
+    # tip hide/show changelist-filter https://stackoverflow.com/questions/6086651/minimize-the-list-filter-in-django-admin#answer-6298648
+    # https://stackoverflow.com/questions/6264823/trying-to-show-hide-the-change-list-filter-in-django-admin
+    # class Media:
+    #     js = ['js/list_filter_collapse.js']
+
     def get_fieldsets(self, request, obj=None):
         fieldsets = super().get_fieldsets(request, obj)
         if obj is None:

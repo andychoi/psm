@@ -18,15 +18,35 @@
                       </ul>
                   <!-- </div> -->
               <!-- </div> -->
-          </li>
+            </li>
 
-          <li class="nav-item dropdown">
+            {% if user.is_superuser %}
+            <li class="nav-item dropdown">
+            <!-- <div class="nav-dropdown"> -->
+                <a href="#" id="nav2" class="nav-link dropdown-toggle text-primary"  role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-pencil-square"></i><span class="ms-1"> Resource Plan(Pilot)</span>
+                </a>
+                <!-- <div class="dropdown-menu dropdown-menu-end nav-link-menu"> -->
+                    <ul class="dropdown-menu nav-list" aria-labelledby="nav2">
+                        <li><a class="dropdown-item" href="/admin/psm/resource/skill/"><i class="pe-2 bi bi-file-earmark-plus"></i> Manage Skills</a></li>
+                        <li><a class="dropdown-item" href="/admin/psm/resource/resource/"><i class="pe-2 bi bi-file-earmark-plus"></i> Manage Resource</a></li>
+                        <div class="dropdown-divider"></div>
+                        <li><a class="dropdown-item" href="/admin/psm/resource/resourceplan/"><i class="pe-2 bi bi-file-earmark-plus"></i> Manage Resource Plan</a></li>
+                        <li><a class="dropdown-item" href="/admin/psm/resource/projectplan/"><i class="pe-2 bi bi-file-earmark-plus"></i> Manage Project Plan</a></li>
+                        <li><a class="dropdown-item" href="/admin/psm/resource/rpplanitem/"><i class="pe-2 bi bi-file-earmark-plus"></i> Manage Allocation Details</a></li>
+                    </ul>
+                <!-- </div> -->
+            <!-- </div> -->
+            </li>
+            {% endif %}
+            
+            <li class="nav-item dropdown">
               <!-- <div class="nav-dropdown"> -->
-                  <a href="#" id="nav2" class="nav-link dropdown-toggle text-primary"  role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <a href="#" id="nav3" class="nav-link dropdown-toggle text-primary"  role="button" data-bs-toggle="dropdown" aria-expanded="false">
                       <i class="bi bi-pencil-square"></i><span class="ms-1">  Project Administration</span>
                   </a>
                   <!-- <div class="dropdown-menu dropdown-menu-end nav-link-menu"> -->
-                      <ul class="dropdown-menu nav-list" aria-labelledby="nav2">
+                      <ul class="dropdown-menu nav-list" aria-labelledby="nav3">
                           <li><a class="dropdown-item" href="/admin/psm/project/add/"><i class="pe-2 bi bi-file-earmark-plus"></i> Register Project</a></li>
                           <li><a class="dropdown-item" href="/admin/psm/project/?year={% now 'Y' %}"><i class="pe-2 bi bi-file-ruled"></i>Manage Project - {% now 'Y' %}</a></li>
                           <li><a class="dropdown-item" href="{% url 'project_list1' %}"><i class="pe-2 bi bi-list-task"></i>Project list</a> </li>
@@ -47,10 +67,10 @@
           </li>
           <!-- <li class="nav-item"><a class="nav-item nav-link"  href="/project/">Reports</a></li> -->
           <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle  text-primary" href="#" id="nav3" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <a class="nav-link dropdown-toggle  text-primary" href="#" id="nav4" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="bi bi-bar-chart-line"></i><span class="ms-1">  Reports</span>
               </a>
-              <ul class="dropdown-menu my-menu-3" aria-labelledby="nav3">
+              <ul class="dropdown-menu nav-list" aria-labelledby="nav4">
     
                 <li><a class="dropdown-item" href="{% url 'project_index' %}"><i class="pe-2 bi bi-layout-wtf"></i> Project Portfolio Quickview</a></li>
                 <div class="dropdown-divider"></div>

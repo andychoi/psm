@@ -180,7 +180,7 @@ class ResourcePlanAdmin(admin.ModelAdmin):
     # tip access to own data, queryset - TODO for manager/HOD
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        if request.user.is_superuser or request.user.profile.is_psmadm
+        if request.user.is_superuser or request.user.profile.is_psmadm:
             return qs
         return qs.filter(created_by=request.user)
 

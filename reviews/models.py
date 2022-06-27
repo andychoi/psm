@@ -30,7 +30,7 @@ class Review(models.Model):
     reviewer = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="rev_reviewer", null=True, blank=True, on_delete=models.SET_NULL)
     res_content = models.TextField(_("Review result"), null=True, blank=True)
 
-    CBUs  = models.ManyToManyField(CBU, blank=True)
+    # CBUs  = models.ManyToManyField(CBU, blank=True)
 
     # attachment=models.FileField(_("attachment"), upload_to='reviews', null=True, blank=True)
     # dept = models.ForeignKey(Dept, blank=True, null=True, on_delete=models.PROTECT)
@@ -54,16 +54,16 @@ class Review(models.Model):
 
     @property
     def CBU_names(self):
-        return " ,".join(p.name for p in self.CBUs.all())
+        return " ,".join(p.name for p in self.project.CBUs.all())
 
 	# used while managing models from terminal
     def __str__(self):
         return self.title
 
-    def save(self, *args, **kwargs):
-        if self.pk and not self.CBUs:   #needs to have a value for field "id" before this many-to-many relationship can be used.
-            self.CBUs = self.project.CBUs
-        super().save(*args, **kwargs)        
+    # def save(self, *args, **kwargs):
+    #     if self.pk and not self.CBUs:   #needs to have a value for field "id" before this many-to-many relationship can be used.
+    #         self.CBUs = self.project.CBUs
+    #     super().save(*args, **kwargs)        
 
     # @property
     # def CBU_str(self):

@@ -33,7 +33,7 @@ from django_object_actions import DjangoObjectActions
 
 class ReviewResource(resources.ModelResource):
     # pm_name     = fields.Field(attribute='project.pm',     widget=ForeignKeyWidget(Profile, 'name'))
-    cbu_names   = fields.Field(attribute='CBUs',   widget=ManyToManyWidget(model=CBU, separator=',', field='name'), )
+    cbu_names   = fields.Field(attribute='project__CBUs',   widget=ManyToManyWidget(model=CBU, separator=',', field='name'), )
 
     class Meta:
         model = Review
@@ -63,13 +63,13 @@ class ReviewAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     list_display = ('formatted_rtype', 'project_view', 'title', 'proc_start', 'onboaddt', 'priority', 'is_escalated', 'project_dept', 'pm', 'state', 'status', 'CBU_names', 'formatted_updated',)
     list_display_links = ('title', 'formatted_updated')
     ordering = ('-id',)
-    readonly_fields = ('created_at', 'created_by', 'updated_on', 'updated_by', )
+    readonly_fields = ('created_at', 'created_by', 'updated_on', 'updated_by', 'CBU_names')
     Custom_fields = ('project_link', 'created_at', 'updated_on', 'created_by', 'updated_by')
     search_fields = ('title', 'project__title', 'req_content', 'res_content',  )
     list_editable = ("status", "is_escalated", "state")
     autocomplete_fields = ('reviewer', 'project')
     fieldsets = (               # Edition form
-                (None, {'fields':   (('project', 'CBUs'),  ('title', 'reqtype',  ),('req_content',), ('proc_start', 'onboaddt', 'state', ), ('status', 'is_escalated', 'priority'), ( 'res_content','reviewer',),   
+                (None, {'fields':   (('project', 'CBU_names'),  ('title', 'reqtype',  ),('req_content',), ('proc_start', 'onboaddt', 'state', ), ('status', 'is_escalated', 'priority'), ( 'res_content','reviewer',),   
                             ), "classes": ("stack_labels",)}),
                 (_('More...'), {'fields': (('created_at', 'created_by'), ('updated_on', 'updated_by')), 'classes': ('collapse',)}),
     )
@@ -86,11 +86,11 @@ class ReviewAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     list_filter = (
         ('reqtype', DropdownFilter),
         ('priority', DropdownFilter),
-        ('CBUs', RelatedDropdownFilter),
+        # ('CBUs', RelatedDropdownFilter),
         ('project',             RelatedDropdownFilter),
         ('project__dept__div',  RelatedDropdownFilter),
         ('project__dept',       RelatedDropdownFilter),
-        # ('project__CBU',       RelatedDropdownFilter),
+        ('project__CBUs',       RelatedDropdownFilter),
         ('status',              DropdownFilter),
         'updated_on',
     )

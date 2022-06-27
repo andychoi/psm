@@ -1,0 +1,48 @@
+
+.related-widget-wrapper-link {  display: none; }
+
+.aligned label + p, .aligned label + div.help, .aligned label + div.readonly  {
+    float: left;
+    margin-left:0;
+}
+
+/* hide in tabluar inline */
+.original { display: none; }
+
+.inline-group .tabular tr.has_original td { padding-top: 0.4em; }
+
+.ui-datepicker .ui-datepicker-buttonpane button.ui-datepicker-current { display: none }
+
+/* textarea size */
+.vLargeTextField { width: 300px; }
+
+.delete { text-align: right; }
+.inline-deletelink { text-align: left; }
+/* td .field-project { width: 100px; } */
+
+/* for tabluar primary key */
+.column-pp, .field-pp { display: none;}
+.column-rp, .field-rp { display: none;}
+
+
+.module td { padding-left:1px; padding-right:1px;}
+
+td .vIntegerField { width: 36px; padding-left: 1px; padding-right: 1px; text-align:center;} */
+
+.field-m01 td, .field-m02, .field-m03, .field-m04, .field-m05, .field-m06, .field-m07, .field-m08, .field-m09, .field-m10, .field-m11, .field-m12 {
+    padding-left:2px; padding-right:2px;
+    width: 20px;
+}
+
+@media (max-width: 1024px) {
+    .field-m01 td, .field-m01 th {
+        padding-left: 2px; padding-right: 2px;
+        font-size: 12px;
+    }
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}

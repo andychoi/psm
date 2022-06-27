@@ -38,9 +38,9 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
     readonly_fields = ('created_at', 'created_by', 'updated_on', 'updated_by')
     autocomplete_fields = ( 'user', 'team', )
     fieldsets = (  # Edition form
-         (None, {'fields': (('user', 'name', 'email') , ('is_psmadm', ), 
+         (None, {'fields': (('user', 'name',), ('email',) , ('CBU',), ('usertype', 'is_psmadm', ), 
                             ('dept', 'team'), 
-                            ('notes', 'CBU' ),
+                            ('notes', ),
                             # ('job', 'department', 'manager', 'mobile', ),
                             # ('image',), 
                             )}),
@@ -57,8 +57,8 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
         fieldsets = super().get_fieldsets(request, obj)
         if obj is None:
             fieldsets = (      # Creation form
-                 (None, {'fields': ('user', ('name', 'email') , ('manager', 'is_psmadm', ), 
-                            ('dept', 'team' ), 
+                 (None, {'fields': ('user', ('name',), ('email'), ('CBU',), ('usertype', 'is_psmadm', ), 
+                            ('dept', 'team',  ), 
                             ('notes' ), 
                         )}),
             )
@@ -93,10 +93,14 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
             raise ValidationError("Email is already registered in User table")
 
     # use signals.py to sync between User and Profile        
-    # def save_model(self, request, obj, form, change):
-        # if change is False:     # create
-        #     obj.created_by = request.user
-        # super().save_model(request, obj, form, change)
+    def save_model(self, request, obj, form, change):
+        if change is False:
+            obj.created_by = request.user
+            obj.updated_by = request.user
+        else:
+            obj.updated_by = request.user
+
+        super().save_model(request, obj, form, change)
 
     actions = ['update_pm_count', 'sync_user_master', 'set_staff', 'remove_staff']
 
@@ -171,7 +175,7 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
     #             return False    # You do not have access to version 21 (Unplanned approved') 
     #         return True
     #     else:
-    #         return super(ProjectPlanAdmin, self).has_change_permission(request, obj)
+    #         return super(ProjectRequestAdmin, self).has_change_permission(request, obj)
 
     # object level permission: https://www.youtube.com/watch?v=2jhQyWeEVHc&ab_channel=VeryAcademy
     # model level permission:  https://www.youtube.com/watch?v=wlYaUvfXJDc&ab_channel=VeryAcademy
@@ -225,6 +229,15 @@ class ProfileCBUAdmin(ImportExportMixin, admin.ModelAdmin):
             )
         return fieldsets
 
+    def save_model(self, request, obj, form, change):
+        if change is False:
+            obj.created_by = request.user
+            obj.updated_by = request.user
+        else:
+            obj.updated_by = request.user
+
+        super().save_model(request, obj, form, change)
+        
     # move to batch scheduler
     # actions = ['update_pm_count', ]
     # @admin.action(description='Update PM count')

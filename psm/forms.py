@@ -7,7 +7,7 @@
 
 # from psm.models import Project
  
-# class ProjectPlanForm(ModelForm):
+# class ProjectRequestForm(ModelForm):
 #     class Meta:
 #         model = Project
 #         fields = [  'title', 'pm', 'year', 'CBU',

@@ -1,3 +1,4 @@
+import holidays
 import datetime
 from datetime import timedelta, date
 
@@ -32,3 +33,20 @@ def previous_working_day(to_date, number_of_days=1):
 #         return most_recent
 #     else:
 #         return previous_working_day(most_recent, holidays)
+
+def workdays_us(m, y = date.today().year):
+    # now = datetime.datetime.now()
+# TODO
+    # holidays = {datetime.date(y, 8, 14)} # you can add more here
+    us_holidays = holidays.US()  # this is a dict
+
+    businessdays = 0
+    for i in range(1, 32):
+        try:
+            thisdate = datetime.date(y, m, i)
+        except(ValueError):
+            break
+        if thisdate.weekday() < 5 and thisdate not in us_holidays: # Monday == 0, Sunday == 6 
+            businessdays += 1
+
+    return businessdays

@@ -23,7 +23,7 @@ from django.utils.html import mark_safe
 from psmprj.utils.dates import previous_working_day
 
 from common.models import Action3, ReqTypes, Versions, CBU, State, Phase
-from .models import Project, ProjectPlan,  ProjectDeliverable, ProjectDeliverableType, Strategy, Program
+from .models import Project, ProjectRequest,  ProjectDeliverable, ProjectDeliverableType, Strategy, Program
 from reviews.models import  Review
 from django.contrib.admin import AdminSite
 from django.urls import reverse
@@ -108,13 +108,13 @@ class ProjectDeliverableInline(admin.TabularInline):
 
 
 # ----------------------------------------------------------------------------------------------------------------
-class ProjectPlanResource(resources.ModelResource):
+class ProjectRequestResource(resources.ModelResource):
     # pm_name     = fields.Field(attribute='pm',     widget=ForeignKeyWidget(Profile, 'name'))
     # cbupm_name  = fields.Field(attribute='CBUpm',  widget=ForeignKeyWidget(Profile, 'name'))
     cbu_names       = fields.Field(attribute='CBUs',    widget=ManyToManyWidget(model=CBU, separator=',', field='name'), )
     strategy_names  = fields.Field(attribute='strategy',widget=ManyToManyWidget(model=Strategy, separator=',', field='name'), )
     class Meta:
-        model = ProjectPlan
+        model = ProjectRequest
         fields = ( 'id', 'year', 'version', 'code', 'title', 'asis', 'tobe', 'objective', 'consider', 'quali', 'quant',
             # 'pm', 'pm__name',  
             # 'CBUpm', 'CBUpm__name',  
@@ -126,9 +126,9 @@ class ProjectPlanResource(resources.ModelResource):
         )
         export_order = fields
 # ----------------------------------------------------------------------------------------------------------------
-@admin.register(ProjectPlan)
-class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
-    resource_class = ProjectPlanResource
+@admin.register(ProjectRequest)
+class ProjectRequestAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
+    resource_class = ProjectRequestResource
     class Meta:
         import_id_fields = ('id',)
         exclude = ()
@@ -149,7 +149,7 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
         ('priority',    UnionFieldListFilter),
     )
     ordering = ['version', '-id']  #Project_PRIORITY_FIELDS
-    readonly_fields = ('created_at', 'updated_on', 'created_by', 'image_tag_asis', 'image_tag_tobe', 'released' )
+    readonly_fields = ('created_at', 'updated_on', 'created_by', 'updated_by',  'image_tag_asis', 'image_tag_tobe', 'released' )
     autocomplete_fields = ['pm', 'CBUs', 'strategy', 'CBUpm', 'program', 'team']
     plan_fields = [ ('title', 'year', 'version' ), 
                     ('type', 'category', 'priority'), 
@@ -175,9 +175,9 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
     def get_fieldsets(self, request, obj=None): # Creation form
         return ( (None, { 'fields': self.plan_fields  }), )
 
-    # default version set
+    # tip initial default version set
     def get_form(self, request, obj=None, **kwargs):
-        form = super(ProjectPlanAdmin, self).get_form(request, obj, **kwargs)
+        form = super(ProjectRequestAdmin, self).get_form(request, obj, **kwargs)
         #FIXME if read-only due to permission
         if hasattr(form, 'base_fields'):
             form.base_fields['version'  ].initial = Versions.V10.value
@@ -262,7 +262,7 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
                 messages.add_message(request, messages.ERROR, mark_safe("Project already exist <a href='/admin/psm/project/%s'>%s</a>" % (prj[0].id, prj[0].pjcode) ))
             else:
                 new_proj = Project.objects.create()
-                for field in ProjectPlan._meta.fields:
+                for field in ProjectRequest._meta.fields:
                     if (not field.name == 'id') and (not field.name == 'code'): 
                         setattr(new_proj, field.name, getattr(obj, field.name))
                 new_proj.description = "##As-Is\n%s \n##To-Be\n%s" % (obj.asis, obj.tobe) 
@@ -302,26 +302,34 @@ class ProjectPlanAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin)
                 return False    # You do not have access to version 21 (Unplanned approved') 
             return True
         else:
-            return super(ProjectPlanAdmin, self).has_change_permission(request, obj)
+            return super(ProjectRequestAdmin, self).has_change_permission(request, obj)
 
     # TODO - limit access to list for specific user group?? like CBU
     def get_queryset(self, request):
-        return ProjectPlan.objects.all()
+        return ProjectRequest.objects.all()
         # if request.user.is_superuser:
-        #     return ProjectPlan.objects.all()
+        #     return ProjectRequest.objects.all()
         
         # try:
-        #     return ProjectPlan.objects.filter(pm = request.user.profile)
+        #     return ProjectRequest.objects.filter(pm = request.user.profile)
         # except:
-        #     return ProjectPlan.objects.none()        
+        #     return ProjectRequest.objects.none()        
 
     # list with default filter
     def changelist_view(self, request, extra_context=None):
         if len(request.GET) == 0:
             get_param = "version_filter=10-Initial"
             return redirect("{url}?{get_parms}".format(url=request.path, get_parms=get_param))
-        return super(ProjectPlanAdmin, self).changelist_view(request, extra_context=extra_context)
+        return super(ProjectRequestAdmin, self).changelist_view(request, extra_context=extra_context)
 
+    def save_model(self, request, obj, form, change):
+        if change is False:
+            obj.created_by = request.user
+            obj.updated_by = request.user
+        else:
+            obj.updated_by = request.user
+
+        super().save_model(request, obj, form, change)
 
 # ===================================================================================================
 # @admin.register(ProjectSet)
@@ -380,8 +388,8 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         
 #        'deadline'
     )
-    ordering = ['phase', 'code']  #Project_PRIORITY_FIELDS
-    readonly_fields = ('cf', 'created_at', 'updated_on', 'created_by', 'lstrpt',  'link', )
+    ordering = ['-year', 'phase', '-code']  #Project_PRIORITY_FIELDS
+    readonly_fields = ('cf', 'created_at', 'updated_on', 'created_by', 'updated_by', 'lstrpt',  'link', )
     autocomplete_fields = ['pm', 'CBUs', 'strategy', 'CBUpm', 'program', 'ref_plan']
 
     fieldsets = (               # Edition form
@@ -397,7 +405,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
                                         ('cbu_req','cbu_sow','cbu_po',),
                                        ), 'classes': ('collapse',)}),
         (_('Communication...'),  {'fields': (('email_active'), ('recipients_to',), ), 'classes': ('collapse',)}),
-        (_('More...'), {'fields': ( ('created_at', 'updated_on'), 'created_by', ('attachment'), ), 'classes': ('collapse',)}),
+        (_('More...'), {'fields': ( ('created_at', 'created_by', 'updated_on', 'updated_by'), ('attachment'), ), 'classes': ('collapse',)}),
         # (None, {'fields': (('link',),) }) 'req_sec','req_inf'
     )
 
@@ -537,14 +545,17 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
 
     # (not called from admin-import-export)
     def save_model(self, request, obj, form, change):
-        if change is False:  #when create
+        if change is False:
             obj.created_by = request.user
+            obj.updated_by = request.user
+        else:
+            obj.updated_by = request.user
 
         super().save_model(request, obj, form, change)
     
-        if not obj.code: #not migration 
-            obj.code = f'{obj.year % 100}-{"{:04d}".format(obj.pk+2000)}'
-            obj.save()    
+        # if not obj.code: #not migration 
+        #     obj.code = f'{obj.year % 100}-{"{:04d}".format(obj.pk+2000)}'
+        #     obj.save()    
 
 
     # def get_queryset(self, request):

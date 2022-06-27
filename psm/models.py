@@ -128,7 +128,7 @@ class Project(models.Model):
     description = models.TextField(_("description"), max_length=2000, null=True, blank=True)
     objective   = models.TextField(_("Objectives"),  max_length=2000, null=True, blank=True)
 
-    ref_plan    = models.ForeignKey("ProjectPlan", on_delete=models.SET_NULL, null=True, blank=True)
+    ref_plan    = models.ForeignKey("ProjectRequest", on_delete=models.SET_NULL, null=True, blank=True)
 
     status_o = models.CharField(_("Overall Health"), max_length=20, choices=STATUS, default=Status.NA.value)
     status_t = models.CharField(_("Schedule status"), max_length=20, choices=STATUS, default=Status.NA.value)
@@ -194,6 +194,8 @@ class Project(models.Model):
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='prj_created_by', verbose_name=_('created by'),
                                    on_delete=models.SET_NULL, null=True)
+    updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='prj_updated_by', verbose_name=_('updated by'),
+                                   on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(_("created at"), auto_now_add=True,   editable=False)
     updated_on = models.DateTimeField(_("updated_on"), auto_now=True,       editable=False)
     last_accessed = models.DateTimeField(blank=True, null=True)
@@ -234,7 +236,7 @@ class Project(models.Model):
 
 
     def save(self, *args, **kwargs):
-        send_email = (self.pk is None)          #and (not self.proxy_name == 'ProjectPlan')
+        send_email = (self.pk is None)          #and (not self.proxy_name == 'ProjectRequest')
         if not send_email and self.CBUs.exists():   #FIXME many-to-many
             old_Project_data = Project.objects.get(pk=self.pk)
             # many-to-many compare FIXME
@@ -352,7 +354,7 @@ class Project(models.Model):
 # ----------------------------------------------------------------------------------------------------
 # project unplanned request, annual planning : version 10, 11, 12, 20, 21
 # ----------------------------------------------------------------------------------------------------
-class ProjectPlan(models.Model):
+class ProjectRequest(models.Model):
     code = models.CharField(_("Code"), max_length=18, null=True, blank=True) 
 
     title = models.CharField(_("title"), max_length=200)
@@ -399,6 +401,8 @@ class ProjectPlan(models.Model):
 
     rel_proj = models.ForeignKey(Project, blank=True, null=True, on_delete=models.SET_NULL)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='prj_req_created_by', verbose_name=_('created by'),
+                                   on_delete=models.SET_NULL, null=True)
+    updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='prj_req_updated_by', verbose_name=_('updated by'),
                                    on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(_("created at"), auto_now_add=True,   editable=False)
     updated_on = models.DateTimeField(_("updated_on"), auto_now=True,       editable=False)
@@ -480,13 +484,13 @@ class ProjectPlan(models.Model):
 
 
         title = self.title.strip() if self.title else self.title
-        # matching_projects = ProjectPlan.objects.filter(title=title) # search all version , version=self.version)
+        # matching_projects = ProjectRequest.objects.filter(title=title) # search all version , version=self.version)
         # if self.id:
         #     matching_projects = matching_projects.exclude(pk=self.pk)
         # if matching_projects.exists():
         #     validation_errors['title'] = u"Project name: %s has already exist." % title
         
-        if ProjectPlan.objects \
+        if ProjectRequest.objects \
                 .others(self.pk, title=title, year=self.year) \
                 .exists():
             validation_errors['title'] = _('Project with this title already exists.')

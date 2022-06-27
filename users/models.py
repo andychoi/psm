@@ -28,8 +28,9 @@ class Profile(ProxySuper): #models.Model):
     #FIXME circular dependency...??
     team = models.ForeignKey('common.Team', verbose_name=_('Team'), on_delete=models.SET_NULL, blank=True, null=True)
     dept = models.ForeignKey('common.Dept', verbose_name=_('Dept'), on_delete=models.SET_NULL, blank=True, null=True)
-    CBU    = models.ForeignKey('common.CBU',  verbose_name=_('CBU'),  on_delete=models.SET_NULL, blank=True, null=True)
+    CBU    = models.ForeignKey('common.CBU',  verbose_name=_('CBU'),  on_delete=models.SET_NULL, blank=False, null=True)
 
+    usertype    = models.CharField(_("User Type"), choices=USERTYPE, max_length=10, null=True, blank=True)
     is_external = models.BooleanField(_("External user?"), default=False)
     is_psmadm   = models.BooleanField(_("PSM Admin?"), default=False)
 
@@ -57,8 +58,7 @@ class Profile(ProxySuper): #models.Model):
             return "%s [%s]" % (self.name, self.CBU)    #preferred
 
     class Meta:
-        # app_label = 'auth'  #circular dependency... FIXME
-        # ordering = ['-CBU', 'name']
+        # app_label = 'auth'  #circular dependency... FIXME, big problem...if change..
         permissions = [ ('admin', 'Can admin user'),
         ]        
 

@@ -45,10 +45,10 @@ from django_filters.views import FilterView
 from common.models import Div, Dept, CBU, State2
 from common.utils import STATE_WORK, PHASE, PHASE_OPEN, PHASE_CLOSE, PHASE_BACKLOG, PHASE_WORK, PRIORITIES, PRJTYPE, VERSIONS
 from common.utils import VERSION_QUEUE, VERSION_DONE, STATE_OPEN, STATE_VALID
-from .models import Project, Program, ProjectPlan
-from .tables import ProjectPlanTable
+from .models import Project, Program, ProjectRequest
+from .tables import ProjectRequestTable
 from reports.models import Report, ReportRisk
-# from .forms import ProjectPlanForm
+# from .forms import ProjectRequestForm
 
 from common.models import Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, Action3, ACTION3, WBS, VERSIONS, Versions
 from users.models import Profile
@@ -168,7 +168,7 @@ def get_filter_options(self, context, def_year=True, plan=False):
 
     if plan:
         context['filterItems'].append( { "key": "YEAR", "text": "Year", "qId": "year", "selected": get_def_year
-        , "items": map( lambda x: {"id": x['year'], "name": x['year']}, ProjectPlan.objects.values('year').distinct().order_by('-year') )
+        , "items": map( lambda x: {"id": x['year'], "name": x['year']}, ProjectRequest.objects.values('year').distinct().order_by('-year') )
         } )
 
         context['filterItems'].append( {
@@ -375,7 +375,7 @@ class projectIndexView(generic.ListView):
         context['oldest_update'] =  Project.objects.filter(**q).filter(updated_on__lt=time_threshold).filter(state__in=STATE_WORK,phase__in=PHASE_WORK).order_by('updated_on')[:100]        
         # context['oldest_update'] =  Project.objects.filter(**q).filter(state__in=STATE_WORK,phase__in=PHASE_WORK).order_by('updated_on')[:100]        
 
-        context['project_request'] = ProjectPlan.objects.filter(Q(version__in=VERSION_QUEUE) & ~Q(released=False)).order_by('created_at')[:100]
+        context['project_request'] = ProjectRequest.objects.filter(Q(version__in=VERSION_QUEUE) & ~Q(released=False)).order_by('created_at')[:100]
 
         q2 =  {k:v for k, v in self.request.GET.items() if v and hasattr(Report, k.split('__')[0] ) }
         if scope == 'dp' and pm:
@@ -709,7 +709,7 @@ class projectDetail(PermissionRequiredMixin, generic.DetailView):
     # context_object_name = 'project'
     def get_context_data(self, **kwargs):
         reports = Report.objects.filter(project__in=Project.objects.filter(code=self.object.code))
-        planprj = ProjectPlan.objects.filter(id=self.object.ref_plan.id) if self.object.ref_plan else None
+        planprj = ProjectRequest.objects.filter(id=self.object.ref_plan.id) if self.object.ref_plan else None
         risk_count = ReportRisk.objects.filter(project=self.object, state=State2.OPEN.value ).count()
         context = {"reports": reports, "planprj" : planprj, 'risk_count': risk_count }
         return super().get_context_data(**context)
@@ -736,7 +736,7 @@ class projectCreateView(PermissionRequiredMixin, generic.CreateView):
 #     project = Project.objects.get(id=id)
 
 #     if request.method == 'POST':
-#         form = ProjectPlanForm(instance=project)  # prepopulate the form with an existing project
+#         form = ProjectRequestForm(instance=project)  # prepopulate the form with an existing project
 #         print(form.errors)
 #         if form.is_valid():
 #             # update the existing `project` in the database
@@ -744,7 +744,7 @@ class projectCreateView(PermissionRequiredMixin, generic.CreateView):
 # 	    # redirect to the detail page of the `project` we just updated
 #             return redirect('project_detail', pk=project.id)
 #         else:
-#             form = ProjectPlanForm(instance=project)
+#             form = ProjectRequestForm(instance=project)
     
 #     context = {
 # 	"form":form
@@ -757,7 +757,7 @@ class projectPlanListView(PermissionRequiredMixin, generic.ListView):
     permission_required = 'psm.view_projectplan'
 
     template_name = 'project/project_plan.html'
-    model = ProjectPlan
+    model = ProjectRequest
     paginate_by = 500    #FIXME
     context_object_name = 'project_list'    
     
@@ -776,16 +776,16 @@ class projectPlanListView(PermissionRequiredMixin, generic.ListView):
 
     def get_queryset(self):
         # generic way to get dict, filter non-existing fields in model, foreign key attribute
-        q =  {k:v for k, v in self.request.GET.items() if v and hasattr(ProjectPlan, k.split('__')[0] ) }
+        q =  {k:v for k, v in self.request.GET.items() if v and hasattr(ProjectRequest, k.split('__')[0] ) }
 
         if not 'year' in q.keys():      # default to current year
             q[ "year" ] = date.today().year
 
         if q: 
-            qs = ProjectPlan.objects.filter( **q )
+            qs = ProjectRequest.objects.filter( **q )
                 # qs = Project.objects.filter(year=self.kwargs['year']).filter( **q )
         else:
-            qs = ProjectPlan.objects.all()
+            qs = ProjectRequest.objects.all()
 
         if (qs.count() == 0):
             return qs   # return empty qs
@@ -827,7 +827,7 @@ class projectPlanChartView(projectPlanListView):
 
 class projectPlanDetailView(PermissionRequiredMixin, generic.DetailView):
     permission_required = 'psm.view_projectplan'
-    model = ProjectPlan
+    model = ProjectRequest
     template_name = "project/project_plan_detail.html"
 
     context_object_name = 'project'

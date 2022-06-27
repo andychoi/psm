@@ -9,11 +9,11 @@ from django.views.generic import ListView
 # Create your views here.
 from .forms import ResourcePlanCreateForm, ResourcePlanEditForm
 
-from .models import Resource, ResourcePlan, ResourcePlanItem
-from .tables import ResourceTable, ResourcePlanTable, ResourcePlanItemTable
+from .models import Resource, ResourcePlan, RPPlanItem
+from .tables import ResourceTable, ResourcePlanTable, RPPlanItemTable
 
 class ResourcePlanView(SingleTableView):
-    model = ResourcePlanItem
+    model = RPPlanItem
     template_name = 'resources/res_plan.html'
 
 @method_decorator(staff_member_required, name='dispatch')
@@ -120,7 +120,7 @@ class ResourcePlanUpdateView(UpdateView):
         instance = self.object
         qs_p = Resource.objects.filter(active=True)[:12]
         products = ResourceTable(qs_p)
-        order_items = ResourcePlanItemTable(instance.order_items.all())
+        order_items = RPPlanItemTable(instance.order_items.all())
         RequestConfig(self.request).configure(products)
         RequestConfig(self.request).configure(order_items)
         context.update(locals())
@@ -141,7 +141,7 @@ def get_context_data(self, **kwargs):
         instance = self.object
         qs_p = Resource.objects.filter(active=True)[:12]
         products = ResourceTable(qs_p)
-        order_items = ResourcePlanItemTable(instance.order_items.all())
+        order_items = RPPlanItemTable(instance.order_items.all())
         RequestConfig(self.request).configure(products)
         RequestConfig(self.request).configure(order_items)
         context.update(locals())
@@ -168,7 +168,7 @@ def ajax_search_products(request, pk):
 def ajax_add_product(request, pk, dk):
     instance = get_object_or_404(ResourcePlan, id=pk)
     product = get_object_or_404(Resource, id=dk)
-    order_item, created = ResourcePlanItem.objects.get_or_create(order=instance, product=product)
+    order_item, created = RPPlanItem.objects.get_or_create(order=instance, product=product)
     if created:
         order_item.qty = 1
         order_item.price = product.value
@@ -179,7 +179,7 @@ def ajax_add_product(request, pk, dk):
     product.qty -= 1
     product.save()
     instance.refresh_from_db()
-    order_items = ResourcePlanItemTable(instance.order_items.all())
+    order_items = RPPlanItemTable(instance.order_items.all())
     RequestConfig(request).configure(order_items)
     data = dict()
     data['result'] = render_to_string(template_name='include/order_container.html',
@@ -192,7 +192,7 @@ def ajax_add_product(request, pk, dk):
 
 @staff_member_required
 def ajax_modify_order_item(request, pk, action):
-    order_item = get_object_or_404(ResourcePlanItem, id=pk)
+    order_item = get_object_or_404(RPPlanItem, id=pk)
     product = order_item.product
     instance = order_item.order
     if action == 'remove':
@@ -208,7 +208,7 @@ def ajax_modify_order_item(request, pk, action):
         order_item.delete()
     data = dict()
     instance.refresh_from_db()
-    order_items = ResourcePlanItemTable(instance.order_items.all())
+    order_items = RPPlanItemTable(instance.order_items.all())
     RequestConfig(request).configure(order_items)
     data['result'] = render_to_string(template_name='include/order_container.html',
                                       request=request,

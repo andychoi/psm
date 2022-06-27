@@ -1,8 +1,8 @@
-# resources/tables.py
+# resource/tables.py
 import django_tables2 as tables
 
 from psm.models import Project
-from .models import ResourcePlan, ResourcePlanItem
+from .models import ResourcePlan, RPPlanItem
 
 class ResourcePlanTable(tables.Table):
     mm_value = tables.Column(orderable=False, verbose_name='M/M')
@@ -10,24 +10,24 @@ class ResourcePlanTable(tables.Table):
         '<a href="{{ record.get_edit_url }}" class="btn btn-info"><i class="fa fa-edit"></i></a>', orderable=False)
 
     class Meta:
-        model = Order
+        model = ResourcePlan
         template_name = 'django_tables2/bootstrap.html'
         fields = ['date', 'title', 'tag_final_value']
 
 
-class ProjectTable(tables.Table):
-    # tag_final_value = tables.Column(orderable=False, verbose_name='Price')
-    action = tables.TemplateColumn(
-        '<button class="btn btn-info add_button" data-href="{% url "ajax_add" instance.id record.id %}">Add!</a>',
-        orderable=False
-    )
+# class ProjectTable(tables.Table):
+#     # tag_final_value = tables.Column(orderable=False, verbose_name='Price')
+#     action = tables.TemplateColumn(
+#         '<button class="btn btn-info add_button" data-href="{% url "ajax_add" instance.id record.id %}">Add!</a>',
+#         orderable=False
+#     )
 
-    class Meta:
-        model = Project
-        template_name = 'django_tables2/bootstrap.html'
-        fields = ['code', 'title', 'est_cost']
+#     class Meta:
+#         model = Project
+#         template_name = 'django_tables2/bootstrap.html'
+#         fields = ['code', 'title', 'est_cost']
 
-class ResourcePlanItemTable(tables.Table):
+class RPPlanItemTable(tables.Table):
 
     mm = tables.Column(orderable=False, verbose_name='M/M')
     action = tables.TemplateColumn('''
@@ -37,7 +37,7 @@ class ResourcePlanItemTable(tables.Table):
     ''', orderable=False)
 
     class Meta:
-        model = ResourcePlanItem
+        model = RPPlanItem
         template_name = "django_tables2/bootstrap.html"
         fields = ("rp", "project", "w01", "w02", )
 

@@ -527,7 +527,7 @@ class ResourcePlanAdmin(admin.ModelAdmin):
 """
 @admin.register(ActualItem)
 class ActualItemAdmin(ImportExportMixin, admin.ModelAdmin):
-    list_display = ( 'project', 'staff', 'CBU', 'year', 'm01', 'm02', 'm03', 'm04', 'm05', 'm06', 'm07', 'm08', 'm09', 'm10', 'm11', 'm12')
+    list_display = ( 'project', 'staff', 'year', 'm01', 'm02', 'm03', 'm04', 'm05', 'm06', 'm07', 'm08', 'm09', 'm10', 'm11', 'm12')
     list_display_links = ('year',)
 
     readonly_fields = ('created_at', 'created_by', 'updated_on', 'updated_by', )

@@ -30,6 +30,8 @@ ALLOWED_HOSTS = [ '*' ]
 
 # Application definition
 INSTALLED_APPS = [
+    "django_crontab",
+
     'apis',
     'users.apps.UsersConfig',   # user extension (profile)
     'blog.apps.BlogConfig',     # blog
@@ -74,6 +76,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'django_extensions',    #debugging tool, jupyter
+    
+    'dbbackup',  # django-dbbackup
 
     # 'ckeditor',           # working fine, but not used here...
     # 'django_markdown',    # use different way markdown2
@@ -135,33 +139,17 @@ CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", ["http://localhost",])
 #https://stackoverflow.com/questions/44034879/django-nginx-getting-csrf-verification-error-in-production-over-http
 #CSRF_COOKIE_HTTPONLY = env.bool('CSRF_COOKIE_HTTPONLY', False)
 
-# Database
-# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-#
-# Database config is passed in environment variable DATABASE_URL
-# as string connection like postgresql://dpsmprj:postgres@localhost/dpsmprj_dev,
-# otherwise the default SQLite database below is used.
-# See more options at https://github.com/kennethreitz/dj-database-url
-#
-DB = env('DB', "SQLITE3")
-if DB == "POSTGRES":
-    #postgresql,  python -m pip install psycopg2
-    DATABASES  = { 'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': env("POSTGRES_DB", "psmdb"), 
-        'USER': env("POSTGRES_USER", 'postgres'), 
-        'PASSWORD': env("POSTGRES_PASSWORD", "postgres"),
-        'HOST': '127.0.0.1', 
-        'PORT': '5432',
-        },
-    }
-else:   #Development
-    DATABASES = { 'default': env.dj_db_url('DATABASE_URL',
-                            'sqlite:///%s/db.sqlite3' % BASE_DIR,
-                            conn_max_age=env.int('CONN_MAX_AGE', 600)),
+# Cron tasks https://pypi.org/project/django-crontab/
+CRONJOBS = [
+    # ('*/1 * * * *', 'psmprj.cron.my_backup'),
+    # ('*/0 0 * * *', 'psmprj.cron.my_backup', {'verbose': 0}),
+    # ('*/5 * * * *', 'myapp.cron.other_scheduled_job', ['arg1', 'arg2'], {'verbose': 0}),
+    # ('0   4 * * *', 'django.core.management.call_command', ['clearsessions']),
+]
 
-    }
+# Database settings
+from .settings_db import *
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 

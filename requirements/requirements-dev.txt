@@ -84,3 +84,5 @@ django-apscheduler
 pandas
 palettable
 django-autocomplete-light
+# django-dbbackup # ISSUE: def get_escaped_command_arg(arg): return arg
+django_cron 

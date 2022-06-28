@@ -48,6 +48,7 @@ db.json
 run/
 tmp/
 sent_emails/
+backup/
 
 # file upload folder
 media/

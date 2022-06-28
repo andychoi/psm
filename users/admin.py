@@ -218,27 +218,30 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)        
-        if request.user.is_superuser:
+        if request.user.is_superuser or request.user.profile.is_psmadm:
             return form
 
         # field level permission 
         # for complex rule, let's implement https://github.com/dfunckt/django-rules         
         # if form.base_fields and not request.user.has_perm('users.admin_profile'):
 
-        if request.user.profile != obj:
+        # allow own profile edit
+        if form.base_fields and ( request.user.is_staff or request.user.profile == obj):
             # tip dict attribute for loop set
             for k,v in form.base_fields.items():
                 v.disabled = True
-
-        elif form.base_fields and not request.user.profile.is_psmadm:
-            for k,v in form.base_fields.items():
-                v.disabled = True
-            # when creating or updating by non-reviewer (except superuser)
+            # when creating or updating allow to staff (except superuser)
             # allow only reviewer to allow updating
             form.base_fields['wcal'].disabled = False 
             form.base_fields['dept'].disabled = False 
             form.base_fields['team'].disabled = False 
             form.base_fields['name'].disabled = False 
+
+        # default display only
+        elif form.base_fields:
+            for k,v in form.base_fields.items():
+                v.disabled = True
+
 
         return form
 

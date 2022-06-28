@@ -3,6 +3,7 @@
 {% load psm_filters %}
 
 {% block head_script %}
+<link href="https://cdn.jsdelivr.net/gh/akottr/dragtable@master/dragtable.css" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.css">
 <!-- <link href="/static/theme/assets/vendor/datatables/datatables.min.css" rel="stylesheet"> -->
 <link href="{% static 'css/tablelist.css' %}" rel="stylesheet">
@@ -28,6 +29,7 @@
             <table data-toggle="table" data-pagination="true" data-page-size="25" data-page-list="[10, 25, 50, 100, all]"
             data-search="true" data-filter-control="true" data-show-search-clear-button="false" data-show-refresh="false"
             data-toolbar="#toolbar" data-show-toggle="true" data-show-columns="true"
+            data-reorderable-columns="true"
             data-show-export="true"
             id="table" class="col table table-striped table-hover table-bordered table-sm small">
                 <thead class="table-primary">
@@ -85,8 +87,11 @@
 
 
 {% block script_body %}
-<script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>    
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>     -->
+<script src="https://cdn.jsdelivr.net/npm/jqueryui@1.11.1/jquery-ui.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/akottr/dragtable@master/jquery.dragtable.js"></script>
 <script src="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.20.2/dist/extensions/reorder-columns/bootstrap-table-reorder-columns.min.js"></script>
 
 <script src="https://unpkg.com/bootstrap-table@1.20.2/dist/extensions/export/bootstrap-table-export.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.10.21/tableExport.min.js"></script>

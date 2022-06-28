@@ -266,7 +266,7 @@ class projectList1View(PermissionRequiredMixin, generic.ListView):
         else:
             qs = Project.objects.all()
 
-        qs = qs.filter(is_internal=False)    #exclude internal
+        # qs = qs.filter(is_internal=False)    #exclude internal
         if qs.count() == 0:
             return  qs      # return empty queryset
 

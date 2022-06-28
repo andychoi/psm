@@ -30,7 +30,7 @@ ALLOWED_HOSTS = [ '*' ]
 
 # Application definition
 INSTALLED_APPS = [
-    "django_crontab",
+    # "django_crontab",
 
     'apis',
     'users.apps.UsersConfig',   # user extension (profile)

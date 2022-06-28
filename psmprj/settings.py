@@ -77,7 +77,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'django_extensions',    #debugging tool, jupyter
     
-    'dbbackup',  # django-dbbackup
+    # 'dbbackup',  # django-dbbackup
 
     # 'ckeditor',           # working fine, but not used here...
     # 'django_markdown',    # use different way markdown2
@@ -149,7 +149,37 @@ CRONJOBS = [
 ]
 
 # Database settings
-from .settings_db import *
+# from .settings_db import *
+DB = env('DB', "SQLITE3")
+if DB == "POSTGRES":
+    #postgresql,  python -m pip install psycopg2
+    DATABASES  = { 'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': env("POSTGRES_DB", "psmdb"), 
+        'USER': env("POSTGRES_USER", 'postgres'), 
+        'PASSWORD': env("POSTGRES_PASSWORD", "postgres"),
+        'HOST': '127.0.0.1', 
+        'PORT': '5432',
+        },
+    }
+else:   #Development
+    DATABASES = { 'default': env.dj_db_url('DATABASE_URL',
+                            'sqlite:///%s/db.sqlite3' % BASE_DIR,
+                            conn_max_age=env.int('CONN_MAX_AGE', 600)),
+
+    }
+
+# https://django-dbbackup.readthedocs.io/en/master/databases.html
+DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
+DBBACKUP_STORAGE_OPTIONS = {'location':  env("DBBACKUP_LOCATION", BASE_DIR + "/backup")}
+# DBBACKUP_CONNECTORS = {
+#     'default': {
+#         'USER': env("POSTGRES_USER", 'postgres'), 
+#         'PASSWORD': env("POSTGRES_PASSWORD", "postgres"),
+#         'HOST': '127.0.0.1', 
+#     }
+# }
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 

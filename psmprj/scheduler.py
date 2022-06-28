@@ -7,7 +7,7 @@ from django_apscheduler.models import DjangoJobExecution
 import sys
 from django.contrib.auth.models import User, Group
 from django.conf import settings
-from .models import Profile
+from ..users.models import Profile
 from psm.models import Project
 from common.models import Dept, Team
 from django.db.models import Q

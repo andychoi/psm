@@ -34,7 +34,7 @@ class Profile(ProxySuper): #models.Model):
     team = models.ForeignKey('common.Team', verbose_name=_('Team'), on_delete=models.SET_NULL, blank=True, null=True)
     dept = models.ForeignKey('common.Dept', verbose_name=_('Dept'), on_delete=models.SET_NULL, blank=True, null=True)
     # CBU    = models.ForeignKey('common.CBU',  verbose_name=_('CBU'),  on_delete=models.SET_NULL, blank=False, null=True)
-    CBU    = models.ManyToManyField('common.CBU',  verbose_name=_('CBU'),  blank=False, null=True)
+    CBU    = models.ManyToManyField('common.CBU',  verbose_name=_('CBU'),  blank=False) #, null=True)
 
     usertype    = models.CharField(_("User Type"), choices=USERTYPE, max_length=10, null=True, blank=True)
     wcal       = models.CharField(_("Region"), max_length=3, choices=WCAL, default='CA')   # working calendar, exceptional with *

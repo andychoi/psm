@@ -77,7 +77,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'django_extensions',    #debugging tool, jupyter
     
-    # 'dbbackup',  # django-dbbackup
+    'dbbackup',  # django-dbbackup
 
     # 'ckeditor',           # working fine, but not used here...
     # 'django_markdown',    # use different way markdown2
@@ -139,14 +139,6 @@ CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", ["http://localhost",])
 #https://stackoverflow.com/questions/44034879/django-nginx-getting-csrf-verification-error-in-production-over-http
 #CSRF_COOKIE_HTTPONLY = env.bool('CSRF_COOKIE_HTTPONLY', False)
 
-
-# Cron tasks https://pypi.org/project/django-crontab/
-CRONJOBS = [
-    # ('*/1 * * * *', 'psmprj.cron.my_backup'),
-    # ('*/0 0 * * *', 'psmprj.cron.my_backup', {'verbose': 0}),
-    # ('*/5 * * * *', 'myapp.cron.other_scheduled_job', ['arg1', 'arg2'], {'verbose': 0}),
-    # ('0   4 * * *', 'django.core.management.call_command', ['clearsessions']),
-]
 
 # Database settings
 # from .settings_db import *
@@ -307,3 +299,14 @@ if ENV == "PROD":
     SECURE_HSTS_PRELOAD = False    
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
+
+# -----------------------------------------------------------------------
+# Cron tasks https://pypi.org/project/django-crontab/
+CRONJOBS = [
+    # ('*/1 * * * *', 'psmprj.cron.my_backup'),
+    # ('*/0 0 * * *', 'psmprj.cron.my_backup', {'verbose': 0}),
+    # ('*/5 * * * *', 'myapp.cron.other_scheduled_job', ['arg1', 'arg2'], {'verbose': 0}),
+    # ('0   4 * * *', 'django.core.management.call_command', ['clearsessions']),
+]
+# apscheduer start in users/apps.py
+

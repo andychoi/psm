@@ -12,7 +12,7 @@ diff-match-patch==20200713
     # via django-import-export
 dj-database-url==0.5.0
     # via -r requirements-dev.in
-django==4.0.4
+django==4.0.5
     # via
     #   -r requirements-dev.in
     #   django-extensions
@@ -68,13 +68,13 @@ psycopg2
 
 django-crispy-forms
 Pillow    
-Markdown==3.3.7
 django_filter==21.1
 # django-private-storage==3.0
 django_object_actions==4.0.0
 django_tables2==2.4.1
 # django-multi-email-field==0.6.2
 holidays 
+# Markdown==3.3.7
 markdown2
 sorl-thumbnail
 django-auth-ldap
@@ -85,4 +85,5 @@ pandas
 palettable
 django-autocomplete-light
 # django-dbbackup # ISSUE: def get_escaped_command_arg(arg): return arg
+-e git+https://github.com/jazzband/django-dbbackup.git#egg=django-dbbackup
 django_cron 

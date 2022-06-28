@@ -407,8 +407,8 @@ class projectIndexView(generic.ListView):
 
 """
 이거 어떨지...
-https://django-plotly-dash.readthedocs.io/en/latest/index.html
-
+https://django-plotly-dash.readthedocs.io/en/latest/index.html  not comptible yet with dj 4.x
+django-plotly-dash 2.0.0 requires Django<4.0.0,>=2.2
 
 """
 # -----------------------------------------------------------------------------------------------

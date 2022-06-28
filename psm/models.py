@@ -138,7 +138,7 @@ class Project(models.Model):
     status_s = models.CharField(_("Scope status"), max_length=20, choices=STATUS, default=Status.NA.value)
     resolution = models.TextField(_("PM Memo"), max_length=2000, null=True, blank=True)
     #settings.AUTH_USER_MODEL - user directory...
-    pm = models.ForeignKey(Profile, related_name='project_manager', verbose_name=_('HAEA PM'),
+    pm = models.ForeignKey(Profile, related_name='project_manager', verbose_name=_('PM'),
                            on_delete=models.PROTECT, null=True, blank=True)
     state = models.CharField(_("state"), max_length=20, choices=STATES, default=State.TODO.value)
     phase = models.CharField(_("Phase"), max_length=20, choices=PHASE, default=Phase.PRE_PLAN.value)
@@ -387,7 +387,7 @@ class ProjectRequest(models.Model):
     img_asis    = models.ImageField(_("As-Is Image"), upload_to='project/%Y', null=True, blank=True)  #default='default.jpg', 
     img_tobe    = models.ImageField(_("To-Be Image"), upload_to='project/%Y', null=True, blank=True)  #default='default.jpg', 
 
-    pm = models.ForeignKey(Profile, related_name='req_pm', verbose_name=_('HAEA PM'),
+    pm = models.ForeignKey(Profile, related_name='req_pm', verbose_name=_('PM'),
                            on_delete=models.SET_NULL, null=True, blank=True)
     priority = models.CharField(_("priority"), max_length=20, choices=PRIORITIES, default=Priority.NORMAL.value)
     est_cost = models.DecimalField(_("Est. cost"), decimal_places=0, max_digits=12, blank=True, null=True)

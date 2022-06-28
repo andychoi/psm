@@ -62,6 +62,8 @@ INSTALLED_APPS = [
     'django_admin_listfilter_dropdown', # https://github.com/mrts/django-admin-list-filter-dropdown
 #    'jazzmin',                 # admin new UI
     
+    'dal',                  # https://django-autocomplete-light.readthedocs.io/en/master/install.html#install-in-your-project
+    'dal_select2',
     # "django.contrib.postgres",  # new for fulltext search (need POC)
 
     'django.contrib.admin',

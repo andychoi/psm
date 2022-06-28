@@ -5,6 +5,8 @@ from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from import_export import resources, fields
+from import_export.widgets import ManyToManyWidget, ForeignKeyWidget
 from import_export.admin import ImportExportMixin
 from django_object_actions import DjangoObjectActions
 from adminfilters.multiselect import UnionFieldListFilter
@@ -43,12 +45,21 @@ class UserAdmin(UserAdmin):
         return qs.filter(is_staff=True)
 
 """
-
+class ProfileResource(resources.ModelResource):
+    cbu_names       = fields.Field(attribute='CBU',    widget=ManyToManyWidget(model=CBU, separator=',', field='name'), )
+    class Meta:
+        model = Profile
+        fields = ( 'id', 'user', 'name', 'email', 'wcal', 'dept__name', 'team__name', 'cbu_names', 'migrated', 'usertype', 'notes', 
+                   'proxy_name'
+        )
+        export_order = fields
 
 @admin.register(Profile)
 class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
+    resource_class = ProfileResource
+
     # list_display = ('id', 'user', 'name', 'email', 'dept', 'manager', 'u_div', 'CBU', 'is_active')
-    list_display = ('id', 'user', 'name', 'email', 'wcal', 'dept', 'is_active', 'is_staff', 'proxy_name', 'pm_count', 'goto_user')
+    list_display = ('id', 'user', 'name', 'email', 'wcal', 'dept', 'is_active', 'is_staff', 'pm_count', 'goto_user', 'cbu_names', 'proxy_name', )
     list_display_links = ('id', 'name', 'email')
     search_fields = ('id', 'name', 'email', 'CBU__name', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
     ordering = ('CBU__id', 'dept', 'team', 'name', )
@@ -222,11 +233,20 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
         import_id_fields = ('id',)
 
 
+class ProfileCBUResource(resources.ModelResource):
+    cbu_names       = fields.Field(attribute='CBU',    widget=ManyToManyWidget(model=CBU, separator=',', field='name'), )
+    class Meta:
+        model = ProfileCBU
+        fields = ( 'id', 'user', 'name', 'email', 'cbu_names', 'migrated', 'notes'
+        )
+        export_order = fields
+
 # ------------------------------------------------------------------
 @admin.register(ProfileCBU)
 class ProfileCBUAdmin(ImportExportMixin, admin.ModelAdmin):
+    resource_class = ProfileCBUResource
     # list_display = ('id', 'user', 'name', 'email', 'dept', 'manager', 'u_div', 'CBU', 'is_active')
-    list_display = ('id', 'user', 'name', 'email', 'CBU_names', 'pm_count')
+    list_display = ('id', 'user', 'name', 'email', 'cbu_names', 'pm_count')
     list_display_links = ('id', 'user', 'name')
     search_fields = ('id', 'name', 'email', 'CBU__name', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
     ordering = ('CBU', 'name', )

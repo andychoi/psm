@@ -54,7 +54,7 @@ class Profile(ProxySuper): #models.Model):
     created_by = models.ForeignKey(User, related_name="profile_created", null=True, on_delete=models.SET_NULL)
     updated_on = models.DateTimeField(_("updated_on"), auto_now=True, editable=False)
     updated_by = models.ForeignKey(User, related_name="profile_updated", null=True, on_delete=models.SET_NULL)
-    id_auto = models.BooleanField(_("User create from Profile"), default=False )    #auto creation of user from profile creation
+    # id_auto = models.BooleanField(_("User create from Profile"), default=False )    #auto creation of user from profile creation
 
     notes      = models.CharField(_("notes"), max_length=500, null=True, blank=True)
     migrated   = models.CharField(_("migrated"), max_length=10, null=True, blank=True)
@@ -63,7 +63,7 @@ class Profile(ProxySuper): #models.Model):
         if getattr(self, 'user') and not self.name :
             return "%s [%s]" % ("%s %s" % (self.user.first_name, self.user.last_name), self.CBU) 
         else:
-            return "%s [%s]" % (self.name, self.CBU)    #preferred
+            return "%s [%s]" % (self.name, self.cbu_names)    #preferred
 
     class Meta:
         # app_label = 'auth'  #circular dependency... FIXME, big problem...if change..
@@ -82,7 +82,7 @@ class Profile(ProxySuper): #models.Model):
         return self.dept.div if (self.dept.div) else None
 
     @property
-    def CBU_names(self):
+    def cbu_names(self):
         return " ,".join(p.name for p in self.CBU.all())
 
     # def create_user_profile(sender, instance, created, **kwargs):

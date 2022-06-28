@@ -30,12 +30,19 @@ class SkillAdmin(ImportExportMixin, admin.ModelAdmin):
 """
 TODO
 https://django-autocomplete-light.readthedocs.io/en/master/tutorial.html#overview
-TODO https://stackoverflow.com/questions/57800526/custom-dynamic-list-filter-with-django-simplelistfilter
 
 """
-
+from dal import autocomplete
+class ResourceForm(forms.ModelForm):
+    class Meta:
+        model = Resource
+        fields = ('__all__')
+        widgets = {
+            'staff': autocomplete.ModelSelect2(url='profile-staff-autocomplete')    # common.adminfilters.py
+        }
 @admin.register(Resource)
 class ResourceAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
+    form = ResourceForm
     list_display = ( 'staff', 'year', 'wcal', 'active', 'm01', 'm02', 'm03', 'm04', 'm05', 'm06', 'm07', 'm08', 'm09', 'm10', 'm11', 'm12', 'skill_names')
     list_display_links = ('staff',)
     list_editable = ('active', 'wcal', 'm01', 'm02', 'm03', 'm04', 'm05', 'm06', 'm07', 'm08', 'm09', 'm10', 'm11', 'm12')

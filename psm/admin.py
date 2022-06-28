@@ -40,6 +40,7 @@ from users.models import Profile
 
 # README issue with import/export https://github.com/crccheck/django-object-actions/issues/67
 from django_object_actions import DjangoObjectActions
+from dal import autocomplete    #https://django-autocomplete-light.readthedocs.io/en/master/tutorial.html#overview
 
 # https://stackoverflow.com/questions/54514324/how-to-register-inherited-sub-class-in-admin-py-file-in-django
 # GOOD: https://stackoverflow.com/questions/241250/single-table-inheritance-in-django
@@ -106,7 +107,6 @@ class ProjectDeliverableInline(admin.TabularInline):
     class Media:
         css = {"all": ("psm/css/custom_admin.css",)}
 
-
 # ----------------------------------------------------------------------------------------------------------------
 class ProjectRequestResource(resources.ModelResource):
     # pm_name     = fields.Field(attribute='pm',     widget=ForeignKeyWidget(Profile, 'name'))
@@ -125,9 +125,18 @@ class ProjectRequestResource(resources.ModelResource):
             'p_ideation','p_plan_b','p_kickoff','p_design_b','p_dev_b','p_uat_b','p_launch','p_close',
         )
         export_order = fields
+
+class ProjectRequestForm(forms.ModelForm):
+    class Meta:
+        model = ProjectRequest
+        fields = ('__all__')
+        widgets = {
+            'pm': autocomplete.ModelSelect2(url='profile-staff-autocomplete')    # common.adminfilters.py
+        }
 # ----------------------------------------------------------------------------------------------------------------
 @admin.register(ProjectRequest)
 class ProjectRequestAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
+    form = ProjectRequestForm
     resource_class = ProjectRequestResource
     class Meta:
         import_id_fields = ('id',)
@@ -354,9 +363,18 @@ class ProjectResource(resources.ModelResource):
             'wbs__wbs', 'es', 'ref', 'cbu_req','cbu_sow','cbu_po', 'status_o', 'status_t', 'status_b', 'status_s', 'resolution'
         )
         export_order = fields
+
+class ProjectForm(forms.ModelForm):
+    class Meta:
+        model = Project
+        fields = ('__all__')
+        widgets = {
+            'pm': autocomplete.ModelSelect2(url='profile-staff-autocomplete')    # common.adminfilters.py
+        }
 # ----------------------------------------------------------------------------------------------------------------
 @admin.register(Project)
 class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
+    form = ProjectForm
     resource_class = ProjectResource
     class Meta:
         import_id_fields = ('id',)

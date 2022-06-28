@@ -45,11 +45,12 @@ urlpatterns = [
     re_path(r'^api/v1/', include(router.urls)),
     # path('api-blog/', include('blog.api.urls')),
     # urls handling app  routes
+    path('', include('common.urls')),
     path('', include('blog.urls')),
     path('', include('reports.urls')),
     path('', include('psm.urls')),
     path('', include('data.urls')),
-    # path('', include('resources.urls')),
+    # path('', include('resource.urls')),   # not yet complete
 
 
     # Authentication Urls

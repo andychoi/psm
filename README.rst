@@ -38,6 +38,11 @@ Docker, or:
 * users.Profile has circular dependencies with Div and Dept in common app
   python manage.py squashmigrations
 
+
+Todo / In reviews
+-----------------
+* https://github.com/dfunckt/django-rules : rule based permission, nice
+
 Install and Run
 ---------------
 

@@ -77,7 +77,7 @@ class CBUAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display_links = ('id', 'name')
     search_fields = ('id', 'name', 'full_name')
 
-    ordering = ('name',)
+    ordering = ('id', 'name',)
     list_filter = ('is_active',)
     readonly_fields = ('created_at', 'updated_on', )
     fieldsets = (  # Edition form

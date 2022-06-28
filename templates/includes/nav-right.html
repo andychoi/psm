@@ -47,7 +47,11 @@
                     <a class="dropdown-item" href="/admin/blog/ticket"><i class="bi bi-bug"></i> Bug tracker</a>
                     <div class="dropdown-divider"></div>
                     
+                    {% if user.is_staff %}
+                    <a class="dropdown-item" href="/admin/users/profile/{{ user.profile.id }}"><i class="bi bi-person-circle"></i> Profile</a>
+                    {% else %}
                     <a class="dropdown-item" href="{% url 'profile' %}"><i class="bi bi-person-circle"></i> Profile</a>
+                    {% endif %}
                     <a class="dropdown-item" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a>
                   {% else %}
                     <a class="dropdown-item" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-left"></i> Login</a>

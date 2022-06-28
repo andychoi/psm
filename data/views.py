@@ -88,7 +88,7 @@ class Dashboard(TemplateView):
         context['charts'].append(proj_stat3.get_presentation())
 
 
-        proj_stat7 = Chart('HorizontalBar', chart_id='proj_stat7', palette=PALETTE, height=100, title='Proejct Est.Cost')
+        proj_stat7 = Chart('horizontalBar', chart_id='proj_stat7', palette=PALETTE, height=100, title='Proejct Est.Cost')
         proj_stat7.from_df(df3, values='est_cost', stacks=['phase'], labels=['CBUs__name'])
         context['charts'].append(proj_stat7.get_presentation())
 

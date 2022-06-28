@@ -234,8 +234,7 @@ class Chart:
 
         pivot = pivot.round(round_values)
         
-        values = pivot.values.tolist() 
-        # values = np.array(values,float)  # FIXME Decimal field to Float
+        values = pivot.values.astype(float).tolist()  # Fixed: if decimal type, conver to int or Float
         labels = pivot.columns.tolist()
         stacks = pivot.index.tolist()
 

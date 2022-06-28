@@ -50,7 +50,7 @@ class ProfileResource(resources.ModelResource):
     class Meta:
         model = Profile
         fields = ( 'id', 'user', 'name', 'email', 'wcal', 'dept__name', 'team__name', 'cbu_names', 'migrated', 'usertype', 'notes', 
-                   'proxy_name'
+                   'pm_count', 'proxy_name'
         )
         export_order = fields
 
@@ -237,7 +237,7 @@ class ProfileCBUResource(resources.ModelResource):
     cbu_names       = fields.Field(attribute='CBU',    widget=ManyToManyWidget(model=CBU, separator=',', field='name'), )
     class Meta:
         model = ProfileCBU
-        fields = ( 'id', 'user', 'name', 'email', 'cbu_names', 'migrated', 'notes'
+        fields = ( 'id', 'user', 'name', 'email', 'cbu_names', 'migrated', 'notes', 'pm_count'
         )
         export_order = fields
 

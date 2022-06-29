@@ -57,7 +57,7 @@ def _project_list(request):
         # if ltmp:
         #     qs = qs.filter(priority=PRIORITIES[int(ltmp)][0])
 
-        ltmp = request.GET.get('prg', '')
+        ltmp = request.GET.get('program', '')
         if ltmp:
             qs = qs.filter(program__id=ltmp)
 

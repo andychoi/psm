@@ -213,7 +213,7 @@ def get_filter_options(self, context, def_year=True, plan=False):
     } )
     
     context['filterItems'].append( {
-        "key": "PRG", "text": "Program", "qId": "prg", "selected": self.request.GET.get('prg', '')
+        "key": "PRG", "text": "Program", "qId": "program", "selected": self.request.GET.get('program', '')
         # , "items": Project.objects.values('program').distinct()
         , "items": Program.objects.filter(is_active=True)  # all()
     } )
@@ -331,6 +331,32 @@ class projectChartView3(projectList1View):
     template_name = 'project/project_chart-test-w-json.html'
 
 
+# - how to provide my project for PM, HOD
+class programIndexView(generic.ListView):
+    template_name = 'project/program.html'
+    context_object_name = 'project_list'    
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs) #dict
+        q =  {k:v for k, v in self.request.GET.items() if v and hasattr(Project, k.split('__')[0] ) }
+
+        context['year'] = self.request.GET.get('year', date.today().year)
+        context['programs'] = Program.objects.all()
+
+        q2 =  {k:v for k, v in self.request.GET.items() if v and hasattr(Report, k.split('__')[0] ) }
+        context['report_list'] =  Report.objects.filter(project__in=self.object_list).filter(**q2).order_by('-created_at')[:100]
+
+        q3 =  {k:v for k, v in self.request.GET.items() if v and hasattr(ReportRisk, k.split('__')[0] ) }
+        context['latest_risk'] =    ReportRisk.objects.filter(project__in=self.object_list).filter(state=State2.OPEN.value).order_by('created_at')[:100] 
+
+        get_filter_options(self, context)
+
+        return context
+
+    def get_queryset(self):
+        q =  {k:v for k, v in self.request.GET.items() if v and hasattr(Project, k.split('__')[0] ) }
+        return Project.objects.filter(**q).filter(~Q(program=None)).order_by('program')
+      
 
 # - how to provide my project for PM, HOD
 class projectIndexView(generic.ListView):

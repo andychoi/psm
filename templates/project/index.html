@@ -45,7 +45,7 @@
               <div class="card-body">
                   <div class="table-responsive">
                       <table class="table table-striped table-borderless" data-toggle="table" data-pagination="true" data-page-size="10" data-page-list="[10]" >
-                          <thead><tr><th>CBU</th><th>Title</th><!--th>PM</th--><th>Created</th></tr></thead>
+                          <thead><tr><th>CBU</th><th>Project Title</th><!--th>PM</th--><th>Created</th></tr></thead>
                           <tbody>
                             {% for p in latest_update %}
                               <tr>
@@ -69,7 +69,7 @@
               <div class="card-body">
                   <div class="table-responsive">
                     <table class="table table-striped table-borderless" data-toggle="table" data-pagination="true" data-page-size="10" data-page-list="[10]" >
-                      <thead><tr><!--th>CBU</th--><th>Title</th><th>PM</th><th>Created</th></tr></thead>
+                      <thead><tr><!--th>CBU</th--><th>Project Title</th><th>PM</th><th>Created</th></tr></thead>
                           <tbody>
                             {% for r in latest_report %}
                               <tr>
@@ -115,14 +115,23 @@
               <div class="card-body">
                   <div class="table-responsive">
                     <table class="table table-striped" data-toggle="table" data-pagination="true" data-page-size="5" data-page-list="[5]" >
-                      <thead><tr><th>CBU</th><th>Title</th><!--th>PM</th--><th>Created</th></tr></thead>
+                      <thead><tr><th>CBU</th><th>Title</th><th class="text-center">Status</th><th>Deadline</th><th>Owner</th></tr></thead>
                           <tbody>
-                            {% for r in latest_risk %}
+                            {% for risk in latest_risk %}
                               <tr>
-                                  <th scope="row">{{ r.project.CBU_str }}</th>
-                                  <td><a target="_blank" href="{% url 'report_risks_project' r.project.id %}">{{ r.project.title }}</a></td>
-                                  <!-- <td>{{ p.pm }}</td> -->
-                                  <td>{{ r.created_at|naturalday }}<!--|date:"m/d/y"--></td>
+                                  <th scope="row">{{ risk.project.CBU_str }}</th>
+                                  <td><a target="_blank" href="{% url 'report_risks_project' risk.project.id %}">{{ risk.project.title }}</a></td>
+                                  <td class="text-center">
+                                    {%   if risk.status_o|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
+                                    {% elif risk.status_o|slice:'0:1' == '2' %}<i class="text-warning bi-exclamation-circle"></i>
+                                    {% elif risk.status_o|slice:'0:1' == '3' %}<i class="text-danger  bi-exclamation-circle-fill"></i>
+                                    {% elif risk.status_o|slice:'0:1' == '9' %}<i class="text-primary bi-circle-fill"></i>
+                                    {% else %}<i class="text-secondary  bi-dash-circle-dotted"></i>
+                                    {% endif %}
+                                  </td>
+
+                                  <td>{{ risk.deadline|naturalday }}</td>
+                                  <td>{{ risk.owner }}</td>
                               </tr>
                             {% endfor %}
                           </tbody>

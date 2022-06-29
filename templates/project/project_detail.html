@@ -35,6 +35,7 @@
     <div class="col d-flex align-items-start">Project code : <b>{{ project.pjcode }}</b>
       <span class="ms-3"> <a target="_blank" href="/admin/psm/project/{{ project.id }}"><i class="bi bi-pencil"></i></a> </span>
       <span class="ms-3"> <a target="_blank" href="/admin/reports/report/add/?project__id={{ project.id }}"><i class="bi bi-chat-left-quote-fill"></i></a> </span>
+      <span class="ms-3"> <a target="_blank" href="/admin/reports/reportrisk/add/?project__id={{ project.id }}"><i class="pe-2 bi bi-flag"></i></a> </span>
     </div>
     <div class="col d-flex justify-content-end">Project year : <b>{{ project.year }}</b></div>
   </div>
@@ -80,7 +81,7 @@
       <div class="col-4 mt-2">
         <div class="card w-100 ">
           <div class="card-body">
-            <h5 class="card-title">Status{% if risk_count > 0 %} <a target="_blank" href="{% url 'report_risks' %}"> <span class="badge rounded-pill bg-danger"> {{  risk_count  }} </span></a> {% endif %}</h5>
+            <h5 class="card-title">Status{% if risk_count > 0 %} <a target="_blank" href="{% url 'report_risks' %}?project={{ project.id }}"> <span class="badge rounded-pill bg-danger"> {{  risk_count  }} </span></a> {% endif %}</h5>
             <!-- <div class="row ms-2 media"> -->
               <table class="table table-borderless" >
                 <tr><td>State</td><td>{{ project.state|slice:'3:' }}</td></tr>

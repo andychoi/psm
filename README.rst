@@ -48,7 +48,7 @@ Install and Run
 
 Create a virtual environment and activate it with *(Optional)*::
 
-    $ python3.8 -m venv .venv && source .venv/bin/activate
+    $ python -m venv .venv && source .venv/bin/activate
 
 Install dependencies with::
 

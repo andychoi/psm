@@ -75,6 +75,7 @@
               <ul class="dropdown-menu nav-list" aria-labelledby="nav4">
     
                 <li><a class="dropdown-item" href="{% url 'project_index' %}"><i class="pe-2 bi bi-layout-wtf"></i> Project Portfolio Quickview</a></li>
+                <li><a class="dropdown-item" href="{% url 'program_index' %}"><i class="pe-2 bi bi-columns"></i> Program Quickview</a></li>
                 <div class="dropdown-divider"></div>
                 <li><a class="dropdown-item" href="{% url 'project_dashboard' %}"><i class="pe-2 bi bi-speedometer"></i> Project Portfolio Dashboard </a></li>
                 {% if user.profile.is_psmadm or user.is_superuser %}
@@ -87,7 +88,6 @@
                     <li><a class="dropdown-item" href="{% url 'project_chart_3' %}"><i class="pe-2 bi bi-clipboard-data"></i>Chart (pilot)</a></li>
             {% endif %}
                 <div class="dropdown-divider"></div>
-                <li><a class="dropdown-item" href="{% url 'program_index' %}"><i class="pe-2 bi bi-columns"></i> Program Overview</a></li>
                 <li><a class="dropdown-item" href="{% url 'project_list1' %}"><i class="pe-2 bi bi-signpost"></i> Project List</a></li>
                 <li><a class="dropdown-item" href="/report"><i class="pe-2 bi bi-journal-check"></i> Status Report List</a></li>
                 <li><a class="dropdown-item" href="/report/risks"><i class="pe-2 bi bi-flag"></i> Risk Report List</a></li>

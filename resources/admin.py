@@ -1,3 +1,4 @@
+import csv
 import urllib
 from datetime import date
 from django import forms
@@ -5,10 +6,13 @@ from django.contrib import admin
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import ngettext
-from django.urls import reverse
+from django.urls import reverse, path, re_path
 from django.utils.html import mark_safe
 from django.shortcuts import redirect
 from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from django.contrib.admin import helpers
+from django.template.response import TemplateResponse
 
 from adminfilters.multiselect import UnionFieldListFilter
 from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter, DropdownFilter, ChoiceDropdownFilter
@@ -532,8 +536,12 @@ class ResourcePlanAdmin(admin.ModelAdmin):
 """
     Actual time data
 """
+import pandas as pd
+class CsvImportForm(forms.Form):
+    csv_file = forms.FileField()
+
 @admin.register(ActualItem)
-class ActualItemAdmin(ImportExportMixin, admin.ModelAdmin):
+class ActualItemAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
     list_display = ( 'project', 'staff', 'year', 'm01', 'm02', 'm03', 'm04', 'm05', 'm06', 'm07', 'm08', 'm09', 'm10', 'm11', 'm12')
     list_display_links = ('year',)
 
@@ -556,3 +564,41 @@ class ActualItemAdmin(ImportExportMixin, admin.ModelAdmin):
                 ('m01', 'm02', 'm03', 'm04', 'm05', 'm06', 'm07', 'm08', 'm09', 'm10', 'm11', 'm12',) )  }),
             )
         return fieldsets
+
+    # why need???
+    # def get_urls(self):
+    #     urls = super().get_urls()
+    #     my_urls = [
+    #         path('admin/resource/actualitem/', self.import_csv, name="import_csv_view"),
+    #     ]
+    #     return my_urls + urls
+
+    def import_csv(self, request, queryset):
+        if request.method == "POST":
+            try:
+                csv_file = request.FILES["csv_file"]
+            except UnicodeDecodeError as e:
+                self.message_user(request, "There was an error in reading CSV file:{}".format(e), level=messages.ERROR )
+                return redirect("../..")
+
+            # reader = csv.reader(csv_file)
+            df = pd.read_csv(csv_file)
+            # Create Hero objects from passed in data
+            # ...
+            self.message_user(request, "Your csv file has been imported")
+            return redirect("../..")
+
+        else:
+            form = CsvImportForm()
+            payload = {"form": form}    #, "endpoint": "/admin/resources/actualitem/import/"}
+            return render(
+                request, "resources/csv_form.html", payload
+            )
+
+    import_csv.label = "Import CSV"  
+    changelist_actions = ('import_csv', )   # extended with DjangoObjectActions
+    # change_list_template = "resource/actual_changelist.html"
+    # def changelist_view(self, request, extra_context=None):
+    #     extra = extra_context or {}
+    #     extra["csv_upload_form"] = CsvImportForm()
+    #     return super(ActualItemAdmin, self).changelist_view(request, extra_context=extra)

@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'reports',                  # reporting
     'reviews',                  # reviews
     'data',                     # analytics (pilot)
-    'resource',                 # resource management
+    'resources',                # resource management (name resource is reserved by notebook)
 
     # 'guardian',               # object level permission management; django default is class level 
 

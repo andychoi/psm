@@ -63,7 +63,10 @@ class Profile(ProxySuper): #models.Model):
         if getattr(self, 'user') and not self.name :
             return "%s [%s]" % ("%s %s" % (self.user.first_name, self.user.last_name), self.CBU) 
         else:
-            return "%s [%s]" % (self.name, self.cbu_names)    #preferred
+            if self.pk:
+                return "%s [%s]" % (self.name, self.cbu_names)    #preferred
+            else:
+                return "<new>"     #return self.name
 
     class Meta:
         # app_label = 'auth'  #circular dependency... FIXME, big problem...if change..

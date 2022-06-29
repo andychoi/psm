@@ -61,7 +61,7 @@ Determine database to use, sqllite or postgresql
 Create the database with::
 
     $ python manage.py makemigrations
-    $ python manage.py makemigrations users common psm reports mtasks reviews blog
+    $ python manage.py makemigrations users common psm reports mtasks reviews blog resources
     $ python manage.py migrate
 
 To create an admin user::

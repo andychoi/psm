@@ -63,16 +63,16 @@ class SearchProjectView(generic.ListView):
 
     def get_queryset(self):
        result = super(SearchProjectView, self).get_queryset()
+
        query = self.request.GET.get('q')
        if query:
-          postresult = Project.objects.filter(title__contains=query)
-          result = postresult
+            return Project.objects.filter(title__contains=query)
        else:
-           result = None
-       return result
+            return None
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
+        context['req'] = "Search result"
         get_filter_options(self, context)
 
         #https://stackoverflow.com/questions/59972694/django-pagination-maintaining-filter-and-order-by

@@ -131,10 +131,9 @@ def late_reminder():
                 logger.warning("[Project #%s] Error trying to send the Project creation email - %s: %s",
                                p.pk, e.__class__.__name__, str(e))
 
-
 def wbs_import():
-    pass
-
+    from common.admin import _update_wbs
+    _update_wbs()
 
 # https://github.com/jcass77/django-apscheduler
 # https://apscheduler.readthedocs.io/en/latest/userguide.html

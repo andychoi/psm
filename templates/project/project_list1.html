@@ -57,7 +57,7 @@
                     <th data-sortable="true" scope="col" data-visible="false">Schedule</th>
                     <th data-sortable="true" scope="col" data-visible="false">Scope</th>
                     <th data-sortable="true" scope="col" data-visible="false">Budget</th>
-                    <th data-sortable="false" scope="col" data-visible="false">Resolution</th>
+                    <th data-sortable="false" scope="col" data-visible="false">pm_memo</th>
                     <th data-sortable="true" scope="col" data-visible="false">HOD</th>                    
                     <th data-sortable="false" >E</th>
                 </tr>
@@ -125,7 +125,7 @@
                         {% else %}<i class="text-secondary  bi-dash-circle-dotted"></i>
                         {% endif %}</td>
 
-                    <td class="text-begin">{{ p.resolution }}</td>
+                    <td class="text-begin">{{ p.pm_memo }}</td>
                     <td class="text-begin">{{ p.dept.head }}</td>
     
                     <td class="text-center"><a target="_blank" href="/admin/psm/project/{{ p.id }}"><i class="bi bi-pencil"></i></a></td>

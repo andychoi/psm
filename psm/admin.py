@@ -369,9 +369,9 @@ class ProjectResource(resources.ModelResource):
         fields = ( 'id', 'year', 'code', 'cf', 'title', 'description', 'objective', 'phase', 'state', 'progress', 'ref_plan__code',
             'pm', 'pm__name',  'CBUs', 'cbu_names', 'CBUpm__name', 'strategy', 'strategy_names', 'program', 'program__name','type', 'category', 'priority', 
             'est_cost', 'budget', 'dept', 'dept__name', 'dept__div', 'dept__div__name', 'team__name', 
-            'p_ideation','p_plan_b','p_kickoff','p_design_b','p_dev_b','p_uat_b','p_launch','p_close',
-            'a_plan_b','a_kickoff','a_design_b','a_dev_b','a_uat_b','a_launch','a_close',
-            'wbs__wbs', 'es', 'ref', 'cbu_req','cbu_sow','cbu_po', 'status_o', 'status_t', 'status_b', 'status_s', 'resolution'
+            'p_ideation','p_plan_b','p_kickoff','p_design_b', 'p_design_e', 'p_dev_b', 'p_dev_e', 'p_uat_b','p_uat_e','p_launch','p_close',
+                         'a_plan_b','a_kickoff','a_design_b', 'a_design_e', 'a_dev_b', 'a_dev_e', 'a_uat_b','a_uat_e','a_launch','a_close',
+            'wbs__wbs', 'es', 'ref', 'cbu_req','cbu_sow','cbu_po', 'status_o', 'status_t', 'status_b', 'status_s', 'pm_memo'
         )
         export_order = fields
 
@@ -394,7 +394,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         css = {
         'all': ('psm/css/custom_admin.css',),
     }    
-    search_fields = ('id', 'title', 'description', 'objective', 'resolution', 'code', 'wbs__wbs', 'es', 'ref', 'program__name', 'strategy__name', 'pm__name', 'CBUpm__name', 'CBUs__name')     #FIXME many to many
+    search_fields = ('id', 'title', 'description', 'objective', 'pm_memo', 'code', 'wbs__wbs', 'es', 'ref', 'program__name', 'strategy__name', 'pm__name', 'CBUpm__name', 'CBUs__name')     #FIXME many to many
     list_display = ('year', 'pjcode', 'title', 'dept', 'progress', 'phase', 'state', 'CBU_str', 'view', 'ITPC' )    #CBU many to many
     list_display_links = ('pjcode', 'title')
     list_editable = ("phase", 'state',)
@@ -424,7 +424,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     fieldsets = (               # Edition form
         (None,  {'fields': (('title', 'type', 'category', 'year', ), 
                             ('state', 'phase', 'progress', 'priority'), 
-                            ('status_o', 'status_t', 'status_b', 'status_s', 'lstrpt', 'resolution'), 
+                            ('status_o', 'status_t', 'status_b', 'status_s', 'lstrpt', 'pm_memo'), 
                             ), "classes": ("stack_labels",)}),
         (_('Detail...'),  {'fields': (('strategy', 'program', 'is_agile'), ('CBUs', 'CBUpm', 'ref'),('pm', 'dept', ), 
                             ( 'est_cost', 'budget', 'wbs', 'es', 'is_internal' ), ('description', 'objective'),  ('ref_plan',),
@@ -535,7 +535,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
             form.base_fields['objective'].widget.attrs.update({'rows':5,'cols':80})
             form.base_fields['ref_plan'].widget.attrs['style'] = 'width: 550px'
             if  obj:    #change
-                form.base_fields['resolution'].widget.attrs.update({'rows':5,'cols':40})
+                form.base_fields['pm_memo'].widget.attrs.update({'rows':5,'cols':40})
                 form.base_fields['recipients_to'].widget.attrs.update({'rows':6,'cols':800})
                 # form.base_fields['recipients_cc'].widget.attrs.update({'rows':5,'cols':120})      #not yet implemented
                 form.base_fields["recipients_to"].help_text = 'Use semi-colon to add multiple. Example: "Johnny Test" <johnny@test.com>; Jack <another@test.com>; "Scott Summers" <scotts@test.com>; noname@test.com'

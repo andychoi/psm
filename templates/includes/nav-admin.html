@@ -18,11 +18,22 @@
       {% include "includes/nav-left.html" %}
 
       <ul class="nav navbar-nav ms-auto ">
+
+        <ul class="nav navbar-nav ms-auto ">
+          <li class="nav-item me-3" >
+              <form class="form-inline" method="GET" action="{% url 'project_search' %}" >{% csrf_token %}
+              <!-- <div class="form-group""> -->
+                  <input class="form-control form-control-sm" style="display:flex;" name="q" type="search" placeholder="Search Project" value="{{request.GET.title}}">
+                  <!-- <button class="btn btn btn-outline-info my-2 my-sm-0" type="submit"> Search </button> -->
+              <!-- </div> -->
+              </form>
+          </li>          
+
           <!-- template/admin/change_list.html -->
           <li class="nav-item"><button onclick="toggle_filter()" class="btn btn-outline-primary btn-sm" type="submit">Toggle Filter</button></li>
           
 
-          {% include "includes/nav-right.html" %}
+        {% include "includes/nav-right.html" %}
 
       </ul> <!--right side-->
 

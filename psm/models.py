@@ -136,7 +136,7 @@ class Project(models.Model):
     status_t = models.CharField(_("Schedule status"), max_length=20, choices=STATUS, default=Status.NA.value)
     status_b = models.CharField(_("Budget status"), max_length=20, choices=STATUS, default=Status.NA.value)
     status_s = models.CharField(_("Scope status"), max_length=20, choices=STATUS, default=Status.NA.value)
-    resolution = models.TextField(_("PM Memo"), max_length=2000, null=True, blank=True)
+    pm_memo = models.TextField(_("PM Memo"), max_length=2000, null=True, blank=True)
     #settings.AUTH_USER_MODEL - user directory...
     pm = models.ForeignKey(Profile, related_name='project_manager', verbose_name=_('PM'),
                            on_delete=models.PROTECT, null=True, blank=True)

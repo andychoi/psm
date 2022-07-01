@@ -292,7 +292,7 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
             obj.project.status_t = obj.status_t
             obj.project.status_b = obj.status_b
             obj.project.status_s = obj.status_s
-            obj.project.resolution = obj.issue
+            obj.project.pm_memo = obj.issue
             obj.project.progress = obj.progress
             obj.project.lstrpt = obj.updated_on   #update to project last report date
             obj.project.save()

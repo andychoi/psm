@@ -34,7 +34,7 @@
                     <th data-sortable="true" scope="col">Schedule</th>
                     <th data-sortable="true" scope="col">Scope</th>
                     <th data-sortable="true" scope="col">Budget</th>
-                    <th data-sortable="false" scope="col">Resolution</th>
+                    <th data-sortable="false" scope="col">pm_memo</th>
                     <th data-sortable="true" scope="col">HOD</th>
                     <th scope="col">E</th>
                     <!-- <th class="text-center" scope="col">Progress</th> -->
@@ -75,7 +75,7 @@
                         {% elif p.status_b|slice:'0:1' == '9' %}<i class="text-primary bi-circle-fill"></i>
                         {% else %}<i class="text-secondary  bi-dash-circle-dotted"></i>
                         {% endif %}</td>
-                    <td class="text-begin">{{ p.resolution }}</td>
+                    <td class="text-begin">{{ p.pm_memo }}</td>
                     <td class="text-begin">{{ p.dept.head }}</td>
                     <td class="text-center"><a target="_blank" href="/admin/psm/project/{{ p.id }}"><i class="bi bi-pencil"></i></a></td>
                     <!-- <td class="text-center">

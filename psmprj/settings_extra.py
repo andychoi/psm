@@ -26,3 +26,7 @@ DEFAULT_AUTH_GROUP  = env('DEFAULT_AUTH_GROUP', "staff")
 DOMAIN = env('DOMAIN', 'abc.local')
 APP_URL = env('APP_URL', 'psm.localhost')
 SCHEDULER = env.bool('SCHEDULER', False)
+
+#https://docs.djangoproject.com/en/dev/ref/settings/#data-upload-max-memory-size
+DATA_UPLOAD_MAX_MEMORY_SIZE=10*1024*1024
+# NGINX Default nginx client_max_body_size = 1MB

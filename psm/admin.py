@@ -368,7 +368,7 @@ class ProjectResource(resources.ModelResource):
         model = Project
         fields = ( 'id', 'year', 'code', 'cf', 'title', 'description', 'objective', 'phase', 'state', 'progress', 'ref_plan__code',
             'pm', 'pm__name',  'CBUs', 'cbu_names', 'CBUpm__name', 'strategy', 'strategy_names', 'program', 'program__name','type', 'category', 'priority', 
-            'est_cost', 'budget', 'dept', 'dept__name', 'dept__div', 'dept__div__name', 'team__name', 
+            'est_cost', 'budget', 'dept', 'dept__name', 'dept__div', 'dept__div__name', 'team', 'team__name', 
             'p_ideation','p_plan_b','p_kickoff','p_design_b', 'p_design_e', 'p_dev_b', 'p_dev_e', 'p_uat_b','p_uat_e','p_launch','p_close',
                          'a_plan_b','a_kickoff','a_design_b', 'a_design_e', 'a_dev_b', 'a_dev_e', 'a_uat_b','a_uat_e','a_launch','a_close',
             'wbs__wbs', 'es', 'ref', 'cbu_req','cbu_sow','cbu_po', 'status_o', 'status_t', 'status_b', 'status_s', 'pm_memo'

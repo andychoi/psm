@@ -137,7 +137,7 @@ class PrjType(enum.Enum):
     INF  = '10-Infrastructure'
     APP  = '20-Application'
     ASS  = '30-Assessment/Audit'
-    ENH  = '40-Big Enhancement'
+    ENH  = '40-Big_Enhancement'
     UNC  = '00-Unclassifed'
 
 PRJTYPE = (

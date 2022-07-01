@@ -211,8 +211,12 @@ class Project(models.Model):
         return f'[{self.code}{"*" if self.cf else ""}] {self.title}' 
 
     @property
+    def pyear(self) -> str:
+        f'{self.year}{"*" if self.cf else ""}'    
+
+    @property
     def pjcode(self) -> str:
-        return f'{self.year % 100}-{"{:04d}".format(self.pk)}' if (self.code is None) and (not self.pk is None) else f'{self.code}{"*" if self.cf else ""}'    
+        return f'<new>' if (self.code is None) and (not self.pk is None) else f'{self.code}{"*" if self.cf else ""}'    
     @property
     def CBU_str(self):
         return " ,".join(p.name for p in self.CBUs.all())

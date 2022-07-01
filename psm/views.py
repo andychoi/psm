@@ -266,7 +266,7 @@ class projectList1View(PermissionRequiredMixin, generic.ListView):
         else:
             qs = Project.objects.all()
 
-        qs = qs.filter(state=State.DELETE.value)    #exclude internal
+        qs = qs.filter(~Q(state=State.DELETE.value))    #exclude internal
         
         if qs.count() == 0:
             return  qs      # return empty queryset

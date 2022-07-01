@@ -68,6 +68,17 @@ class Team(models.Model):
         return f'{"{:04d}".format(self.pk)}-{self.name}'   # "%s-%s" % (self.pk, self.name)
 
 class GMDM(models.Model):
+    GMDM1 = (
+        ('A',  "R&D"),
+        ('B',  "Manufacturing"),
+        ('C',  "Sales"),
+        ('D',  "Business Support"),
+        ('E',  "ERP"),
+        ('F',  "IT"),
+        ('G',  "Customer Service"),
+        ('Q',  "Quality"),
+    )
+
     class Meta:
         verbose_name = _("GMDM")
         verbose_name_plural = _("GMDM")

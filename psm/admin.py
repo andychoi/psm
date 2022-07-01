@@ -426,7 +426,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
                             ('state', 'phase', 'progress', 'priority'), 
                             ('status_o', 'status_t', 'status_b', 'status_s', 'lstrpt', 'pm_memo'), 
                             ), "classes": ("stack_labels",)}),
-        (_('Detail...'),  {'fields': (('strategy', 'program', 'is_agile'), ('CBUs', 'CBUpm', 'ref'),('pm', 'dept', ), 
+        (_('Detail...'),  {'fields': (('strategy', 'program', 'is_agile'), ('CBUs', 'CBUpm', 'ref'),('pm', 'dept', 'team' ), 
                             ( 'est_cost', 'budget', 'wbs', 'es', 'is_internal' ), ('description', 'objective'),  ('ref_plan',),
                                        ), 'classes': ('collapse',)}),
         (_('Schedule...'),  {'fields': (('p_ideation',),('p_plan_b','p_kickoff','p_design_b','p_design_e','p_dev_b','p_dev_e','p_uat_b','p_uat_e','p_launch','p_close'),
@@ -452,7 +452,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         if obj is None:
             fieldsets = (      # Creation form
                 (None, {'fields': (('title', 'type', 'year'), ('strategy', 'program','is_agile'), 
-                            ('CBUs', 'CBUpm', 'ref', ), ('pm', 'dept', ), 
+                            ('CBUs', 'CBUpm', 'ref', ), ('pm', 'dept', 'team'), 
                             ( 'est_cost', 'budget', 'wbs', 'es',  ),
                             ('state', 'phase', 'progress', 'priority'), ('description', 'objective'),  ('ref_plan',),
                             ('p_ideation', 'p_plan_b','p_kickoff','p_design_b','p_design_e','p_dev_b','p_dev_e','p_uat_b','p_uat_e','p_launch','p_close'),

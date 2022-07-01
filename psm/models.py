@@ -219,7 +219,7 @@ class Project(models.Model):
     def pjcode(self) -> str:
         return f'<new>' if (self.code is None) and (not self.pk is None) else f'{self.code}{"*" if self.cf else ""}'    
     @property
-    def CBU_str(self):
+    def CBU_names(self):
         return " ,".join(p.name for p in self.CBUs.all())
     @property
     def strategy_str(self):
@@ -315,7 +315,7 @@ class Project(models.Model):
             vals = {
                 "id": self.code,
                 "PM": str(self.pm) if self.pm else '(Not assigned yet)',
-                "CBU": self.CBU_str,
+                "CBU": self.CBU_names,
                 "CBU_PM": self.CBUpm if self.CBUpm else '(Not assigned yet)',
                 "title": self.title,
                 "description": self.description or '-',
@@ -436,7 +436,7 @@ class ProjectRequest(models.Model):
         return prefix + f'{self.year % 100}-{"{:04d}".format(self.pk)}'    
         # return self.code if not self.code is None else prefix + f'{self.year % 100}-{"{:04d}".format(self.pk)}'    
     @property
-    def CBU_str(self):
+    def CBU_names(self):
         return " ,".join(p.name for p in self.CBUs.all())
     @property
     def strategy_str(self):

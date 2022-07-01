@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from import_export.admin import ImportExportMixin
 from django.contrib import messages
 
-from .models import CompanyHoliday, CBU, Div, Dept, Team, WBS
+from .models import CompanyHoliday, CBU, Div, Dept, Team, WBS, GMDM
 
 from django.contrib.auth.models import Permission
 from django.contrib import admin
@@ -74,6 +74,18 @@ class TeamAdmin(ImportExportMixin, admin.ModelAdmin):
         model = Team
         import_id_fields = ('id',)
 
+        
+@admin.register(GMDM)
+class GMDMAdmin(ImportExportMixin, admin.ModelAdmin):
+    list_display = ('id', 'code', 'name', 'dept', 'is_active', 'pm_count')
+    list_display_links = ('id', 'code')
+    search_fields = ('id', 'code', 'name')
+    # autocomplete_fields = ('dept',)
+    ordering = ('code', )
+    class Meta:
+        model = GMDM
+        import_id_fields = ('id',)
+
 @admin.register(CBU)
 class CBUAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display = ('id', 'name', 'fullname', 'group', 'is_tier1', 'cbu_type')
@@ -116,7 +128,7 @@ class WBSAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
     list_display_links = ('wbs', 'name')
     search_fields = ('id', 'wbs', 'name')
 
-    ordering = ('wbs',)
+    ordering = ('-wbs',)
 
     readonly_fields = ('created_at', 'updated_on', )
     fieldsets = (  # Edition form

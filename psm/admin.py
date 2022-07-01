@@ -145,7 +145,7 @@ class ProjectRequestAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdm
         css = { 'all': ('psm/css/custom_admin.css',), }
 
     search_fields = ('id', 'code', 'title', 'asis', 'tobe', 'objective', 'consider', 'pm__name', 'CBUpm__name', 'CBUs__name')
-    list_display = ('version', 'code',  'title', 'pm', 'dept', 'CBU_str', 'est_cost', 'view' )    #CBU many to many
+    list_display = ('version', 'code',  'title', 'pm', 'dept', 'CBU_names', 'est_cost', 'view' )    #CBU many to many
     list_display_links = ('code', 'title')
     list_editable = ("version", )
     list_filter = (
@@ -395,10 +395,10 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         'all': ('psm/css/custom_admin.css',),
     }    
     search_fields = ('id', 'title', 'description', 'objective', 'pm_memo', 'code', 'wbs__wbs', 'es', 'ref', 'program__name', 'strategy__name', 'pm__name', 'CBUpm__name', 'CBUs__name')     #FIXME many to many
-    list_display = ('year', 'pjcode', 'title', 'dept', 'progress', 'phase', 'state', 'CBU_str', 'view', 'ITPC' )    #CBU many to many
+    list_display = ('year', 'pjcode', 'title', 'dept', 'progress', 'phase', 'state', 'CBU_names', 'view', 'ITPC' )    #CBU many to many
     list_display_links = ('pjcode', 'title')
     list_editable = ("phase", 'state',)
-    list_filter = ('pm', 'dept', 'phase', 'state', 'CBU_str', )    #CBU many to many
+    list_filter = ('pm', 'dept', 'phase', 'state', 'CBU_names', )    #CBU many to many
     list_filter = (
         ('status_o', UnionFieldListFilter),
         ('year', DropdownFilter),

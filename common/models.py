@@ -67,6 +67,19 @@ class Team(models.Model):
     def __str__(self):
         return f'{"{:04d}".format(self.pk)}-{self.name}'   # "%s-%s" % (self.pk, self.name)
 
+class GMDM(models.Model):
+    class Meta:
+        verbose_name = _("GMDM")
+        verbose_name_plural = _("GMDM")
+    code  = models.CharField(max_length=5, blank=False, null=False)
+    name  = models.CharField(max_length=100, blank=False, null=False)
+    dept = models.ForeignKey(Dept, on_delete=models.SET_NULL, null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    pm_count  = models.SmallIntegerField(_('PM counts'), default=0)
+    def __str__(self):
+        return f'[{self.code}] {self.name}'
+
+
 CBU_TYPE = (
 	(0, "Own"),
 	(1, "Customer"),

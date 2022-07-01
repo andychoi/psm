@@ -522,8 +522,8 @@ function loadAllCharts(year) {
               tGroupId = tDeptObj.id || 0;
               break;
             case 'cbu':
-              tGroupName = pDat.CBU_str;
-              tGroupId = pDat.CBU_str;
+              tGroupName = pDat.CBU_names;
+              tGroupId = pDat.CBU_names;
               break;
             case 'type':
               tGroupName = pDat.type.split("-").pop();
@@ -612,22 +612,22 @@ function loadAllCharts(year) {
             // return true;
           })
           .forEach(function(pDat) {            
-              tCBUDataMap[pDat.CBU_str] || (tCBUDataMap[pDat.CBU_str] = {completed: 0, cancel: 0, open: 0});
+              tCBUDataMap[pDat.CBU_names] || (tCBUDataMap[pDat.CBU_names] = {completed: 0, cancel: 0, open: 0});
             
               tCntTotal ++;
               // if (pDat.cf === true) {
               if (pDat.state === "80-cancel") {  //State.CANCEL") {
                 tCntCanceled ++;
-                // tCBUDataMap[pDat.CBU_str].cancel ++;
-                tCBUDataMap[pDat.CBU_str].open ++;
+                // tCBUDataMap[pDat.CBU_names].cancel ++;
+                tCBUDataMap[pDat.CBU_names].open ++;
               }
               else if (pDat.phase === "70-Completed" || pDat.phase === "80-Closed") {
                 tCntCompleted ++;
-                tCBUDataMap[pDat.CBU_str].completed ++;
+                tCBUDataMap[pDat.CBU_names].completed ++;
               } 
               else {
                 tCntOpen ++;
-                tCBUDataMap[pDat.CBU_str].open ++;
+                tCBUDataMap[pDat.CBU_names].open ++;
               }
 
               tPhaseMap[pDat.phase] || (tPhaseMap[pDat.phase] = 0);

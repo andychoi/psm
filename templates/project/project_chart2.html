@@ -279,7 +279,7 @@
             if (tCounter++ < tMaxItem) {                
                 tColors.push(getColor(pItem.phase));
 
-                var tCategory = "[" + pItem.CBU_str + "] " + pItem.title;
+                var tCategory = "[" + pItem.CBU_names + "] " + pItem.title;
                 tCategories.push(tCategory);
 
                 var tStart = convertDate(pItem.p_plan_b);
@@ -305,7 +305,7 @@
                         y: pIdx
                     }],                    
                     completed: (pItem.progress / 100), 
-                    name: pItem.title, CBU: pItem.CBU_str, y: pIdx
+                    name: pItem.title, CBU: pItem.CBU_names, y: pIdx
                 });
             }
         });

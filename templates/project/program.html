@@ -43,7 +43,7 @@
                           <tbody>
                                 {% for p in pg.list %}
                                 <tr>
-                                  <th scope="row">{{ p.CBU_str }}</th>
+                                  <th scope="row">{{ p.CBU_names }}</th>
                                   <td><a target="_blank" href="{% url 'project_detail' pk=p.id %}">{{ p.title }}</a></td>
                                   <!-- <td>{{ p.pm }}</td> -->
                                   <!-- <td>{{ p.created_at|naturalday }}</td> -->
@@ -76,7 +76,7 @@
                             <tbody>
                               {% for r in report_list %}{% if r.project in pg.list %}
                                 <tr>
-                                    <!-- <th scope="row">{{ p.CBU_str }}</th> -->
+                                    <!-- <th scope="row">{{ p.CBU_names }}</th> -->
                                     <td><a target="_blank" href="{% url 'report_detail' r.id %}">{{ r.project.title }}</a></td>
                                     <!-- <td>{{ r.created_by }}</td> -->
                                     <td>{{ r.created_at|naturalday }}<!--|date:"m/d/y"--></td>
@@ -132,7 +132,7 @@
                             <tbody>
                               {% for risk in latest_risk %}{% if risk.project in pg.list %}
                                 <tr>
-                                    <th scope="row">{{ risk.project.CBU_str }}</th>
+                                    <th scope="row">{{ risk.project.CBU_names }}</th>
                                     <td><a target="_blank" href="{% url 'report_risks_project' risk.project.id %}">{{ risk.project.title|slice:'0:20' }}</a></td>
                                     <td class="text-center">
                                         {%   if risk.status_o|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>

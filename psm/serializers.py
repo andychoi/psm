@@ -15,7 +15,7 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
         # fields = [
         #     'code',
         #     'title',
-        #     'CBU_str',
+        #     'CBU_names',
         #     'pm',
         #     'description',
         #     'state',

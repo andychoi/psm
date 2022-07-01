@@ -66,7 +66,7 @@ class Review(models.Model):
     #     super().save(*args, **kwargs)        
 
     # @property
-    # def CBU_str(self):
+    # def CBU_names(self):
     #     return " ,".join(p.name for p in self.CBU.all())
 
 class ReviewLog(models.Model):

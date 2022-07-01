@@ -49,7 +49,7 @@
                           <tbody>
                             {% for p in latest_update %}
                               <tr>
-                                  <th scope="row">{{ p.CBU_str }}</th>
+                                  <th scope="row">{{ p.CBU_names }}</th>
                                   <td><a target="_blank" href="{% url 'project_detail' pk=p.id %}">{{ p.title }}</a></td>
                                   <!-- <td>{{ p.pm }}</td> -->
                                   <td>{{ p.created_at|naturalday }}<!--|date:"m/d/y"--></td>
@@ -73,7 +73,7 @@
                           <tbody>
                             {% for r in latest_report %}
                               <tr>
-                                  <!-- <th scope="row">{{ p.CBU_str }}</th> -->
+                                  <!-- <th scope="row">{{ p.CBU_names }}</th> -->
                                   <td><a target="_blank" href="{% url 'report_detail' r.id %}">{{ r.project.title }}</a></td>
                                   <td>{{ r.project.pm.sname }}</td>
                                   <td>{{ r.created_at|naturalday }}<!--|date:"m/d/y"--></td>
@@ -96,7 +96,7 @@
                           <tbody>
                             {% for p in oldest_update %}
                               <tr>
-                                  <!-- <th scope="row">{{ p.CBU_str }}</th> -->
+                                  <!-- <th scope="row">{{ p.CBU_names }}</th> -->
                                   <td><a target="_blank" href="{% url 'project_detail' p.id %}">{{ p.title }}</a></td>
                                   <td>{{ p.phase|slice:'3:' }}</td>
                                   <td>{{ p.updated_on|naturalday }}<!--|date:"m/d/y"--></td>
@@ -119,7 +119,7 @@
                           <tbody>
                             {% for risk in latest_risk %}
                               <tr>
-                                  <th scope="row">{{ risk.project.CBU_str }}</th>
+                                  <th scope="row">{{ risk.project.CBU_names }}</th>
                                   <td><a target="_blank" href="{% url 'report_risks_project' risk.project.id %}">{{ risk.project.title }}</a></td>
                                   <td class="text-center">
                                     {%   if risk.status_o|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
@@ -151,7 +151,7 @@
                           <tbody>
                             {% for pp in project_request %}
                               <tr>
-                                  <th scope="row">{{ pp.CBU_str }}</th>
+                                  <th scope="row">{{ pp.CBU_names }}</th>
                                   <td><a target="_blank" href="{% url 'project_plan_detail' pp.id %}">{{ pp.title }}</a></td>
                                   <!-- <td>{{ p.pm }}</td> -->
                                   <td>{{ pp.created_at|naturalday }}<!--|date:"m/d/y"--></td>
@@ -174,7 +174,7 @@
                           <tbody>
                             {% for p in new_project %}
                               <tr>
-                                  <th scope="row">{{ p.CBU_str }}</th>
+                                  <th scope="row">{{ p.CBU_names }}</th>
                                   <td><a target="_blank" href="{% url 'project_detail' pk=p.id %}">{{ p.title }}</a></td>
                                   <!-- <td>{{ p.pm }}</td> -->
                                   <td>{{ p.created_at|naturalday }}<!--|date:"m/d/y"--></td>

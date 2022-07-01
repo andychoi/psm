@@ -48,7 +48,7 @@
       <tbody>
         {% for report in report_list %}
           <tr>
-            <td>{{ report.project.CBU_str }}</td> 
+            <td>{{ report.project.CBU_names }}</td> 
             <td class="report-count-{{ forloop.counter }}">
             <a class="report-title" href="{% url 'report_detail' report.pk %}" target="blank">{{ report.title }}</a> </td> 
             <td>{{ report.updated_on|date:'Y-m-d' }}</td>               

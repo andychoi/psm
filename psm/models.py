@@ -273,7 +273,7 @@ class Project(models.Model):
         #     validation_errors['title'] = u"Project name: %s has already exist." % title
         if Project.objects \
                 .others(self.pk, title=title, year=self.year) \
-                .exclude(state__in=(State.DONE.value, State.CANCEL.value)) \
+                .exclude(state__in=(State.DONE.value, State.CANCEL.value, State.DELETE.value)) \
                 .exists():
             validation_errors['title'] = _('Open Project with this title already exists.')
 

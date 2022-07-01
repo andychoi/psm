@@ -42,7 +42,8 @@ class State(enum.Enum):
     DOING   = '20-doing'
     HOLD    = '30-hold'
     DONE    = '40-done'
-    CANCEL  = '90-cancel'
+    CANCEL  = '80-cancel'
+    DELETE  = '90-delete'
 # from django.contrib.auth.models import (BaseUserManager, AbstractBaseUser)
 STATES = (
     (State.BACKLOG.value, _('Backlog')),
@@ -50,7 +51,8 @@ STATES = (
     (State.DOING.value, _('Doing')),
     (State.HOLD.value, _('Blocked')),
     (State.DONE.value, _('Done')),
-    (State.CANCEL.value, _('Canceled'))
+    (State.CANCEL.value, _('Canceled')),
+    (State.DELETE.value, _('Deleted')),
 )
 STATE_VALID  = { State.BACKLOG.value, State.TODO.value, State.DOING.value, State.HOLD.value, State.DONE.value }
 STATE_OPEN = { State.BACKLOG.value, State.TODO.value, State.DOING.value, State.HOLD.value,  }
@@ -59,7 +61,7 @@ STATE_WORK = { State.TODO.value, State.DOING.value,  }
 class State2(enum.Enum):
     OPEN    = '00-Open'
     CLOSE   = '10-Close'
-    CANCEL  = '90-Cancel'
+    CANCEL  = '80-cancel'
 # from django.contrib.auth.models import (BaseUserManager, AbstractBaseUser)
 STATE2 = (
     (State2.OPEN.value, _('Open')),

@@ -266,7 +266,8 @@ class projectList1View(PermissionRequiredMixin, generic.ListView):
         else:
             qs = Project.objects.all()
 
-        # qs = qs.filter(is_internal=False)    #exclude internal
+        qs = qs.filter(state=State.DELETE.value)    #exclude internal
+        
         if qs.count() == 0:
             return  qs      # return empty queryset
 
@@ -355,7 +356,7 @@ class programIndexView(generic.ListView):
 
     def get_queryset(self):
         q =  {k:v for k, v in self.request.GET.items() if v and hasattr(Project, k.split('__')[0] ) }
-        return Project.objects.filter(**q).filter(~Q(program=None)).order_by('program')
+        return Project.objects.filter(**q).filter(~Q(program=None) & ~Q(state=State.DELETE.value)).order_by('program')
       
 
 # - how to provide my project for PM, HOD
@@ -542,7 +543,7 @@ def get_project_metrics(request, year=date.today().year, groupby='year' ):
         except FieldDoesNotExist:
             groupby = 'year'   #default_field
 
-    qs = Project.objects.filter(year=year)  #, state__in=STATE_VALID)
+    qs = Project.objects.filter(Q(year=year) & ~Q(state=State.DELETE.value))  #, state__in=STATE_VALID)
 
     # readme: https://docs.djangoproject.com/en/4.0/ref/models/conditional-expressions/
     # string gte, lte... not working -> use "in" instead

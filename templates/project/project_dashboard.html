@@ -509,7 +509,7 @@ function loadAllCharts(year) {
 
         tRawData
         // .filter(function(pDat) {
-        //   return (pDat.state !== "90-cancel");
+        //   return (pDat.state !== "80-cancel");
         // })
         .forEach(function(pDat) {          
           var tGroupId = 0;
@@ -538,7 +538,7 @@ function loadAllCharts(year) {
             // do nothing
             tGroupDataMap[tGroupId].total --;
           }
-          else if (pDat.state === "90-cancel") { //cf === true) {
+          else if (pDat.state === "80-cancel") { //cf === true) {
             // do nothing
             tGroupDataMap[tGroupId].cancel ++;
           }
@@ -608,7 +608,7 @@ function loadAllCharts(year) {
           var tCntOpen = 0;
           tRawData
           .filter(function(pDat) {
-            return (pDat.is_internal == 0); //exclude internal project
+            return (pDat.is_internal == 0 && pDat.state != "90-delete"); //exclude internal project
             // return true;
           })
           .forEach(function(pDat) {            
@@ -616,7 +616,7 @@ function loadAllCharts(year) {
             
               tCntTotal ++;
               // if (pDat.cf === true) {
-              if (pDat.state === "90-cancel") {  //State.CANCEL") {
+              if (pDat.state === "80-cancel") {  //State.CANCEL") {
                 tCntCanceled ++;
                 // tCBUDataMap[pDat.CBU_str].cancel ++;
                 tCBUDataMap[pDat.CBU_str].open ++;

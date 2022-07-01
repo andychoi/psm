@@ -1,14 +1,14 @@
 # tables.py
-import django_tables2 as tables
-from .models import Project
-from common.models import CBU
+# import django_tables2 as tables
+# from .models import Project
+# from common.models import CBU
 
-class ProjectRequestTable(tables.Table):
-    class Meta:
-        model = Project
-        template_name = "django_tables2/bootstrap.html"
+# class ProjectRequestTable(tables.Table):
+#     class Meta:
+#         model = Project
+#         template_name = "django_tables2/bootstrap.html"
 
-        fields = ("code", "title", "description" )
+#         fields = ("code", "title", "description" )
 
         # CBU_list = tables.Column()
 

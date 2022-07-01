@@ -134,26 +134,29 @@ PHASE_CLOSE = (
     Phase.COMPLETED.value, Phase.CLOSED.value )
 
 class PrjType(enum.Enum):
-    MAJOR = '10-Major'
-    SMALL = '20-Small'
-    ENH   = '30-Enhancement'
-    UNC   = '00-Unclassifed'
+    INF  = '10-Infrastructure'
+    APP  = '20-Application'
+    ASS  = '30-Assessment/Audit'
+    ENH  = '40-Big Enhancement'
+    UNC  = '00-Unclassifed'
 
 PRJTYPE = (
-    (PrjType.MAJOR.value, _('Major')),
-    (PrjType.SMALL.value, _('Small')),
-    (PrjType.ENH.value, _('Enhancement')),
-    (PrjType.UNC.value, _('Unclassified')),
+    (PrjType.INF.value, _('Infrastructure')),
+    (PrjType.APP.value, _('Application')),
+    (PrjType.ASS.value, _('Assessment/Audit')),
+    (PrjType.ENH.value, _('Big Enhancement')),
+    # (PrjType.UNC.value, _('Unclassified')),
 )
 
-class PrjCate(enum.Enum):
-    APP = '10-Application'
-    INF = '20-Infrastructure'
-    ASS = '30-Assessment/Audit'
-PRJCATE = (
-    (PrjCate.APP.value, _('Application')),
-    (PrjCate.INF.value, _('Infrastructure')),
-    (PrjCate.ASS.value, _('Assessment/Audit')),
+class PrjSize(enum.Enum):
+    LAR = '10-Large'
+    MED = '20-Medium'
+    SML = '30-Small'
+
+PRJSIZE = (
+    (PrjSize.LAR.value, _('Large')),
+    (PrjSize.MED.value, _('Medium')),
+    (PrjSize.SML.value, _('Small')),
 )
 
 class Action3(enum.Enum):

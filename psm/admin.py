@@ -121,7 +121,7 @@ class ProjectRequestResource(resources.ModelResource):
             # 'CBU', 'cbu_names', 
             'pm__name', 'CBUpm__name', 'cbu_names',  
             'strategy_names', 'program__name', 
-            'est_cost', 'resource', 'type', 'category', 'priority', 'dept', 'dept__name', 'team__name', 'dept__div', 'dept__div__name',  
+            'est_cost', 'resource', 'type', 'size', 'priority', 'dept', 'dept__name', 'team__name', 'dept__div', 'dept__div__name',  
             'p_ideation','p_plan_b','p_kickoff','p_design_b','p_dev_b','p_uat_b','p_launch','p_close',
         )
         export_order = fields
@@ -161,7 +161,7 @@ class ProjectRequestAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdm
     readonly_fields = ('created_at', 'updated_on', 'created_by', 'updated_by',  'image_tag_asis', 'image_tag_tobe', 'released' )
     autocomplete_fields = ['pm', 'CBUs', 'strategy', 'CBUpm', 'program', 'team']
     plan_fields = [ ('title', 'year', 'version' ), 
-                    ('type', 'category', 'priority'), 
+                    ('type', 'size', 'priority'), 
                     ('strategy', 'program', 'is_agile'),
                     ('pm', 'team'),
                     ('CBUs', 'CBUpm'),
@@ -367,7 +367,7 @@ class ProjectResource(resources.ModelResource):
     class Meta:
         model = Project
         fields = ( 'id', 'year', 'code', 'cf', 'title', 'description', 'objective', 'phase', 'state', 'progress', 'ref_plan__code',
-            'pm', 'pm__name',  'CBUs', 'cbu_names', 'CBUpm__name', 'strategy', 'strategy_names', 'program', 'program__name','type', 'category', 'priority', 
+            'pm', 'pm__name',  'CBUs', 'cbu_names', 'CBUpm__name', 'strategy', 'strategy_names', 'program', 'program__name','type', 'size', 'priority', 
             'est_cost', 'budget', 'dept', 'dept__name', 'dept__div', 'dept__div__name', 'team', 'team__name', 
             'p_ideation','p_plan_b','p_kickoff','p_design_b', 'p_design_e', 'p_dev_b', 'p_dev_e', 'p_uat_b','p_uat_e','p_launch','p_close',
                          'a_plan_b','a_kickoff','a_design_b', 'a_design_e', 'a_dev_b', 'a_dev_e', 'a_uat_b','a_uat_e','a_launch','a_close',
@@ -395,9 +395,9 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         'all': ('psm/css/custom_admin.css',),
     }    
     search_fields = ('id', 'title', 'description', 'objective', 'pm_memo', 'code', 'wbs__wbs', 'es', 'ref', 'program__name', 'strategy__name', 'pm__name', 'CBUpm__name', 'CBUs__name')     #FIXME many to many
-    list_display = ('year', 'code', 'title', 'dept', 'progress', 'phase', 'state', 'CBU_str', 'view', 'ITPC' )    #CBU many to many
+    list_display = ('year', 'code', 'title', 'program','dept', 'progress', 'phase', 'state', 'CBU_str', 'view', 'ITPC' )    #CBU many to many
     list_display_links = ('code', 'title')
-    list_editable = ("phase", 'state',)
+    list_editable = ("phase", 'state','program',)
     list_filter = ('pm', 'dept', 'phase', 'state', 'CBU_str', )    #CBU many to many
     list_filter = (
         ('status_o', UnionFieldListFilter),
@@ -422,7 +422,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     autocomplete_fields = ['pm', 'CBUs', 'strategy', 'CBUpm', 'program', 'ref_plan']
 
     fieldsets = (               # Edition form
-        (None,  {'fields': (('title', 'type', 'category', 'year', 'cf' ), 
+        (None,  {'fields': (('title', 'type', 'size', 'year', 'cf' ), 
                             ('state', 'phase', 'progress', 'priority'), 
                             ('status_o', 'status_t', 'status_b', 'status_s', 'lstrpt', 'pm_memo'), 
                             ), "classes": ("stack_labels",)}),
@@ -451,7 +451,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         fieldsets = super().get_fieldsets(request, obj)
         if obj is None:
             fieldsets = (      # Creation form
-                (None, {'fields': (('title', 'type', 'year'), ('strategy', 'program','is_agile'), 
+                (None, {'fields': (('title', 'type', 'size', 'year'), ('strategy', 'program','is_agile'), 
                             ('CBUs', 'CBUpm', 'ref', ), ('pm', 'dept', 'team'), 
                             ( 'est_cost', 'budget', 'wbs', 'es',  ),
                             ('state', 'phase', 'progress', 'priority'), ('description', 'objective'),  ('ref_plan',),

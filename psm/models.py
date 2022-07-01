@@ -10,7 +10,7 @@ from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from django.contrib import messages
 
-from common.models import Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, Action3, ACTION3, PrjCate, PRJCATE
+from common.models import Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, Action3, ACTION3, PrjSize, PRJSIZE
 from common.models import CBU, Div, Dept, Team
 from common.models import WBS, VERSIONS, Versions
 from users.models import Profile, ProfileCBU
@@ -112,8 +112,8 @@ class Project(models.Model):
     cf   = models.BooleanField(_("carryforward?"),default=False)
 
     title = models.CharField(_("title"), max_length=200)
-    type = models.CharField(_("type"), max_length=20, choices=PRJTYPE, default=PrjType.UNC.value)
-    category = models.CharField(_("Category"), max_length=20, choices=PRJCATE, default=PrjCate.APP.value)
+    type = models.CharField(_("type"), max_length=20, choices=PRJTYPE, default=PrjType.ENH.value)
+    size = models.CharField(_("Size"), max_length=20, choices=PRJSIZE, default=PrjSize.SML.value)
     year = models.PositiveIntegerField(_("Year"), default=current_year(), validators=[MinValueValidator(2014), max_value_current_year])
     strategy = models.ManyToManyField(Strategy, blank=True)
     program = models.ForeignKey(Program, blank=True, null=True, on_delete=models.PROTECT)
@@ -360,8 +360,8 @@ class ProjectRequest(models.Model):
     code = models.CharField(_("Code"), max_length=18, null=True, blank=True) 
 
     title = models.CharField(_("title"), max_length=200)
-    type     = models.CharField(_("type"), max_length=20, choices=PRJTYPE, default=PrjType.UNC.value)
-    category = models.CharField(_("Category"), max_length=20, choices=PRJCATE, default=PrjCate.APP.value)
+    type    = models.CharField(_("type"), max_length=20, choices=PRJTYPE, default=PrjType.ENH.value)
+    size    = models.CharField(_("Size"), max_length=20, choices=PRJSIZE, default=PrjSize.SML.value)
     year = models.PositiveIntegerField(_("Year"), default=current_year(), validators=[MinValueValidator(2014), max_value_current_year])
     strategy = models.ManyToManyField(Strategy, blank=True)
     program = models.ForeignKey(Program, blank=True, null=True, on_delete=models.PROTECT)

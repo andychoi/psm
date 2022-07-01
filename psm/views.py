@@ -46,7 +46,7 @@ from common.models import Div, Dept, CBU, State2
 from common.codes import STATE_WORK, PHASE, PHASE_OPEN, PHASE_CLOSE, PHASE_BACKLOG, PHASE_WORK, PRIORITIES, PRJTYPE, VERSIONS
 from common.codes import VERSION_QUEUE, VERSION_DONE, STATE_OPEN, STATE_VALID
 from .models import Project, Program, ProjectRequest
-from .tables import ProjectRequestTable
+#from .tables import ProjectRequestTable
 from reports.models import Report, ReportRisk
 # from .forms import ProjectRequestForm
 

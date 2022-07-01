@@ -46,6 +46,7 @@ class DivAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display = ('id', 'name', 'head', 'is_active')
     list_display_links = ('id', 'name')
     autocomplete_fields = ('head',)
+    ordering = ('id', )
     class Meta:
         model = Div
         import_id_fields = ('id',)
@@ -57,6 +58,7 @@ class DeptAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display_links = ('id', 'name')
     search_fields = ('id', 'name', 'head__name')    
     autocomplete_fields = ('head',)
+    ordering = ('id', )
     class Meta:
         model = Dept
         import_id_fields = ('id',)
@@ -67,6 +69,7 @@ class TeamAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display_links = ('id', 'name')
     search_fields = ('id', 'name', 'head__name')
     autocomplete_fields = ('head',)
+    ordering = ('id', )
     class Meta:
         model = Team
         import_id_fields = ('id',)

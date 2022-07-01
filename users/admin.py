@@ -61,6 +61,7 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
     # list_display = ('id', 'user', 'name', 'email', 'dept', 'manager', 'u_div', 'CBU', 'is_active')
     list_display = ('id', 'user', 'name', 'email', 'wcal', 'dept', 'is_active', 'is_staff', 'pm_count', 'goto_user', 'cbu_names', 'proxy_name', )
     list_display_links = ('id', 'name', 'email')
+    list_editable = ( 'wcal',)
     search_fields = ('id', 'name', 'email', 'CBU__name', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
     ordering = ('CBU__id', 'dept', 'team', 'name', )
     readonly_fields = ('created_at', 'created_by', 'updated_on', 'updated_by')

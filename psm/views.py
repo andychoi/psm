@@ -356,7 +356,9 @@ class programIndexView(generic.ListView):
 
     def get_queryset(self):
         q =  {k:v for k, v in self.request.GET.items() if v and hasattr(Project, k.split('__')[0] ) }
-        return Project.objects.filter(**q).filter(~Q(program=None) & ~Q(state=State.DELETE.value)).order_by('program')
+
+        year = self.request.GET.get('year', date.today().year)
+        return Project.objects.filter(**q).filter(Q(year=year) & ~Q(program=None) & ~Q(state=State.DELETE.value)).order_by('program')
       
 
 # - how to provide my project for PM, HOD

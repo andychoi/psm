@@ -422,7 +422,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     autocomplete_fields = ['pm', 'CBUs', 'strategy', 'CBUpm', 'program', 'ref_plan']
 
     fieldsets = (               # Edition form
-        (None,  {'fields': (('title', 'type', 'category', 'year', ), 
+        (None,  {'fields': (('title', 'type', 'category', 'year', 'cf' ), 
                             ('state', 'phase', 'progress', 'priority'), 
                             ('status_o', 'status_t', 'status_b', 'status_s', 'lstrpt', 'pm_memo'), 
                             ), "classes": ("stack_labels",)}),

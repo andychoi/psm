@@ -395,8 +395,8 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         'all': ('psm/css/custom_admin.css',),
     }    
     search_fields = ('id', 'title', 'description', 'objective', 'pm_memo', 'code', 'wbs__wbs', 'es', 'ref', 'program__name', 'strategy__name', 'pm__name', 'CBUpm__name', 'CBUs__name')     #FIXME many to many
-    list_display = ('year', 'pjcode', 'title', 'dept', 'progress', 'phase', 'state', 'CBU_str', 'view', 'ITPC' )    #CBU many to many
-    list_display_links = ('pjcode', 'title')
+    list_display = ('year', 'code', 'title', 'dept', 'progress', 'phase', 'state', 'CBU_str', 'view', 'ITPC' )    #CBU many to many
+    list_display_links = ('code', 'title')
     list_editable = ("phase", 'state',)
     list_filter = ('pm', 'dept', 'phase', 'state', 'CBU_str', )    #CBU many to many
     list_filter = (
@@ -417,7 +417,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         
 #        'deadline'
     )
-    ordering = ['-year', 'phase', '-code']  #Project_PRIORITY_FIELDS
+    ordering = ['-year', '-code', ]  #Project_PRIORITY_FIELDS
     readonly_fields = ('cf', 'created_at', 'updated_on', 'created_by', 'updated_by', 'lstrpt',  'link', )
     autocomplete_fields = ['pm', 'CBUs', 'strategy', 'CBUpm', 'program', 'ref_plan']
 

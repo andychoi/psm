@@ -122,6 +122,65 @@ class CBUAdmin(ImportExportMixin, admin.ModelAdmin):
 
 from django_object_actions import DjangoObjectActions
 
+def _update_wbs():
+    ret = {"E_RET": "E", "E_MSG": ""}
+    timezone = pytz.timezone("America/Los_Angeles")
+
+    if not settings.SAP:
+        ret["E_MSG"] = "SAP connection is not enabled in setting"
+        return ret
+        
+    data = {}
+    with Connection(**settings.SAP_CONN_WBS) as conn:
+        try:
+            result = conn.call('ZPS_PROJECT_LIST', ET_TAB=[])
+            for item in result['ET_TAB']:
+                if item['ZZLARGE'] == 'S':
+                    tObj = {}
+                    tObj['PSPID'] = item['PSPID']
+                    tObj['POST1'] = item['POST1']
+                    tObj['SORTL'] = item['SORTL']
+                    tObj['ERNAM'] = item['ERNAM_PRPS']
+                    tObj['ERDAT'] = item['ERDAT_PRPS']
+                    tObj['AEDAT'] = item['AEDAT_PRPS']
+                    tObj['STATUS'] = item['STATUS']
+                    tObj['BUDGET'] = item['BUDGET']
+                    data[ tObj['PSPID'] ] = tObj
+        except Exception as e:
+            ret["E_MSG"] = 'RFC Error: ' + str(e)
+            return ret
+
+    try:
+        for key in data.keys():
+            item = data[key]
+            user = None
+            userSet = User.objects.filter(username=item['ERNAM'].lower())
+            if len(userSet) > 0:
+                user = userSet[0]
+            ctime = None
+            if item['ERDAT'] != '':
+                ctime = datetime.strptime(item['ERDAT'], '%Y%m%d') #.strftime('%Y-%m-%d')
+                ctime = timezone.localize(ctime)
+            utime = None
+            if item['AEDAT'] != '':
+                utime = datetime.strptime(item['AEDAT'], '%Y%m%d') #.strftime('%Y-%m-%d')
+                utime = timezone.localize(utime)
+            wbsSet = WBS.objects.filter(wbs=item['PSPID'])
+            if (len(wbsSet) > 0):
+                if ctime == None:
+                    ctime = wbsSet[0].created_at
+                if utime == None:
+                    utime = wbsSet[0].updated_on
+                wbsSet.update(name = item['POST1'], cbu = item['SORTL'], status = item['STATUS'], budget = item['BUDGET'], created_by = user, created_at = ctime, updated_on = utime)
+            else:
+                wbs = WBS(wbs = item['PSPID'], name = item['POST1'], cbu = item['SORTL'], status = item['STATUS'], budget = item['BUDGET'], created_by = user, created_at = ctime, updated_on = utime)
+                wbs.save()
+    except Exception as e:
+        ret["E_MSG"] = 'An error occurs during DB operations' + str(e)
+        return ret
+    ret["E_RET"] = 'S'
+    return ret
+
 @admin.register(WBS)
 class WBSAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
     list_display = ('id', 'wbs', 'name', 'is_sub', 'cbu', 'status', 'formatted_budget')
@@ -178,61 +237,8 @@ class WBSAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
     # Table: ZSUSPSV0020
     # FIELDS: PSPID, POST1, STSPD, ...
 
-    def import_func(modeladmin, request, queryset):        
-        timezone = pytz.timezone("America/Los_Angeles")
-
-        if not settings.SAP:
-            messages.warning(request, "SAP connection is not enabled in setting")
-            return
-            
-        data = {}
-        with Connection(**settings.SAP_CONN_WBS) as conn:
-            try:
-                result = conn.call('ZPS_PROJECT_LIST', ET_TAB=[])
-                for item in result['ET_TAB']:
-                    if item['ZZLARGE'] == 'S':
-                        tObj = {}
-                        tObj['PSPID'] = item['PSPID']
-                        tObj['POST1'] = item['POST1']
-                        tObj['SORTL'] = item['SORTL']
-                        tObj['ERNAM'] = item['ERNAM_PRPS']
-                        tObj['ERDAT'] = item['ERDAT_PRPS']
-                        tObj['AEDAT'] = item['AEDAT_PRPS']
-                        tObj['STATUS'] = item['STATUS']
-                        tObj['BUDGET'] = item['BUDGET']
-                        data[ tObj['PSPID'] ] = tObj
-            except Exception as e:
-                print ('RFC Error: ' + str(e))
-
-        try:
-            for key in data.keys():
-                item = data[key]
-                user = None
-                userSet = User.objects.filter(username=item['ERNAM'].lower())
-                if len(userSet) > 0:
-                    user = userSet[0]
-                ctime = None
-                if item['ERDAT'] != '':
-                    ctime = datetime.strptime(item['ERDAT'], '%Y%m%d') #.strftime('%Y-%m-%d')
-                    ctime = timezone.localize(ctime)
-                utime = None
-                if item['AEDAT'] != '':
-                    utime = datetime.strptime(item['AEDAT'], '%Y%m%d') #.strftime('%Y-%m-%d')
-                    utime = timezone.localize(utime)
-                wbsSet = WBS.objects.filter(wbs=item['PSPID'])
-                if (len(wbsSet) > 0):
-                    if ctime == None:
-                        ctime = wbsSet[0].created_at
-                    if utime == None:
-                        utime = wbsSet[0].updated_on
-                    wbsSet.update(name = item['POST1'], cbu = item['SORTL'], status = item['STATUS'], budget = item['BUDGET'], created_by = user, created_at = ctime, updated_on = utime)
-                else:
-                    wbs = WBS(wbs = item['PSPID'], name = item['POST1'], cbu = item['SORTL'], status = item['STATUS'], budget = item['BUDGET'], created_by = user, created_at = ctime, updated_on = utime)
-                    wbs.save()
-        except Exception as e:
-            print ('DB error' + str(e))
-            return                
-
+    def import_func(modeladmin, request, queryset):    
+        print(_update_wbs())
 
     # def import_func_deprecated(modeladmin, request, queryset):
         

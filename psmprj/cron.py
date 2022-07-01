@@ -132,8 +132,10 @@ def late_reminder():
                                p.pk, e.__class__.__name__, str(e))
 
 
+from common.admin import WBSAdmin 
 def wbs_import():
-    pass
+    WBSAdmin.import_func
+
 
 
 # https://github.com/jcass77/django-apscheduler

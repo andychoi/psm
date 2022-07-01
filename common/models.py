@@ -67,30 +67,6 @@ class Team(models.Model):
     def __str__(self):
         return f'{"{:04d}".format(self.pk)}-{self.name}'   # "%s-%s" % (self.pk, self.name)
 
-class GMDM(models.Model):
-    GMDM1 = (
-        ('A',  "R&D"),
-        ('B',  "Manufacturing"),
-        ('C',  "Sales"),
-        ('D',  "Business Support"),
-        ('E',  "ERP"),
-        ('F',  "IT"),
-        ('G',  "Customer Service"),
-        ('Q',  "Quality"),
-    )
-
-    class Meta:
-        verbose_name = _("GMDM")
-        verbose_name_plural = _("GMDM")
-    code  = models.CharField(max_length=5, blank=False, null=False)
-    name  = models.CharField(max_length=100, blank=False, null=False)
-    dept = models.ForeignKey(Dept, on_delete=models.SET_NULL, null=True, blank=True)
-    is_active = models.BooleanField(default=True)
-    pm_count  = models.SmallIntegerField(_('PM counts'), default=0)
-    def __str__(self):
-        return f'[{self.code}] {self.name}'
-
-
 CBU_TYPE = (
 	(0, "Own"),
 	(1, "Customer"),
@@ -151,3 +127,67 @@ class WBS(models.Model):
 
     def __str__(self):
         return f"{self.wbs}{'*' if self.is_sub else ''}" 
+
+
+
+class GMDM(models.Model):
+    GMDM1 = (
+        ('A-R&D',  "R&D"),
+        ('B-Manufacturing',  "Manufacturing"),
+        ('C-Sales',  "Sales"),
+        ('D-Business Support',  "Business Support"),
+        ('E-ERP',  "ERP"),
+        ('F-IT',  "IT"),
+        ('G-Customer Service',  "Customer Service"),
+        ('Q-Quality',  "Quality"),
+    )
+
+    GMDM2 = (
+        ('G1000-Product Development       ', 	'Product Development       '),
+        ('G2000-Production_etc            ', 	'Production_etc            '),
+        ('G2100-Purchase                  ', 	'Purchase                  '),
+        ('G2200-MES                       ', 	'MES                       '),
+        ('G2300-Sales & Operation Planning', 	'Sales & Operation Planning'),
+        ('G2400-Production Quality        ', 	'Production Quality        '),
+        ('G3100-Marketing                 ', 	'Marketing                 '),
+        ('G3200-Sales Support             ', 	'Sales Support             '),
+        ('G3300-Sales_etc                 ', 	'Sales_etc                 '),
+        ('G4100-HR                        ', 	'HR                        '),
+        ('G4200-Finance                   ', 	'Finance                   '),
+        ('G4300-Advertisement             ', 	'Advertisement             '),
+        ('G4400-Planning/Legal            ', 	'Planning/Legal            '),
+        ('G4500-General Affairs           ', 	'General Affairs           '),
+        ('G4900-Admin_etc                 ', 	'Admin_etc                 '),
+        ('G5000-ERP                       ', 	'ERP                       '),
+        ('G5100-Sales ERP                 ', 	'Sales ERP                 '),
+        ('G6000-Business Intelligence     ', 	'Business Intelligence     '),
+        ('G6100-Information Technology    ', 	'Information Technology    '),
+        ('G6200-IT Infrastructure         ', 	'IT Infrastructure         '),
+        ('G6300-Security                  ', 	'Security                  '),
+        ('G6400-Consulting/Services/Others', 	'Consulting/Services/Others'),
+        ('G6500-Big Data                  ', 	'Big Data                  '),
+        ('G7000-CRM                       ', 	'CRM                       '),
+        ('G7100-Maintenance Technique     ', 	'Maintenance Technique     '),
+        ('G7200-Oversea Service           ', 	'Oversea Service           '),
+        ('G7250-Domestic Service          ', 	'Domestic Service          '),
+        ('G7300-TMS                       ', 	'TMS                       '),
+        ('G8000-Quality Management        ', 	'Quality Management        '),
+    )
+
+
+    class Meta:
+        verbose_name = _("GMDM")
+        verbose_name_plural = _("GMDM")
+    code  = models.CharField(max_length=5, blank=False, null=False)
+    name  = models.CharField(max_length=100, blank=False, null=False)
+    dept = models.ForeignKey(Dept, on_delete=models.SET_NULL, null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    pm_count  = models.SmallIntegerField(_('PM counts'), default=0)
+
+    level1 = models.CharField(_("Level 1"), max_length=50, choices=GMDM1, blank=True, null=True)
+    level2 = models.CharField(_("Level 2"), max_length=50, choices=GMDM2, blank=True, null=True)
+    CBU = models.ForeignKey('common.CBU', null=True, on_delete=models.SET_NULL)
+
+    def __str__(self):
+        return f'[{self.code}] {self.name}'
+

@@ -190,16 +190,17 @@ class WBSAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
             try:
                 result = conn.call('ZPS_PROJECT_LIST', ET_TAB=[])
                 for item in result['ET_TAB']:
-                    tObj = {}
-                    tObj['PSPID'] = item['PSPID']
-                    tObj['POST1'] = item['POST1']
-                    tObj['SORTL'] = item['SORTL']
-                    tObj['ERNAM'] = item['ERNAM_PRPS']
-                    tObj['ERDAT'] = item['ERDAT_PRPS']
-                    tObj['AEDAT'] = item['AEDAT_PRPS']
-                    tObj['STATUS'] = item['STATUS']
-                    tObj['BUDGET'] = item['BUDGET']
-                    data[ tObj['PSPID'] ] = tObj
+                    if item['ZZLARGE'] == 'S':
+                        tObj = {}
+                        tObj['PSPID'] = item['PSPID']
+                        tObj['POST1'] = item['POST1']
+                        tObj['SORTL'] = item['SORTL']
+                        tObj['ERNAM'] = item['ERNAM_PRPS']
+                        tObj['ERDAT'] = item['ERDAT_PRPS']
+                        tObj['AEDAT'] = item['AEDAT_PRPS']
+                        tObj['STATUS'] = item['STATUS']
+                        tObj['BUDGET'] = item['BUDGET']
+                        data[ tObj['PSPID'] ] = tObj
             except Exception as e:
                 print ('RFC Error: ' + str(e))
 

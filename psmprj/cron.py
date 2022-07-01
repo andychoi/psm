@@ -83,6 +83,12 @@ def project_backfill_dates():
             p.p_uat_e = previous_business_day(p.p_launch, 1)
             p.save()    #update_fields='p_uat_e')
 
+def project_creator_from_pm():
+    for p in Project.objects.all():
+        if hasattr(p.pm, 'user') and p.pm.user and p.created_by != p.pm.user:
+            p.created_by = p.pm.user
+            p.save()    #update_fields='p_launch')   error...why?
+
 def project_state_from_progress():
     # for p in Project.objects.filter(Q(progress=100) & ( Q(phase__in=PHASE_OPEN) | Q(state__in=STATE_OPEN))):
     for p in Project.objects.filter(progress=100).filter(Q(phase__in=PHASE_OPEN) | Q(state__in=STATE_OPEN)):
@@ -136,11 +142,12 @@ def start():
     # run this job every 24 hours
     # scheduler.add_job(deactivate_expired_accounts, 'interval', hours=24, id='clean_accounts', jobstore='default', replace_existing=True,)
     scheduler.add_job(assign_staff_role, 'interval', days=1, id='assign_staff_role', jobstore='default', replace_existing=True,)
-    scheduler.add_job(project_pm_count, 'interval', weeks=1, id='project_pm_count', jobstore='default', replace_existing=True,)
-    scheduler.add_job(project_backfill_dates, 'interval', weeks=2, id='project_backfill_dates', jobstore='default', replace_existing=True,)
+    scheduler.add_job(project_pm_count, 'interval', weeks=1, start_date='2022-06-30', end_date='2022-06-30', id='project_pm_count', jobstore='default', replace_existing=True,)
+    scheduler.add_job(project_backfill_dates, 'interval', start_date='2022-06-30', end_date='2022-06-30', weeks=2, id='project_backfill_dates', jobstore='default', replace_existing=True,)
     scheduler.add_job(late_reminder, 'interval', weeks=2, id='late_reminder', jobstore='default', replace_existing=True,)
-    scheduler.add_job(project_state_from_progress, 'interval', weeks=52, id='project_state_from_progress', jobstore='default', replace_existing=True,)
+    scheduler.add_job(project_state_from_progress, 'interval', weeks=52, start_date='2022-06-30', end_date='2022-06-30', id='project_state_from_progress', jobstore='default', replace_existing=True,)
     scheduler.add_job(database_backup, 'interval', days=1, id='database_backup', jobstore='default', replace_existing=True,)
+    scheduler.add_job(project_creator_from_pm, 'interval', days=365, start_date='2022-06-30', end_date='2022-06-30', id='project_creator_from_pm', jobstore='default', replace_existing=True,)
 
     register_events(scheduler)
     scheduler.start()

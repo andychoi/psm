@@ -144,7 +144,7 @@ PRJTYPE = (
     (PrjType.INF.value, _('Infrastructure')),
     (PrjType.APP.value, _('Application')),
     (PrjType.ASS.value, _('Assessment/Audit')),
-    (PrjType.ENH.value, _('Big Enhancement')),
+    (PrjType.ENH.value, _('Big_Enhancement')),
     # (PrjType.UNC.value, _('Unclassified')),
 )
 

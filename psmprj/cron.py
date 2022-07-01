@@ -13,7 +13,7 @@ from psm.models import Project
 from common.models import Dept, Team
 from django.db.models import Q
 from django.db.models import Count  #, F, Q, Sum, Avg
-from common.dates import previous_working_day
+from common.dates import previous_business_day
 from reports.models import Report
 from common.codes import PHASE_WORK, PHASE_OPEN, Phase, State, STATE_OPEN
 from psmprj.utils.mail import send_mail_async as send_mail
@@ -30,6 +30,7 @@ logger = logging.getLogger(__name__)
 def database_backup():
     try:
         call_command('dbbackup')
+        print("backup started...", file=sys.stdout)
     except:
         pass
 
@@ -70,16 +71,16 @@ def project_pm_count():
 def project_backfill_dates():
     for p in Project.objects.filter(year = date.today().year):
         if not p.p_launch and p.p_close:
-            p.p_launch = previous_working_day(p.p_close, 1)
+            p.p_launch = previous_business_day(p.p_close, 1)
             p.save()    #update_fields='p_launch')   error...why?
-        if not p.p_plan_e and p.p_design_b:
-            p.p_plan_e = previous_working_day(p.p_design_b, 1)
-            p.save()    #update_fields='p_plan_e')
+        # if not p.p_plan_e and p.p_design_b:
+        #     p.p_plan_e = previous_business_day(p.p_design_b, 1)
+        #     p.save()    #update_fields='p_plan_e')
         if not p.p_design_e and p.p_uat_b:
-            p.p_design_e = previous_working_day(p.p_uat_b, 1)
+            p.p_design_e = previous_business_day(p.p_uat_b, 1)
             p.save()    #update_fields='p_design_e')
         if not p.p_uat_e and p.p_launch:
-            p.p_uat_e = previous_working_day(p.p_launch, 1)
+            p.p_uat_e = previous_business_day(p.p_launch, 1)
             p.save()    #update_fields='p_uat_e')
 
 def project_state_from_progress():
@@ -134,13 +135,13 @@ def start():
     # trigger=CronTrigger(second="*/10"),  # Every 10 seconds
     # run this job every 24 hours
     # scheduler.add_job(deactivate_expired_accounts, 'interval', hours=24, id='clean_accounts', jobstore='default', replace_existing=True,)
-    scheduler.add_job(assign_staff_role, 'interval', hours=24, id='assign_staff_role', jobstore='default', replace_existing=True,)
-    scheduler.add_job(project_pm_count, 'interval', hours=24, id='project_pm_count', jobstore='default', replace_existing=True,)
-    scheduler.add_job(project_backfill_dates, 'interval', hours=24, id='project_backfill_dates', jobstore='default', replace_existing=True,)
-    scheduler.add_job(late_reminder, 'interval', hours=168, id='late_reminder', jobstore='default', replace_existing=True,)
-    scheduler.add_job(project_state_from_progress, 'interval', hours=168, id='project_state_from_progress', jobstore='default', replace_existing=True,)
-    scheduler.add_job(database_backup, 'interval', hours=24, id='database_backup', jobstore='default', replace_existing=True,)
+    scheduler.add_job(assign_staff_role, 'interval', days=1, id='assign_staff_role', jobstore='default', replace_existing=True,)
+    scheduler.add_job(project_pm_count, 'interval', weeks=1, id='project_pm_count', jobstore='default', replace_existing=True,)
+    scheduler.add_job(project_backfill_dates, 'interval', weeks=2, id='project_backfill_dates', jobstore='default', replace_existing=True,)
+    scheduler.add_job(late_reminder, 'interval', weeks=2, id='late_reminder', jobstore='default', replace_existing=True,)
+    scheduler.add_job(project_state_from_progress, 'interval', weeks=52, id='project_state_from_progress', jobstore='default', replace_existing=True,)
+    scheduler.add_job(database_backup, 'interval', days=1, id='database_backup', jobstore='default', replace_existing=True,)
 
     register_events(scheduler)
     scheduler.start()
-    # print("Scheduler started...", file=sys.stdout)
+    print("Scheduler started...", file=sys.stdout)

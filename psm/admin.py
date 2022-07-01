@@ -20,7 +20,7 @@ from django import forms
 
 from django.utils.html import format_html
 from django.utils.html import mark_safe
-from common.dates import previous_working_day
+from common.dates import previous_business_day, add_business_days
 
 from common.models import Action3, ReqTypes, Versions, CBU, State, Phase
 from .models import Project, ProjectRequest,  ProjectDeliverable, ProjectDeliverableType, Strategy, Program
@@ -275,10 +275,15 @@ class ProjectRequestAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdm
                     if (not field.name == 'id') and (not field.name == 'code'): 
                         setattr(new_proj, field.name, getattr(obj, field.name))
                 new_proj.description = "##As-Is\n%s \n##To-Be\n%s" % (obj.asis, obj.tobe) 
-                new_proj.p_plan_e   = obj.p_plan_e
-                new_proj.p_design_e = obj.p_design_e
-                new_proj.p_dev_e    = obj.p_dev_e
-                new_proj.p_uat_e    = obj.p_uat_e
+                # new_proj.p_plan_e   = obj.p_plan_e
+                new_proj.p_plan_b   = obj.p_plan_b
+                new_proj.p_kickoff  = obj.p_kickoff
+                new_proj.p_design_b = obj.p_design_b 
+                new_proj.p_design_e = previous_business_day(obj.p_dev_b)
+                new_proj.p_dev_b    = obj.p_dev_b
+                new_proj.p_dev_e    = previous_business_day(obj.p_uat_b)
+                new_proj.p_uat_b    = obj.p_uat_b
+                new_proj.p_uat_e    = previous_business_day(obj.p_launch)
                 new_proj.ref_plan   = obj
                 new_proj.save()
                 obj.released = new_proj
@@ -338,6 +343,12 @@ class ProjectRequestAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdm
         else:
             obj.updated_by = request.user
 
+        # if self.code is None:
+        prefix = 'BAP-' if obj.version == Versions.V20.value else ('UNP-' if obj.version == Versions.V21.value else 'REQ-')
+        next_code = Project.objects.filter(year = obj.year).count() + 1
+        obj.code = prefix + f'{obj.year % 100}-{"{:04d}".format(next_code)}'    
+        # self.save()
+        
         super().save_model(request, obj, form, change)
 
 # ===================================================================================================
@@ -384,9 +395,9 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         'all': ('psm/css/custom_admin.css',),
     }    
     search_fields = ('id', 'title', 'description', 'objective', 'resolution', 'code', 'wbs__wbs', 'es', 'ref', 'program__name', 'strategy__name', 'pm__name', 'CBUpm__name', 'CBUs__name')     #FIXME many to many
-    list_display = ('year', 'pjcode', 'title', 'program', 'dept', 'progress', 'phase', 'state', 'CBU_str', 'view', 'ITPC' )    #CBU many to many
+    list_display = ('year', 'pjcode', 'title', 'dept', 'progress', 'phase', 'state', 'CBU_str', 'view', 'ITPC' )    #CBU many to many
     list_display_links = ('pjcode', 'title')
-    list_editable = ("phase", 'state','program')
+    list_editable = ("phase", 'state',)
     list_filter = ('pm', 'dept', 'phase', 'state', 'CBU_str', )    #CBU many to many
     list_filter = (
         ('status_o', UnionFieldListFilter),
@@ -418,8 +429,8 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         (_('Detail...'),  {'fields': (('strategy', 'program', 'is_agile'), ('CBUs', 'CBUpm', 'ref'),('pm', 'dept', ), 
                             ( 'est_cost', 'budget', 'wbs', 'es', 'is_internal' ), ('description', 'objective'),  ('ref_plan',),
                                        ), 'classes': ('collapse',)}),
-        (_('Schedule...'),  {'fields': (('p_ideation',),('p_plan_b','p_plan_e','p_kickoff','p_design_b','p_design_e','p_dev_b','p_dev_e','p_uat_b','p_uat_e','p_launch','p_close'),
-                                        ('a_plan_b','a_plan_e','a_kickoff','a_design_b','a_design_e','a_dev_b','a_dev_e','a_uat_b','a_uat_e','a_launch','a_close'),
+        (_('Schedule...'),  {'fields': (('p_ideation',),('p_plan_b','p_kickoff','p_design_b','p_design_e','p_dev_b','p_dev_e','p_uat_b','p_uat_e','p_launch','p_close'),
+                                        ('a_plan_b','a_kickoff','a_design_b','a_design_e','a_dev_b','a_dev_e','a_uat_b','a_uat_e','a_launch','a_close'),
                                         ('cbu_req','cbu_sow','cbu_po',),
                                        ), 'classes': ('collapse',)}),
         (_('Communication...'),  {'fields': (('email_active'), ('recipients_to',), ), 'classes': ('collapse',)}),
@@ -444,7 +455,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
                             ('CBUs', 'CBUpm', 'ref', ), ('pm', 'dept', ), 
                             ( 'est_cost', 'budget', 'wbs', 'es',  ),
                             ('state', 'phase', 'progress', 'priority'), ('description', 'objective'),  ('ref_plan',),
-                            ('p_ideation', 'p_plan_b','p_plan_e','p_kickoff','p_design_b','p_design_e','p_dev_b','p_dev_e','p_uat_b','p_uat_e','p_launch','p_close'),
+                            ('p_ideation', 'p_plan_b','p_kickoff','p_design_b','p_design_e','p_dev_b','p_dev_e','p_uat_b','p_uat_e','p_launch','p_close'),
                             # ('req_pro','req_sec','req_inf'), 
                             # 'attachment'
                         )}),

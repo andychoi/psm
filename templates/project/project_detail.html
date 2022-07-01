@@ -153,7 +153,7 @@
       <div class="col-4 mt-2">
         <div class="card w-100 ">
           <div class="card-body">
-            <h5 class="card-title">Schedule Actual/Plan (pilot)</h5>
+            <h5 class="card-title">Schedule</h5>
             <!-- <div class="row ms-2 media"> -->
               <div id="gantt_chart"></div>
               <table class="table small">
@@ -165,7 +165,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr><td>Planning</td><td>{{ project.a_plan_b|date:"m/d/y" }} - {{ project.a_plan_e|date:"m/d/y" }}</td><td>{{ project.p_plan_b|date:"m/d/y" }} - {{ project.p_plan_e|date:"m/d/y" }}</td> </tr>
+                  <tr><td>Planning-start</td><td>{{ project.a_plan_b|date:"m/d/y" }}</td><td>{{ project.p_plan_b|date:"m/d/y" }} </td> </tr>
                   <tr><td>Kick-Off</td><td>{{ project.a_kickoff|date:"m/d/y" }} </td><td> {{ project.p_kickoff|date:"m/d/y" }}</td></li>
                   <tr><td>Design </td><td>{{ project.a_design_b|date:"m/d/y" }} - {{ project.a_design_e|date:"m/d/y" }}</td><td>{{ project.p_design_b|date:"m/d/y" }} - {{ project.p_design_e|date:"m/d/y" }}</td> </tr>
                   <tr><td>Develop</td><td>{{ project.a_dev_b|date:"m/d/y" }} - {{ project.a_dev_e|date:"m/d/y" }}</td><td>{{ project.p_dev_b|date:"m/d/y" }} - {{ project.p_dev_e|date:"m/d/y" }}</td> </tr>
@@ -481,8 +481,8 @@ var chart = Highcharts.ganttChart('gantt_chart', {
         name: '{{ project.title }}',
         data: [{
           start: convertDate('{{ project.a_plan_b }}'),
-            end: convertDate('{{ project.a_plan_e }}'),
             name: 'Planning',
+            milestone: true,
             y: 0,
         }, {
           start: convertDate('{{ project.a_kickoff }}'),
@@ -516,8 +516,8 @@ var chart = Highcharts.ganttChart('gantt_chart', {
             y: 0
         }, {
             start: convertDate('{{ project.p_plan_b }}'),
-            end: convertDate('{{ project.p_plan_e }}'),
-            name: 'Planning',
+            name: 'Plan start',
+            milestone: true,
             y: 1,
         }, {
           start: convertDate('{{ project.p_kickoff }}'),

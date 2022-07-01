@@ -16,7 +16,7 @@ from common.models import WBS, VERSIONS, Versions
 from users.models import Profile, ProfileCBU
 
 from psmprj.utils.mail import send_mail_async as send_mail, split_combined_addresses
-from common.dates import previous_working_day
+from common.dates import previous_business_day
 from django.utils.html import mark_safe, escape
 from common.utils import md2
 from common.proxy import ObjectManager, ProxySuper, ProxyManager
@@ -158,7 +158,7 @@ class Project(models.Model):
     p_ideation   = models.DateField(_("Planned Ideation start"), null=True, blank=True, default=date.today)
 
     p_plan_b =  models.DateField(_("planned planning start"), null=True, blank=False, default=date.today)
-    p_plan_e =  models.DateField(_("planned planning end"), null=True, blank=True)
+    # p_plan_e =  models.DateField(_("planned planning end"), null=True, blank=True)
     p_kickoff = models.DateField(_("planned kick-off date"), null=True, blank=False, default=date.today)
     p_design_b = models.DateField(_("planned design start"), null=True, blank=True)
     p_design_e = models.DateField(_("planned design end"), null=True, blank=True)
@@ -174,7 +174,7 @@ class Project(models.Model):
     cbu_po      = models.BooleanField(_("PO received"), default=False)
 
     a_plan_b = models.DateField(_("actual planning start"), null=True, blank=True)
-    a_plan_e = models.DateField(_("actual planning end"), null=True, blank=True)
+    # a_plan_e = models.DateField(_("actual planning end"), null=True, blank=True)
     a_kickoff = models.DateField(_("actual kick-off date"), null=True, blank=True)
     a_design_b = models.DateField(_("actual design start"), null=True, blank=True)
     a_design_e = models.DateField(_("actual design end"), null=True, blank=True)
@@ -435,18 +435,18 @@ class ProjectRequest(models.Model):
     def strategy_str(self):
         # this is not working... FIXME 
         return " ,".join(p.name for p in self.strategy.all())
-    @property
-    def p_plan_e(self):
-        return previous_working_day(self.p_design_b, 1)
+    # @property
+    # def p_plan_e(self):
+    #     return previous_business_day(self.p_design_b, 1)
     @property
     def p_design_e(self):
-        return previous_working_day(self.p_dev_b, 1)
+        return previous_business_day(self.p_dev_b, 1)
     @property
     def p_dev_e(self):
-        return previous_working_day(self.p_uat_b, 1)
+        return previous_business_day(self.p_uat_b, 1)
     @property
     def p_uat_e(self):
-        return previous_working_day(self.p_kickoff, 1)
+        return previous_business_day(self.p_kickoff, 1)
 
     @property
     def image_tag_asis(self):
@@ -476,11 +476,6 @@ class ProjectRequest(models.Model):
 
         super().save(*args, **kwargs)        
 
-        if self.code is None:
-            prefix = 'BAP-' if self.version == Versions.V20.value else ('UNP-' if self.version == Versions.V21.value else 'REQ-')
-            next_code = Project.objects.filter(year = self.year).count() + 1
-            self.code = prefix + f'{self.year % 100}-{"{:04d}".format(next_code)}'    
-            self.save()
 
     def clean(self):
         validation_errors = {}

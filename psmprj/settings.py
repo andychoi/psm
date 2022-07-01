@@ -30,7 +30,6 @@ ALLOWED_HOSTS = [ '*' ]
 
 # Application definition
 INSTALLED_APPS = [
-    # "django_crontab",
 
     'apis',
     'users.apps.UsersConfig',   # user extension (profile)
@@ -53,7 +52,9 @@ INSTALLED_APPS = [
 
     # 'django_filters'  ,       #bug with pagination
 
+    # "django_crontab",
     "django_apscheduler",       # job scheduler
+
     'django_object_actions',    # for object-action
 
     # 'multi_email_field',  #not compatible with django 4.x
@@ -302,11 +303,11 @@ if ENV == "PROD":
 
 # -----------------------------------------------------------------------
 # Cron tasks https://pypi.org/project/django-crontab/
-CRONJOBS = [
-    # ('*/1 * * * *', 'psmprj.cron.my_backup'),
+# CRONJOBS = [
+    # ('*/1 * * * *', 'psmprj.cron.database_backup'),
     # ('*/0 0 * * *', 'psmprj.cron.my_backup', {'verbose': 0}),
     # ('*/5 * * * *', 'myapp.cron.other_scheduled_job', ['arg1', 'arg2'], {'verbose': 0}),
     # ('0   4 * * *', 'django.core.management.call_command', ['clearsessions']),
-]
+# ]
 # apscheduer start in users/apps.py
 

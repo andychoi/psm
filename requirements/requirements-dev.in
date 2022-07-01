@@ -23,11 +23,11 @@ django-auth-ldap
 # PyRFC
 cython~=0.29.30
 pyrfc~=2.5.0
-django-apscheduler
 pandas
 palettable
 django-autocomplete-light
 # django-dbbackup ISSUE: def get_escaped_command_arg(arg): return arg
 # -e git+https://github.com/jazzband/django-dbbackup.git#egg=django-dbbackup
 # pip install --no-cache-dir --upgrade <package>
-django_cron 
+django-apscheduler
+# django_crontab

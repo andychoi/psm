@@ -131,6 +131,11 @@ def late_reminder():
                 logger.warning("[Project #%s] Error trying to send the Project creation email - %s: %s",
                                p.pk, e.__class__.__name__, str(e))
 
+
+def wbs_import():
+    pass
+
+
 # https://github.com/jcass77/django-apscheduler
 # https://apscheduler.readthedocs.io/en/latest/userguide.html
 # https://pythonlang.dev/repo/jcass77-django-apscheduler/
@@ -147,6 +152,7 @@ def start():
     scheduler.add_job(late_reminder, 'interval', weeks=2, id='late_reminder', jobstore='default', replace_existing=True,)
     scheduler.add_job(project_state_from_progress, 'interval', weeks=52, start_date='2022-06-30', end_date='2022-06-30', id='project_state_from_progress', jobstore='default', replace_existing=True,)
     scheduler.add_job(database_backup, 'interval', days=1, id='database_backup', jobstore='default', replace_existing=True,)
+    scheduler.add_job(wbs_import, 'interval', days=1, id='wbs_import', jobstore='default', replace_existing=True,)
     scheduler.add_job(project_creator_from_pm, 'interval', days=365, start_date='2022-06-30', end_date='2022-06-30', id='project_creator_from_pm', jobstore='default', replace_existing=True,)
 
     register_events(scheduler)

@@ -9,6 +9,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from django.contrib import messages
+from django.db.models import Max
 
 from common.models import Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, Action3, ACTION3, PrjSize, PRJSIZE
 from common.models import CBU, Div, Dept, Team
@@ -254,7 +255,9 @@ class Project(models.Model):
         # if not c/f, new year is set, then allow to change project code
         if self.code is None or ( self.cf == False and self.code[:2] != f'{self.year % 100}' ):
 
-            next_code = Project.objects.filter(year = self.year).count() + 1
+            # next_code = Project.objects.filter(year = self.year).count() + 1
+            # to handle deleted record
+            next_code = int(Project.objects.filter(year = self.year).aggregate(Max('code')).get('code__max').split('-')[1]) + 1
 
             # self.code = f'{self.year % 100}-{"{:04d}".format(self.pk+2000)}'    #migration upto 1999
             self.code = f'{self.year % 100}-{"{:04d}".format(next_code)}'    

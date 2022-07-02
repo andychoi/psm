@@ -414,6 +414,7 @@ class GMDMAdmin(ImportExportMixin, admin.ModelAdmin):
         ('team__name',          DropdownFilter),
         ('critical',            DropdownFilter),
         ('apptype',             DropdownFilter),
+        ('grouping',            DropdownFilter),
     )
     autocomplete_fields = ['team',  ]
 

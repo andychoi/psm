@@ -404,7 +404,7 @@ class GMDMAdmin(ImportExportMixin, admin.ModelAdmin):
     search_fields = ('id', 'code', 'name')
     # autocomplete_fields = ('dept',)
     ordering = ('dept', 'team', 'code', )
-    search_fields = ('id', 'code', 'name', 'outline', 'sme', 'assignee', 'ui')
+    search_fields = ('id', 'code', 'name', 'outline', 'sme', 'assignee', 'assignment', 'grouping', 'ui')
     list_filter = (
         ('CBU__name',           DropdownFilter),
         ('operator',            DropdownFilter),

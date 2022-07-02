@@ -2,14 +2,21 @@ from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from import_export.admin import ImportExportMixin
 from django.contrib import messages
+from import_export import resources, fields
+from django.core.exceptions import ValidationError
 
 from .models import CompanyHoliday, CBU, Div, Dept, Team, WBS, GMDM
 
 from django.contrib.auth.models import Permission
 from django.contrib import admin
+from django.shortcuts import redirect
+from import_export.widgets import ManyToManyWidget, ForeignKeyWidget
 
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+
+from adminfilters.multiselect import UnionFieldListFilter
+from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter, DropdownFilter, ChoiceDropdownFilter
 
 from pyrfc import Connection
 from django.conf import settings
@@ -74,17 +81,6 @@ class TeamAdmin(ImportExportMixin, admin.ModelAdmin):
         model = Team
         import_id_fields = ('id',)
 
-        
-@admin.register(GMDM)
-class GMDMAdmin(ImportExportMixin, admin.ModelAdmin):
-    list_display = ('id', 'code', 'name', 'dept', 'is_active', 'pm_count')
-    list_display_links = ('id', 'code')
-    search_fields = ('id', 'code', 'name')
-    # autocomplete_fields = ('dept',)
-    ordering = ('code', )
-    class Meta:
-        model = GMDM
-        import_id_fields = ('id',)
 
 @admin.register(CBU)
 class CBUAdmin(ImportExportMixin, admin.ModelAdmin):
@@ -375,3 +371,115 @@ class WBSAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
     import_func.label = "Import from SAP"  
     import_func.short_description = "This will import WBS data from SAP system" 
     changelist_actions = ('import_func', )
+
+
+# ----------------------------------------------------------------------------------------------------------------
+class GMDMResource(resources.ModelResource):
+    dept_name  = fields.Field(attribute='dept',widget=ForeignKeyWidget(model=Dept, field='name'), )
+    team_name  = fields.Field(attribute='team',widget=ForeignKeyWidget(model=Team, field='name'), )
+    cbu_name   = fields.Field(attribute='CBU',widget=ForeignKeyWidget(model=CBU, field='name'), )
+    class Meta:
+        model = GMDM
+        fields = ( 'id', 'code', 'cbu_name', 'CBUteam', 'name', 'critical', 'outline', 
+            'platform', 'os', 'db', 'lang', 'ui', 'usertype', 'apptype',
+            'operator', 'owner1', 'owner2', 'assignment', 
+            'grouping', 'dept', 'dept_name', 'team', 'team_name', 
+            'level1', 'level2', 'initial', 'latest', 'decommision', 'remark',  
+        )
+
+       
+@admin.register(GMDM)
+class GMDMAdmin(ImportExportMixin, admin.ModelAdmin):
+    resource_class = GMDMResource
+    class Meta:
+        model = GMDM
+        import_id_fields = ('id',)    
+
+    list_display = ('id', 'code', 'name', 'CBU','dept', 'assignment', 'is_active', 'grouping')
+    list_display_links = ('id', 'code', 'name')
+    readonly_fields = ('created_at', 'updated_on', 'created_by', 'updated_by', )
+    search_fields = ('id', 'code', 'name')
+    # autocomplete_fields = ('dept',)
+    ordering = ('dept', 'team', 'code', )
+    search_fields = ('id', 'code', 'title', 'asis', 'tobe', 'objective', 'consider', 'pm__name', 'CBUpm__name', 'CBUs__name')
+    list_editable = ("grouping", )
+    list_filter = (
+        ('CBU__name',           DropdownFilter),
+        ('operator',            DropdownFilter),
+        ('owner1__name',        DropdownFilter),   
+        ('owner2__name',        DropdownFilter),
+        ('dept__name',          DropdownFilter),
+        ('team__name',          DropdownFilter),
+        ('critical',            DropdownFilter),
+        ('apptype',             DropdownFilter),
+    )
+    autocomplete_fields = ['team', 'owner1', 'owner2', ]
+
+    gmdm_fields = [ ('code', 'name', 'CBU', 'critical',  ),
+                    ('outline','remark' ), 
+                    ('platform', 'os', 'db', 'lang', 'ui', 'usertype','apptype'), 
+                    ('operator', 'owner1', 'owner2', 'assignment', ),
+                    ('dept', 'team', 'CBUteam'),
+                    ('grouping', 'level1', 'level2'),
+                    ('initial', 'latest', 'decommision'),
+                    ]
+    fieldsets = (               # Edition form
+        (None,  {'fields': gmdm_fields 
+                , "classes": ("stack_labels",)}),
+        (_('More...'), {'fields': ( ('created_at', 'updated_on'), 'created_by', ('attachment'),  ), 'classes': ('collapse',)}),
+    )
+
+    def get_fieldsets(self, request, obj=None): # Creation form
+        return ( (None, { 'fields': self.gmdm_fields  }), )
+
+    def is_active(self, obj):
+        return "yes" if not obj.decommision else "no"
+
+    # tip initial default version set
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(GMDMAdmin, self).get_form(request, obj, **kwargs)
+        #FIXME if read-only due to permission
+        if hasattr(form, 'base_fields'):
+            form.base_fields['outline'     ].widget.attrs.update({'rows':5,'cols':160})
+
+        #permission based field read only....
+        if not request.user.has_perm('admin_gmdm'):
+            form.base_fields['code'].disabled = True 
+
+        return form
+
+    def save_model(self, request, obj, form, change):
+        if change is False:
+            obj.created_by = request.user
+            obj.updated_by = request.user
+        else:
+            obj.updated_by = request.user            
+
+    def changelist_view(self, request, extra_context=None):
+        if len(request.GET) == 0:
+            get_param = "is_active=True"
+            return redirect("{url}?{get_parms}".format(url=request.path, get_parms=get_param))
+        return super(GMDMAdmin, self).changelist_view(request, extra_context=extra_context)
+
+    # permission... use get_form 
+    # def has_change_permission(self, request, obj=None):
+    #     if obj :
+    #         if not request.user.has_perm('admin_gmdm'):
+    #             return False    
+    #         return True
+    #     else:
+    #         return super(GMDMAdmin, self).has_change_permission(request, obj)
+
+    def get_queryset(self, request):
+        return GMDM.objects.all()
+
+    # validation logic
+    def clean(self):
+        validation_errors = {}
+
+        # code change is only allowed for admin TODO
+        # if not self.user.has_perm('admin_gmdm') and change...
+        #     validation_errors['code'] = _('You are not allowed to change code')
+
+        if len(validation_errors):
+            raise ValidationError(validation_errors)

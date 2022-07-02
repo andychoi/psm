@@ -12,7 +12,7 @@ from django.contrib import messages
 from django.db.models import Max
 
 from common.models import Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, Action3, ACTION3, PrjSize, PRJSIZE
-from common.models import CBU, Div, Dept, Team
+from common.models import CBU, Div, Dept, Team, GMDM
 from common.models import WBS, VERSIONS, Versions
 from users.models import Profile, ProfileCBU
 
@@ -151,6 +151,7 @@ class Project(models.Model):
     budget = models.DecimalField(_("Approved budget"), decimal_places=0, max_digits=12, blank=True, null=True)
     # est_cost = models.FloatField(_("Est. cost"), decimal_places=0, max_digits=12, blank=True, null=True)
     # budget = models.FloatField(_("Approved budget"), decimal_places=0, max_digits=12, blank=True, null=True)
+    gmdm = models.ForeignKey(GMDM, blank=True, null=True, on_delete=models.PROTECT, verbose_name=_('GMDM'))
     wbs = models.ForeignKey(WBS, blank=True, null=True, on_delete=models.PROTECT, verbose_name=_('WBS (SAP)'))
     es = models.CharField(_("ES#"), blank=True, null=True, max_length=100)
     ref = models.CharField(_("Reference"), blank=True, null=True, max_length=100)
@@ -199,7 +200,7 @@ class Project(models.Model):
                                    on_delete=models.SET_NULL, null=True)
     updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='prj_updated_by', verbose_name=_('updated by'),
                                    on_delete=models.SET_NULL, null=True)
-    created_at = models.DateTimeField(_("created at"), auto_now_add=True,   editable=False)
+    created_at = models.DateTimeField(_("created at"), auto_now_add=True,   editable=True)
     updated_on = models.DateTimeField(_("updated_on"), auto_now=True,       editable=False)
     last_accessed = models.DateTimeField(blank=True, null=True)
     counts = models.IntegerField(default=1)  # for analytics purpose

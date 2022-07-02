@@ -2,8 +2,9 @@ from django.db import models
 from django.conf import settings
 from common.codes import *
 from django.utils.translation import gettext_lazy as _
-import datetime
+from datetime import datetime, date
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.utils import timezone
 # https://stackoverflow.com/questions/45309128/circular-dependency-error-in-django
 # from typing import TYPE_CHECKING
 # if TYPE_CHECKING:
@@ -132,14 +133,15 @@ class WBS(models.Model):
 
 class GMDM(models.Model):
     GMDM1 = (
-        ('A-R&D',  "R&D"),
-        ('B-Manufacturing',  "Manufacturing"),
-        ('C-Sales',  "Sales"),
-        ('D-Business Support',  "Business Support"),
-        ('E-ERP',  "ERP"),
-        ('F-IT',  "IT"),
-        ('G-Customer Service',  "Customer Service"),
-        ('Q-Quality',  "Quality"),
+        ('A-R&D',               "R&D"),
+        ('B-Manufacturing',     "Manufacturing"),
+        ('C-Sales',             "Sales"),
+        ('D-Administration',    "Administration"),
+        ('E-ERP',               "ERP"),
+        ('F-Information Technology',                "Information Technology"),
+        ('G-Service',             "Service"),
+        ('Q-Quality',           "Quality"),
+        ('#N/A',                '#Unknown'),
     )
 
     GMDM2 = (
@@ -154,6 +156,7 @@ class GMDM(models.Model):
         ('G3300-Sales_etc                 ', 	'Sales_etc                 '),
         ('G4100-HR                        ', 	'HR                        '),
         ('G4200-Finance                   ', 	'Finance                   '),
+        ('G4210-Cost                      ', 	'Cost                      '),
         ('G4300-Advertisement             ', 	'Advertisement             '),
         ('G4400-Planning/Legal            ', 	'Planning/Legal            '),
         ('G4500-General Affairs           ', 	'General Affairs           '),
@@ -172,22 +175,81 @@ class GMDM(models.Model):
         ('G7250-Domestic Service          ', 	'Domestic Service          '),
         ('G7300-TMS                       ', 	'TMS                       '),
         ('G8000-Quality Management        ', 	'Quality Management        '),
+        ('#N/A', 	                            '#Unknown'),
     )
 
+    USERTYPE = (
+        ('1-Corporate user',        "Corporate user"),
+        ('2-Dealer',                "Dealer"),
+        ('3-Corporate+Dealer',      "Corporate + Dealer user"),
+        ('5-Customer',              "Customer"),
+        ('7-Public',                "Public"),
+    )
+
+    APPTYPE = (
+        ('10-Package',      "Package"),
+        ('11-Package+Dev',  "Package+Dev"),
+        ('20-SaaS',         "SaaS"),
+        ('21-SasS+Dev',     "SaaS+Dev"),
+        ('22-PaaS+Dev',     "PaaS+Dev"),
+        ('30-Custom App',   "Custom App"),
+        ('40-Mobile App',   "Mobile App"),
+        ('50-External App', "External App"),
+        ('90-Desktop S/W',  "Desktop S/W"),
+    )
+
+    CRITICAL = (
+        ('1-Very High',   "Very high"),
+        ('2-High',        "High"),
+        ('3-Medium',      "Medium"),
+        ('4-Low',         "Low"),
+        ('9-TBD',         "TBD"),
+    )
 
     class Meta:
         verbose_name = _("GMDM")
         verbose_name_plural = _("GMDM")
+
     code  = models.CharField(max_length=5, blank=False, null=False)
     name  = models.CharField(max_length=100, blank=False, null=False)
-    dept = models.ForeignKey(Dept, on_delete=models.SET_NULL, null=True, blank=True)
-    is_active = models.BooleanField(default=True)
-    pm_count  = models.SmallIntegerField(_('PM counts'), default=0)
 
+    outline = models.TextField(_("Description"), max_length=1000, blank=True, null=True)
+    platform = models.CharField(_("Platform"), max_length=150, blank=True, null=True)
+    os    = models.CharField(_("OS"), max_length=100, blank=True, null=True)
+    db    = models.CharField(_("DB"), max_length=100, blank=True, null=True)
+    lang  = models.CharField(_("Languages"), max_length=100, blank=True, null=True)
+    ui    = models.CharField(_("UI/URL"), max_length=100, blank=True, null=True)
+    usertype = models.CharField(_("User type"), max_length=25, choices=USERTYPE, blank=True, null=True)
+    apptype = models.CharField(_("App type"), max_length=25, choices=APPTYPE, blank=True, null=True)
+    operator = models.CharField(_("Operator"), max_length=100, blank=True, null=True)
+
+    initial = models.DateField(_("Initial launching"), null=True, blank=True)
+    latest  = models.DateField(_("Lasted upgrade"), null=True, blank=True )
+    decommision  = models.DateField(_("Decommision"), null=True, blank=True )
+
+    dept = models.ForeignKey('common.Dept', on_delete=models.SET_NULL, null=True, blank=True)
+    team = models.ForeignKey('common.Team', on_delete=models.SET_NULL, null=True, blank=True)
+    owner1 = models.ForeignKey('users.Profile', related_name='app_primary',   on_delete=models.SET_NULL, null=True, blank=True)
+    owner2 = models.ForeignKey('users.Profile', related_name='app_secondary', on_delete=models.SET_NULL, null=True, blank=True)
+    assignment = models.CharField(_("Assignment Group"), max_length=50, blank=True, null=True)
+
+    critical = models.CharField(_("Criticality"), max_length=50, choices=CRITICAL, default='4-Low', null=True)
     level1 = models.CharField(_("Level 1"), max_length=50, choices=GMDM1, blank=True, null=True)
     level2 = models.CharField(_("Level 2"), max_length=50, choices=GMDM2, blank=True, null=True)
     CBU = models.ForeignKey('common.CBU', null=True, on_delete=models.SET_NULL)
+    CBUteam  = models.CharField(_("CBU team"), max_length=50, blank=True, null=True)
 
+    grouping = models.CharField(_("Grouping"), max_length=50, blank=True, null=True)
+    remark = models.CharField(_("Remark"), max_length=200, blank=True, null=True)
+
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='GMDM_created', verbose_name=_('created by'),
+                                   on_delete=models.SET_NULL, null=True)
+    updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='GMDM_updated', verbose_name=_('updated by'),
+                                   on_delete=models.SET_NULL, null=True)
+    created_at = models.DateField(_("created at"), auto_now_add=True, editable=False)  #auto_now_add=True,
+    updated_on = models.DateField(_("updated_on"), auto_now=True, editable=False)  #auto_now=True,     , default=timezone.now()
+
+    pm_count  = models.SmallIntegerField(_('PM counts'), default=0)
     def __str__(self):
         return f'[{self.code}] {self.name}'
 

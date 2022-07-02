@@ -311,8 +311,8 @@ class ProjectRequestAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdm
         if obj :
             # return True
             #check permission on version
-            if obj.version == Versions.V20.value and not request.user.has_perm('psm.v-20') or \
-               obj.version == Versions.V21.value and not request.user.has_perm('psm.v-21'):
+            if obj.version == Versions.V20.value and not request.user.has_perm('access_projectrequest_v20') or \
+               obj.version == Versions.V21.value and not request.user.has_perm('access_projectrequest_v21'):
                 return False    # You do not have access to version 21 (Unplanned approved') 
             return True
         else:
@@ -368,7 +368,7 @@ class ProjectResource(resources.ModelResource):
         model = Project
         fields = ( 'id', 'year', 'code', 'cf', 'title', 'description', 'objective', 'phase', 'state', 'progress', 'ref_plan__code',
             'pm', 'pm__name',  'CBUs', 'cbu_names', 'CBUpm__name', 'strategy', 'strategy_names', 'program', 'program__name','type', 'size', 'priority', 
-            'est_cost', 'budget', 'dept', 'dept__name', 'dept__div', 'dept__div__name', 'team', 'team__name', 
+            'est_cost', 'budget', 'dept', 'dept__name', 'dept__div', 'dept__div__name', 'team', 'team__name', 'gmdm',
             'p_ideation','p_plan_b','p_kickoff','p_design_b', 'p_design_e', 'p_dev_b', 'p_dev_e', 'p_uat_b','p_uat_e','p_launch','p_close',
                          'a_plan_b','a_kickoff','a_design_b', 'a_design_e', 'a_dev_b', 'a_dev_e', 'a_uat_b','a_uat_e','a_launch','a_close',
             'wbs__wbs', 'es', 'ref', 'cbu_req','cbu_sow','cbu_po', 'status_o', 'status_t', 'status_b', 'status_s', 'pm_memo'
@@ -427,7 +427,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
                             ('status_o', 'status_t', 'status_b', 'status_s', 'lstrpt', 'pm_memo'), 
                             ), "classes": ("stack_labels",)}),
         (_('Detail...'),  {'fields': (('strategy', 'program', 'is_agile'), ('CBUs', 'CBUpm', 'ref'),('pm', 'dept', 'team' ), 
-                            ( 'est_cost', 'budget', 'wbs', 'es', 'is_internal' ), ('description', 'objective'),  ('ref_plan',),
+                            ( 'est_cost', 'budget', 'wbs', 'es', 'is_internal' ), ('description', 'objective'),  ('ref_plan', 'gmdm'),
                                        ), 'classes': ('collapse',)}),
         (_('Schedule...'),  {'fields': (('p_ideation',),('p_plan_b','p_kickoff','p_design_b','p_design_e','p_dev_b','p_dev_e','p_uat_b','p_uat_e','p_launch','p_close'),
                                         ('a_plan_b','a_kickoff','a_design_b','a_design_e','a_dev_b','a_dev_e','a_uat_b','a_uat_e','a_launch','a_close'),

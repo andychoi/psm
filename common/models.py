@@ -231,7 +231,7 @@ class GMDM(models.Model):
     team = models.ForeignKey('common.Team', on_delete=models.SET_NULL, null=True, blank=True)
     owner1 = models.ForeignKey('users.Profile', related_name='app_primary',   on_delete=models.SET_NULL, null=True, blank=True)
     owner2 = models.ForeignKey('users.Profile', related_name='app_secondary', on_delete=models.SET_NULL, null=True, blank=True)
-    assignment = models.CharField(_("Assignment Group"), max_length=50, blank=True, null=True)
+    assignment = models.CharField(_("Assignment Group"), max_length=100, blank=True, null=True)
 
     critical = models.CharField(_("Criticality"), max_length=50, choices=CRITICAL, default='4-Low', null=True)
     level1 = models.CharField(_("Level 1"), max_length=50, choices=GMDM1, blank=True, null=True)

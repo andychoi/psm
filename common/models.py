@@ -210,7 +210,7 @@ class GMDM(models.Model):
         verbose_name = _("GMDM")
         verbose_name_plural = _("GMDM")
 
-    code  = models.CharField(max_length=5, blank=False, null=False)
+    code  = models.CharField(max_length=10, blank=False, null=False)
     name  = models.CharField(max_length=100, blank=False, null=False)
 
     outline = models.TextField(_("Description"), max_length=1000, blank=True, null=True)
@@ -219,8 +219,8 @@ class GMDM(models.Model):
     db    = models.CharField(_("DB"), max_length=100, blank=True, null=True)
     lang  = models.CharField(_("Languages"), max_length=100, blank=True, null=True)
     ui    = models.CharField(_("UI/URL"), max_length=100, blank=True, null=True)
-    usertype = models.CharField(_("User type"), max_length=50, choices=USERTYPE, blank=True, null=True)
-    apptype = models.CharField(_("App type"), max_length=50, choices=APPTYPE, blank=True, null=True)
+    usertype = models.CharField(_("User type"), max_length=100, choices=USERTYPE, blank=True, null=True)
+    apptype = models.CharField(_("App type"), max_length=100, choices=APPTYPE, blank=True, null=True)
     operator = models.CharField(_("Operator"), max_length=100, blank=True, null=True)
 
     initial = models.DateField(_("Initial launching"), null=True, blank=True)
@@ -237,10 +237,10 @@ class GMDM(models.Model):
     level1 = models.CharField(_("Level 1"), max_length=50, choices=GMDM1, blank=True, null=True)
     level2 = models.CharField(_("Level 2"), max_length=50, choices=GMDM2, blank=True, null=True)
     CBU = models.ForeignKey('common.CBU', null=True, on_delete=models.SET_NULL)
-    CBUteam  = models.CharField(_("CBU team"), max_length=50, blank=True, null=True)
+    CBUteam  = models.CharField(_("CBU team"), max_length=100, blank=True, null=True)
 
-    grouping = models.CharField(_("Grouping"), max_length=50, blank=True, null=True)
-    remark = models.CharField(_("Remark"), max_length=200, blank=True, null=True)
+    grouping = models.CharField(_("Grouping"), max_length=100, blank=True, null=True)
+    remark = models.CharField(_("Remark"), max_length=400, blank=True, null=True)
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='GMDM_created', verbose_name=_('created by'),
                                    on_delete=models.SET_NULL, null=True)

@@ -179,23 +179,23 @@ class GMDM(models.Model):
     )
 
     USERTYPE = (
-        ('1-Corporate user',        "Corporate user"),
-        ('2-Dealer',                "Dealer"),
-        ('3-Corporate+Dealer',      "Corporate + Dealer user"),
-        ('5-Customer',              "Customer"),
-        ('7-Public',                "Public"),
+        ('Corporate user',        "Corporate user"),
+        ('Dealer',                "Dealer"),
+        ('Corporate+Dealer',      "Corporate + Dealer user"),
+        ('Customer',              "Customer"),
+        ('Public',                "Public"),
     )
 
     APPTYPE = (
-        ('10-Package',      "Package"),
-        ('11-Package+Dev',  "Package+Dev"),
-        ('20-SaaS',         "SaaS"),
-        ('21-SasS+Dev',     "SaaS+Dev"),
-        ('22-PaaS+Dev',     "PaaS+Dev"),
-        ('30-Custom App',   "Custom App"),
-        ('40-Mobile App',   "Mobile App"),
-        ('50-External App', "External App"),
-        ('90-Desktop S/W',  "Desktop S/W"),
+        ('Package',      "Package"),
+        ('Package+Dev',  "Package+Dev"),
+        ('SaaS',         "SaaS"),
+        ('SasS+Dev',     "SaaS+Dev"),
+        ('PaaS+Dev',     "PaaS+Dev"),
+        ('Custom App',   "Custom App"),
+        ('Mobile App',   "Mobile App"),
+        ('External App', "External App"),
+        ('Desktop S/W',  "Desktop S/W"),
     )
 
     CRITICAL = (
@@ -218,7 +218,7 @@ class GMDM(models.Model):
     os    = models.CharField(_("OS"), max_length=100, blank=True, null=True)
     db    = models.CharField(_("DB"), max_length=100, blank=True, null=True)
     lang  = models.CharField(_("Languages"), max_length=100, blank=True, null=True)
-    ui    = models.CharField(_("UI/URL"), max_length=100, blank=True, null=True)
+    ui    = models.CharField(_("UI/URL"), max_length=150, blank=True, null=True)
     usertype = models.CharField(_("User type"), max_length=100, choices=USERTYPE, blank=True, null=True)
     apptype = models.CharField(_("App type"), max_length=100, choices=APPTYPE, blank=True, null=True)
     operator = models.CharField(_("Operator"), max_length=100, blank=True, null=True)

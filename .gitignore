@@ -62,3 +62,6 @@ media-private/
 
 # gunicorn pid file
 *.pid
+
+# SAP trace
+*.trc

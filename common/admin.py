@@ -4,15 +4,16 @@ from import_export.admin import ImportExportMixin
 from django.contrib import messages
 from import_export import resources, fields
 from django.core.exceptions import ValidationError
+from django.conf import settings
 
-from .models import CompanyHoliday, CBU, Div, Dept, Team, WBS, GMDM
+from .models import CompanyHoliday, CBU, Div, Dept, Team, WBS, GMDM, Employee
 
 from django.contrib.auth.models import Permission
 from django.contrib import admin
 from django.shortcuts import redirect
 from import_export.widgets import ManyToManyWidget, ForeignKeyWidget
 
-from datetime import datetime
+from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
 
 from adminfilters.multiselect import UnionFieldListFilter
@@ -23,6 +24,9 @@ from django.conf import settings
 from django.utils import timezone
 from users.models import User
 import pytz
+
+import logging
+logger = logging.getLogger(__name__)
 
 @admin.register(CompanyHoliday) 
 class CompanyHolidayAdmin(ImportExportMixin, admin.ModelAdmin):
@@ -372,7 +376,105 @@ class WBSAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
     import_func.short_description = "This will import WBS data from SAP system" 
     changelist_actions = ('import_func', )
 
+from django.contrib.auth.decorators import user_passes_test
 
+
+# ------------------------------------------------------------------------------------------------------------
+"""A function to query SAP with RFC_READ_TABLE
+"""
+def sap_qry(conn, SQLTable,  Fields, Where = '', MaxRows=50, FromRow=0):
+    
+    # By default, if you send a blank value for fields, you get all of them
+    # Therefore, we add a select all option, to better mimic SQL.
+    if Fields[0] == '*':
+        Fields = ''
+    else:
+        Fields = [{'FIELDNAME':x} for x in Fields] # Notice the format
+        # pass
+
+    # the WHERE part of the query is called "options"
+    options = [{'TEXT': x} for x in Where] # again, notice the format
+
+    # we set a maximum number of rows to return, because it's easy to do and
+    # greatly speeds up testing queries.
+    rowcount = MaxRows
+
+    # Here is the call to SAP's RFC_READ_TABLE
+    tables = conn.call("RFC_READ_TABLE", QUERY_TABLE=SQLTable, DELIMITER='|', FIELDS = Fields, \
+                        OPTIONS=options, ROWCOUNT = MaxRows, ROWSKIPS=FromRow)
+
+    # We split out fields and fields_name to hold the data and the column names
+    fields = []
+    fields_name = []
+
+    data_fields = tables["DATA"] # pull the data part of the result set
+    data_names = tables["FIELDS"] # pull the field name part of the result set
+
+    headers = [x['FIELDNAME'] for x in data_names] # headers extraction
+    long_fields = len(data_fields) # data extraction
+    long_names = len(data_names) # full headers extraction if you want it
+
+    # now parse the data fields into a list
+    for line in range(0, long_fields):
+        fields.append(data_fields[line]["WA"].strip())
+
+    # for each line, split the list by the '|' separator
+    fields = [x.strip().split('|') for x in fields ]
+
+    # return the 2D list and the headers
+    return fields, headers
+
+# --------------------------------------------------------------------------------------------
+def _update_emp():
+    if not settings.SAP:
+        logger.warning('SAP connection is not enabled in setting')
+        return
+
+    timezone = pytz.timezone(settings.TIME_ZONE)
+    data = {}
+    table = 'ZSUSRMT0010'
+    fields = ['USER_ID', 'CREATE_DATE', 'TERMINATE_DATE', 'USER_NAME', 'EMAIL', 'COSTCENTER', 'DEPT_CODE', 'DEPT_NAME', 'CHARGE_JOB', 'SUPERVISORID' ]
+    where = [ "TERMINATE_DATE = '00000000'" ]  
+    maxrows = 10000
+    # starting row to return
+    fromrow = 0
+
+    with Connection(**settings.SAP_CONN_WBS) as conn:
+        # query SAP
+        results, headers = sap_qry(conn, table, fields, where, maxrows, fromrow)
+
+    # get latest per emp_id, create_date, sort first / better to select latest... 
+    sorted_results = sorted( results, key=lambda x:( x[0], x[1] ) )
+
+    for item in sorted_results:
+        if item[1][:1] == '0':  # invalid record, skip
+            continue
+
+        # ctime = datetime(1, 1, 1, 0, 0)   # initial date/time
+        # cdate = datetime.strptime(item[1], '%Y%m%d').replace(tzinfo=).date()
+        cdate = timezone.localize(datetime.strptime(item[1], '%Y%m%d'))
+        email = item[4].split('@')[0].lower() 
+        emp_id = item[0].lstrip().rstrip()
+        if int( Employee.objects.filter(emp_id=emp_id).count() ) > 0:
+            Employee.objects.filter(emp_id=emp_id).update(emp_id=emp_id, create_date=cdate, emp_name=item[3], email=email, cc=item[5], dept_code=item[6], dept_name=item[7], job=item[8], manager_id=item[9])
+        else:
+            Employee.objects.create(emp_id=emp_id, create_date=cdate, emp_name=item[3], email=email, cc=item[5], dept_code=item[6], dept_name=item[7], job=item[8], manager_id=item[9])
+
+    messages.success(request, 'Successfully processed')
+
+@user_passes_test(lambda u: u.is_superuser)
+@admin.register(Employee)
+class EmployeeAdmin(DjangoObjectActions, admin.ModelAdmin):
+    list_display = ('emp_id', 'emp_name', 'email', 'job', 'cc', 'dept_code', 'dept_name', 'manager_id', 'create_date', )
+    list_display_links = ('emp_id', )
+    search_fields = ('emp_id', 'manager_id', 'emp_name', 'email', 'dept_name')
+    ordering = ('emp_id',)
+
+    def import_func(modeladmin, request, queryset):    
+        print(_update_emp(request))
+
+    import_func.label = "Import from SAP"  
+    changelist_actions = ('import_func', )
 # ----------------------------------------------------------------------------------------------------------------
 class GMDMResource(resources.ModelResource):
     from users.models import Profile
@@ -391,7 +493,7 @@ class GMDMResource(resources.ModelResource):
 
        
 @admin.register(GMDM)
-class GMDMAdmin(ImportExportMixin, admin.ModelAdmin):
+class GMDMAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
     resource_class = GMDMResource
     class Meta:
         model = GMDM
@@ -406,12 +508,12 @@ class GMDMAdmin(ImportExportMixin, admin.ModelAdmin):
     ordering = ('dept', 'team', 'code', )
     search_fields = ('id', 'code', 'name', 'outline', 'sme', 'assignee', 'assignment', 'grouping', 'ui')
     list_filter = (
-        ('CBU__name',           DropdownFilter),
+        ('CBU',           RelatedDropdownFilter),
         ('operator',            DropdownFilter),
         # ('owner1__name',        DropdownFilter),   
         # ('owner2__name',        DropdownFilter),
-        ('dept__name',          DropdownFilter),
-        ('team__name',          DropdownFilter),
+        ('dept',          RelatedDropdownFilter),
+        ('team',          RelatedDropdownFilter),
         ('critical',            DropdownFilter),
         ('apptype',             DropdownFilter),
         ('grouping',            DropdownFilter),

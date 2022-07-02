@@ -30,3 +30,5 @@ SCHEDULER = env.bool('SCHEDULER', False)
 #https://docs.djangoproject.com/en/dev/ref/settings/#data-upload-max-memory-size
 DATA_UPLOAD_MAX_MEMORY_SIZE=10*1024*1024
 # NGINX Default nginx client_max_body_size = 1MB
+
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240   #default 1000

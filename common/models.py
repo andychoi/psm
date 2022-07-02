@@ -129,6 +129,20 @@ class WBS(models.Model):
     def __str__(self):
         return f"{self.wbs}{'*' if self.is_sub else ''}" 
 
+class Employee(models.Model):
+    emp_id = models.CharField(_("EmpID"), max_length=10, blank=False, null=False, db_index=True)
+    emp_name = models.CharField(max_length=50, blank=True, null=True)
+    dept_code = models.CharField(max_length=10, blank=True, null=True)
+    dept_name = models.CharField(max_length=50, blank=True, null=True)
+    cc = models.CharField(max_length=10, blank=True, null=True)
+    job = models.CharField(max_length=50, blank=True, null=True)
+    manager_id = models.CharField(_("ManagerID"), max_length=10, blank=False, null=False, db_index=True)
+    email = models.CharField(_("Email"), max_length=50, blank=False, null=False, db_index=True)
+    create_date = models.DateTimeField(_("Create_date"), blank=True, null=True)
+
+    updated_on = models.DateTimeField(_("updated_on"), auto_now=True, editable=False)
+    def __str__(self):
+        return f"{self.emp_id}" 
 
 
 class GMDM(models.Model):

@@ -219,8 +219,8 @@ class GMDM(models.Model):
     db    = models.CharField(_("DB"), max_length=100, blank=True, null=True)
     lang  = models.CharField(_("Languages"), max_length=100, blank=True, null=True)
     ui    = models.CharField(_("UI/URL"), max_length=100, blank=True, null=True)
-    usertype = models.CharField(_("User type"), max_length=25, choices=USERTYPE, blank=True, null=True)
-    apptype = models.CharField(_("App type"), max_length=25, choices=APPTYPE, blank=True, null=True)
+    usertype = models.CharField(_("User type"), max_length=50, choices=USERTYPE, blank=True, null=True)
+    apptype = models.CharField(_("App type"), max_length=50, choices=APPTYPE, blank=True, null=True)
     operator = models.CharField(_("Operator"), max_length=100, blank=True, null=True)
 
     initial = models.DateField(_("Initial launching"), null=True, blank=True)

@@ -471,7 +471,7 @@ class EmployeeAdmin(DjangoObjectActions, admin.ModelAdmin):
     ordering = ('emp_id',)
 
     def import_func(modeladmin, request, queryset):    
-        print(_update_emp(request))
+        print(_update_emp())    # in psmprj/cron.py too
 
     import_func.label = "Import from SAP"  
     changelist_actions = ('import_func', )

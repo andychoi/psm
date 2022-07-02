@@ -460,7 +460,7 @@ def _update_emp():
         else:
             Employee.objects.create(emp_id=emp_id, create_date=cdate, emp_name=item[3], email=email, cc=item[5], dept_code=item[6], dept_name=item[7], job=item[8], manager_id=item[9])
 
-    messages.success(request, 'Successfully processed')
+    logger.success('Successfully processed...')
 
 @user_passes_test(lambda u: u.is_superuser)
 @admin.register(Employee)

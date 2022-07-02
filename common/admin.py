@@ -434,7 +434,7 @@ def _update_emp():
     data = {}
     table = 'ZSUSRMT0010'
     fields = ['USER_ID', 'CREATE_DATE', 'TERMINATE_DATE', 'USER_NAME', 'EMAIL', 'COSTCENTER', 'DEPT_CODE', 'DEPT_NAME', 'CHARGE_JOB', 'SUPERVISORID' ]
-    where = [ "TERMINATE_DATE = '00000000'" ]  
+    where = []      # "TERMINATE_DATE = '00000000'" ] -> terminated -> delete from current emp table  
     maxrows = 10000
     # starting row to return
     fromrow = 0
@@ -456,7 +456,7 @@ def _update_emp():
         email = item[4].split('@')[0].lower() 
         emp_id = item[0].lstrip().rstrip()
         if int( Employee.objects.filter(emp_id=emp_id).count() ) > 0:
-            Employee.objects.filter(emp_id=emp_id).update(emp_id=emp_id, create_date=cdate, emp_name=item[3], email=email, cc=item[5], dept_code=item[6], dept_name=item[7], job=item[8], manager_id=item[9])
+                Employee.objects.filter(emp_id=emp_id).update(emp_id=emp_id, create_date=cdate, emp_name=item[3], email=email, cc=item[5], dept_code=item[6], dept_name=item[7], job=item[8], manager_id=item[9])
         else:
             Employee.objects.create(emp_id=emp_id, create_date=cdate, emp_name=item[3], email=email, cc=item[5], dept_code=item[6], dept_name=item[7], job=item[8], manager_id=item[9])
 

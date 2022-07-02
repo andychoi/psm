@@ -206,6 +206,29 @@ class GMDM(models.Model):
         ('9-TBD',         "TBD"),
     )
 
+    NO_USER = (
+        ('1-< 100',    "< 100"),
+        ('2-< 250',    "< 250"),
+        ('3-< 500',    "< 500"),
+        ('4-< 1500',   "< 1500"),
+        ('5-< 5000',   "< 5000"),
+        ('6-< 10000',  "< 10000"),
+        ('7-< 50000',  "< 50000"),
+        ('8-> 50000',  "> 50000"),
+    )
+
+    NO_CUSTOM = (
+        ('1-< 10',   "< 50"),
+        ('2-< 50',   "< 50"),
+        ('3-< 100',  "< 100"),
+        ('4-< 250',  "< 250"),
+        ('5-< 500',  "< 500"),
+        ('6-< 750',  "< 750"),
+        ('7-< 1000', "< 1000"),
+        ('8-< 2000', "> 1000"),
+        ('9-> 2000', "> 1000"),
+    )
+
     class Meta:
         verbose_name = _("GMDM")
         verbose_name_plural = _("GMDM")
@@ -219,7 +242,12 @@ class GMDM(models.Model):
     db    = models.CharField(_("DB"), max_length=100, blank=True, null=True)
     lang  = models.CharField(_("Languages"), max_length=100, blank=True, null=True)
     ui    = models.CharField(_("UI/URL"), max_length=150, blank=True, null=True)
+    no_screen = models.CharField(_("no of screens"),    max_length=20, choices=NO_CUSTOM, blank=True, null=True)
+    no_if     = models.CharField(_("no of interface"),  max_length=20, choices=NO_CUSTOM, blank=True, null=True)
+    no_table  = models.CharField(_("no of tables"),     max_length=20, choices=NO_CUSTOM, blank=True, null=True)
+
     usertype = models.CharField(_("User type"), max_length=100, choices=USERTYPE, blank=True, null=True)
+    no_user = models.CharField(_("no of users"), max_length=20, choices=NO_USER, blank=True, null=True)
     apptype = models.CharField(_("App type"), max_length=100, choices=APPTYPE, blank=True, null=True)
     operator = models.CharField(_("Operator"), max_length=100, blank=True, null=True)
 
@@ -229,11 +257,13 @@ class GMDM(models.Model):
 
     dept = models.ForeignKey('common.Dept', on_delete=models.SET_NULL, null=True, blank=True)
     team = models.ForeignKey('common.Team', on_delete=models.SET_NULL, null=True, blank=True)
-    owner1 = models.ForeignKey('users.Profile', related_name='app_primary',   on_delete=models.SET_NULL, null=True, blank=True)
-    owner2 = models.ForeignKey('users.Profile', related_name='app_secondary', on_delete=models.SET_NULL, null=True, blank=True)
+    # owner1 = models.ForeignKey('users.Profile', related_name='app_primary',   on_delete=models.SET_NULL, null=True, blank=True)
+    sme = models.CharField(_("SME"), max_length=100, blank=True, null=True)
     assignment = models.CharField(_("Assignment Group"), max_length=100, blank=True, null=True)
+    assignee = models.CharField(_("Assignee"), max_length=100, blank=True, null=True)
 
     critical = models.CharField(_("Criticality"), max_length=50, choices=CRITICAL, default='4-Low', null=True)
+    dr = models.BooleanField(_("DR ready"), default=False)
     level1 = models.CharField(_("Level 1"), max_length=50, choices=GMDM1, blank=True, null=True)
     level2 = models.CharField(_("Level 2"), max_length=50, choices=GMDM2, blank=True, null=True)
     CBU = models.ForeignKey('common.CBU', null=True, on_delete=models.SET_NULL)

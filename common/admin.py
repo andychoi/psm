@@ -375,14 +375,16 @@ class WBSAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
 
 # ----------------------------------------------------------------------------------------------------------------
 class GMDMResource(resources.ModelResource):
+    from users.models import Profile
     dept_name  = fields.Field(attribute='dept',widget=ForeignKeyWidget(model=Dept, field='name'), )
     team_name  = fields.Field(attribute='team',widget=ForeignKeyWidget(model=Team, field='name'), )
-    cbu_name   = fields.Field(attribute='CBU',widget=ForeignKeyWidget(model=CBU, field='name'), )
+    CBU_name   = fields.Field(attribute='CBU',widget=ForeignKeyWidget(model=CBU, field='name'), )
+    # owner1_name   = fields.Field(attribute='owner1',widget=ForeignKeyWidget(model=Profile, field='name'), )
     class Meta:
         model = GMDM
-        fields = ( 'id', 'code', 'cbu_name', 'CBUteam', 'name', 'critical', 'outline', 
-            'platform', 'os', 'db', 'lang', 'ui', 'usertype', 'apptype',
-            'operator', 'owner1', 'owner2', 'assignment', 
+        fields = ( 'id', 'code', 'CBU', 'CBU_name', 'CBUteam', 'name', 'critical', 'outline', 
+            'platform', 'os', 'db', 'lang', 'ui', 'no_screen', 'no_interface', 'no_table', 'usertype', 'no_user' 'apptype',
+            'operator', 'sme', 'assignment', 'assignee', 
             'grouping', 'dept', 'dept_name', 'team', 'team_name', 
             'level1', 'level2', 'initial', 'latest', 'decommision', 'remark',  
         )
@@ -395,30 +397,30 @@ class GMDMAdmin(ImportExportMixin, admin.ModelAdmin):
         model = GMDM
         import_id_fields = ('id',)    
 
-    list_display = ('id', 'code', 'name', 'CBU','dept', 'assignment', 'is_active', 'grouping')
+    list_display = ('id', 'code', 'name', 'CBU','dept', 'sme', 'assignment', 'is_active', 'grouping')
     list_display_links = ('id', 'code', 'name')
     readonly_fields = ('created_at', 'updated_on', 'created_by', 'updated_by', )
     search_fields = ('id', 'code', 'name')
     # autocomplete_fields = ('dept',)
     ordering = ('dept', 'team', 'code', )
     search_fields = ('id', 'code', 'title', 'asis', 'tobe', 'objective', 'consider', 'pm__name', 'CBUpm__name', 'CBUs__name')
-    list_editable = ("grouping", )
+    list_editable = ('sme', "grouping", )
     list_filter = (
         ('CBU__name',           DropdownFilter),
         ('operator',            DropdownFilter),
-        ('owner1__name',        DropdownFilter),   
-        ('owner2__name',        DropdownFilter),
+        # ('owner1__name',        DropdownFilter),   
+        # ('owner2__name',        DropdownFilter),
         ('dept__name',          DropdownFilter),
         ('team__name',          DropdownFilter),
         ('critical',            DropdownFilter),
         ('apptype',             DropdownFilter),
     )
-    autocomplete_fields = ['team', 'owner1', 'owner2', ]
+    autocomplete_fields = ['team',  ]
 
     gmdm_fields = [ ('code', 'name', 'CBU', 'critical',  ),
                     ('outline','remark' ), 
-                    ('platform', 'os', 'db', 'lang', 'ui', 'usertype','apptype'), 
-                    ('operator', 'owner1', 'owner2', 'assignment', ),
+                    ('platform', 'os', 'db', 'lang', 'ui', 'no_screen', 'no_interface', 'no_table', 'usertype', 'no_user', 'apptype'), 
+                    ('operator', 'sme', 'assignment', 'assignee'),
                     ('dept', 'team', 'CBUteam'),
                     ('grouping', 'level1', 'level2'),
                     ('initial', 'latest', 'decommision'),

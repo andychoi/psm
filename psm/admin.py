@@ -86,7 +86,7 @@ class ProgramAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     redirect_to_export.label = "Export"
     def redirect_to_import(self, request, obj):
         return HttpResponseRedirect(reverse('admin:%s_%s_import' % self.get_model_info()))
-    redirect_to_export.label = "Import"
+    redirect_to_import.label = "Import"
 
 # to make textarea format
 class ProjectDeliverableModelForm( forms.ModelForm ):
@@ -298,7 +298,7 @@ class ProjectRequestAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdm
     redirect_to_export.label = "Export"
     def redirect_to_import(self, request, obj):
         return HttpResponseRedirect(reverse('admin:%s_%s_import' % self.get_model_info()))
-    redirect_to_export.label = "Import"
+    redirect_to_import.label = "Import"
 
     def get_actions(self, request):
         actions = super().get_actions(request)
@@ -662,7 +662,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     redirect_to_export.label = "Export"
     def redirect_to_import(self, request, obj):
         return HttpResponseRedirect(reverse('admin:%s_%s_import' % self.get_model_info()))
-    redirect_to_export.label = "Import"
+    redirect_to_import.label = "Import"
 
     def get_actions(self, request):
         actions = super().get_actions(request)

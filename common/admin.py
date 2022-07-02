@@ -24,6 +24,8 @@ from django.conf import settings
 from django.utils import timezone
 from users.models import User
 import pytz
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 import logging
 logger = logging.getLogger(__name__)
@@ -433,8 +435,8 @@ def _update_emp():
     timezone = pytz.timezone(settings.TIME_ZONE)
     data = {}
     table = 'ZSUSRMT0010'
-    fields = ['USER_ID', 'CREATE_DATE', 'TERMINATE_DATE', 'USER_NAME', 'EMAIL', 'COSTCENTER', 'DEPT_CODE', 'DEPT_NAME', 'CHARGE_JOB', 'SUPERVISORID' ]
-    where = []      # "TERMINATE_DATE = '00000000'" ] -> terminated -> delete from current emp table  
+    fields = ['USER_ID', 'CREATE_DATE', 'TERMINATE_DATE', 'USER_NAME', 'EMAIL', 'COSTCENTER', 'DEPT_CODE', 'DEPT_NAME', 'CHARGE_JOB', 'POS_LEVEL', 'SUPERVISORID' ]
+    where = [  ]    # "USER_ID = 'HIS10004'"    # "TERMINATE_DATE = '00000000'" ] -> terminated -> delete from current emp table  
     maxrows = 10000
     # starting row to return
     fromrow = 0
@@ -447,34 +449,56 @@ def _update_emp():
     sorted_results = sorted( results, key=lambda x:( x[0], x[1] ) )
 
     for item in sorted_results:
-        if item[1][:1] == '0':  # invalid record, skip
+        if item[1][:1] == '0' or item[9].lstrip().rstrip() == '':  # invalid record, skip
             continue
 
+        if int(item[9].lstrip().rstrip()) <= 6:
+            level = 1
+        elif int(item[9].lstrip().rstrip()) <= 7:
+            level = 2
+        else:
+            level = 3
+        
         # ctime = datetime(1, 1, 1, 0, 0)   # initial date/time
-        # cdate = datetime.strptime(item[1], '%Y%m%d').replace(tzinfo=).date()
         cdate = timezone.localize(datetime.strptime(item[1], '%Y%m%d'))
+        tdate = timezone.localize(datetime.strptime(item[2], '%Y%m%d')) if item[2][:1] != '0' else None
         email = item[4].split('@')[0].lower() 
         emp_id = item[0].lstrip().rstrip()
         if int( Employee.objects.filter(emp_id=emp_id).count() ) > 0:
-                Employee.objects.filter(emp_id=emp_id).update(emp_id=emp_id, create_date=cdate, emp_name=item[3], email=email, cc=item[5], dept_code=item[6], dept_name=item[7], job=item[8], manager_id=item[9])
+                Employee.objects.filter(emp_id=emp_id).update(emp_id=emp_id, create_date=cdate, terminated=tdate, emp_name=item[3], email=email, cc=item[5], dept_code=item[6], dept_name=item[7], job=item[8], l=level, manager_id=item[10])
         else:
-            Employee.objects.create(emp_id=emp_id, create_date=cdate, emp_name=item[3], email=email, cc=item[5], dept_code=item[6], dept_name=item[7], job=item[8], manager_id=item[9])
+            Employee.objects.create(emp_id=emp_id, create_date=cdate, terminated=tdate, emp_name=item[3], email=email, cc=item[5], dept_code=item[6], dept_name=item[7], job=item[8], l=level, manager_id=item[10])
 
     # logger('Successfully processed...')
 
 @user_passes_test(lambda u: u.is_superuser)
 @admin.register(Employee)
-class EmployeeAdmin(DjangoObjectActions, admin.ModelAdmin):
-    list_display = ('emp_id', 'emp_name', 'email', 'job', 'cc', 'dept_code', 'dept_name', 'manager_id', 'create_date', )
+class EmployeeAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
+    list_display = ('emp_id', 'emp_name', 'email', 'job', 'cc', 'l', 'dept_code', 'dept_name', 'manager_id', 'create_date', 'terminated')
     list_display_links = ('emp_id', )
     search_fields = ('emp_id', 'manager_id', 'emp_name', 'email', 'dept_name')
     ordering = ('emp_id',)
+
+    list_filter = (
+        ('terminated',  DropdownFilter),
+        ('cc',          DropdownFilter),
+        ('dept_name',   DropdownFilter),
+        ('manager_id',  DropdownFilter),
+    )
 
     def import_func(modeladmin, request, queryset):    
         print(_update_emp())    # in psmprj/cron.py too
 
     import_func.label = "Import from SAP"  
-    changelist_actions = ('import_func', )
+
+    # fix conflict issue with two package: import/export, obj-action
+    changelist_actions = ['redirect_to_export', 'redirect_to_import', 'import_func']
+    def redirect_to_export(self, request, obj):
+        return HttpResponseRedirect(reverse('admin:%s_%s_export' % self.get_model_info()))
+    redirect_to_export.label = "Export"
+    def redirect_to_import(self, request, obj):
+        return HttpResponseRedirect(reverse('admin:%s_%s_import' % self.get_model_info()))
+    redirect_to_import.label = "Import"
 # ----------------------------------------------------------------------------------------------------------------
 class GMDMResource(resources.ModelResource):
     from users.models import Profile

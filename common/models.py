@@ -134,11 +134,13 @@ class Employee(models.Model):
     emp_name = models.CharField(max_length=50, blank=True, null=True)
     dept_code = models.CharField(max_length=10, blank=True, null=True)
     dept_name = models.CharField(max_length=50, blank=True, null=True)
+    l = models.PositiveSmallIntegerField(blank=True, null=True)
     cc = models.CharField(max_length=10, blank=True, null=True)
     job = models.CharField(max_length=50, blank=True, null=True)
     manager_id = models.CharField(_("ManagerID"), max_length=10, blank=False, null=False, db_index=True)
     email = models.CharField(_("Email"), max_length=50, blank=False, null=False, db_index=True)
     create_date = models.DateTimeField(_("Create_date"), blank=True, null=True)
+    terminated = models.DateTimeField(_("Terminated"), blank=True, null=True)
 
     updated_on = models.DateTimeField(_("updated_on"), auto_now=True, editable=False)
     def __str__(self):

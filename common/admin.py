@@ -642,6 +642,10 @@ def _update_emp():
         else:
             Employee.objects.create(emp_id=item[0], create_date=cdate, terminated=tdate, emp_name=item[3], email=email, cc=item[5], dept_code=item[6], dept_name=item[7], job=item[8], l=level, manager_id=item[10])
 
+
+def _refresh_emp():
+    # interface from SAP
+    _update_emp()
     # create/update div, dept, team from current emp data
     _update_org()
     # create/update profile and assign div, dept, team
@@ -664,6 +668,11 @@ class EmployeeAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
         ('manager_id',  DropdownFilter),
     )
 
+
+    def refresh_func(modeladmin, request, queryset):    
+        print(_refresh_emp())    # in psmprj/cron.py too
+    refresh_func.label = "Refresh from SAP"  
+
     def import_func(modeladmin, request, queryset):    
         print(_update_emp())    # in psmprj/cron.py too
     import_func.label = "Import from SAP"  
@@ -677,7 +686,7 @@ class EmployeeAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
     update_profile_func.label = "Update Profile"  
 
     # fix conflict issue with two package: import/export, obj-action
-    changelist_actions = ['redirect_to_export', 'redirect_to_import', 'import_func', 'update_org_func', 'update_profile_func']
+    changelist_actions = ['redirect_to_export', 'redirect_to_import', 'refresh_func', 'import_func', 'update_org_func', 'update_profile_func']
     def redirect_to_export(self, request, obj):
         return HttpResponseRedirect(reverse('admin:%s_%s_export' % self.get_model_info()))
     redirect_to_export.label = "Export"

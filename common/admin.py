@@ -508,16 +508,17 @@ def _update_profile():
                 defaults = {'name':e.emp_name, 'email':e.email, 'team':team, 'dept':dept, 'manager': mgr, 'department': e.dept_name, 'usertype': 'EMP', 'notes': '<auto-updated>' })
             obj.CBU.set( CBU.objects.filter(name__exact=settings.MY_CBU))   # many-to-many, 
 
-            if hasattr(obj, 'user') and obj.user:
-                User.objects.filter(user=obj.user).update(is_active=True, is_staff=True)
+            # FIXME, Django user SQL...
+            # if hasattr(obj, 'user') and obj.user:
+            #     User.objects.filter(user=obj.user).update(is_active=True, is_staff=True)
 
-                if not obj.user.groups.filter(name=settings.DEFAULT_AUTH_GROUP).exists():    
-                    try:
-                        user_group = Group.objects.get(name=settings.DEFAULT_AUTH_GROUP)
-                        if user_group: 
-                            obj.user.groups.add(user_group) 
-                    except:
-                        pass
+            #     if not obj.user.groups.filter(name=settings.DEFAULT_AUTH_GROUP).exists():    
+            #         try:
+            #             user_group = Group.objects.get(name=settings.DEFAULT_AUTH_GROUP)
+            #             if user_group: 
+            #                 obj.user.groups.add(user_group) 
+            #         except:
+            #             pass
 
 def _get_mgr(id):
     try: 

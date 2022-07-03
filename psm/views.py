@@ -43,7 +43,7 @@ from django_filters.views import FilterView
 # Create your views here.
 # importing models and libraries
 from common.models import Div, Dept, CBU, State2
-from common.codes import STATE_WORK, PHASE, PHASE_OPEN, PHASE_CLOSE, PHASE_BACKLOG, PHASE_WORK, PRIORITIES, PRJTYPE, VERSIONS
+from common.codes import STATE_WORK, PHASE, PHASE_OPEN, PHASE_CLOSE, PHASE_BACKLOG, PHASE_WORK, PRIORITIES, PRJTYPE, VERSIONS, PRJSIZE
 from common.codes import VERSION_QUEUE, VERSION_DONE, STATE_OPEN, STATE_VALID
 from .models import Project, Program, ProjectRequest
 #from .tables import ProjectRequestTable
@@ -206,6 +206,10 @@ def get_filter_options(self, context, def_year=True, plan=False):
         "key": "TYP", "text": "Type", "qId": "type", "selected": self.request.GET.get('type', '')
         , "items": [{"id": x[0], "name" : x[1]} for i, x in enumerate(PRJTYPE)]
         # , "items": [{"id": i, "name": x[1]} for i, x in enumerate(PRJTYPE)]
+    } )
+    context['filterItems'].append( {
+        "key": "SIZ", "text": "Size", "qId": "size", "selected": self.request.GET.get('size', '')
+        , "items": [{"id": x[0], "name" : x[1]} for i, x in enumerate(PRJSIZE)]
     } )
     context['filterItems'].append( {
         "key": "PRI", "text": "Priority", "qId": "priority", "selected": self.request.GET.get('priority', '')

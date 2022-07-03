@@ -10,7 +10,7 @@ from django.conf import settings
 from users.models import Profile
 from django.core.management import call_command
 from psm.models import Project
-from common.models import Dept, Team
+from common.models import Dept, Team, Div
 from django.db.models import Q
 from django.db.models import Count  #, F, Q, Sum, Avg
 from common.dates import previous_business_day
@@ -53,6 +53,7 @@ def project_pm_count():
     pm_qs = Project.objects.values('pm').annotate(pm_count=Count('pk'))
     cbupm_qs = Project.objects.values('CBUpm').annotate(pm_count=Count('pk'))
     
+    div_qs  = Project.objects.values('div').filter(year = date.today().year).annotate(pm_count=Count('pk'))
     dept_qs = Project.objects.values('dept').filter(year = date.today().year).annotate(pm_count=Count('pk'))
     team_qs = Project.objects.values('team').filter(year = date.today().year).annotate(pm_count=Count('pk'))
 
@@ -61,6 +62,11 @@ def project_pm_count():
     for item in cbupm_qs:
         Profile.objects.filter(id=item['CBUpm']).update(pm_count=item['pm_count'])
 
+    Div.objects.all().update(pm_count=0)
+    Dept.objects.all().update(pm_count=0)
+    Team.objects.all().update(pm_count=0)
+    for item in dept_qs:
+        Dept.objects.filter(id=item['div']).update(pm_count=item['pm_count'])
     for item in dept_qs:
         Dept.objects.filter(id=item['dept']).update(pm_count=item['pm_count'])
     for item in team_qs:

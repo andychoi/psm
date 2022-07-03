@@ -544,7 +544,7 @@ def _get_team_dept(e):
         except:
             team = None
 
-        if not team.head:
+        if team and not team.head:
             try:
                 Team.objects.filter(id=team.id).update(head = Profile.objects.get(auto_id__exact=e.manager_id))
             except:
@@ -559,17 +559,17 @@ def _get_team_dept(e):
         except:
             mgr, dept = None, None
 
-        if not team.dept:
+        if team and not team.dept:
             Team.objects.filter(id=team.id).update(dept=dept)
 
-        if not dept.head:
+        if dept and not dept.head:
             try:
                 Dept.objects.filter(id=dept.id).update(head=Profile.objects.get(auto_id__exact=mgr.emp_id))
             except:
                 pass            
 
         # div level
-        if mgr.l == 1:  # no dept exist, then just use it
+        if mgr and mgr.l == 1:  # no dept exist, then just use it
             pass
         else:
             try:
@@ -579,8 +579,12 @@ def _get_team_dept(e):
             except:
                 mgr = None            
         
-        div = Div.objects.get(name__exact=mgr.dept_name)
-        if not div.head:
+        try:
+            div = Div.objects.get(name__exact=mgr.dept_name)
+        except:
+            div = None            
+
+        if div and not div.head:
             try:
                 Div.objects.filter(id=div.id).update(head=Profile.objects.get(auto_id__exact=mgr.emp_id))
             except:

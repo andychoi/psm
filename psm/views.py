@@ -66,7 +66,7 @@ class SearchProjectView(generic.ListView):
 
        query = self.request.GET.get('q')
        if query:
-            return Project.objects.filter(Q(title__contains=query) | Q(code__contains=query) | Q(description__contains=query))
+            return Project.objects.filter(Q(title__contains=query) | Q(code__contains=query) | Q(description__contains=query) | Q(objective__contains=query) | Q(pm__name__contains=query) )
        else:
             return None
 

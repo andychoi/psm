@@ -259,6 +259,10 @@ class GMDM(models.Model):
         verbose_name = _("GMDM")
         verbose_name_plural = _("GMDM")
 
+        permissions = [ ("admin_gmdm",     "Can admin GMDM)"),
+        ]
+
+
     code  = models.CharField(max_length=10, blank=False, null=False)
     name  = models.CharField(max_length=100, blank=False, null=False)
 
@@ -302,10 +306,10 @@ class GMDM(models.Model):
                                    on_delete=models.SET_NULL, null=True)
     updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='GMDM_updated', verbose_name=_('updated by'),
                                    on_delete=models.SET_NULL, null=True)
-    created_at = models.DateField(_("created at"), auto_now_add=True, editable=False)  #auto_now_add=True,
-    updated_on = models.DateField(_("updated_on"), auto_now=True, editable=False)  #auto_now=True,     , default=timezone.now()
+    created_at = models.DateField(_("created at"), auto_now_add=True, editable=False, null=True, blank=True)  #auto_now_add=True,
+    updated_on = models.DateField(_("updated_on"), auto_now=True, editable=False, null=True, blank=True)  #auto_now=True,     , default=timezone.now()
 
-    pm_count  = models.SmallIntegerField(_('PM counts'), default=0)
+    pm_count  = models.SmallIntegerField(_('PM counts'), default=0, blank=True, null=True)
     def __str__(self):
         return f'[{self.code}] {self.name} { "(inactive)" if self.decommission else ""}'
 

@@ -136,7 +136,7 @@ def late_reminder():
                                p.pk, e.__class__.__name__, str(e))
 
 def sap_import():
-    from common.admin import _update_wbs, _update_emp
+    from common.functions import _update_wbs, _update_emp
     _update_wbs()
     _update_emp()
 

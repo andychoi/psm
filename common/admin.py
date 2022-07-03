@@ -539,8 +539,6 @@ def _get_team_dept(e):
     else:
         # team level
         team = Team.objects.get(name__exact=e.dept_name) 
-        if not team.dept:
-            Team.objects.filter(id=team.id).update(dept=dept)
         if not team.head:
             try:
                 Team.objects.filter(id=team.id).update(head = Profile.objects.get(auto_id__exact=e.manager_id))
@@ -552,6 +550,10 @@ def _get_team_dept(e):
         while mgr.l == 3:
             mgr = Employee.objects.get(emp_id__exact=mgr.manager_id)
         dept = Dept.objects.get(name__exact=mgr.dept_name)
+
+        if not team.dept:
+            Team.objects.filter(id=team.id).update(dept=dept)
+
         if not dept.head:
             try:
                 Dept.objects.filter(id=dept.id).update(head=Profile.objects.get(auto_id__exact=mgr.emp_id))

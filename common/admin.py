@@ -709,7 +709,7 @@ class GMDMResource(resources.ModelResource):
             'platform', 'os', 'db', 'lang', 'ui', 'no_screen', 'no_interface', 'no_table', 'usertype', 'no_user' 'apptype',
             'operator', 'sme', 'assignment', 'assignee', 
             'grouping', 'dept', 'dept_name', 'team', 'team_name', 
-            'level1', 'level2', 'initial', 'latest', 'decommision', 'remark',  
+            'level1', 'level2', 'initial', 'latest', 'decommission', 'remark',  
         )
 
        
@@ -747,7 +747,7 @@ class GMDMAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
                     ('operator', 'sme', 'assignment', 'assignee'),
                     ('dept', 'team', 'CBUteam'),
                     ('grouping', 'level1', 'level2'),
-                    ('initial', 'latest', 'decommision'),
+                    ('initial', 'latest', 'decommission'),
                     ]
     fieldsets = (               # Edition form
         (None,  {'fields': gmdm_fields 
@@ -759,7 +759,7 @@ class GMDMAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
         return ( (None, { 'fields': self.gmdm_fields  }), )
 
     def is_active(self, obj):
-        return "yes" if not obj.decommision else "no"
+        return "yes" if not obj.decommission else "no"
 
     # tip initial default version set
     def get_form(self, request, obj=None, **kwargs):

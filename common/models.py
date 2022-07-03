@@ -279,7 +279,7 @@ class GMDM(models.Model):
 
     initial = models.DateField(_("Initial launching"), null=True, blank=True)
     latest  = models.DateField(_("Lasted upgrade"), null=True, blank=True )
-    decommision  = models.DateField(_("Decommision"), null=True, blank=True )
+    decommission  = models.DateField(_("Decommision"), null=True, blank=True )
 
     dept = models.ForeignKey('common.Dept', on_delete=models.SET_NULL, null=True, blank=True)
     team = models.ForeignKey('common.Team', on_delete=models.SET_NULL, null=True, blank=True)
@@ -307,5 +307,5 @@ class GMDM(models.Model):
 
     pm_count  = models.SmallIntegerField(_('PM counts'), default=0)
     def __str__(self):
-        return f'[{self.code}] {self.name} { "(inactive)" if self.decommsion else ""}'
+        return f'[{self.code}] {self.name} { "(inactive)" if self.decommission else ""}'
 

@@ -50,11 +50,13 @@ def assign_staff_role():
 
 def project_pm_count():
     # queryset count groupby
-    pm_qs = Project.objects.values('pm').annotate(pm_count=Count('pk'))
-    cbupm_qs = Project.objects.values('CBUpm').annotate(pm_count=Count('pk'))
+    pm_qs = Project.objects.exclude(cf=True).values('pm').annotate(pm_count=Count('pk'))
+    cbupm_qs = Project.objects.exclude(cf=True).values('CBUpm').annotate(pm_count=Count('pk'))
     
-    dept_qs = Project.objects.values('dept').filter(year = date.today().year).annotate(pm_count=Count('pk'))
-    team_qs = Project.objects.values('team').filter(year = date.today().year).annotate(pm_count=Count('pk'))
+    dept_qs = Project.objects.exclude(cf=True).values('dept').annotate(pm_count=Count('pk'))
+    team_qs = Project.objects.exclude(cf=True).values('team').annotate(pm_count=Count('pk'))
+    # dept_qs = Project.objects.exclude(cf=True).values('dept').filter(year = date.today().year).annotate(pm_count=Count('pk'))
+    # team_qs = Project.objects.exclude(cf=True).values('team').filter(year = date.today().year).annotate(pm_count=Count('pk'))
 
     for item in pm_qs:
         Profile.objects.filter(id=item['pm']).update(pm_count=item['pm_count'])

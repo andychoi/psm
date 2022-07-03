@@ -23,8 +23,9 @@ en_formats.DATE_FORMAT = 'Y-m-d'
 
 DEFAULT_AUTH_GROUP  = env('DEFAULT_AUTH_GROUP', "staff")
 
-DOMAIN = env('DOMAIN', 'abc.local')
-APP_URL = env('APP_URL', 'psm.localhost')
+MY_DOMAIN = env('MY_DOMAIN', 'abc.local')
+MY_CBU = env('MY_CBU', 'MY')
+MY_APP_URL = env('MY_APP_URL', 'psm.localhost')
 SCHEDULER = env.bool('SCHEDULER', False)
 
 #https://docs.djangoproject.com/en/dev/ref/settings/#data-upload-max-memory-size

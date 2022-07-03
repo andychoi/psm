@@ -22,7 +22,7 @@ from django.utils.html import format_html
 from django.utils.html import mark_safe
 from common.dates import previous_business_day, add_business_days
 
-from common.models import Action3, ReqTypes, Versions, CBU, State, Phase
+from common.models import Action3, ReqTypes, Versions, CBU, State, Phase, Dept, Team
 from .models import Project, ProjectRequest,  ProjectDeliverable, ProjectDeliverableType, Strategy, Program
 from reviews.models import  Review
 from django.contrib.admin import AdminSite
@@ -360,15 +360,17 @@ class ProjectRequestAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdm
 
 # ----------------------------------------------------------------------------------------------------------------
 class ProjectResource(resources.ModelResource):
-    # pm_name     = fields.Field(attribute='pm',     widget=ForeignKeyWidget(Profile, 'name'))
-    # cbupm_name  = fields.Field(attribute='CBUpm',  widget=ForeignKeyWidget(Profile, 'name'))
+    pm_name    = fields.Field(attribute='pm',   widget=ForeignKeyWidget(model=Profile, field='name'))
+    cbupm_name = fields.Field(attribute='CBUpm',widget=ForeignKeyWidget(model=Profile, field='name'))
+    dept_name  = fields.Field(attribute='dept', widget=ForeignKeyWidget(model=Dept, field='name'), )
+    team_name  = fields.Field(attribute='team', widget=ForeignKeyWidget(model=Team, field='name'), )    
     cbu_names       = fields.Field(attribute='CBUs',    widget=ManyToManyWidget(model=CBU, separator=',', field='name'), )
     strategy_names  = fields.Field(attribute='strategy',widget=ManyToManyWidget(model=Strategy, separator=',', field='name'), )
     class Meta:
         model = Project
         fields = ( 'id', 'year', 'code', 'cf', 'title', 'description', 'objective', 'phase', 'state', 'progress', 'ref_plan__code',
-            'pm', 'pm__name',  'CBUs', 'cbu_names', 'CBUpm__name', 'strategy', 'strategy_names', 'program', 'program__name','type', 'size', 'priority', 
-            'est_cost', 'budget', 'dept', 'dept__name', 'dept__div', 'dept__div__name', 'team', 'team__name', 'gmdm',
+            'pm', 'pm_name',  'CBUs', 'cbu_names', 'CBUpm_name', 'strategy', 'strategy_names', 'program', 'program__name','type', 'size', 'priority', 
+            'est_cost', 'budget', 'dept', 'dept_name', 'dept__div', 'dept__div__name', 'team', 'team_name', 'gmdm',
             'p_ideation','p_plan_b','p_kickoff','p_design_b', 'p_design_e', 'p_dev_b', 'p_dev_e', 'p_uat_b','p_uat_e','p_launch','p_close',
                          'a_plan_b','a_kickoff','a_design_b', 'a_design_e', 'a_dev_b', 'a_dev_e', 'a_uat_b','a_uat_e','a_launch','a_close',
             'wbs__wbs', 'es', 'ref', 'cbu_req','cbu_sow','cbu_po', 'status_o', 'status_t', 'status_b', 'status_s', 'pm_memo'

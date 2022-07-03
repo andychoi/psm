@@ -36,37 +36,46 @@ class Div(models.Model):
         verbose_name = _("Division")
         verbose_name_plural = _("Divisions")
     name = models.CharField(max_length=100, blank=False, null=False)
+    cc   = models.CharField(max_length=10, blank=True, null=True)
     head = models.ForeignKey('users.Profile', related_name='div_head', verbose_name=_('Div head'), on_delete=models.SET_NULL, null=True, blank=True)
     is_active = models.BooleanField(default=True)
+    em_count  = models.SmallIntegerField(_('EM counts'), default=0)
+    pm_count  = models.SmallIntegerField(_('PM counts'), default=0)
+    notes = models.TextField(_("notes"), max_length=1000, null=True, blank=True)
+    updated_on = models.DateTimeField(_("updated_on"), auto_now=True, editable=False)
     def __str__(self):
-        return self.name
+        return f'{self.name}{ "" if self.is_active else " (inactive)"}'
 
 class Dept(models.Model):
     class Meta:
         verbose_name = _("Department")
         verbose_name_plural = _("Departments")
     name = models.CharField(max_length=100, blank=False, null=False)
+    cc   = models.CharField(max_length=10, blank=True, null=True)
     head = models.ForeignKey('users.Profile', related_name='dept_head', verbose_name=_('Dept head'), on_delete=models.SET_NULL, null=True, blank=True)
     div = models.ForeignKey(Div, on_delete=models.SET_NULL, null=True, blank=True)
     is_active = models.BooleanField(default=True)
+    is_virtual = models.BooleanField(default=False)
+    em_count  = models.SmallIntegerField(_('EM counts'), default=0)
     pm_count  = models.SmallIntegerField(_('PM counts'), default=0)
-
+    notes = models.TextField(_("notes"), max_length=1000, null=True, blank=True)
+    updated_on = models.DateTimeField(_("updated_on"), auto_now=True, editable=False)
     def __str__(self):
-        return self.name
+        return f'{self.name}{"*" if self.is_virtual else ""}{ "" if self.is_active else " (inactive)"}'
 
 class Team(models.Model):
     name = models.CharField(max_length=100, blank=False, null=False)
+    cc   = models.CharField(max_length=10, blank=True, null=True)
     head = models.ForeignKey('users.Profile', related_name='team_head', on_delete=models.SET_NULL, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     dept = models.ForeignKey(Dept, on_delete=models.SET_NULL, null=True, blank=True)
     is_active = models.BooleanField(default=True)
+    em_count  = models.SmallIntegerField(_('EM counts'), default=0)
     pm_count  = models.SmallIntegerField(_('PM counts'), default=0)
-#    users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="user_teams")
-
-    class Meta:
-        ordering = ("id",)
+    notes = models.TextField(_("notes"), max_length=1000, null=True, blank=True)
+    updated_on = models.DateTimeField(_("updated_on"), auto_now=True, editable=False)
     def __str__(self):
-        return f'{"{:04d}".format(self.pk)}-{self.name}'   # "%s-%s" % (self.pk, self.name)
+        return f'{self.name}{ "" if self.is_active else " (inactive)"}'
 
 CBU_TYPE = (
 	(0, "Own"),
@@ -90,11 +99,12 @@ class CBU(models.Model):
     is_active = models.BooleanField(_("is active"), default=True)
     is_tier1 = models.BooleanField(_("is Tier-1"), default=False)
     cbu_type = models.IntegerField(choices=CBU_TYPE, default=0)
-#    phone = models.CharField(_("phone"), max_length=40, null=True, blank=True)
-#    mobile = models.CharField(_("mobile"), max_length=40, null=True, blank=True)
-#    address = models.CharField(_("address"), max_length=128, null=True, blank=True)
-    email = models.EmailField(_("email"), blank=True, null=True)
-    website = models.URLField(_("website"), blank=True, null=True)
+    domain   = models.CharField(_("Domain"), max_length=40, db_index=True, null=True, blank=True)
+    # phone = models.CharField(_("phone"), max_length=40, null=True, blank=True)
+    # mobile = models.CharField(_("mobile"), max_length=40, null=True, blank=True)
+    # address = models.CharField(_("address"), max_length=128, null=True, blank=True)
+    # email = models.EmailField(_("email"), blank=True, null=True)
+    # website = models.URLField(_("website"), blank=True, null=True)
     comment = models.TextField(_("notes"), max_length=2000, null=True, blank=True)
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='CBU_created', verbose_name=_('created by'),
@@ -103,7 +113,7 @@ class CBU(models.Model):
     updated_on = models.DateTimeField(_("updated_on"), auto_now=True, editable=False)
 
     def __str__(self):
-        return self.name
+        return f'{self.name}{ "" if self.is_active else " (inactive)"}'
 
     # @property
     # def phones(self):
@@ -144,7 +154,7 @@ class Employee(models.Model):
 
     updated_on = models.DateTimeField(_("updated_on"), auto_now=True, editable=False)
     def __str__(self):
-        return f"{self.emp_id}" 
+        return f"{self.emp_id} { '(terminated)' if self.terminated else ''}" 
 
 
 class GMDM(models.Model):
@@ -297,5 +307,5 @@ class GMDM(models.Model):
 
     pm_count  = models.SmallIntegerField(_('PM counts'), default=0)
     def __str__(self):
-        return f'[{self.code}] {self.name}'
+        return f'[{self.code}] {self.name} { "(inactive)" if self.decommsion else ""}'
 

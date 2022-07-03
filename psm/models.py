@@ -321,7 +321,7 @@ class Project(models.Model):
                 "title": self.title,
                 "description": self.description or '-',
                 "objective": self.objective or '-',
-                "url": f'https://psm.{settings.DOMAIN}/project/{self.id}/',
+                "url": f'https://psm.{settings.MY_DOMAIN}/project/{self.id}/',
                 "sign": settings.SITE_HEADER,
             }
 

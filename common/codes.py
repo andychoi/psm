@@ -2,12 +2,6 @@ import enum
 from django.utils.translation import gettext_lazy as _
 
 
-USERTYPE = (
-    ("ADM",   "Admin"),
-    ("EMP",   "Employee"),
-    ("TEM",   "Contractor"),
-    ("VEN",   "Vendor"),
-)
 
 class Action(enum.Enum):
     NEW = '00-New'

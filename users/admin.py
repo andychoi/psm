@@ -49,8 +49,8 @@ class ProfileResource(resources.ModelResource):
     cbu_names       = fields.Field(attribute='CBU',    widget=ManyToManyWidget(model=CBU, separator=',', field='name'), )
     class Meta:
         model = Profile
-        fields = ( 'id', 'user', 'user__username', 'name', 'email', 'wcal', 'dept__name', 'team__name', 'cbu_names', 'migrated', 'usertype', 'notes', 
-                   'pm_count', 'proxy_name'
+        fields = ( 'id', 'user', 'user__username', 'name', 'email', 'wcal', 'dept__name', 'team__name', 'cbu_names', 
+                   'auto_id', 'manager', 'department', 'usertype', 'notes', 'pm_count', 'proxy_name'
         )
         export_order = fields
 
@@ -59,26 +59,27 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
     resource_class = ProfileResource
 
     # list_display = ('id', 'user', 'name', 'email', 'dept', 'manager', 'u_div', 'CBU', 'is_active')
-    list_display = ('id', 'user', 'name', 'email', 'wcal', 'dept', 'is_active', 'is_staff', 'pm_count', 'goto_user', 'cbu_names', 'proxy_name', )
+    list_display = ('id', 'user', 'name', 'email', 'wcal', 'dept', 'team', 'is_active', 'is_staff', 'pm_count', 'goto_user', 'cbu_names', 'auto_id', 'usertype', 'proxy_name', )
     list_display_links = ('id', 'name', 'email')
     list_editable = ( 'wcal',)
-    search_fields = ('id', 'name', 'email', 'CBU__name', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
+    search_fields = ('id', 'name', 'email', 'auto_id', 'CBU__name', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
     ordering = ('CBU__id', 'dept', 'team', 'name', )
-    readonly_fields = ('created_at', 'created_by', 'updated_on', 'updated_by')
+    readonly_fields = ('created_at', 'created_by', 'updated_on', 'updated_by', 'auto_id', 'manager', 'department')
     autocomplete_fields = ( 'user', 'team', 'CBU' )
     fieldsets = (  # Edition form
          (None, {'fields': (('user', 'name',), ('email',) , ('CBU',), ('usertype', 'is_psmadm', ), 
                             ('wcal', 'dept', 'team'), 
                             ('notes', ),
-                            # ('job', 'department', 'manager', 'mobile', ),
+                            ('auto_id', 'manager', 'department' ), #'job', 'mobile', ),
                             # ('image',), 
                             )}),
-        (_('More...'), {'fields': (('created_at', 'created_by'), ('updated_on', 'updated_by', 'proxy_name', 'migrated')), 'classes': ('collapse',)}),
+        (_('More...'), {'fields': (('created_at', 'created_by'), ('updated_on', 'updated_by', 'proxy_name', )), 'classes': ('collapse',)}),
     )
     list_filter = (
-        ('CBU', RelatedDropdownFilter),
+        ('CBU',  RelatedDropdownFilter),
         ('dept', RelatedDropdownFilter),
         ('team', RelatedDropdownFilter),
+        'proxy_name',
         'user__is_staff',
         'user__is_active'
     )
@@ -194,9 +195,9 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
                     messages.add_message(request, messages.INFO, obj.name + 'is linked with user using email')
             else:
                 try:
-                    found = User.objects.get( username=obj.migrated if obj.migrated else obj.email )
+                    found = User.objects.get( username=obj.auto_id if obj.auto_id else obj.email )
                 except User.DoesNotExist:
-                    new_user = User.objects.create_user( username=obj.migrated if obj.migrated else obj.email, email=obj.email )
+                    new_user = User.objects.create_user( username=obj.auto_id if obj.auto_id else obj.email, email=obj.email )
                     if new_user:
                         obj.user = new_user
                         obj.save(update_fields=['user'])    
@@ -255,7 +256,7 @@ class ProfileCBUResource(resources.ModelResource):
     cbu_names       = fields.Field(attribute='CBU',    widget=ManyToManyWidget(model=CBU, separator=',', field='name'), )
     class Meta:
         model = ProfileCBU
-        fields = ( 'id', 'user', 'user__username', 'name', 'email', 'cbu_names', 'migrated', 'notes', 'pm_count'
+        fields = ( 'id', 'user', 'user__username', 'name', 'email', 'cbu_names', 'auto_id', 'notes', 'pm_count'
         )
         export_order = fields
 

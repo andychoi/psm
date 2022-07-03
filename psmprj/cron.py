@@ -110,7 +110,7 @@ def late_reminder():
                 "lstrpt": p.lstrpt,
                 "title": p.title,
                 'plan_start': p.p_plan_b,
-                "url": f'{settings.APP_URL}/project/{p.id}/',
+                "url": f'{settings.MY_APP_URL}/project/{p.id}/',
                 "sign": settings.SITE_HEADER,
             }
             email_template = settings.PSM_EMAIL_REPORT_REMINDER

@@ -23,7 +23,7 @@ def register(request):
 
 
             # if user belongs to internal company, then assign staff role automatically
-            if u.email[u.email.index('@') + 1 : ] == settings.DOMAIN:
+            if u.email[u.email.index('@') + 1 : ] == settings.MY_DOMAIN:
                 User.objects.filter(id=u.id).update(is_staff=True)
                 user_group = Group.objects.get(name=settings.DEFAULT_AUTH_GROUP)
                 u.groups.add(user_group) 

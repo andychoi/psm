@@ -15,6 +15,14 @@ from common.proxy import ProxySuper,  ProxyManager
 
 """
 class Profile(ProxySuper): #models.Model):
+
+    USERTYPE = (
+        ("ADM",   "Admin"),
+        ("EMP",   "Employee"),
+        ("TEM",   "Contractor"),
+        ("VEN",   "Vendor"),
+    )
+
     proxy_name = models.CharField(max_length=20, default='Profile', blank=True, null=True)
 
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
@@ -25,9 +33,9 @@ class Profile(ProxySuper): #models.Model):
     # report_to   = models.ForeignKey('Profile', verbose_name=_('manager'), related_name='report_to', on_delete=models.CASCADE, null=True, blank=True)
 
     # extra attribute from AD
-    job         = models.CharField(max_length=50, null=True, blank=True)
     department  = models.CharField(max_length=50, null=True, blank=True)
     manager     = models.CharField(max_length=50, null=True, blank=True)
+    job         = models.CharField(max_length=50, null=True, blank=True)
     mobile      = models.CharField(max_length=16, null=True, blank=True)
     
     #FIXME circular dependency...??
@@ -57,7 +65,7 @@ class Profile(ProxySuper): #models.Model):
     # id_auto = models.BooleanField(_("User create from Profile"), default=False )    #auto creation of user from profile creation
 
     notes      = models.CharField(_("notes"), max_length=500, null=True, blank=True)
-    migrated   = models.CharField(_("migrated"), max_length=10, null=True, blank=True)
+    auto_id   = models.CharField(_("auto_id"), max_length=10, null=True, blank=True)
 
     def __str__(self):
         if getattr(self, 'user') and not self.name :

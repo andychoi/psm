@@ -539,7 +539,11 @@ def _get_team_dept(e):
 
     else:
         # team level
-        team = Team.objects.get(name__exact=e.dept_name) 
+        try: 
+            team = Team.objects.get(name__exact=e.dept_name) 
+        except:
+            team = None
+
         if not team.head:
             try:
                 Team.objects.filter(id=team.id).update(head = Profile.objects.get(auto_id__exact=e.manager_id))
@@ -547,10 +551,13 @@ def _get_team_dept(e):
                 pass
 
         # dept level
-        mgr = Employee.objects.get(emp_id__exact=e.manager_id)
-        while mgr.l == 3:
-            mgr = Employee.objects.get(emp_id__exact=mgr.manager_id)
-        dept = Dept.objects.get(name__exact=mgr.dept_name)
+        try: 
+            mgr = Employee.objects.get(emp_id__exact=e.manager_id)
+            while mgr.l == 3:
+                mgr = Employee.objects.get(emp_id__exact=mgr.manager_id)
+            dept = Dept.objects.get(name__exact=mgr.dept_name)
+        except:
+            mgr, dept = None, None
 
         if not team.dept:
             Team.objects.filter(id=team.id).update(dept=dept)
@@ -565,9 +572,12 @@ def _get_team_dept(e):
         if mgr.l == 1:  # no dept exist, then just use it
             pass
         else:
-            mgr = Employee.objects.get(emp_id__exact=mgr.manager_id)
-            while mgr.l == 2:
+            try:
                 mgr = Employee.objects.get(emp_id__exact=mgr.manager_id)
+                while mgr.l == 2:
+                    mgr = Employee.objects.get(emp_id__exact=mgr.manager_id)
+            except:
+                mgr = None            
         
         div = Div.objects.get(name__exact=mgr.dept_name)
         if not div.head:

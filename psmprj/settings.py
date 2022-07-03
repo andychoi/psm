@@ -139,7 +139,9 @@ CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", ["http://localhost",])
 
 #https://stackoverflow.com/questions/44034879/django-nginx-getting-csrf-verification-error-in-production-over-http
 CSRF_COOKIE_HTTPONLY = env.bool('CSRF_COOKIE_HTTPONLY', False)
+# https://stackoverflow.com/questions/28902243/multiple-django-sites-on-the-same-domain-csrf-fails
 CSRF_COOKIE_NAME = env('CSRF_COOKIE_NAME', 'csrftoken')
+SESSION_COOKIE_NAME = env('CSRF_COOKIE_NAME', 'sessionid')
 
 # Database settings
 # from .settings_db import *

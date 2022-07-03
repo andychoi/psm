@@ -141,7 +141,7 @@ CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", ["http://localhost",])
 CSRF_COOKIE_HTTPONLY = env.bool('CSRF_COOKIE_HTTPONLY', False)
 # https://stackoverflow.com/questions/28902243/multiple-django-sites-on-the-same-domain-csrf-fails
 CSRF_COOKIE_NAME = env('CSRF_COOKIE_NAME', 'csrftoken')
-# SESSION_COOKIE_NAME = env('SESSION_COOKIE_NAME', 'sessionid')
+SESSION_COOKIE_NAME = env('SESSION_COOKIE_NAME', 'sessionid')
 SESSION_COOKIE_PATH = env('SESSION_COOKIE_PATH', '/')
 
 # Database settings

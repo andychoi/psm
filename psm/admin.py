@@ -69,7 +69,7 @@ class ProgramAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     list_display_links = ('name', 'lead')
     search_fields = ('name',)
     ordering = ('-startyr', 'name',)
-
+    autocomplete_fields = ( 'lead', )
     class Meta:
         model = Program
         import_id_fields = ('id',)

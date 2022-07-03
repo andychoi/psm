@@ -79,6 +79,8 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
         ('CBU',  RelatedDropdownFilter),
         ('dept', RelatedDropdownFilter),
         ('team', RelatedDropdownFilter),
+        ('wcal', DropdownFilter),
+        ('usertype', DropdownFilter),
         'proxy_name',
         'user__is_staff',
         'user__is_active'

@@ -109,8 +109,8 @@ class ProjectDeliverableInline(admin.TabularInline):
 
 # ----------------------------------------------------------------------------------------------------------------
 class ProjectRequestResource(resources.ModelResource):
-    # pm_name     = fields.Field(attribute='pm',     widget=ForeignKeyWidget(Profile, 'name'))
-    # cbupm_name  = fields.Field(attribute='CBUpm',  widget=ForeignKeyWidget(Profile, 'name'))
+    pm_name     = fields.Field(attribute='pm',     widget=ForeignKeyWidget(model=Profile, field='name'))
+    CBUpm_name  = fields.Field(attribute='CBUpm',  widget=ForeignKeyWidget(model=Profile, field='name'))
     cbu_names       = fields.Field(attribute='CBUs',    widget=ManyToManyWidget(model=CBU, separator=',', field='name'), )
     strategy_names  = fields.Field(attribute='strategy',widget=ManyToManyWidget(model=Strategy, separator=',', field='name'), )
     class Meta:
@@ -119,7 +119,7 @@ class ProjectRequestResource(resources.ModelResource):
             # 'pm', 'pm__name',  
             # 'CBUpm', 'CBUpm__name',  
             # 'CBU', 'cbu_names', 
-            'pm__name', 'CBUpm__name', 'cbu_names',  
+            'pm__name', 'CBUpm_name', 'cbu_names',  
             'strategy_names', 'program__name', 
             'est_cost', 'resource', 'type', 'size', 'priority', 'dept', 'dept__name', 'team__name', 'dept__div', 'dept__div__name',  
             'p_ideation','p_plan_b','p_kickoff','p_design_b','p_dev_b','p_uat_b','p_launch','p_close',
@@ -361,7 +361,7 @@ class ProjectRequestAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdm
 # ----------------------------------------------------------------------------------------------------------------
 class ProjectResource(resources.ModelResource):
     pm_name    = fields.Field(attribute='pm',   widget=ForeignKeyWidget(model=Profile, field='name'))
-    cbupm_name = fields.Field(attribute='CBUpm',widget=ForeignKeyWidget(model=Profile, field='name'))
+    CBUpm_name = fields.Field(attribute='CBUpm',widget=ForeignKeyWidget(model=Profile, field='name'))
     dept_name  = fields.Field(attribute='dept', widget=ForeignKeyWidget(model=Dept, field='name'), )
     team_name  = fields.Field(attribute='team', widget=ForeignKeyWidget(model=Team, field='name'), )    
     cbu_names       = fields.Field(attribute='CBUs',    widget=ManyToManyWidget(model=CBU, separator=',', field='name'), )

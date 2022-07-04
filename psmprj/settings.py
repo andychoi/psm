@@ -278,7 +278,7 @@ ADMINS = (
 from .settings_emails import *
 
 # Default login https://docs.djangoproject.com/en/4.0/ref/settings/#login-url
-LOGIN_URL = "/login"
+LOGIN_URL = "login/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 

@@ -16,7 +16,7 @@ from psmprj import settings
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "psmprj.settings")
 
-if settings.STATIC_ENABLE_WSGI_HANDLER:
-    application = StaticFilesHandler(get_wsgi_application())
-else:
-    application = get_wsgi_application()
+# if settings.STATIC_ENABLE_WSGI_HANDLER:
+#     application = StaticFilesHandler(get_wsgi_application())
+# else:
+application = get_wsgi_application()

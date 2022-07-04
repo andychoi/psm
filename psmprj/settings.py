@@ -224,7 +224,7 @@ STATICFILES_DIRS = [BASE_DIR + '/psmprj/static',]
 # in production environmets it's recommended
 # to serve the static resources with a reverse
 # proxy like Nginx, unless little workloads
-STATIC_ENABLE_WSGI_HANDLER = env.bool('STATIC_ENABLE_WSGI_HANDLER', False)
+# STATIC_ENABLE_WSGI_HANDLER = env.bool('STATIC_ENABLE_WSGI_HANDLER', False)
 
 # Import settings for logging --------------------------------------------------
 from .settings_logging import *

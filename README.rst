@@ -332,3 +332,28 @@ For Redhat/CentOS
     $sudo yum install openldap-devel
     $pip install django-auth-ldap
 
+
+Django subdirectory and NGINX 
+----------------------------------------------------
+::
+    MY_PROJECT = env('MY_PROJECT', '')  # example; '/dj'
+    if MY_PROJECT:
+        USE_X_FORWARDED_HOST = True
+        FORCE_SCRIPT_NAME = MY_PROJECT + "/"
+        SESSION_COOKIE_PATH = MY_PROJECT + "/"
+
+    LOGIN_URL = "login/"
+    LOGIN_REDIRECT_URL = MY_PROJECT + "/"
+    LOGOUT_REDIRECT_URL = MY_PROJECT + "/"
+
+NGINX configuration
+::
+    location /dj/ {
+        proxy_set_header X-Forwarded-Protocol $scheme;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Scheme $scheme;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+        proxy_pass http://127.0.0.1:8000/;
+    }
+

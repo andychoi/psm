@@ -139,6 +139,7 @@ CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", ["http://localhost",])
 
 #https://stackoverflow.com/questions/44034879/django-nginx-getting-csrf-verification-error-in-production-over-http
 CSRF_COOKIE_HTTPONLY = env.bool('CSRF_COOKIE_HTTPONLY', False)
+
 # https://stackoverflow.com/questions/28902243/multiple-django-sites-on-the-same-domain-csrf-fails
 CSRF_COOKIE_NAME = env('CSRF_COOKIE_NAME', 'csrftoken')
 SESSION_COOKIE_NAME = env('SESSION_COOKIE_NAME', 'sessionid')
@@ -147,12 +148,44 @@ SESSION_COOKIE_PATH = env('SESSION_COOKIE_PATH', '/')
 #https://stackoverflow.com/questions/53788577/how-to-serve-subdirectory-as-root-in-nginx-using-django
 #https://stackoverflow.com/questions/47941075/host-django-on-subfolder/47945170#47945170
 # https://stackoverflow.com/questions/44987110/django-in-subdirectory-admin-site-is-not-working
-# USE_X_FORWARDED_HOST = env.bool('USE_X_FORWARDED_HOST', False)
-# USE_X_FORWARDED_HOST = True
-# FORCE_SCRIPT_NAME = "/dj/"
-# SESSION_COOKIE_PATH = '/dj/'
+# https://stackoverflow.com/questions/3232349/multiple-instances-of-django-on-a-single-domain
+# https://stackoverflow.com/questions/35792409/nginx-serving-django-in-a-subdirectory-through-uwsgi/40496307#40496307
+"""
+    subdirectory site: https://stackoverflow.com/questions/44987110/django-in-subdirectory-admin-site-is-not-working
+"""
+MY_PROJECT = env('MY_PROJECT', '')  # example; '/dj'
+if MY_PROJECT:
+    USE_X_FORWARDED_HOST = True
+    FORCE_SCRIPT_NAME = MY_PROJECT + "/"
+    SESSION_COOKIE_PATH = MY_PROJECT + "/"
 
-# Database settings
+LOGIN_URL = "login/"
+LOGIN_REDIRECT_URL = MY_PROJECT + "/"
+LOGOUT_REDIRECT_URL = MY_PROJECT + "/"
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/4.0/ref/settings/#staticfiles-dirs
+# https://learndjango.com/tutorials/django-static-files
+STATIC_URL = '/static/'
+STATIC_ROOT = env('STATIC_ROOT', BASE_DIR + '/static/')
+STATICFILES_DIRS = [BASE_DIR + '/psmprj/static',]    
+
+# Fileupload
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Whether to enable or not the StaticFilesHandler to serve the static resources from the WSGI
+# server. Enabled by default if DEBUG = True, in production environmets it's recommended
+# to serve the static resources with a reverse proxy like Nginx, unless little workloads
+STATIC_ENABLE_WSGI_HANDLER = env.bool('STATIC_ENABLE_WSGI_HANDLER', DEBUG)
+
+
+#https://github.com/edoburu/django-private-storage -> not working
+# PRIVATE_STORAGE_ROOT = BASE_DIR + '/media-private/'
+# PRIVATE_STORAGE_AUTH_FUNCTION = 'private_storage.permissions.allow_staff'
+
+
+# Database settings ------------------------------------------------------------------------
 # from .settings_db import *
 DB = env('DB', "SQLITE3")
 if DB == "POSTGRES":
@@ -210,22 +243,6 @@ if AUTH_PASSWORD_VALIDATORS_ENABLED:
 # Misc settings: timezone, format, ...
 from .settings_extra import *
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.2/howto/static-files/
-# https://docs.djangoproject.com/en/4.0/ref/settings/#staticfiles-dirs
-# https://learndjango.com/tutorials/django-static-files
-STATIC_URL = '/static/'
-STATIC_ROOT = env('STATIC_ROOT', BASE_DIR + '/static/')
-STATICFILES_DIRS = [BASE_DIR + '/psmprj/static',]    
-
-# Whether to enable or not the StaticFilesHandler
-# to serve the static resources from the WSGI
-# server. Enabled by default if DEBUG = True,
-# in production environmets it's recommended
-# to serve the static resources with a reverse
-# proxy like Nginx, unless little workloads
-# STATIC_ENABLE_WSGI_HANDLER = env.bool('STATIC_ENABLE_WSGI_HANDLER', False)
-
 # Import settings for logging --------------------------------------------------
 from .settings_logging import *
 
@@ -241,13 +258,6 @@ REST_FRAMEWORK = {
     ),
 }
 
-# Fileupload
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'
-
-#https://github.com/edoburu/django-private-storage -> not working
-# PRIVATE_STORAGE_ROOT = BASE_DIR + '/media-private/'
-# PRIVATE_STORAGE_AUTH_FUNCTION = 'private_storage.permissions.allow_staff'
 
 # export/import
 #IMPORT_EXPORT_EXPORT_PERMISSION_CODE = 'import '
@@ -284,12 +294,6 @@ ADMINS = (
 
 # IMPORT EMAIL related settings ------------------------------------
 from .settings_emails import *
-
-# Default login https://docs.djangoproject.com/en/4.0/ref/settings/#login-url
-LOGIN_URL = "login/"
-LOGIN_REDIRECT_URL = "/"
-LOGOUT_REDIRECT_URL = "/"
-
 
 # IMPORT Editor related settings ------------------------------------
 from .settings_editor import *

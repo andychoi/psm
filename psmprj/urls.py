@@ -28,6 +28,7 @@ from mtasks.serializers import TaskViewSet
 from django.contrib.auth import views as auth_views
 from users import views as user_views
 from users.forms import MyAuthenticationForm
+from blog.views import PostListView
 
 # private media
 # import private_storage.urls
@@ -51,7 +52,9 @@ urlpatterns = [
     path('', include('psm.urls')),
     path('', include('data.urls')),
     # path('', include('resource.urls')),   # not yet complete
-
+    
+    # home index 
+    re_path(r'^$', PostListView.as_view(), name='home'),
 
     # Authentication Urls
     path('register/', user_views.register, name='register'),
@@ -91,7 +94,8 @@ urlpatterns = urlpatterns + static(settings.MEDIA_URL, document_root=settings.ME
 if settings.ADMIN:
     urlpatterns = [
 #        re_path(r'^$', lambda r: HttpResponseRedirect('admin/')),   # Remove this redirect if you add custom views
-        path('admin/', admin.site.urls, name="admin"),
+        # path('admin/', admin.site.urls, name="admin"),
+        re_path(r'^admin/', admin.site.urls, name="admin")
     ] + urlpatterns
 
 admin.site.site_title = admin.site.site_header = settings.SITE_HEADER

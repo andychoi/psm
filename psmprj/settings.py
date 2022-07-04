@@ -144,6 +144,14 @@ CSRF_COOKIE_NAME = env('CSRF_COOKIE_NAME', 'csrftoken')
 SESSION_COOKIE_NAME = env('SESSION_COOKIE_NAME', 'sessionid')
 SESSION_COOKIE_PATH = env('SESSION_COOKIE_PATH', '/')
 
+#https://stackoverflow.com/questions/53788577/how-to-serve-subdirectory-as-root-in-nginx-using-django
+#https://stackoverflow.com/questions/47941075/host-django-on-subfolder/47945170#47945170
+# https://stackoverflow.com/questions/44987110/django-in-subdirectory-admin-site-is-not-working
+# USE_X_FORWARDED_HOST = env.bool('USE_X_FORWARDED_HOST', False)
+# USE_X_FORWARDED_HOST = True
+# FORCE_SCRIPT_NAME = "/dj/"
+# SESSION_COOKIE_PATH = '/dj/'
+
 # Database settings
 # from .settings_db import *
 DB = env('DB', "SQLITE3")
@@ -216,7 +224,7 @@ STATICFILES_DIRS = [BASE_DIR + '/psmprj/static',]
 # in production environmets it's recommended
 # to serve the static resources with a reverse
 # proxy like Nginx, unless little workloads
-STATIC_ENABLE_WSGI_HANDLER = env.bool('STATIC_ENABLE_WSGI_HANDLER', DEBUG)
+STATIC_ENABLE_WSGI_HANDLER = env.bool('STATIC_ENABLE_WSGI_HANDLER', False)
 
 # Import settings for logging --------------------------------------------------
 from .settings_logging import *

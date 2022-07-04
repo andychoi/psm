@@ -136,7 +136,7 @@ class RPPlanItemAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display = ( 'r_no', 'r_staff', 'project', 'staff', 'year', 'm01', 'm02', 'm03', 'm04', 'm05', 'm06', 'm07', 'm08', 'm09', 'm10', 'm11', 'm12', 'm13', 'm14', 'm15')
     list_display_links = ('year',)
 
-    readonly_fields = ('r_staff', 'created_at', 'created_by', 'updated_on', 'updated_by', )
+    readonly_fields = ('r_staff', 'created_at', 'created_by', 'updated_on', ) # 'updated_by', )
     autocomplete_fields = ('pr', 'project', 'staff')
     extra_field = forms.CharField()
 
@@ -171,7 +171,7 @@ class PPPlanItemAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display = ( 'project', 'p_no', 'p_proj', 'staff', 'year', 'm01', 'm02', 'm03', 'm04', 'm05', 'm06', 'm07', 'm08', 'm09', 'm10', 'm11', 'm12', 'm13', 'm14', 'm15')
     list_display_links = ('year',)
 
-    readonly_fields = ('p_proj', 'created_at', 'created_by', 'updated_on', 'updated_by', )
+    readonly_fields = ('p_proj', 'created_at', 'created_by', 'updated_on', )    # 'updated_by', )
     autocomplete_fields = ('pp', 'project', 'staff', 'skills')
     extra_field = forms.CharField()
 

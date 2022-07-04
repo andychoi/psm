@@ -108,7 +108,7 @@ class CBUAdmin(ImportExportMixin, admin.ModelAdmin):
     readonly_fields = ('created_at', 'updated_on', )
     fieldsets = (  # Edition form
 #        (None, {'fields': (('name', 'is_company'), ('email', 'website'), ('phone', 'mobile'), ('address',), ('comment',))}),
-         (None, {'fields': (('name', 'cbu_type', 'is_tier1', 'is_active'), ('fullname', 'group') , ('email', 'website'), ('comment',))}),
+         (None, {'fields': (('name', 'cbu_type', 'is_tier1', 'is_active'), ('fullname', 'group') , ('comment',))}),
         (_('More...'), {'fields': (('created_at', 'updated_on') ), 'classes': ('collapse',)}),
     )
 
@@ -116,7 +116,7 @@ class CBUAdmin(ImportExportMixin, admin.ModelAdmin):
         fieldsets = super().get_fieldsets(request, obj)
         if obj is None:
             fieldsets = (      # Creation form
-                (None, {'fields': (('name', 'cbu_type', 'is_tier1', 'is_active'), ('fullname', 'group'), ('email', 'website'), ('comment',))}),
+                (None, {'fields': (('name', 'cbu_type', 'is_tier1', 'is_active'), ('fullname', 'group'), ('comment',))}),
 #                (None, {'fields': (('name', 'is_company'), ('email', 'website'), ('phone', 'mobile'), ('address',), ('comment',))}),
             )
         return fieldsets

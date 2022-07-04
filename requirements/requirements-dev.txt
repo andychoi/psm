@@ -42,6 +42,7 @@ palettable
 django-autocomplete-light
 # django-dbbackup # ISSUE: def get_escaped_command_arg(arg): return arg
 -e git+https://github.com/jazzband/django-dbbackup.git#egg=django-dbbackup
+django-pg-copy
 # django_cron 
 django-apscheduler
 # django_crontab

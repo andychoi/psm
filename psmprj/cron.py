@@ -27,6 +27,25 @@ logger = logging.getLogger(__name__)
 #     # get accounts, expire them, etc.
 
 # -----------------------------------------------------------------------------------
+# https://www.benlopatin.com/restoring-postgres-and-django/
+"""
+    pg_dump -F t db_name > /path/to/your/file/dump_name.tar
+    pg_dump -U db_user -d db_name -t table_name > path/to/backup.sql
+
+    pg_restore -d db_name /path/to/your/file/dump_name.tar -c   
+        -c flag is for creating a database before restoring data into it.
+    psql -U db_user -d db_name < path/to/backup.sql
+    gunzip -c path/to/backup.sql.gz | psql -U db_user -d db_name
+
+    https://github.com/FlipperPA/django-pg-copy
+    
+    https://docs.python.org/3/library/subprocess.html#using-the-subprocess-module
+    Tip: Call script, chmod u+rx bash.sh
+    import subprocess
+    subprocess.run(['/home/josema/parser.sh'])
+
+"""
+
 def database_backup():
     try:
         call_command('dbbackup')

@@ -29,5 +29,6 @@ django-autocomplete-light
 # django-dbbackup ISSUE: def get_escaped_command_arg(arg): return arg
 # -e git+https://github.com/jazzband/django-dbbackup.git#egg=django-dbbackup
 # pip install --no-cache-dir --upgrade <package>
+django-pg-copy
 django-apscheduler
 # django_crontab

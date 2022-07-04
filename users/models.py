@@ -25,6 +25,8 @@ class Profile(ProxySuper): #models.Model):
 
     proxy_name = models.CharField(max_length=20, default='Profile', blank=True, null=True)
 
+    # https://stackoverflow.com/questions/5870537/whats-the-difference-between-django-onetoonefield-and-foreignkey
+    # user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
     name = models.CharField(max_length=100, blank=True, null=True) #FIXME - dump during User creation, unique=True)
     email = models.EmailField(max_length=150, blank=True, null=True, unique=False)

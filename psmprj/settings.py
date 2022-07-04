@@ -79,6 +79,7 @@ INSTALLED_APPS = [
     'django_extensions',    #debugging tool, jupyter
     
     'dbbackup',  # django-dbbackup
+    'pg_copy',   # https://pypi.org/project/django-pg-copy/
 
     # 'ckeditor',           # working fine, but not used here...
     # 'django_markdown',    # use different way markdown2
@@ -209,6 +210,10 @@ else:   #Development
 # https://django-dbbackup.readthedocs.io/en/master/databases.html
 DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
 DBBACKUP_STORAGE_OPTIONS = {'location':  env("DBBACKUP_LOCATION", BASE_DIR + "/backup")}
+
+# https://github.com/FlipperPA/django-pg-copy
+PG_COPY_BACKUP_PATH = env("PG_COPY_BACKUP_PATH",  BASE_DIR + "/backup")
+
 # DBBACKUP_CONNECTORS = {
 #     'default': {
 #         'USER': env("POSTGRES_USER", 'postgres'), 

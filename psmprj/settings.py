@@ -79,7 +79,7 @@ INSTALLED_APPS = [
     'django_extensions',    #debugging tool, jupyter
     
     'dbbackup',  # django-dbbackup
-    'pg_copy',   # https://pypi.org/project/django-pg-copy/
+    # 'pg_copy',   # https://pypi.org/project/django-pg-copy/
 
     # 'ckeditor',           # working fine, but not used here...
     # 'django_markdown',    # use different way markdown2

@@ -23,7 +23,7 @@ urlpatterns = [
 	path('report/risks/', 			login_required(views.reportRisks.as_view()), 		name='report_risks'),
 	# path('report/risks/', login_required(views.reportRisks), 		name='report_risks'),
 	path('report/email/<pk>/', login_required(views.reportEmail.as_view()), name='report-email'),
-	path('report/list/<pk>', login_required(views.reportList.as_view()), 	name='report_list'),
+	path('report/list/<pk>', login_required(views.reportList.as_view()), 	name='report_list_pk'),
 	path('report/', login_required(views.reportList.as_view()), 			name='report_list'),
 	path('report/<pk>/', login_required(views.reportDetail.as_view()), 		name='report_detail'),
 ]

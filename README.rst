@@ -333,6 +333,11 @@ For Redhat/CentOS
     $pip install django-auth-ldap
 
 
+admin url - how to find
+-------------------
+python manage.py show_urls
+
+
 Django subdirectory and NGINX 
 ----------------------------------------------------
 ::

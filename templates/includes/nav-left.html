@@ -2,7 +2,7 @@
         <!--left links-->
         <ul class="nav navbar-nav me-auto mb-2 mb-lg-0">
 
-          <li class="nav-item"><a class="nav-item nav-link"  href="/">Home</a></li>
+          <li class="nav-item"><a class="nav-item nav-link"  href="{% url 'home' %}">Home</a></li>
 
           <li class="nav-item dropdown">
               <!-- <div class="nav-dropdown"> -->
@@ -11,8 +11,8 @@
                   </a>
                   <!-- dropdown with ul dropdown-menu <div class="dropdown-menu dropdown-menu-end nav-link-menu" aria-labelledby="nav1"> -->
                           <ul class="dropdown-menu nav-list" aria-labelledby="nav1">
-                          <li><a class="dropdown-item" href="/admin/psm/projectrequest/add/"><i class="pe-2 bi bi-clipboard-data"></i> Create Project Request </a></li>
-                          <li><a class="dropdown-item" href="/admin/psm/projectrequest"><i class="pe-2 bi bi-collection"></i> Manage Project Request </a></li>
+                          <li><a class="dropdown-item" href="{% url 'admin:psm_projectrequest_add' %}"><i class="pe-2 bi bi-clipboard-data"></i> Create Project Request </a></li>
+                          <li><a class="dropdown-item" href="{% url 'admin:psm_projectrequest_changelist' %}"><i class="pe-2 bi bi-collection"></i> Manage Project Request </a></li>
                           <div class="dropdown-divider"></div>
                           <li><a class="dropdown-item" href="{% url 'project_plan_index' %}"><i class="pe-2 bi bi-card-checklist"></i> Project Demand List</a></li>
                       </ul>
@@ -28,15 +28,15 @@
                 </a>
                 <!-- <div class="dropdown-menu dropdown-menu-end nav-link-menu"> -->
                     <ul class="dropdown-menu nav-list" aria-labelledby="nav2">
-                        <li><a class="dropdown-item" href="/admin/resources/skill/"><i class="pe-2 bi bi-file-earmark-plus"></i> Manage Skills</a></li>
-                        <li><a class="dropdown-item" href="/admin/resources/resource/"><i class="pe-2 bi bi-file-earmark-plus"></i> Manage Resource</a></li>
+                        <li><a class="dropdown-item" href="{% url 'admin:resources_skill_changelist' %}"><i class="pe-2 bi bi-file-earmark-plus"></i> Manage Skills</a></li>
+                        <li><a class="dropdown-item" href="{% url 'admin:resources_resource_changelist' %}"><i class="pe-2 bi bi-file-earmark-plus"></i> Manage Resource</a></li>
                         <div class="dropdown-divider"></div>
-                        <li><a class="dropdown-item" href="/admin/resources/resourceplan/"><i class="pe-2 bi bi-file-earmark-plus"></i> Manage Resource Plan</a></li>
-                        <li><a class="dropdown-item" href="/admin/resources/rpplanitem/"><i class="pe-2 bi bi-file-earmark-plus"></i> Resource Allocation Details</a></li>
+                        <li><a class="dropdown-item" href="{% url 'admin:resources_resourceplan_changelist' %}"><i class="pe-2 bi bi-file-earmark-plus"></i> Manage Resource Plan</a></li>
+                        <li><a class="dropdown-item" href="{% url 'admin:resources_rpplanitem_changelist' %}"><i class="pe-2 bi bi-file-earmark-plus"></i> Resource Allocation Details</a></li>
                         <div class="dropdown-divider"></div>
-                        <li><a class="dropdown-item" href="/admin/resources/projectplan/"><i class="pe-2 bi bi-file-earmark-plus"></i> Manage Project Plan</a></li>
-                        <li><a class="dropdown-item" href="/admin/resources/ppplanitem/"><i class="pe-2 bi bi-file-earmark-plus"></i> Project Allocation Details</a></li>
-                        <li><a class="dropdown-item" href="/admin/resources/actualitem/"><i class="pe-2 bi bi-file-earmark-plus"></i> Project Allocation Details</a></li>
+                        <li><a class="dropdown-item" href="{% url 'admin:resources_projectplan_changelist' %}"><i class="pe-2 bi bi-file-earmark-plus"></i> Manage Project Plan</a></li>
+                        <li><a class="dropdown-item" href="{% url 'admin:resources_ppplanitem_changelist' %}"><i class="pe-2 bi bi-file-earmark-plus"></i> Project Allocation Details</a></li>
+                        <li><a class="dropdown-item" href="{% url 'admin:resources_actualitem_changelist' %}"><i class="pe-2 bi bi-file-earmark-plus"></i> Project Allocation Details</a></li>
                     </ul>
                 <!-- </div> -->
             <!-- </div> -->
@@ -50,26 +50,26 @@
                   </a>
                   <!-- <div class="dropdown-menu dropdown-menu-end nav-link-menu"> -->
                       <ul class="dropdown-menu nav-list" aria-labelledby="nav3">
-                          <li><a class="dropdown-item" href="/admin/psm/project/add/"><i class="pe-2 bi bi-file-earmark-plus"></i> Register Project</a></li>
-                          <li><a class="dropdown-item" href="/admin/psm/project/?year={% now 'Y' %}"><i class="pe-2 bi bi-file-ruled"></i>Manage Project - {% now 'Y' %}</a></li>
+                          <li><a class="dropdown-item" href="{% url 'admin:psm_project_add' %}"><i class="pe-2 bi bi-file-earmark-plus"></i> Register Project</a></li>
+                          <li><a class="dropdown-item" href="{% url 'admin:psm_project_changelist' %}?year={% now 'Y' %}"><i class="pe-2 bi bi-file-ruled"></i>Manage Project - {% now 'Y' %}</a></li>
                           <li><a class="dropdown-item" href="{% url 'project_list1' %}"><i class="pe-2 bi bi-list-task"></i>Project list</a> </li>
                           <div class="dropdown-divider"></div>
-                          <li><a class="dropdown-item" href="/admin/reports/report/add/"><i class="pe-2 bi bi-chat-left-quote-fill"></i> Create Project Status Report</a></li>
-                          <li><a class="dropdown-item" href="/admin/reports/report"><i class="pe-2 bi-list-task"></i>Manage Status Report</a></li>
+                          <li><a class="dropdown-item" href="{% url 'admin:reports_report_add' %}"><i class="pe-2 bi bi-chat-left-quote-fill"></i> Create Project Status Report</a></li>
+                          <li><a class="dropdown-item" href="{% url 'admin:reports_report_changelist' %}"><i class="pe-2 bi-list-task"></i>Manage Status Report</a></li>
                           <div class="dropdown-divider"></div>
-                          <li><a class="dropdown-item" href="/admin/reports/reportrisk"><i class="pe-2 bi bi-megaphone-fill"></i> Manage Project Risk Report</a></li>
-                          <li><a class="dropdown-item" href="/admin/reviews/review"><i class="pe-2 bi bi-cart-plus"></i>Manage ITPC</a></li>
+                          <li><a class="dropdown-item" href="{% url 'admin:reports_reportrisk_changelist' %}"><i class="pe-2 bi bi-megaphone-fill"></i> Manage Project Risk Report</a></li>
+                          <li><a class="dropdown-item" href="{% url 'admin:reviews_review_changelist' %}"><i class="pe-2 bi bi-cart-plus"></i>Manage ITPC</a></li>
                           <div class="dropdown-divider"></div>
-                          <li><a class="dropdown-item" href="/admin/psm/program"><i class="pe-2 bi bi-columns"></i>Manage Program</a></li>
+                          <li><a class="dropdown-item" href="{% url 'admin:psm_program_changelist' %}"><i class="pe-2 bi bi-columns"></i>Manage Program</a></li>
                           <div class="dropdown-divider"></div>
-                          <li><a class="dropdown-item" href="/admin/common/gmdm"><i class="pe-2 bi bi-pc-display"></i>Manage GMDM</a></li>
-                          <li><a class="dropdown-item" href="/admin/common/wbs"><i class="pe-2 bi bi-currency-dollar"></i>Manage WBS(SAP)</a></li>
-                          <li><a class="dropdown-item" href="/admin/users/profilecbu"><i class="pe-2 bi bi-person"></i>Manage CBU contacts</a></li>
+                          <li><a class="dropdown-item" href="{% url 'admin:common_gmdm_changelist' %}"><i class="pe-2 bi bi-pc-display"></i>Manage GMDM</a></li>
+                          <li><a class="dropdown-item" href="{% url 'admin:common_wbs_changelist' %}"><i class="pe-2 bi bi-currency-dollar"></i>Manage WBS(SAP)</a></li>
+                          <li><a class="dropdown-item" href="{% url 'admin:users_profilecbu_changelist' %}"><i class="pe-2 bi bi-person"></i>Manage CBU contacts</a></li>
                       </ul>
                   <!-- </div> -->
               <!-- </div> -->
           </li>
-          <!-- <li class="nav-item"><a class="nav-item nav-link"  href="/project/">Reports</a></li> -->
+          <!-- <li class="nav-item"><a class="nav-item nav-link"  href="_project' %}">Reports</a></li> -->
           <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle  text-primary" href="#" id="nav4" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="bi bi-bar-chart-line"></i><span class="ms-1">  Reports</span>
@@ -81,7 +81,7 @@
                 <div class="dropdown-divider"></div>
                 <li><a class="dropdown-item" href="{% url 'project_dashboard' %}"><i class="pe-2 bi bi-speedometer"></i> Project Portfolio Dashboard </a></li>
                 {% if user.profile.is_psmadm or user.is_superuser %}
-                    <li><a class="dropdown-item" href="/data"><i class="pe-2 bi bi-speedometer"></i> Dashboard - pilot 1 </a></li>
+                    <li><a class="dropdown-item" href="_data"><i class="pe-2 bi bi-speedometer"></i> Dashboard - pilot 1 </a></li>
                 {% endif %}
                 <div class="dropdown-divider"></div>
                 <li><a class="dropdown-item" href="{% url 'project_chart_1' %}"><i class="pe-2 bi bi-bar-chart-steps"></i>Gantt chart (type1)</a></li>
@@ -90,9 +90,9 @@
                     <li><a class="dropdown-item" href="{% url 'project_chart_3' %}"><i class="pe-2 bi bi-clipboard-data"></i>Chart (pilot)</a></li>
             {% endif %}
                 <div class="dropdown-divider"></div>
-                <li><a class="dropdown-item" href="{% url 'project_list1' %}"><i class="pe-2 bi bi-signpost"></i> Project List</a></li>
-                <li><a class="dropdown-item" href="/report"><i class="pe-2 bi bi-journal-check"></i> Status Report List</a></li>
-                <li><a class="dropdown-item" href="/report/risks"><i class="pe-2 bi bi-flag"></i> Risk Report List</a></li>
+                <li><a class="dropdown-item" href="{% url 'report_list' %}"><i class="pe-2 bi bi-signpost"></i> Project List</a></li>
+                <li><a class="dropdown-item" href="{% url 'project_list1' %}"><i class="pe-2 bi bi-journal-check"></i> Status Report List</a></li>
+                <li><a class="dropdown-item" href="{% url 'report_risks' %}"><i class="pe-2 bi bi-flag"></i> Risk Report List</a></li>
               </ul>
             </li>
   

@@ -10,21 +10,21 @@
                     </a>
                     <!-- <div class="dropdown-menu dropdown-menu-end nav-link-menu" aria-labelledby="nav1"> -->
                         <ul class="dropdown-menu nav-list" aria-labelledby="nav4">
-                            <li><a class="dropdown-item" href="/admin/users/profilecbu/">Manage Profile CBU</a></li>
-                            <li><a class="dropdown-item" href="/admin/users/profile/">Manage Profile</a></li>
-                            <li><a class="dropdown-item" href="/admin/auth/user/">Manage User</a></li>
-                            <li><a class="dropdown-item" href="/admin/auth/group/">Manage Group</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:users_profilecbu_changelist' %}">Manage Profile CBU</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:users_profile_changelist' %}">Manage Profile</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:auth_user_changelist' %}">Manage User</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:auth_group_changelist' %}">Manage Group</a></li>
                             <div class="dropdown-divider"></div>
-                            <li><a class="dropdown-item" href="/admin/psm/strategy/">Master Data - Stategy</a></li>
-                            <li><a class="dropdown-item" href="/admin/psm/projectdeliverabletype/">Master Data - Deliverable Type</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:psm_strategy_changelist' %}">Master Data - Stategy</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:psm_projectdeliverabletype_changelist' %}">Master Data - Deliverable Type</a></li>
                             <div class="dropdown-divider"></div>
-                            <li><a class="dropdown-item"  href="/post/new/">New Post</a></li>
-                            <li><a class="dropdown-item" href="/admin/blog/post/">Manage Post</a></li>
-                            <li><a class="dropdown-item" href="/admin/blog/ticket/">Manage Tickets</a></li>
+                            <li><a class="dropdown-item"  href="{% url 'post_create' %}">New Post</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:blog_post_changelist' %}">Manage Post</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:blog_ticket_changelist' %}">Manage Tickets</a></li>
                             <div class="dropdown-divider"></div>
-                            <li><a class="dropdown-item" href="/admin/django_apscheduler/djangojob/">Manage Batch Jobs</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:django_apscheduler_djangojob_changelist' %}">Manage Batch Jobs</a></li>
                             <div class="dropdown-divider"></div>
-                            <li><a class="dropdown-item" href="/admin">Admin - Home</a></li>
+                            <li><a class="dropdown-item" href="{% url 'admin:index' %}">Admin - Home</a></li>
                         </ul>
                     <!-- </div> -->
                 <!-- </div> -->
@@ -44,14 +44,10 @@
                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink9">
                   {% if user.is_authenticated %}
                     <a class="dropdown-item" href="{% url 'about' %}"><i class="bi bi-info-circle"></i> About</a>
-                    <a class="dropdown-item" href="/admin/blog/ticket"><i class="bi bi-bug"></i> Bug tracker</a>
+                    <a class="dropdown-item" href="{% url 'admin:blog_ticket_changelist' %}"><i class="bi bi-bug"></i> Bug tracker</a>
                     <div class="dropdown-divider"></div>
                     
-                    {% if user.is_staff %}
-                    <a class="dropdown-item" href="/admin/users/profile/{{ user.profile.id }}"><i class="bi bi-person-circle"></i> Profile</a>
-                    {% else %}
                     <a class="dropdown-item" href="{% url 'profile' %}"><i class="bi bi-person-circle"></i> Profile</a>
-                    {% endif %}
                     <a class="dropdown-item" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a>
                   {% else %}
                     <a class="dropdown-item" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-left"></i> Login</a>

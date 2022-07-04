@@ -191,6 +191,63 @@ Backup & restore plan
 ---------------------
 https://stackoverflow.com/questions/34822002/django-backup-strategy-with-dumpdata-and-migrations
 
+Postgres dumpdata
+    $ pg_dump -U $user -Fc $database --exclude-table=django_migrations > path/to/backup-dir/db.dump
+
+Django dumpdata and loaddata
+    $ python manage.py dumpdata \
+    --exclude auth.permission --exclude contenttypes --exclude admin.LogEntry --exclude sessions \
+    --exclude auth.user
+    --natural-foreign 
+    --natural-foreign --natural-primary
+    --format jsonl --indent 2 --output ../db.json
+
+    $ python manage.py loaddata ../db.json
+
+https://markvanlent.dev/2011/05/06/integrityerror-duplicate-key-value-violates-unique-constraint/
+As is often the case: once you’ve discovered the cause of the problem, the solution becomes trivial. 
+In this case I just had to set the last_value of the sequence to the highest ID in the table.
+
+I chose the quick-and-dirty solution to create a new, empty migration:
+
+    $ python manage.py makemigrations --empty users
+
+Then I added this code to the forwards method:
+
+    if orm.Profile.objects.count():
+        highest_number = db.execute('select id from users_profile order by id desc limit 1;')[0][0]
+        db.execute('alter sequence users_profile_id_seq restart with %s;' % (highest_number + 1))
+
+I probably could have safely set the sequence to highest number but I choose to increment by one 
+just to make sure I didn’t have an off-by-one error. The second line fails if there are no Profile 
+so to prevent my tests from failing I check for the existence of Profile explicitly.
+
+After I ran this migration on the production environment, users could create profiles again without triggering an IntegrityError.
+
+
+OnetoOne field issue
+---------------------
+Profile.user = models.OneToOneField(User) when django creates User records 
+it automatically creates Profiles for these users (probably via post_save). 
+So when loaddata starts to import Profiles, each User already has a profile and additional profiles break the constraint.
+
+1) export auth.user into a separate auth_user.json;
+    python manage.py dumpdata --indent=4 auth.user auth.group --natural-foreign --natural-primary --output  ../psm_sandbox/auth_user.json
+
+2) export other models:
+    python manage.py dumpdata --indent=4 -e sessions -e admin -e contenttypes -e auth.Permission --natural-foreign --natural-primary --output ../psm_sandbox/other_models.json
+
+3) load User records: 
+    python manage.py loaddata   ../auth_user.json
+
+4) open ./manage.py shell or shell_plus and delete all the Profiles:
+    Profiles.objects.all().delete()
+    Profiles.objects.all().count()
+
+5) load the rest of the records:
+    python manage.py loaddata ../other_models.json
+
+
 Django permission 
 -----------------
 https://testdriven.io/static/images/blog/django/drf-permissions/permissions_execution.png

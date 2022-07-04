@@ -340,25 +340,54 @@ python manage.py show_urls
 
 Django subdirectory and NGINX 
 ----------------------------------------------------
-::
-    MY_PROJECT = env('MY_PROJECT', '')  # example; '/dj'
+sudo nano /etc/systemd/system/psm_sandbox.socket
+    [Unit]
+    Description = PSM sandbox guniocorn socket
+
+    [Socket]
+    ListenStream=/run/psm_sandbox.sock
+
+    [Install]
+    WantedBy=sockets.target
+
+
+sudo nano /etc/systemd/system/psm_sandbox.service
+    [Unit]
+    Description=PSM sandbox gunicorn daemon
+    Requires=psm_sandbox.socket
+    After=network.rarget
+
+    [Service]
+    User=psm
+    Group=psm
+    WorkingDirectory=/opt/app/psm_sandbox/psm
+    ExecStart=/opt/app/psm_sandbox/psm/.venv/bin/gunicorn --workers 1 --bind unix:/run/psm_sandbox.socket psmprj.wsgi:application
+
+    [Install]
+    WantedBy=multi-user.targetw
+
+sudo nano /etc/ngnix/conf.d/psm.conf
+    ...
+    location /sandbox/ {
+        #proxy_cookie_path / /sandbox/;
+        #rewrite /sandbox/(.*) /$1 break;
+        proxy_pass http://unix:/run/psm_sandbox.sock;
+    }
+    ...
+
+Django - for subdirectory 
+    .env : MY_PROJECT=/sandbox
+    **settings.py** 
+    MY_PROJECT = env('MY_PROJECT', '')  # example; '/sandbox'
     if MY_PROJECT:
         USE_X_FORWARDED_HOST = True
         FORCE_SCRIPT_NAME = MY_PROJECT + "/"
         SESSION_COOKIE_PATH = MY_PROJECT + "/"
-
-    LOGIN_URL = "login/"
     LOGIN_REDIRECT_URL = MY_PROJECT + "/"
     LOGOUT_REDIRECT_URL = MY_PROJECT + "/"
 
-NGINX configuration
-::
-    location /dj/ {
-        proxy_set_header X-Forwarded-Protocol $scheme;
-        proxy_set_header Host $http_host;
-        proxy_set_header X-Scheme $scheme;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+Start services
 
-        proxy_pass http://127.0.0.1:8000/;
-    }
-
+    $ systemctl start psm_sandbox.socket
+    $ systemctl enable psm_sandbox.socket
+    $ systemctl start psm_sandbox

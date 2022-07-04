@@ -153,15 +153,15 @@ SESSION_COOKIE_PATH = env('SESSION_COOKIE_PATH', '/')
 """
     subdirectory site: https://stackoverflow.com/questions/44987110/django-in-subdirectory-admin-site-is-not-working
 """
-MY_PROJECT = env('MY_PROJECT', '')  # example; '/dj'
+MY_PROJECT = env('MY_PROJECT', '')  # example; '/sandbox'
 if MY_PROJECT:
     USE_X_FORWARDED_HOST = True
     FORCE_SCRIPT_NAME = MY_PROJECT + "/"
     SESSION_COOKIE_PATH = MY_PROJECT + "/"
 
-LOGIN_URL = "login/"
 LOGIN_REDIRECT_URL = MY_PROJECT + "/"
 LOGOUT_REDIRECT_URL = MY_PROJECT + "/"
+LOGIN_URL = "login/"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/ref/settings/#staticfiles-dirs

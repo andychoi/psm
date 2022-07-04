@@ -28,6 +28,7 @@ staticfiles/
 # Script for different environments
 prod.sh
 dev.sh
+run.sh
 
 # Static files collected
 /static

@@ -144,7 +144,8 @@ class RPPlanItemAdmin(ImportExportMixin, admin.ModelAdmin):
                 (None,  {'fields': ( ('r_staff', 'project',), ('staff',), ( 'year',  ), 
                 # (None,  {'fields': ( ('project',), ('staff',), ( 'year', 'status', ), 
                 ('m01', 'm02', 'm03', 'm04', 'm05', 'm06', 'm07', 'm08', 'm09', 'm10', 'm11', 'm12', 'm13', 'm14', 'm15') )}),
-                (_('More...'), {'fields': ( ('created_at', 'created_by', 'updated_on', 'updated_by' )), 'classes': ('collapse',)}),
+                (_('More...'), {'fields': ( ('created_at', 'created_by', 'updated_on',  )), 'classes': ('collapse',)}),
+                # (_('More...'), {'fields': ( ('created_at', 'created_by', 'updated_on', 'updated_by' )), 'classes': ('collapse',)}),
             )
 
     def get_fieldsets(self, request, obj=None):
@@ -178,7 +179,8 @@ class PPPlanItemAdmin(ImportExportMixin, admin.ModelAdmin):
                 (None,  {'fields': ( ('project',), ('p_proj', 'staff',), ( 'year',  ), 
                 # (None,  {'fields': ( ('project',), ('staff',), ( 'year', 'status', ), 
                 ('m01', 'm02', 'm03', 'm04', 'm05', 'm06', 'm07', 'm08', 'm09', 'm10', 'm11', 'm12', 'm13', 'm14', 'm15') )}),
-                (_('More...'), {'fields': ( ('created_at', 'created_by', 'updated_on', 'updated_by' )), 'classes': ('collapse',)}),
+                (_('More...'), {'fields': ( ('created_at', 'created_by', 'updated_on',  )), 'classes': ('collapse',)}),
+                # (_('More...'), {'fields': ( ('created_at', 'created_by', 'updated_on', 'updated_by' )), 'classes': ('collapse',)}),
             )
 
     def get_fieldsets(self, request, obj=None):

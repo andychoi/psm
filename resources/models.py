@@ -181,7 +181,7 @@ class RPPlanItem(models.Model):
     created_at = models.DateField(_("created at"), default=date.today, editable=False)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="rpitem_created_by", null=True, on_delete=models.SET_NULL)
     updated_on = models.DateTimeField(_("last updated"), auto_now=True, editable=False)
-    updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="rpitem_updated_by", null=True, on_delete=models.SET_NULL)
+    # updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="rpitem_updated_by", null=True, on_delete=models.SET_NULL)
 
     def save(self, *args, **kwargs):
         # self.final_value = self.discount_value if self.discount_value > 0 else self.value
@@ -252,7 +252,7 @@ class PPPlanItem(models.Model):
     created_at = models.DateField(_("created at"), default=date.today, editable=False)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="ppitem_created_by", null=True, on_delete=models.SET_NULL)
     updated_on = models.DateTimeField(_("last updated"), auto_now=True, editable=False)
-    updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="ppitem_updated_by", null=True, on_delete=models.SET_NULL)
+    # updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="ppitem_updated_by", null=True, on_delete=models.SET_NULL)
 
     def save(self, *args, **kwargs):
         # self.final_value = self.discount_value if self.discount_value > 0 else self.value

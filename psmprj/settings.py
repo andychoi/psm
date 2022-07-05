@@ -151,6 +151,7 @@ SESSION_COOKIE_PATH = env('SESSION_COOKIE_PATH', '/')
 # https://stackoverflow.com/questions/44987110/django-in-subdirectory-admin-site-is-not-working
 # https://stackoverflow.com/questions/3232349/multiple-instances-of-django-on-a-single-domain
 # https://stackoverflow.com/questions/35792409/nginx-serving-django-in-a-subdirectory-through-uwsgi/40496307#40496307
+# https://stackoverflow.com/questions/54338420/django-gunicorn-script-name
 """
     subdirectory site: https://stackoverflow.com/questions/44987110/django-in-subdirectory-admin-site-is-not-working
 """

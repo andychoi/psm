@@ -121,6 +121,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'common.context_processors.my_context',
                 # "django.template.context_processors.request",
 #                'microsoft_auth.context_processors.microsoft',
             ],

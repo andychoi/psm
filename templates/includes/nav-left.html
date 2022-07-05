@@ -1,10 +1,10 @@
 
         <!--left links-->
-        <ul class="nav navbar-nav me-auto mb-2 mb-lg-0">
+        <ul class="nav navbar-nav me-auto ">
 
-          <li class="nav-item"><a class="nav-item nav-link"  href="{% url 'home' %}">Home</a></li>
+            <li class="nav-item"><a class="nav-item nav-link"  href="{% url 'home' %}">{% if my_sub_project %}<button type="button" class="btn btn-warning">{{ my_sub_project }}</button>{% else %}Home{% endif %}</a></li>
 
-          <li class="nav-item dropdown">
+            <li class="nav-item dropdown">
               <!-- <div class="nav-dropdown"> -->
                   <a href="#" id="nav1" class="nav-item nav-link dropdown-toggle  text-secondary" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="bi bi-window-plus"></i><span class="ms-1"> Project Demand</span>
@@ -68,9 +68,9 @@
                       </ul>
                   <!-- </div> -->
               <!-- </div> -->
-          </li>
-          <!-- <li class="nav-item"><a class="nav-item nav-link"  href="_project' %}">Reports</a></li> -->
-          <li class="nav-item dropdown">
+            </li>
+            <!-- <li class="nav-item"><a class="nav-item nav-link"  href="_project' %}">Reports</a></li> -->
+            <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle  text-primary" href="#" id="nav4" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="bi bi-bar-chart-line"></i><span class="ms-1">  Reports</span>
               </a>
@@ -96,6 +96,4 @@
               </ul>
             </li>
   
-
-
-      </ul>
+        </ul> <!-- left menus -->

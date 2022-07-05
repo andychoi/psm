@@ -20,6 +20,7 @@ from django import forms
 
 from django.utils.html import format_html
 from django.utils.html import mark_safe
+from pyparsing import null_debug_action
 from common.dates import previous_business_day, add_business_days
 
 from common.models import Action3, ReqTypes, Versions, CBU, State, Phase, Dept, Team
@@ -191,7 +192,7 @@ class ProjectRequestAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdm
         form = super(ProjectRequestAdmin, self).get_form(request, obj, **kwargs)
         #FIXME if read-only due to permission
         if hasattr(form, 'base_fields'):
-            if not obj.id:
+            if obj is None:
                 form.base_fields['version'  ].initial = Versions.V10.value
             form.base_fields['asis'     ].widget.attrs.update({'rows':7,'cols':80})
             form.base_fields['tobe'     ].widget.attrs.update({'rows':7,'cols':80})

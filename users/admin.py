@@ -192,8 +192,9 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
             try:
                 found = User.objects.get(email=obj.email)
             except User.DoesNotExist:
-                continue
+                pass    # create user 
             except User.MultipleObjectsReturned:
+                messages.add_message(request, messages.WARNING, obj.name + ' has multiple User with email in profile')
                 continue
 
             if found:

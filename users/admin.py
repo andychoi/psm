@@ -181,19 +181,19 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
         # email is required for django user creation
         for obj in queryset:
             if obj.user:
-                break
+                continue
             if obj.email is None or obj.email == "":
-                break
+                continue
             if Profile.objects.filter(email = obj.email).count() > 1:  #if multiple profiles with same email, pass
-                break
+                continue
 
             found = None
             try:
                 found = User.objects.get(email=obj.email)
             except User.DoesNotExist:
-                pass
+                continue
             except User.MultipleObjectsReturned:
-                break
+                continue
 
             if found:
                 try:

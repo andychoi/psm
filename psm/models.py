@@ -258,7 +258,8 @@ class Project(models.Model):
 
             # next_code = Project.objects.filter(year = self.year).count() + 1
             # to handle deleted record
-            next_code = int(Project.objects.filter(year = self.year).aggregate(Max('code')).get('code__max').split('-')[1]) + 1
+            code_max = Project.objects.filter(year = self.year).aggregate(Max('code')).get('code__max')
+            next_code = ( int(code_max.split('-')[1]) + 1 ) if code_max  else  1
 
             # self.code = f'{self.year % 100}-{"{:04d}".format(self.pk+2000)}'    #migration upto 1999
             self.code = f'{self.year % 100}-{"{:04d}".format(next_code)}'    
@@ -422,7 +423,7 @@ class ProjectRequest(models.Model):
         return self.title if self.pk is None else "[%s] %s" % (self.code, self.title)            
 
     class Meta:
-        permissions = [ ("approve_projectrequest",     "Can approve project plan"),
+        permissions = [ ("approve_projectrequest",     "Can approve project request"),
                         ("access_projectrequest_v20",  "Can access version 20 (BAP approved)"),
                         ("access_projectrequest_v21",  "Can access version 21 (Unplanned approved)"),
                         ("access_projectrequest_cbu",  "Can access by CBU user)"),

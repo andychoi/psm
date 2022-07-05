@@ -191,7 +191,8 @@ class ProjectRequestAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdm
         form = super(ProjectRequestAdmin, self).get_form(request, obj, **kwargs)
         #FIXME if read-only due to permission
         if hasattr(form, 'base_fields'):
-            form.base_fields['version'  ].initial = Versions.V10.value
+            if not obj.id:
+                form.base_fields['version'  ].initial = Versions.V10.value
             form.base_fields['asis'     ].widget.attrs.update({'rows':7,'cols':80})
             form.base_fields['tobe'     ].widget.attrs.update({'rows':7,'cols':80})
             form.base_fields['objective'].widget.attrs.update({'rows':5,'cols':30})

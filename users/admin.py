@@ -16,6 +16,7 @@ from django.shortcuts import redirect
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.utils.html import mark_safe
+from django.urls import reverse
 from common.models import CBU, Div, Dept
 from psm.models import Project
 
@@ -59,7 +60,7 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
     resource_class = ProfileResource
 
     # list_display = ('id', 'user', 'name', 'email', 'dept', 'manager', 'u_div', 'CBU', 'is_active')
-    list_display = ('id', 'user', 'name', 'email', 'wcal', 'dept', 'team', 'is_active', 'is_staff', 'pm_count', 'goto_user', 'cbu_names', 'auto_id', 'usertype', 'proxy_name', )
+    list_display = ('id', 'user', 'name', 'email', 'wcal', 'dept', 'team', 'is_active', 'is_staff', 'pm_count_link', 'goto_user', 'cbu_names', 'auto_id', 'usertype', 'proxy_name', )
     list_display_links = ('id', 'name', 'email')
     list_editable = ( 'wcal',)
     search_fields = ('id', 'name', 'email', 'auto_id', 'CBU__name', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
@@ -115,6 +116,12 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
     #     return super(ProfileEmpAdmin, self).changelist_view(request, extra_context=extra_context)           
 
     #README: https://django-tips.avilpage.com/en/latest/admin_custom_admin_actions.html
+
+    def pm_count_link(self, obj):
+        # FIXME
+        # url = reverse('admin:psm_project') + f'?pm={[obj.id]}'
+        return mark_safe(f"<a href='/admin/psm/project/?pm={obj.id}'>{obj.pm_count}</a>")
+    pm_count_link.short_description = 'PM count'
 
     #object-function
     def goto_user(self, obj):

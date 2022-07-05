@@ -361,3 +361,12 @@ class GMDMAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
 
     #     if len(validation_errors):
     #         raise ValidationError(validation_errors)
+
+    # fix conflict issue with two package: import/export, obj-action
+    changelist_actions = ['redirect_to_export', 'redirect_to_import', ]
+    def redirect_to_export(self, request, obj):
+        return HttpResponseRedirect(reverse('admin:%s_%s_export' % self.get_model_info()))
+    redirect_to_export.label = "Export"
+    def redirect_to_import(self, request, obj):
+        return HttpResponseRedirect(reverse('admin:%s_%s_import' % self.get_model_info()))
+    redirect_to_import.label = "Import"

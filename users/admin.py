@@ -182,9 +182,10 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
         for obj in queryset:
             if obj.user:
                 continue
-            if obj.email is None or obj.email == "":
+            if obj.email is None or obj.email.strip() == "":
+                messages.add_message(request, messages.WARNING, obj.name + ' has no valid email address in profile')
                 continue
-            if Profile.objects.filter(email = obj.email).count() > 1:  #if multiple profiles with same email, pass
+            if obj.emailProfile.objects.filter(email = obj.email).count() > 1:  #if multiple profiles with same email, pass
                 continue
 
             found = None

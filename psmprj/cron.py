@@ -169,9 +169,12 @@ def late_reminder():
                                p.pk, e.__class__.__name__, str(e))
 
 def sap_import():
-    from common.functions import _update_wbs, _update_emp
+    from common.functions import _update_wbs, _update_emp, _update_org, _update_profile
     _update_wbs()
+
     _update_emp()
+    _update_org()
+    _update_profile()
 
 # https://github.com/jcass77/django-apscheduler
 # https://apscheduler.readthedocs.io/en/latest/userguide.html

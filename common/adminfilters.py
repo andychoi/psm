@@ -14,6 +14,6 @@ class ProfileAutocomplete(autocomplete.Select2QuerySetView):
         qs = Profile.objects.filter(proxy_name='Profile')
 
         if self.q:
-            qs = qs.filter(Q(name__contains=self.q) | Q(email__contains=self.q) | Q(user__username__contains=self.q) )
+            qs = qs.filter(Q(name__icontains=self.q) | Q(email__icontains=self.q) | Q(user__username__icontains=self.q) )
 
         return qs

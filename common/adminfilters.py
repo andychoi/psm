@@ -1,6 +1,7 @@
 # common/adminfilters.py
 # https://django-autocomplete-light.readthedocs.io/en/master/tutorial.html#overview
 
+from django.db.models import Q
 from users.models import Profile
 
 from dal import autocomplete
@@ -13,6 +14,6 @@ class ProfileAutocomplete(autocomplete.Select2QuerySetView):
         qs = Profile.objects.filter(proxy_name='Profile')
 
         if self.q:
-            qs = qs.filter(name__istartswith=self.q)
+            qs = qs.filter(Q(name__contains=self.q) | Q(email__contains=self.q) | Q(user__username__contains=self.q) )
 
         return qs

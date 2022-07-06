@@ -132,7 +132,7 @@ class WBS(models.Model):
     status = models.CharField(max_length=20, blank=True, null=True)
     budget = models.DecimalField(_("Budget"), decimal_places=0, max_digits=12, default=0, blank=True, null=True)
 
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='WBS_created_by', null=True, on_delete=models.SET_NULL)
     created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False, blank=True)
     updated_on = models.DateTimeField(_("updated_on"), auto_now=True, editable=False)
 
@@ -151,8 +151,8 @@ class Employee(models.Model):
     email = models.CharField(_("Email"), max_length=50, blank=False, null=False, db_index=True)
     create_date = models.DateTimeField(_("Create_date"), blank=True, null=True)
     terminated = models.DateTimeField(_("Terminated"), blank=True, null=True)
-
     updated_on = models.DateTimeField(_("updated_on"), auto_now=True, editable=False)
+
     def __str__(self):
         return f"{self.emp_id} { '(terminated)' if self.terminated else ''}" 
 

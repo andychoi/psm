@@ -120,7 +120,7 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
     def pm_count_link(self, obj):
         # FIXME
         # url = reverse('admin:psm_project') + f'?pm={[obj.id]}'
-        return mark_safe(f"<a href='/admin/psm/project/?pm={obj.id}'>{obj.pm_count}</a>")
+        return mark_safe(f"<a href='{reverse('admin:psm_project_changelist')}?pm={obj.id}'>{obj.pm_count}</a>")
     pm_count_link.short_description = 'PM count'
 
     #object-function

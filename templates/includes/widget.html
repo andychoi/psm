@@ -10,21 +10,10 @@
     {% endif %}
 
     {% if user.is_authenticated and user.is_staff %}
-    <!-- <h6 class="mt-3">Reports</h6>
-    <ul class="list-group">
-      <li class="list-group-item list-group-item-light"><a href="/project_list/1">Project Dashboard</a></li>
-      <li class="list-group-item list-group-item-light"><a href="/reports">Status Report List</a></li>
-    </ul>
 
-    <h6 class="mt-3">Admins</h6>
-    <ul class="list-group">
-      <li class="list-group-item list-group-item-light"><a href="/admin">Admin - Home</a></li>
-      <li class="list-group-item list-group-item-light"><a href="/admin/psm/project">Admin - project</a></li>
-      <li class="list-group-item list-group-item-light"><a href="/admin/reports/report">Admin - status report</a></li>
-      <li class="list-group-item list-group-item-light"><a href="/admin/reports/reportrisk">Admin - project risk</a></li> -->
       {% if users.profile.is_psmadm %}
       {% endif %}
-    <!-- </ul> -->
+
     {% endif %}
         
   </div>        

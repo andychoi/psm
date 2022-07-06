@@ -196,7 +196,8 @@ class ReviewAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     change_actions = ('goto_project',)
     # object-function
     def goto_project(self, request, obj):
-        return HttpResponseRedirect(f'/admin/psm/project/{obj.project.id}')
+        # return HttpResponseRedirect(f'/admin/psm/project/{obj.project.id}')
+        return HttpResponseRedirect(reverse('admin:psm_project_change', args=(obj.project.id,)))
 
     #FIX conflict with DjangoObjectActions, import/export
     changelist_actions = ['redirect_to_export', 'redirect_to_import']

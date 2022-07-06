@@ -61,7 +61,7 @@
                     <td class="text-center">{{ p.p_kickoff }}</td>
                     <td class="text-center">{{ p.p_launch }}</td>
                     <td class="text-end">{{ p.est_cost|currency:"k" }}</td>
-                    <td class="text-center"><a target="_blank" href="/admin/psm/projectrequest/{{ p.id }}"><i class="bi bi-pencil"></i></a></td>
+                    <td class="text-center"><a target="_blank" href="{% url 'admin:psm_projectrequest_change' p.id %}"><i class="bi bi-pencil"></i></a></td>
                 </tr>						
                 {% endfor %}	
                 </tbody>

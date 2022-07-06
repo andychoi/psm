@@ -229,7 +229,7 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
 
     # object-function
     def goto_project(self, request, obj):
-        return HttpResponseRedirect(f'/admin/psm/project/{obj.project.id}')
+        return HttpResponseRedirect(reverse('admin:psm_project_change', args=(obj.project.id,)))
         # from django.shortcuts import redirect
         # redirect('/admin/psm/project/%s' % obj.project.pk)
 
@@ -245,7 +245,7 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
 
     # object-function
     def past_reports(self, request, obj):
-        return HttpResponseRedirect(f'/admin/reports/report/?project__id__exact={obj.project.id}')
+        return HttpResponseRedirect(f"{reverse('admin:reports_report_changelist')}?project__id__exact={obj.project.id}")
 
     # object-function
     def clone(self, request, obj):
@@ -264,8 +264,8 @@ class ReportAdmin(DjangoObjectActions, admin.ModelAdmin):
             m.report = new
             m.pk = None
             m.save()
-        messages.add_message(request, messages.INFO, "Report is cloned to #%i with title %s" % (new.id, new.title))
-        return HttpResponseRedirect(f'/admin/reports/report/{new.id}')
+        messages.add_message(request, messages.INFO, mark_safe( f"Report is cloned to <a href='{reverse('admin:reports_report_change', args=(new.id,))}'> {new.id} </a>" ))
+        return HttpResponseRedirect(f'{reverse("admin:reports_report_change", args=(new.id,))}')
     clone.label = "Clone+"  
 
     def save_model(self, request, obj, form, change):

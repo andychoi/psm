@@ -49,7 +49,7 @@ from dal import autocomplete    #https://django-autocomplete-light.readthedocs.i
 
 @admin.register(Strategy)
 class StrategyAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
-    list_display = ('name', 'updated_on','is_active')
+    list_display = ('name', 'updated_on','is_active', 'goto_project')
     list_display_links = ('name',)
     list_filter = ('is_active',)
     search_fields = ('name', 'description')
@@ -61,12 +61,12 @@ class StrategyAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         import_id_fields = ('id',)
 
     change_actions = ('goto_project', )
-    def goto_project(self, request, obj):
-        return HttpResponseRedirect(f'/admin/psm/project/?strategy__id__exact={obj.id}')
+    def goto_project(self, obj):
+        return mark_safe(f'<a href="{reverse("admin:psm_project_changelist")}?strategy__id__exact={obj.id}"> Links </a>')
 
 @admin.register(Program)
 class ProgramAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
-    list_display = ('name', 'lead', 'startyr', 'is_active')
+    list_display = ('name', 'lead', 'startyr', 'is_active', 'goto_project')
     list_display_links = ('name', 'lead')
     search_fields = ('name',)
     ordering = ('-startyr', 'name',)
@@ -78,8 +78,8 @@ class ProgramAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     # object-function in object admin page
     change_actions = ('goto_project', )
     # object-function
-    def goto_project(self, request, obj):
-        return HttpResponseRedirect(f'/admin/psm/project/?program__id__exact={obj.id}')
+    def goto_project(self, obj):
+        return mark_safe(f'<a href="{reverse("admin:psm_project_changelist")}?program__id__exact={obj.id}"> Links </a>')
 
     changelist_actions = ['redirect_to_export', 'redirect_to_import']
     def redirect_to_export(self, request, obj):
@@ -213,6 +213,30 @@ class ProjectRequestAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdm
         return form
 
 
+    # TODO - permission override
+    def has_change_permission(self, request, obj=None):
+        if obj :
+            # return True
+            #check permission on version
+            if obj.version == Versions.V20.value and not request.user.has_perm('access_projectrequest_v20') or \
+               obj.version == Versions.V21.value and not request.user.has_perm('access_projectrequest_v21'):
+                return False    # You do not have access to version 21 (Unplanned approved') 
+            return True
+        else:
+            return super(ProjectRequestAdmin, self).has_change_permission(request, obj)
+
+    # TODO - limit access to list for specific user group?? like CBU
+    def get_queryset(self, request):
+        return ProjectRequest.objects.all()
+        # if request.user.is_superuser:
+        #     return ProjectRequest.objects.all()
+        
+        # try:
+        #     return ProjectRequest.objects.filter(pm = request.user.profile)
+        # except:
+        #     return ProjectRequest.objects.none()        
+
+
     actions = ['move_to_final_version', 'move_to_11_version', 'move_to_12_version', 'release_to_actual_batch' ]
     def queryset_update_version(self, request, queryset, version):
         updated = queryset.update(version=version)
@@ -272,7 +296,7 @@ class ProjectRequestAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdm
             # check if actual prj is created
             prj = Project.objects.filter(ref_plan=obj)
             if prj.exists():
-                messages.add_message(request, messages.ERROR, mark_safe("Project already exist <a href='/admin/psm/project/%s'>%s</a>" % (prj[0].id, prj[0].pjcode) ))
+                messages.add_message(request, messages.ERROR, mark_safe(f'Project already exist <a href="{reverse("admin:psm_project_change", args=(prj[0].id,))}"> {prj[0].pjcode} </a>'))
             else:
                 new_proj = Project.objects.create()
                 for field in ProjectRequest._meta.fields:
@@ -292,7 +316,7 @@ class ProjectRequestAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdm
                 new_proj.save()
                 obj.released = new_proj
                 obj.save()
-                messages.add_message(request, messages.INFO, mark_safe("released to actual project to <a href='/admin/psm/project/%s'>%s</a>" % (new_proj.id, new_proj.pjcode) ))
+                messages.add_message(request, messages.INFO, mark_safe(f"released to actual project to <a href='{reverse('admin:psm_project_change', args=(new_proj.id,))}'> {new_proj.pjcode} </a>") )
 
 
     # fix conflict issue with two package: import/export, obj-action
@@ -309,29 +333,6 @@ class ProjectRequestAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdm
         if 'delete_selected' in actions and not request.user.is_superuser :
             del actions['delete_selected']
         return actions
-
-    # TODO - permission override
-    def has_change_permission(self, request, obj=None):
-        if obj :
-            # return True
-            #check permission on version
-            if obj.version == Versions.V20.value and not request.user.has_perm('access_projectrequest_v20') or \
-               obj.version == Versions.V21.value and not request.user.has_perm('access_projectrequest_v21'):
-                return False    # You do not have access to version 21 (Unplanned approved') 
-            return True
-        else:
-            return super(ProjectRequestAdmin, self).has_change_permission(request, obj)
-
-    # TODO - limit access to list for specific user group?? like CBU
-    def get_queryset(self, request):
-        return ProjectRequest.objects.all()
-        # if request.user.is_superuser:
-        #     return ProjectRequest.objects.all()
-        
-        # try:
-        #     return ProjectRequest.objects.filter(pm = request.user.profile)
-        # except:
-        #     return ProjectRequest.objects.none()        
 
     # list with default filter
     def changelist_view(self, request, extra_context=None):
@@ -352,8 +353,17 @@ class ProjectRequestAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdm
         next_code = Project.objects.filter(year = obj.year).count() + 1
         obj.code = prefix + f'{obj.year % 100}-{"{:04d}".format(next_code)}'    
         # self.save()
-        
-        super().save_model(request, obj, form, change)
+
+        # validation check in admin, not possible
+
+        if obj.version == Versions.V20.value and not request.user.has_perm('access_projectrequest_v20') or \
+            obj.version == Versions.V21.value and not request.user.has_perm('access_projectrequest_v21'):
+            messages.add_message(request, messages.ERROR, f"You don't have permission to change on version {obj.version}" )
+
+        else:
+            super().save_model(request, obj, form, change)
+
+
 
 # ===================================================================================================
 # @admin.register(ProjectSet)
@@ -446,12 +456,12 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
 
     def ITPC(self, obj):
         count = Review.objects.filter(project=obj).count()
-        return mark_safe(f"<a class='btn btn-outline-success p-1 btn-sm adminlist' style='color:#000' target='_blank' href='/admin/reviews/review/?project__id__exact={obj.id}'>{count}</a>")
+        return mark_safe(f"<a class='btn btn-outline-success p-1 btn-sm adminlist' style='color:#000' target='_blank' href='{reverse('admin:reviews_review_changelist')}?project__id__exact={obj.id}'>{count}</a>")
     ITPC.short_description = 'ITPC'
 
     def view(self, obj):
         # count = Report.objects.filter(project=obj).count()
-        return mark_safe(f"<a class='btn btn-outline-success p-1 btn-sm adminlist' style='color:#000' href='/project/{obj.id}'>View</a>")
+        return mark_safe(f"<a class='btn btn-outline-success p-1 btn-sm adminlist' style='color:#000' href='{reverse('project_detail', args=(obj.id,))}'>View</a>")
 
     def get_fieldsets(self, request, obj=None):
         fieldsets = super().get_fieldsets(request, obj)
@@ -479,44 +489,30 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     change_actions = ('project_view','report_add', 'report_list', 'risk_add', 'risk_list', 'itpc')
 
     def project_view(self, request, obj):
-        return HttpResponseRedirect(f'/project/{obj.id}')
+        return HttpResponseRedirect(reverse('project_detail', args=(obj.id, )))
     project_view.label = 'View'
     def report_add(self, request, obj):
-        return HttpResponseRedirect(f'/admin/reports/report/add/?project__id={obj.id}')
+        return HttpResponseRedirect(f'{reverse("admin:reports_report_add")}?project__id={obj.id}')
     report_add.label = '++Report'
     def report_list(self, request, obj):
-        return HttpResponseRedirect(f'/admin/reports/report/?project__id={obj.id}')
+        return HttpResponseRedirect(f'{reverse("admin:reports_report_changelist")}?project__id={obj.id}')
     report_list.label = 'Report list'
     def risk_add(self, request, obj):
-        return HttpResponseRedirect(f'/admin/reports/reportrisk/add/?project__id={obj.id}')
+        return HttpResponseRedirect(f'{reverse("admin:reports_reportrisk_add")}?project__id={obj.id}')
     risk_add.label = '++Risk'
     def risk_list(self, request, obj):
-        return HttpResponseRedirect(f'/admin/reports/reportrisk/?project__id={obj.id}')
+        return HttpResponseRedirect(f'{reverse("admin:reports_reportrisk_changelist")}?project__id={obj.id}')
     risk_list.label = 'Risk list'
     def itpc(self, request, obj):
-        return HttpResponseRedirect(f'/admin/reviews/review/?project__id={obj.id}')
+        return HttpResponseRedirect(f'{reverse("admin:reviews_review_changelist")}?project__id={obj.id}')
     itpc.label = 'ITPC'
-    # <li><a href="/admin/reports/report/add/?project__id={{original.pk}}" class="status-report">Add Report+</a></li>
-    # <li><a href="/admin/reports/report/?project__id__exact={{original.pk}}" class="status-report">Status Reports</a></li>
-    # <li><a href="/admin/reports/reportrisk/add/?project__id={{original.pk}}" class="risk-report">Add Risk+</a></li>
-    # <li><a href="/admin/reports/reportrisk/?project__id__exact={{original.pk}}" class="risk-report">Risks</a></li>
-    # <li><a href="/admin/reviews/review/?project__id__exact={{original.pk}}" class="project-review">Reviews</a></li>
-    # <!-- <li><a href="/reports/?project__id__exact={{original.pk}}" class="historylink">Reviews</a></li> -->
-
-    # <li>
-    #     <a href="{% url opts|admin_urlname:'history' original.pk|admin_urlquote %}" class="historylink">{% translate "History" %}</a>
-    # </li>
-    # {% if has_absolute_url %}
-    #     <li>
-    #         <a href="{% url 'admin:view_on_site' content_type_id original.pk %}" class="viewsitelink">{% translate "View on site" %}</a>
-    #     </li>
 
     # https://stackoverflow.com/questions/19542295/overridding-django-admins-object-tools-bar-for-one-model
     # change_list_template = 'admin/psm/project/change_list.html'
 
     # admin/base_site.html - field-link { display: none;}    
     def link(self, obj):
-        return mark_safe(f"<a class='btn btn-outline-success p-1 my-admin-link' style='color:fff' href='/admin/reports/report/?project__id__exact={obj.id}'> GO TO project report list </a>")
+        return mark_safe(f"<a class='btn btn-outline-success p-1 my-admin-link' style='color:fff' href='{reverse('admin:reports_report_changelist')}?project__id__exact={obj.id}'> GO TO project report list </a>")
     link.short_description = 'Links'        
     # the following is necessary if 'link' method is also used in list_display
     # link.allow_tags = True
@@ -645,7 +641,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
             obj.strategy.set(old.strategy.all())    
             obj.save() 
             # new.CBUs =obj.CBUs mark_safe("released to actual project to <a href='/admin/psm/project/%s'>%s</a>" % (new_proj.id, new_proj.pjcode) )
-            messages.add_message(request, messages.INFO, mark_safe("released to actual project to <a href='/admin/psm/project/%s'>%s</a>" % (obj.id, obj.pjcode) ))
+            messages.add_message(request, messages.INFO, mark_safe(f"released to actual project to <a href='{reverse('admin:psm_project_change', args=(obj.id,))}'>{obj.pjcode}</a>"))
 
     @admin.action(description="Duplicate selected record", permissions=['change'])
     def duplicate_project(self, request, queryset):
@@ -660,7 +656,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     def create_review(self, request, queryset):
         for obj in queryset:
             new_review = Review.objects.create(title='New Request', project=obj)
-            messages.add_message(request, messages.SUCCESS, mark_safe("New review is requested. <a href='/admin/reviews/review/%s'>review #%s</a>" % (new_review.id, new_review.id) ))
+            messages.add_message(request, messages.SUCCESS, mark_safe(f"New review is requested. <a href='{reverse('admin:reviews_review_change', args=(new_review.id,))}'> review #{new_review.id}</a>"))
 
     changelist_actions = ['redirect_to_export', 'redirect_to_import']
     def redirect_to_export(self, request, obj):

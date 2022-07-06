@@ -52,7 +52,7 @@
             <td class="report-count-{{ forloop.counter }}">
             <a class="report-title" href="{% url 'report_detail' report.pk %}" target="blank">{{ report.title }}</a> </td> 
             <td>{{ report.updated_on|date:'Y-m-d' }}</td>               
-            <td><a class="" href="/admin/reports/report/{{ report.pk }}">Edit</a> </td> 
+            <td><a class="" href="{% url 'admin:reports_report_change' report.pk %}">Edit</a> </td> 
             <td>{{ report.updated_by }}</td> 
             <td><a href="{% url 'project_detail' report.project.pk %}">{{ report.project }}</a></td> 
             <td class="text-center"> 

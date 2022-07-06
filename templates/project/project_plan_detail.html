@@ -26,7 +26,7 @@
 <div class="container-fluid">
   <div class="row m-3">
     <div class="col d-flex align-items-start">Project code : <b>{{ project.pjcode }}</b>
-      <span class="ms-3"> <a href="/admin/psm/projectrequest/{{ project.id }}"><i class="bi bi-pencil"></i></a></span>
+      <span class="ms-3"> <a href="{% url 'admin:psm_projectrequest_change' project.id %}"><i class="bi bi-pencil"></i></a></span>
     </div>
     <div class="col d-flex justify-content-end">Project year : <b>{{ project.year }}</b></div>
   </div>
@@ -167,7 +167,7 @@
     </div>
 
     {% if actual.id %}
-      <a href="/project/{{ actual.id }}"><i class="bi bi-kanban"></i> Link to actual project</a>
+      <a href="{% url 'project_detail' actual.id %}"><i class="bi bi-kanban"></i> Link to actual project</a>
     {% endif %}
 
 </div>

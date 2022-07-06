@@ -185,7 +185,7 @@
 						</tbody>
 					</table>
 					<p class="text-end text-muted small m-0 "><i class="text-success bi-check-circle-fill"></i>Good | <i class="text-warning bi-exclamation-circle"></i>Issue | <i class="text-danger  bi-exclamation-circle-fill"></i>Roadblocks | <i class="text-primary bi-circle-fill"></i>Complete | <i class="text-secondary  bi-dash-circle-dotted"></i>Not started
-					<a href="/admin/reports/report/{{object.id}}" class="btn btn btn-outline-info btn-sm"><i class="bi bi-pencil"></i></a>
+					<a href="{% url 'admin:reports_report_change' object.id %}" class="btn btn btn-outline-info btn-sm"><i class="bi bi-pencil"></i></a>
 					</p>
 
 				</div>				

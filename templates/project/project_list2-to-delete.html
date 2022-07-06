@@ -77,7 +77,7 @@
                         {% endif %}</td>
                     <td class="text-begin">{{ p.pm_memo }}</td>
                     <td class="text-begin">{{ p.dept.head }}</td>
-                    <td class="text-center"><a target="_blank" href="/admin/psm/project/{{ p.id }}"><i class="bi bi-pencil"></i></a></td>
+                    <td class="text-center"><a target="_blank" href="{% url 'admin:psm_project_change' p.id %}"><i class="bi bi-pencil"></i></a></td>
                     <!-- <td class="text-center">
                         <div class="progress">
                             <div class="progress-bar" role="progressbar" style="width: {{ p.progress }}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{{ p.progress }}%</div>

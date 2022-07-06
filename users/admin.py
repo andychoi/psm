@@ -176,6 +176,24 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
                 except:
                     pass    
 
+    def create_user(self, request, obj):
+        try:
+            User.objects.get( username=obj.auto_id if obj.auto_id else obj.email )
+        except User.DoesNotExist:
+            new_user = User.objects.create_user( username=obj.auto_id if obj.auto_id else obj.email, email=obj.email )
+            if new_user:
+                obj.user = new_user
+                obj.save(update_fields=['user'])    
+                messages.add_message(request, messages.INFO, '%s is created to user as username: %s ' % (obj.name, obj.user.username))
+
+    def link_user(self, request, obj, link):
+        try:
+            Profile.objects.get(user=link)
+        except User.DoesNotExist:  #check if found user is linked to other profile
+            obj.user = link                  
+            obj.save(update_fields=['user'])    # duplicate update....
+            messages.add_message(request, messages.INFO, obj.name + 'is linked with user using email')
+
     @admin.action(description='Migration - create User, link user with email', permissions=['change'])
     def sync_user_master(self, request, queryset):
         # email is required for django user creation
@@ -198,21 +216,11 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
                 continue
 
             if found:
-                try:
-                    found = Profile.objects.get(user=found)
-                except User.DoesNotExist:  #check if found user is linked to other profile
-                    obj.user = found                  
-                    obj.save(update_fields=['user'])    # duplicate update....
-                    messages.add_message(request, messages.INFO, obj.name + 'is linked with user using email')
+                self.link_user(request, obj, found)
             else:
-                try:
-                    found = User.objects.get( username=obj.auto_id if obj.auto_id else obj.email )
-                except User.DoesNotExist:
-                    new_user = User.objects.create_user( username=obj.auto_id if obj.auto_id else obj.email, email=obj.email )
-                    if new_user:
-                        obj.user = new_user
-                        obj.save(update_fields=['user'])    
-                        messages.add_message(request, messages.INFO, '%s is created to user as username: %s ' % (obj.name, obj.user.username))
+                self.create_user(request, obj)
+
+
 
     # permission check; 
     # def has_change_permission(self, request, obj=None):

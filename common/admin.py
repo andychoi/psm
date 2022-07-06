@@ -204,7 +204,7 @@ from common.functions import _update_wbs, _update_emp, _update_org, _update_prof
 @user_passes_test(lambda u: u.is_superuser)
 @admin.register(Employee)
 class EmployeeAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
-    list_display = ('emp_id', 'emp_name', 'email', 'job', 'cc', 'l', 'dept_code', 'dept_name', 'manager_id', 'create_date', 'terminated')
+    list_display = ('emp_id', 'emp_name', 'email', 'job', 'cc', 'l', 'dept_code', 'dept_name', 'manager_id', 'create_date', 'terminated', 'updated_on')
     list_display_links = ('emp_id', )
     search_fields = ('emp_id', 'manager_id', 'emp_name', 'email', 'dept_name', 'cc', 'dept_name')
     ordering = ('emp_id',)

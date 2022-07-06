@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from common.codes import PUBLISH, WCAL
-from users.models import Profile
+# from users.models import Profile
 from datetime import date
 from django.dispatch import receiver
 from django.db.models.signals import pre_save, post_save, post_delete
@@ -54,7 +54,7 @@ class Resource(models.Model):
     MAX_DAYS    = 31    # 150%
     
     # category = models.ForeignKey(Category, null=True, on_delete=models.SET_NULL)
-    staff = models.ForeignKey(Profile, related_name='staff', on_delete=models.PROTECT, null=True, blank=False)
+    staff = models.ForeignKey('users.Profile', related_name='resource_staff', on_delete=models.PROTECT, null=True, blank=False)
     year = models.PositiveSmallIntegerField(default=date.today().year)
     skills = models.ManyToManyField(Skill, blank=True)
 
@@ -127,7 +127,7 @@ class ProjectPlan(models.Model):
         return f'{self.project} ({self.year})' 
 
 class ResourcePlan(models.Model):
-    staff = models.ForeignKey(Profile, related_name='staf_plan', on_delete=models.PROTECT, null=True, blank=False)
+    staff = models.ForeignKey('users.Profile', related_name='resourceplan_staff', on_delete=models.PROTECT, null=True, blank=False)
     year = models.PositiveIntegerField(_("Year"), default=current_year())
     status = models.IntegerField(choices=PUBLISH, default=1) 
 
@@ -158,7 +158,7 @@ class RPPlanItem(models.Model):
     # pp = models.ForeignKey(ProjectPlan, on_delete=models.CASCADE, null=True, blank=True)
 
     year = models.PositiveIntegerField(_("Year"), default=current_year())
-    staff = models.ForeignKey(Profile, related_name='rp_staf_planitem', on_delete=models.SET_NULL, blank=True, null=True )
+    staff = models.ForeignKey('users.Profile', related_name='rp_planitem_staff', on_delete=models.SET_NULL, blank=True, null=True )
     project = models.ForeignKey('psm.Project', related_name='rp_project_planitem', on_delete=models.PROTECT, null=True, blank=True)
     
     m01 = models.IntegerField(default = 0, validators = [MinValueValidator(0), MaxValueValidator(Resource.MAX_MH)])
@@ -228,7 +228,7 @@ class PPPlanItem(models.Model):
     pp = models.ForeignKey(ProjectPlan, on_delete=models.CASCADE, null=True, blank=True)
 
     year = models.PositiveIntegerField(_("Year"), default=current_year())
-    staff = models.ForeignKey(Profile, related_name='pp_staf_planitem', on_delete=models.SET_NULL, blank=True, null=True )
+    staff = models.ForeignKey('users.Profile', related_name='pp_planitem_staff', on_delete=models.SET_NULL, blank=True, null=True )
     project = models.ForeignKey('psm.Project', related_name='pp_project_planitem', on_delete=models.PROTECT, null=True, blank=True)
     skills = models.ForeignKey(Skill, on_delete=models.SET_NULL, null=True, blank=True)
     
@@ -288,7 +288,7 @@ class ActualItem(models.Model):
     # pp = models.ForeignKey(ProjectPlan, on_delete=models.CASCADE, null=True, blank=True)
 
     year = models.PositiveIntegerField(_("Year"), default=current_year())
-    staff = models.ForeignKey(Profile, related_name='act_staff', on_delete=models.SET_NULL, blank=True, null=True )
+    staff = models.ForeignKey('users.Profile', related_name='act_staff', on_delete=models.SET_NULL, blank=True, null=True )
     project = models.ForeignKey('psm.Project', related_name='act_project', on_delete=models.PROTECT, null=True, blank=True)
     # skills = models.ForeignKey(Skill, on_delete=models.SET_NULL, null=True, blank=True)
     

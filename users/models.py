@@ -61,7 +61,7 @@ class Profile(ProxySuper): #models.Model):
 
     image = models.ImageField(upload_to='profile_pics', null=True, blank=True)  #default='default.jpg', 
     created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False, null=True, blank=True)
-    created_by = models.ForeignKey(User, related_name="profile_created", null=True, on_delete=models.SET_NULL)
+    created_by = models.ForeignKey(User, related_name="profile_createdby", null=True, on_delete=models.SET_NULL)
     updated_on = models.DateTimeField(_("updated_on"), auto_now=True, editable=False)
     updated_by = models.ForeignKey(User, related_name="profile_updated", null=True, on_delete=models.SET_NULL)
     # id_auto = models.BooleanField(_("User create from Profile"), default=False )    #auto creation of user from profile creation

@@ -97,7 +97,7 @@ class Task(models.Model):
                              on_delete=models.SET_NULL, null=True, blank=True)
     state = models.CharField(_("state"), max_length=20, choices=STATES, default=State.TODO.value)
     priority = models.CharField(_("priority"), max_length=20, choices=PRIORITIES, default=Priority.NORMAL.value)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='task_created_by', verbose_name=_('created by'),
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='task_createdby', verbose_name=_('created by'),
                                    on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False)
     updated_on = models.DateTimeField(_("updated_on"), auto_now=True, editable=False)

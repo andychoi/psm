@@ -107,7 +107,7 @@ class CBU(models.Model):
     # website = models.URLField(_("website"), blank=True, null=True)
     comment = models.TextField(_("notes"), max_length=2000, null=True, blank=True)
 
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='CBU_created', verbose_name=_('created by'),
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='CBU_createdby', verbose_name=_('created by'),
                                    on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False)
     updated_on = models.DateTimeField(_("updated_on"), auto_now=True, editable=False)
@@ -132,7 +132,7 @@ class WBS(models.Model):
     status = models.CharField(max_length=20, blank=True, null=True)
     budget = models.DecimalField(_("Budget"), decimal_places=0, max_digits=12, default=0, blank=True, null=True)
 
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='WBS_created_by', null=True, on_delete=models.SET_NULL)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='WBS_createdby', null=True, on_delete=models.SET_NULL)
     created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False, blank=True)
     updated_on = models.DateTimeField(_("updated_on"), auto_now=True, editable=False)
 
@@ -302,7 +302,7 @@ class GMDM(models.Model):
     grouping = models.CharField(_("Grouping"), max_length=100, blank=True, null=True)
     remark = models.CharField(_("Remark"), max_length=400, blank=True, null=True)
 
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='GMDM_created', verbose_name=_('created by'),
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='GMDM_createdby', verbose_name=_('created by'),
                                    on_delete=models.SET_NULL, null=True)
     updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='GMDM_updated', verbose_name=_('updated by'),
                                    on_delete=models.SET_NULL, null=True)

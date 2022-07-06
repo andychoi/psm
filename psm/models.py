@@ -59,7 +59,7 @@ class Strategy(models.Model):
         return self.name
 
     created_at = models.DateTimeField(_("created at"), auto_now_add=True, editable=False)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="strategy_created", null=True, on_delete=models.SET_NULL)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="strategy_createdby", null=True, on_delete=models.SET_NULL)
     updated_on = models.DateTimeField(_("updated_on"), auto_now=True, editable=False)
 
 class Program(models.Model):
@@ -196,7 +196,7 @@ class Project(models.Model):
     req_sec = models.CharField(_("Info Security Review Needed?"), max_length=20, choices=ACTION3, default='00-TBD', blank=True)
     req_inf = models.CharField(_("Infra Architecure Review Needed?"), max_length=20, choices=ACTION3, default='00-TBD', blank=True)
 
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='prj_created_by', verbose_name=_('created by'),
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='prj_createdby', verbose_name=_('created by'),
                                    on_delete=models.SET_NULL, null=True)
     updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='prj_updated_by', verbose_name=_('updated by'),
                                    on_delete=models.SET_NULL, null=True)
@@ -411,7 +411,7 @@ class ProjectRequest(models.Model):
     p_close = models.DateField(_("planned closing"), null=True, blank=False, default=date.today)
 
     rel_proj = models.ForeignKey(Project, blank=True, null=True, on_delete=models.SET_NULL)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='prj_req_created_by', verbose_name=_('created by'),
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='prj_req_createdby', verbose_name=_('created by'),
                                    on_delete=models.SET_NULL, null=True)
     updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='prj_req_updated_by', verbose_name=_('updated by'),
                                    on_delete=models.SET_NULL, null=True)

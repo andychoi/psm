@@ -54,7 +54,7 @@ class Resource(models.Model):
     MAX_DAYS    = 31    # 150%
     
     # category = models.ForeignKey(Category, null=True, on_delete=models.SET_NULL)
-    staff = models.ForeignKey('users.Profile', related_name='resource_staff', on_delete=models.PROTECT, null=True, blank=False)
+    staff = models.ForeignKey('users.Profile', related_name='staff_resource', on_delete=models.PROTECT, null=True, blank=False)
     year = models.PositiveSmallIntegerField(default=date.today().year)
     skills = models.ManyToManyField(Skill, blank=True)
 
@@ -75,7 +75,7 @@ class Resource(models.Model):
 
     active     = models.BooleanField(default=True)
     created_at = models.DateField(_("created at"), default=date.today, editable=False)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="res_created_by", null=True, on_delete=models.SET_NULL)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="res_createdby", null=True, on_delete=models.SET_NULL)
     updated_on = models.DateTimeField(_("last updated"), auto_now=True, editable=False)
     updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="res_updated_by", null=True, on_delete=models.SET_NULL)
 
@@ -117,7 +117,7 @@ class ProjectPlan(models.Model):
 
     # auto_now_add=True
     created_at = models.DateField(_("created at"), default=date.today, editable=False)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="pp_created_by", null=True, on_delete=models.SET_NULL)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="pp_createdby", null=True, on_delete=models.SET_NULL)
     updated_on = models.DateTimeField(_("last updated"), auto_now=True, editable=False)
     updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="pp_updated_by", null=True, on_delete=models.SET_NULL)
 
@@ -127,13 +127,13 @@ class ProjectPlan(models.Model):
         return f'{self.project} ({self.year})' 
 
 class ResourcePlan(models.Model):
-    staff = models.ForeignKey('users.Profile', related_name='resourceplan_staff', on_delete=models.PROTECT, null=True, blank=False)
+    staff = models.ForeignKey('users.Profile', related_name='staff_resourceplan', on_delete=models.PROTECT, null=True, blank=False)
     year = models.PositiveIntegerField(_("Year"), default=current_year())
     status = models.IntegerField(choices=PUBLISH, default=1) 
 
     # auto_now_add=True
     created_at = models.DateField(_("created at"), default=date.today, editable=False)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="rp_created_by", null=True, on_delete=models.SET_NULL)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="rp_createdby", null=True, on_delete=models.SET_NULL)
     updated_on = models.DateTimeField(_("last updated"), auto_now=True, editable=False)
     updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="rp_updated_by", null=True, on_delete=models.SET_NULL)
 
@@ -158,8 +158,8 @@ class RPPlanItem(models.Model):
     # pp = models.ForeignKey(ProjectPlan, on_delete=models.CASCADE, null=True, blank=True)
 
     year = models.PositiveIntegerField(_("Year"), default=current_year())
-    staff = models.ForeignKey('users.Profile', related_name='rp_planitem_staff', on_delete=models.SET_NULL, blank=True, null=True )
-    project = models.ForeignKey('psm.Project', related_name='rp_project_planitem', on_delete=models.PROTECT, null=True, blank=True)
+    staff = models.ForeignKey('users.Profile', related_name='staff_rp_planitem', on_delete=models.SET_NULL, blank=True, null=True )
+    project = models.ForeignKey('psm.Project', related_name='project_rp_planitem', on_delete=models.PROTECT, null=True, blank=True)
     
     m01 = models.IntegerField(default = 0, validators = [MinValueValidator(0), MaxValueValidator(Resource.MAX_MH)])
     m02 = models.IntegerField(default = 0, validators = [MinValueValidator(0), MaxValueValidator(Resource.MAX_MH)])
@@ -179,7 +179,7 @@ class RPPlanItem(models.Model):
 
     # auto_now_add=True
     created_at = models.DateField(_("created at"), default=date.today, editable=False)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="rpitem_created_by", null=True, on_delete=models.SET_NULL)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="rpitem_createdby", null=True, on_delete=models.SET_NULL)
     updated_on = models.DateTimeField(_("last updated"), auto_now=True, editable=False)
     updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="rpitem_updated_by", null=True, on_delete=models.SET_NULL)
 
@@ -228,8 +228,8 @@ class PPPlanItem(models.Model):
     pp = models.ForeignKey(ProjectPlan, on_delete=models.CASCADE, null=True, blank=True)
 
     year = models.PositiveIntegerField(_("Year"), default=current_year())
-    staff = models.ForeignKey('users.Profile', related_name='pp_planitem_staff', on_delete=models.SET_NULL, blank=True, null=True )
-    project = models.ForeignKey('psm.Project', related_name='pp_project_planitem', on_delete=models.PROTECT, null=True, blank=True)
+    staff = models.ForeignKey('users.Profile', related_name='staff_pp_planitem', on_delete=models.SET_NULL, blank=True, null=True )
+    project = models.ForeignKey('psm.Project', related_name='project_pp_planitem', on_delete=models.PROTECT, null=True, blank=True)
     skills = models.ForeignKey(Skill, on_delete=models.SET_NULL, null=True, blank=True)
     
     m01 = models.IntegerField(default = 0, validators = [MinValueValidator(0), MaxValueValidator(Resource.MAX_MH)])
@@ -250,7 +250,7 @@ class PPPlanItem(models.Model):
 
     # auto_now_add=True
     created_at = models.DateField(_("created at"), default=date.today, editable=False)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="ppitem_created_by", null=True, on_delete=models.SET_NULL)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="ppitem_createdby", null=True, on_delete=models.SET_NULL)
     updated_on = models.DateTimeField(_("last updated"), auto_now=True, editable=False)
     updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="ppitem_updated_by", null=True, on_delete=models.SET_NULL)
 
@@ -288,8 +288,8 @@ class ActualItem(models.Model):
     # pp = models.ForeignKey(ProjectPlan, on_delete=models.CASCADE, null=True, blank=True)
 
     year = models.PositiveIntegerField(_("Year"), default=current_year())
-    staff = models.ForeignKey('users.Profile', related_name='act_staff', on_delete=models.SET_NULL, blank=True, null=True )
-    project = models.ForeignKey('psm.Project', related_name='act_project', on_delete=models.PROTECT, null=True, blank=True)
+    staff = models.ForeignKey('users.Profile', related_name='staff_actual', on_delete=models.SET_NULL, blank=True, null=True )
+    project = models.ForeignKey('psm.Project', related_name='project_actual', on_delete=models.PROTECT, null=True, blank=True)
     # skills = models.ForeignKey(Skill, on_delete=models.SET_NULL, null=True, blank=True)
     
     m01 = models.DecimalField(default = 0, decimal_places=2, max_digits=10, validators = [MinValueValidator(0), MaxValueValidator(Resource.MAX_MH)])
@@ -307,7 +307,7 @@ class ActualItem(models.Model):
 
     # auto_now_add=True
     created_at = models.DateField(_("created at"), default=date.today, editable=False)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="act_item_created_by", null=True, on_delete=models.SET_NULL)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="act_item_createdby", null=True, on_delete=models.SET_NULL)
     updated_on = models.DateTimeField(_("last updated"), auto_now=True, editable=False)
     updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="act_item_updated_by", null=True, on_delete=models.SET_NULL)
 

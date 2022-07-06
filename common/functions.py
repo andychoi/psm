@@ -206,6 +206,7 @@ def _update_emp():
     for r in sorted_results:
         r[:] = [info.strip() for info in r]
 
+    new_emp, upd_emp = [], []
     for item in sorted_results:
         if item[1][:1] == '0' or item[9] == '' or item[5] == '':  # invalid record, skip
             continue
@@ -221,10 +222,24 @@ def _update_emp():
         cdate = timezone.localize(datetime.strptime(item[1], '%Y%m%d'))
         tdate = timezone.localize(datetime.strptime(item[2], '%Y%m%d')) if item[2][:1] != '0' else None
         email = item[4].lower()     #.split('@')[0].lower() 
-        if int( Employee.objects.filter(emp_id=item[0]).count() ) > 0:
-                Employee.objects.filter(emp_id=item[0]).update(emp_id=item[0], create_date=cdate, terminated=tdate, emp_name=item[3], email=email, cc=item[5], dept_code=item[6], dept_name=item[7], job=item[8], l=level, manager_id=item[10])
+
+
+        obj, created = Employee.objects.update_or_create(emp_id=item[0], defaults = { 'create_date':cdate, 'terminated':tdate, 'emp_name':item[3], 'email':email, 
+                                'cc':item[5], 'dept_code':item[6], 'dept_name':item[7], 'job':item[8], 'l':level, 'manager_id':item[10] })
+
+        # if int( Employee.objects.filter(emp_id=item[0]).count() ) > 0:
+        #         Employee.objects.filter(emp_id=item[0]).update(emp_id=item[0], create_date=cdate, terminated=tdate, emp_name=item[3], email=email, cc=item[5], dept_code=item[6], dept_name=item[7], job=item[8], l=level, manager_id=item[10])
+        # else:
+        #     Employee.objects.create(emp_id=item[0], create_date=cdate, terminated=tdate, emp_name=item[3], email=email, cc=item[5], dept_code=item[6], dept_name=item[7], job=item[8], l=level, manager_id=item[10])
+
+        if created:
+            new_emp.append(obj.id)
         else:
-            Employee.objects.create(emp_id=item[0], create_date=cdate, terminated=tdate, emp_name=item[3], email=email, cc=item[5], dept_code=item[6], dept_name=item[7], job=item[8], l=level, manager_id=item[10])
+            upd_emp.append(obj.id)
+
+    del_emp = Employee.objects.exclude(id__in=new_emp).exclude(id__in=upd_emp)
+    del_emp.delete()
+
 
 """
     crontab scheduling

@@ -60,7 +60,7 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
     resource_class = ProfileResource
 
     # list_display = ('id', 'user', 'name', 'email', 'dept', 'manager', 'u_div', 'CBU', 'is_active')
-    list_display = ('id', 'user', 'name', 'email', 'wcal', 'dept', 'team', 'is_active', 'is_staff', 'pm_count_link', 'goto_user', 'cbu_names', 'auto_id', 'usertype', 'proxy_name', )
+    list_display = ('id', 'user', 'name', 'email', 'wcal', 'dept', 'team', 'is_active', 'is_staff', 'pm_count_link', 'goto_user', 'cbu_names', 'auto_id', 'updated_on', 'usertype', 'proxy_name', )
     list_display_links = ('id', 'name', 'email')
     list_editable = ( 'wcal',)
     search_fields = ('id', 'name', 'email', 'auto_id', 'CBU__name', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??

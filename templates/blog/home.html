@@ -41,7 +41,11 @@
     {%  include "includes/headline.html"  %}
 </div> <!-- container-fluid home-headline -->
 
+{% if page_obj.number > 1 %}
+<div class="container mt-5 pt-5">
+{% else %}
 <div class="container">
+{% endif %}
   <main role="main" class="content" id="main-content">
 
     <div class="container">

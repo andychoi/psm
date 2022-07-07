@@ -423,7 +423,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         'all': ('psm/css/custom_admin.css',),
     }    
     search_fields = ('id', 'title', 'description', 'objective', 'pm_memo', 'code', 'wbs__wbs', 'es', 'ref', 'program__name', 'strategy__name', 'pm__name', 'CBUpm__name', 'CBUs__name')     #FIXME many to many
-    list_display = ('year', 'pjcode', 'title', 'dept', 'progress', 'phase', 'pm', 'CBU_names', 'view', 'ITPC' )    #CBU many to many
+    list_display = ('year', 'pjcode', 'title', 'dept', 'progress', 'phase', 'pm_link', 'CBU_names', 'view', 'ITPC' )    #CBU many to many
     list_display_links = ('pjcode', 'title')
     list_editable = ("phase", )
     list_filter = ('pm', 'dept', 'phase', 'state', 'CBU_names', )    #CBU many to many
@@ -475,6 +475,11 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         # count = Report.objects.filter(project=obj).count()
         return mark_safe(f"<a class='btn btn-outline-success p-1 btn-sm adminlist' style='color:#000' href='{reverse('project_detail', args=(obj.id,))}'>View</a>")
 
+    def pm_link(self, obj):
+        # FIXME
+        # url = reverse('admin:psm_project') + f'?pm={[obj.id]}'
+        return mark_safe(f"<a href='{reverse('admin:psm_project_changelist')}?pm={obj.pm_id}'>{obj.pm}</a>")
+    
     def get_fieldsets(self, request, obj=None):
         fieldsets = super().get_fieldsets(request, obj)
         if obj is None:

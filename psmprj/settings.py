@@ -163,10 +163,12 @@ if MY_PROJECT:
     SESSION_COOKIE_PATH = MY_PROJECT + "/"
     CSRF_COOKIE_NAME = CSRF_COOKIE_NAME + "_" + MY_PROJECT.strip('/')
     SESSION_COOKIE_NAME = SESSION_COOKIE_NAME + "_" + MY_PROJECT.strip('/')
+    LOGIN_URL = MY_PROJECT + "/login"
+else:
+    LOGIN_URL = "/login"
 
 LOGIN_REDIRECT_URL = MY_PROJECT + "/"
 LOGOUT_REDIRECT_URL = MY_PROJECT + "/"
-LOGIN_URL = "login/"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/ref/settings/#staticfiles-dirs

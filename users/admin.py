@@ -80,11 +80,12 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
         ('CBU',  RelatedDropdownFilter),
         ('dept', RelatedDropdownFilter),
         ('team', RelatedDropdownFilter),
-        ('wcal', DropdownFilter),
         ('usertype', DropdownFilter),
-        'proxy_name',
+        ('pm_count', DropdownFilter),
         'user__is_staff',
-        'user__is_active'
+        'user__is_active',
+        'proxy_name',
+        ('wcal', DropdownFilter),
     )
     # tip hide/show changelist-filter https://stackoverflow.com/questions/6086651/minimize-the-list-filter-in-django-admin#answer-6298648
     # https://stackoverflow.com/questions/6264823/trying-to-show-hide-the-change-list-filter-in-django-admin

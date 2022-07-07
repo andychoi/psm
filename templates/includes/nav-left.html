@@ -2,7 +2,7 @@
         <!--left links-->
         <ul class="nav navbar-nav me-auto ">
 
-            <li class="nav-item"><a class="nav-item nav-link"  href="{% url 'home' %}">{% if my_sub_project %}<button type="button" class="btn btn-warning">{{ my_sub_project }}</button>{% else %}Home{% endif %}</a></li>
+            <li class="nav-item"><a class="nav-item nav-link"  href="{% url 'home' %}">{% if my_sub_project %}<span class="text-warning bg-dark">{{ my_sub_project }}</span>{% else %}Home{% endif %}</a></li>
 
             <li class="nav-item dropdown">
               <!-- <div class="nav-dropdown"> -->

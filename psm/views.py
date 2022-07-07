@@ -349,10 +349,10 @@ class programIndexView(generic.ListView):
         context['programs'] = Program.objects.all()
 
         q2 =  {k:v for k, v in self.request.GET.items() if v and hasattr(Report, k.split('__')[0] ) }
-        context['report_list'] =  Report.objects.filter(project__in=self.object_list).filter(**q2).order_by('-created_at')[:100]
+        context['report_list'] =  Report.objects.filter(project__in=self.object_list, status=1).filter(**q2).order_by('-created_at')[:100]  #publish only
 
         q3 =  {k:v for k, v in self.request.GET.items() if v and hasattr(ReportRisk, k.split('__')[0] ) }
-        context['latest_risk'] =    ReportRisk.objects.filter(project__in=self.object_list).filter(state=State2.OPEN.value).order_by('created_at')[:100] 
+        context['latest_risk'] =    ReportRisk.objects.filter(project__in=self.object_list, status=1).filter(state=State2.OPEN.value).order_by('created_at')[:100] 
 
         get_filter_options(self, context)
 
@@ -416,7 +416,7 @@ class projectIndexView(generic.ListView):
                 q2['project__dept'] = profile.dept.id
         elif pm:
                 q2['project__pm'] = profile.id
-        context['latest_report'] =  Report.objects.filter(**q2).order_by('-created_at')[:100]
+        context['latest_report'] =  Report.objects.filter(**q2).filter(status=1).order_by('-created_at')[:100]
 
         q3 =  {k:v for k, v in self.request.GET.items() if v and hasattr(ReportRisk, k.split('__')[0] ) }
         if scope == 'dp' and pm:
@@ -424,7 +424,7 @@ class projectIndexView(generic.ListView):
                 q3['project__dept'] = profile.dept.id
         elif pm:
                 q3['project__pm'] = profile.id
-        context['latest_risk'] =    ReportRisk.objects.filter(state=State2.OPEN.value).order_by('created_at')[:100] 
+        context['latest_risk'] =    ReportRisk.objects.filter(state=State2.OPEN.value, status=1).order_by('created_at')[:100] 
 
         get_filter_options(self, context)
 

@@ -136,6 +136,23 @@ class ProjectRequestForm(forms.ModelForm):
         widgets = {
             'pm': autocomplete.ModelSelect2(url='profile-staff-autocomplete')    # common.adminfilters.py
         }
+
+    # https://stackoverflow.com/questions/41613079/how-to-give-the-information-about-request-user-to-clean-method
+    # def __init__(self, request=None, *args, **kwargs):
+    #     self.user = request.user
+    #     super().__init__(*args, **kwargs)
+        
+    # validation logic here in admin form -> check version field access
+    def clean_version(self):
+        super().clean()
+
+        #TODO how to get requestor???
+        # ver = self.cleaned_data.get("version")
+        # if ver == Versions.V20.value and not self.user.has_perm('access_projectrequest_v20') or \
+        #     ver == Versions.V21.value and not self.user.has_perm('access_projectrequest_v21'):
+        #     # messages.add_message(self.request, messages.ERROR, f"You don't have permission to change on version {ver}" )
+        #     raise ValidationError(_('No access to this version'), code='invalid')
+
 # ----------------------------------------------------------------------------------------------------------------
 @admin.register(ProjectRequest)
 class ProjectRequestAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
@@ -215,15 +232,15 @@ class ProjectRequestAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdm
 
     # TODO - permission override
     def has_change_permission(self, request, obj=None):
-        if obj :
-            # return True
-            #check permission on version
-            if obj.version == Versions.V20.value and not request.user.has_perm('access_projectrequest_v20') or \
-               obj.version == Versions.V21.value and not request.user.has_perm('access_projectrequest_v21'):
-                return False    # You do not have access to version 21 (Unplanned approved') 
-            return True
-        else:
-            return super(ProjectRequestAdmin, self).has_change_permission(request, obj)
+        # if obj :
+        #     # return True
+        #     #check permission on version
+        #     if obj.version == Versions.V20.value and not request.user.has_perm('access_projectrequest_v20') or \
+        #        obj.version == Versions.V21.value and not request.user.has_perm('access_projectrequest_v21'):
+        #         return False    # You do not have access to version 21 (Unplanned approved') 
+        #     return True
+
+        return super(ProjectRequestAdmin, self).has_change_permission(request, obj)
 
     # TODO - limit access to list for specific user group?? like CBU
     def get_queryset(self, request):
@@ -354,14 +371,9 @@ class ProjectRequestAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdm
         obj.code = prefix + f'{obj.year % 100}-{"{:04d}".format(next_code)}'    
         # self.save()
 
-        # validation check in admin, not possible
+        # validation check in admin, not possible -> https://docs.djangoproject.com/en/dev/ref/contrib/admin/#adding-custom-validation-to-the-admin
 
-        if obj.version == Versions.V20.value and not request.user.has_perm('access_projectrequest_v20') or \
-            obj.version == Versions.V21.value and not request.user.has_perm('access_projectrequest_v21'):
-            messages.add_message(request, messages.ERROR, f"You don't have permission to change on version {obj.version}" )
-
-        else:
-            super().save_model(request, obj, form, change)
+        super().save_model(request, obj, form, change)
 
 
 

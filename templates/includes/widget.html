@@ -1,19 +1,18 @@
 {% load markdown_extras %}
-
-<div class="content-section">
+<!-- widget.html -->
 
     {% if widgets %}
-    {% for w in widgets %}
-      <h6 class="mt-3">{{ w.title }}</h6>
-      <p class="mt-1 mb-3"><small>{{ w.content|md2|safe }}</small></p>
-    {% endfor %}
+      {% for w in widgets %}
+          <div class="content-section">
+            <h5 class="mt-2">{{ w.title }}</h5>
+            <p class="mt-1 mb-3"><small>{{ w.content|md2|safe }}</small></p>
+          </div>        
+        {% endfor %}
     {% endif %}
 
     {% if user.is_authenticated and user.is_staff %}
-
       {% if users.profile.is_psmadm %}
       {% endif %}
-
     {% endif %}
         
-  </div>        
+  

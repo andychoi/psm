@@ -68,10 +68,10 @@
                   
                   <div class="row">
                     <div class="col-9 text-start">
-                      <h4 class="blog-post-title mb-1"><a class="article-title" href="{% url 'post_detail' post.pk %}">{{ post.title }}</a> {% if post.featured == 2 %}<i class="bi bi-sticky"></i>{% endif %} </h4></div> 
+                      <h4 class="blog-post-title mb-1"><a class="article-title" href="{% url 'post_detail' post.pk %}">{{ post.title }}</a> {% if post.featured == 2 %}<i class="bi bi-pin-angle"></i>{% endif %} </h4></div> 
                     <div class="col-3 text-end mt-auto "> 
                       {% for tag in post.tags.all %}
-                        <button type="button" class="btn btn-outline-success btn-sm" disabled>{{ tag }}</button>
+                        <button type="button" class="btn btn-outline-light btn-sm" >{{ tag }}</button>
                       {% endfor %}
                     </div>
                   </div>
@@ -88,7 +88,7 @@
                       </div>
                     </div>
                     <p class="text-end mb-0">
-                      <a type="button" class="btn btn-primary  btn-sm" href="{% url 'post_detail' post.pk %}"">read more...</a>
+                      <a type="button" class="btn btn-outline-primary  btn-sm" href="{% url 'post_detail' post.pk %}"">read more...</a>
                       <small class="text-muted">{{ post.date_posted|date:"F d, Y" }} by {{ post.author.profile.name }}</small>
                     </p>
                   </div><!--row -->                    

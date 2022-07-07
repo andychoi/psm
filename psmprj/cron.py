@@ -155,9 +155,9 @@ def late_reminder():
             if settings.EMAIL_DEV:
                 email_receiver = [ settings.EMAIL_PSM_ADMIN ]   
             else:
-                email_receiver = [ p.pm.email if p.pm else p.dept.head.profile.email if p.dept.head else settings.EMAIL_PSM_ADMIN ]
+                email_receiver = [ p.pm.email if p.pm else p.dept.head.email if p.dept.head else settings.EMAIL_PSM_ADMIN ]
                 if p.dept.head:
-                    email_receiver.append(p.dept.head.profile.email) 
+                    email_receiver.append(p.dept.head.email) 
             try:
                 send_mail(
                     f'{settings.EMAIL_SUBJECT_PREFIX} Project status report reminder -{p}',

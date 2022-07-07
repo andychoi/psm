@@ -423,9 +423,9 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
         'all': ('psm/css/custom_admin.css',),
     }    
     search_fields = ('id', 'title', 'description', 'objective', 'pm_memo', 'code', 'wbs__wbs', 'es', 'ref', 'program__name', 'strategy__name', 'pm__name', 'CBUpm__name', 'CBUs__name')     #FIXME many to many
-    list_display = ('year', 'pjcode', 'title', 'dept', 'progress', 'phase', 'state', 'CBU_names', 'view', 'ITPC' )    #CBU many to many
+    list_display = ('year', 'pjcode', 'title', 'dept', 'progress', 'phase', 'pm', 'CBU_names', 'view', 'ITPC' )    #CBU many to many
     list_display_links = ('pjcode', 'title')
-    list_editable = ("phase", 'state',)
+    list_editable = ("phase", )
     list_filter = ('pm', 'dept', 'phase', 'state', 'CBU_names', )    #CBU many to many
     list_filter = (
         ('status_o', UnionFieldListFilter),

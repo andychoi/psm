@@ -23,31 +23,26 @@ def _update_org():
     updated_on = timezone.localize(datetime.now())
 
     # create/update div,dept,team / caution in filter - date=None 
-    dept_list = Employee.objects.filter(Q(terminated__isnull=True)).values('l', 'dept_name', 'cc', 'manager_id').annotate(emp_count=Count('emp_id'))
-    mgr_list = Employee.objects.filter(Q(terminated__isnull=True) & Q(l=3)).values('l', 'manager_id').annotate(emp_count=Count('emp_id'))
+    org_list = Employee.objects.filter(Q(terminated__isnull=True)).values('l', 'dept_name').annotate(emp_count=Count('emp_id')).order_by('l')
+    cc_list = Employee.objects.filter(Q(terminated__isnull=True)).values('l', 'dept_name', 'cc').annotate(emp_count=Count('emp_id')).order_by('l')
+    mgr_list = Employee.objects.filter(Q(terminated__isnull=True) & Q(l=3)).values('l', 'manager_id').annotate(emp_count=Count('emp_id')).order_by('l')
 
-    new_team, upd_team, new_dept, upd_dept, new_div, upd_div = [], [], [], [], [], [] 
-    for dept in dept_list:
-        if dept['l'] == 3:
-            obj, created = Team.objects.update_or_create(name = dept['dept_name'], defaults = {'em_count':dept['emp_count'], 'cc':dept['cc'], 'is_active':True })
-            if created:
-                new_team.append(obj.id)
-            else:
-                upd_team.append(obj.id)
-        elif  dept['l'] == 2:
-            obj, created = Dept.objects.update_or_create(name = dept['dept_name'], defaults = {'em_count':dept['emp_count'], 'cc':dept['cc'], 'is_active':True })
-            if created:
-                new_dept.append(obj.id)
-            else:
-                upd_dept.append(obj.id)
-        elif  dept['l'] == 1:
-            obj, created = Div.objects.update_or_create(name = dept['dept_name'], defaults = {'em_count':dept['emp_count'], 'cc':dept['cc'], 'is_active':True })
-            if created:
-                new_div.append(obj.id)
-            else:
-                upd_div.append(obj.id)
+    new_upd_team, new_upd_dept, new_upd_div = [], [], [] 
+    for org in org_list:
+        # one HR org may have multiple cc, first 'cc' is taken... / reset head and org hierarchy
+        cc = cc_list.filter(l=org['l'], dept_name__exact=org['dept_name'])[0]
+        if org['l'] == 3:
+            obj, created = Team.objects.update_or_create(name = org['dept_name'], defaults = {'em_count':org['emp_count'], 'cc':cc['cc'], 'is_active':True, 'head': None, 'dept': None })
+            # if created:
+            new_upd_team.append(obj.id)
+        elif  org['l'] == 2:
+            obj, created = Dept.objects.update_or_create(name = org['dept_name'], defaults = {'em_count':org['emp_count'], 'cc':cc['cc'], 'is_active':True, 'head': None, 'div': None })
+            new_upd_dept.append(obj.id)
+        elif  org['l'] == 1:
+            obj, created = Div.objects.update_or_create(name = org['dept_name'], defaults = {'em_count':org['emp_count'], 'cc':cc['cc'], 'is_active':True, 'head': None })
+            new_upd_div.append(obj.id)
 
-    # add dept if report to is div                
+    # add 'virtual' dept if report to is div                
     for m in mgr_list:
         manager = Employee.objects.get(emp_id=m['manager_id'])
         try:
@@ -56,26 +51,23 @@ def _update_org():
             mgr_profile = None
         if manager.l == 1:
             obj, created = Dept.objects.update_or_create(name = manager.dept_name, 
-                defaults = {'em_count':m['emp_count'], 'cc':manager.cc, 'head': mgr_profile, 'is_active':True, 'is_virtual':True })
-            if created:
-                new_dept.append(obj.id)
-            else:
-                upd_dept.append(obj.id)
+                defaults = {'em_count':m['emp_count'], 'cc':manager.cc, 'head': mgr_profile, 'div': None, 'is_active':True, 'is_virtual':True })
+            new_upd_dept.append(obj.id)
 
     # disable inactive orgs
-    for o in Team.objects.exclude(id__in=new_team).exclude(id__in=upd_team):
+    for o in Team.objects.exclude(id__in=new_upd_team):
         Team.objects.filter(id=o.id).update(is_active=False, em_count=0)
-    for o in Dept.objects.exclude(id__in=new_dept).exclude(id__in=upd_dept):
+    for o in Dept.objects.exclude(id__in=new_upd_dept):
         Dept.objects.filter(id=o.id).update(is_active=False, em_count=0)
-    for o in Div.objects.exclude(id__in=new_div).exclude(id__in=upd_div):
+    for o in Div.objects.exclude(id__in=new_upd_div):
         Div.objects.filter(id=o.id).update(is_active=False, em_count=0)
-
 
     #TODO
     # create/update profile and assign div, dept, team
     # update head for div,dept,team 
 
     # logger('Successfully processed...')
+
 def _update_profile():
 
     e_list = Employee.objects.all()
@@ -125,49 +117,49 @@ def _get_team_dept(e):
         # team level
         try: 
             team = Team.objects.get(name__exact=e.dept_name) 
-        except:
-            team = None
 
-        if team and not team.head:
-            try:
-                Team.objects.filter(id=team.id).update(head = Profile.objects.get(auto_id__exact=e.manager_id))
-            except:
-                pass
-
-        # dept level
-        try: 
             mgr = Employee.objects.get(emp_id__exact=e.manager_id)
             while mgr.l == 3:
                 mgr = Employee.objects.get(emp_id__exact=mgr.manager_id)
             dept = Dept.objects.get(name__exact=mgr.dept_name)
         except:
-            mgr, dept = None, None
+            mgr, team, dept = None, None, None
 
+        if team and not team.head:
+            Team.objects.filter(id=team.id).update(head = Profile.objects.get(auto_id__exact=e.manager_id))
         if team and not team.dept:
             Team.objects.filter(id=team.id).update(dept=dept)
 
-        if dept and not dept.head:
-            try:
-                Dept.objects.filter(id=dept.id).update(head=Profile.objects.get(auto_id__exact=mgr.emp_id))
-            except:
-                pass            
 
-        # div level
-        if mgr and mgr.l == 1:  # no dept exist, then just use it
+        # if div level (special case)
+        if mgr and mgr.l in (1, 2):  # no dept exist, then just use it
             pass
         else:
-            try:
+            # find dept level manager
+            mgr = Employee.objects.get(emp_id__exact=mgr.manager_id)
+            while mgr.l == 2:
                 mgr = Employee.objects.get(emp_id__exact=mgr.manager_id)
-                while mgr.l == 2:
-                    mgr = Employee.objects.get(emp_id__exact=mgr.manager_id)
-            except:
-                mgr = None            
+
+        # dept head
+        if dept and not dept.head:
+            Dept.objects.filter(id=dept.id).update(head=Profile.objects.get(auto_id__exact=mgr.emp_id))
+
+        # get next level - div
+        if mgr and mgr.l == 1:
+            pass
+        else:
+            mgr = Employee.objects.get(emp_id__exact=mgr.manager_id)
         
         try:
             div = Div.objects.get(name__exact=mgr.dept_name)
         except:
             div = None            
 
+        # dept's div
+        if dept and not dept.div:
+            Dept.objects.filter(id=dept.id).update(div=div)
+
+        # div head
         if div and not div.head:
             try:
                 Div.objects.filter(id=div.id).update(head=Profile.objects.get(auto_id__exact=mgr.emp_id))
@@ -189,7 +181,7 @@ def _update_emp():
     timezone = pytz.timezone(settings.TIME_ZONE)
     data = {}
     table = 'ZSUSRMT0010'
-    fields = ['USER_ID', 'CREATE_DATE', 'TERMINATE_DATE', 'USER_NAME', 'EMAIL', 'COSTCENTER', 'DEPT_CODE', 'DEPT_NAME', 'CHARGE_JOB', 'POS_LEVEL', 'SUPERVISORID' ]
+    fields = ['USER_ID', 'CREATE_DATE', 'TERMINATE_DATE', 'USER_NAME', 'EMAIL', 'COSTCENTER', 'DEPT_CODE', 'DEPT_NAME', 'CHARGE_JOB', 'POS_LEVEL', 'SUPERVISORID', 'DUTY_CODE' ]
     where  = []    # "USER_ID = 'xxx'"    # "TERMINATE_DATE = '00000000'" ] -> terminated -> delete from current emp table  
     maxrows = 10000
     # starting row to return
@@ -211,10 +203,12 @@ def _update_emp():
         if item[1][:1] == '0' or item[9] == '' or item[5] == '':  # invalid record, skip
             continue
 
-        if int(item[9]) <= 6:
+        if item[11] in ('1000', '2000', '0600', '0100'):    #Sub-div/division/president
             level = 1
-        elif int(item[9]) <= 7:
+        elif item[11] == '3000':            #Dept
             level = 2
+        elif item[11] in ('4000', '5000'):  #Section and members
+            level = 3
         else:
             level = 3
         

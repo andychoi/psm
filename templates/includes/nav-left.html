@@ -51,20 +51,21 @@
                   <!-- <div class="dropdown-menu dropdown-menu-end nav-link-menu"> -->
                       <ul class="dropdown-menu nav-list" aria-labelledby="nav3">
                           <li><a class="dropdown-item" href="{% url 'admin:psm_project_add' %}"><i class="pe-2 bi bi-file-earmark-plus"></i> Register Project</a></li>
-                          <li><a class="dropdown-item" href="{% url 'admin:psm_project_changelist' %}?year={% now 'Y' %}"><i class="pe-2 bi bi-file-ruled"></i>Manage Project - {% now 'Y' %}</a></li>
-                          <li><a class="dropdown-item" href="{% url 'project_list1' %}"><i class="pe-2 bi bi-list-task"></i>Project list</a> </li>
+                          <li><a class="dropdown-item" href="{% url 'admin:psm_project_changelist' %}?year={% now 'Y' %}"><i class="pe-2 bi bi-file-ruled"></i>Manage Project </a></li>
+                          <!-- <li><a class="dropdown-item" href="{% url 'project_list1' %}"><i class="pe-2 bi bi-list-task"></i>Project list</a> </li> -->
                           <div class="dropdown-divider"></div>
-                          <li><a class="dropdown-item" href="{% url 'admin:reports_report_add' %}"><i class="pe-2 bi bi-chat-left-quote-fill"></i> Create Project Status Report</a></li>
-                          <li><a class="dropdown-item" href="{% url 'admin:reports_report_changelist' %}"><i class="pe-2 bi-list-task"></i>Manage Status Report</a></li>
+                          <li><a class="dropdown-item" href="{% url 'admin:reports_report_add' %}"><i class="pe-2 bi bi-chat-left-quote-fill"></i> +New Status Report</a></li>
+                          <li><a class="dropdown-item" href="{% url 'admin:reports_report_changelist' %}"><i class="pe-2 bi-list-task"></i> Status Report</a></li>
                           <div class="dropdown-divider"></div>
-                          <li><a class="dropdown-item" href="{% url 'admin:reports_reportrisk_changelist' %}"><i class="pe-2 bi bi-megaphone-fill"></i> Manage Project Risk Report</a></li>
-                          <li><a class="dropdown-item" href="{% url 'admin:reviews_review_changelist' %}"><i class="pe-2 bi bi-cart-plus"></i>Manage ITPC</a></li>
+                          <li><a class="dropdown-item" href="{% url 'admin:reports_reportrisk_changelist' %}"><i class="pe-2 bi bi-megaphone-fill"></i>  Project Risk Report</a></li>
+                          <li><a class="dropdown-item" href="{% url 'admin:reviews_review_changelist' %}"><i class="pe-2 bi bi-cart-plus"></i> ITPC</a></li>
                           <div class="dropdown-divider"></div>
-                          <li><a class="dropdown-item" href="{% url 'admin:psm_program_changelist' %}"><i class="pe-2 bi bi-columns"></i>Manage Program</a></li>
+                          <li><a class="dropdown-item" href="{% url 'admin:psm_program_changelist' %}"><i class="pe-2 bi bi-columns"></i>Program</a></li>
+                          <li><a class="dropdown-item" href="{% url 'admin:psm_strategy_changelist' %}"><i class="pe-2 bi bi-columns"></i>Strategy</a></li>
                           <div class="dropdown-divider"></div>
-                          <li><a class="dropdown-item" href="{% url 'admin:common_gmdm_changelist' %}"><i class="pe-2 bi bi-pc-display"></i>Manage GMDM</a></li>
-                          <li><a class="dropdown-item" href="{% url 'admin:common_wbs_changelist' %}"><i class="pe-2 bi bi-currency-dollar"></i>Manage WBS(SAP)</a></li>
-                          <li><a class="dropdown-item" href="{% url 'admin:users_profilecbu_changelist' %}"><i class="pe-2 bi bi-person"></i>Manage CBU contacts</a></li>
+                          <li><a class="dropdown-item" href="{% url 'admin:common_gmdm_changelist' %}"><i class="pe-2 bi bi-pc-display"></i> GMDM</a></li>
+                          <li><a class="dropdown-item" href="{% url 'admin:common_wbs_changelist' %}"><i class="pe-2 bi bi-currency-dollar"></i> WBS(SAP)</a></li>
+                          <li><a class="dropdown-item" href="{% url 'admin:users_profilecbu_changelist' %}"><i class="pe-2 bi bi-person"></i> CBU contacts</a></li>
                       </ul>
                   <!-- </div> -->
               <!-- </div> -->

@@ -39,7 +39,7 @@ class reportList(PermissionRequiredMixin, generic.ListView):
 	permission_required = 'reports.view_report'
 	queryset = Report.objects.filter(status=1).order_by('-id')
 	template_name = 'reports/report_list.html'
-	paginate_by = 200
+	paginate_by = 250
 	context_object_name = 'report_list'
 	
 	#FIXME

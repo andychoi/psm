@@ -157,22 +157,22 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
 
     @admin.action(description='Set as staff', permissions=['change'])
     def set_staff(self, request, queryset):
+        user_group = Group.objects.get(name=settings.DEFAULT_AUTH_GROUP)
         for obj in queryset:
             if obj.user:
                 User.objects.filter(id=obj.user.id).update(is_staff=True)
                 try:
-                    user_group = Group.objects.get(name=settings.DEFAULT_AUTH_GROUP)
                     obj.user.groups.add(user_group) 
                 except:
                     pass    
 
     @admin.action(description='Remove from staff', permissions=['change'])
     def remove_staff(self, request, queryset):
+        user_group = Group.objects.get(name=settings.DEFAULT_AUTH_GROUP)
         for obj in queryset:
             if obj.user:
                 User.objects.filter(id=obj.user.id).update(is_staff=False)
                 try:
-                    user_group = Group.objects.get(name=settings.DEFAULT_AUTH_GROUP)
                     obj.user.groups.remove(user_group) 
                 except:
                     pass    

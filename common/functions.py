@@ -81,7 +81,7 @@ def _update_profile():
             team, dept  = _get_team_dept(e)
 
             obj, created = Profile.objects.update_or_create(auto_id=e.emp_id, 
-                defaults = {'name':e.emp_name, 'email':e.email, 'team':team, 'dept':dept, 'manager': mgr, 'department': e.dept_name, 'usertype': 'EMP', 'notes': '<auto-updated>' })
+                defaults = {'name':e.emp_name, 'email':e.email, 'team':team, 'dept':dept, 'manager': mgr, 'department': e.dept_name, 'job': e.job, 'usertype': 'EMP', 'notes': '<auto-updated>' })
             obj.CBU.set( CBU.objects.filter(name__exact=settings.MY_CBU))   # many-to-many, 
 
             # FIXME, Django user SQL...

@@ -71,7 +71,7 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
          (None, {'fields': (('user', 'name',), ('email',) , ('CBU',), ('usertype', 'is_psmadm', ), 
                             ('wcal', 'dept', 'team'), 
                             ('notes', ),
-                            ('auto_id', 'manager', 'department' ), #'job', 'mobile', ),
+                            ('auto_id', 'manager', 'department', 'job',  ), #'job', 'mobile', ),
                             # ('image',), 
                             )}),
         (_('More...'), {'fields': (('created_at', 'created_by'), ('updated_on', 'updated_by', 'proxy_name', )), 'classes': ('collapse',)}),
@@ -97,7 +97,7 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
         if obj is None:
             fieldsets = (      # Creation form
                  (None, {'fields': ('user', ('name',), ('email'), ('CBU',), ('usertype', 'is_psmadm', ), 
-                            ('wcal', 'dept', 'team',  ), 
+                            ('wcal', 'manager', 'dept', 'team', 'job',   ), 
                             ('notes' ), 
                         )}),
             )

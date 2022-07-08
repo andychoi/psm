@@ -1,8 +1,5 @@
 /* -------------------------------------- */
 
-ol > li {
-   display: table-row;
-}
 /* 
 .psm-md2  dl, ol, ul { margin-top: 0.3rem; margin-bottom: 0.1rem; padding-left: 0.5rem; }
 .psm-md2  li { line-height: 1.2rem; } 
@@ -138,6 +135,8 @@ dt {
    color:#87a6bc
 }
 .psm-md2 ol {
-   list-style-position: inside;
+   /* list-style-position: inside; */
    list-style-type: decimal;
 }
+/* ol > li { display: table-row; } */
+

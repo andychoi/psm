@@ -137,7 +137,7 @@ class WBS(models.Model):
     updated_on = models.DateTimeField(_("updated_on"), auto_now=True, editable=False)
 
     def __str__(self):
-        return f"{self.wbs}{'*' if self.is_sub else ''}" 
+        return f"{self.wbs}{'*' if self.is_sub else ''} - {self.name}" 
 
 class Employee(models.Model):
     emp_id = models.CharField(_("EmpID"), max_length=10, blank=False, null=False, db_index=True)

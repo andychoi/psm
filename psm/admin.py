@@ -447,7 +447,7 @@ class ProjectAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdmin):
     )
     ordering = ['-year', '-code', ]  #Project_PRIORITY_FIELDS
     readonly_fields = ('cf', 'created_at', 'updated_on', 'created_by', 'updated_by', 'lstrpt',  'link', )
-    autocomplete_fields = ['pm', 'CBUs', 'strategy', 'CBUpm', 'program', 'ref_plan', 'gmdm']
+    autocomplete_fields = ['pm', 'CBUs', 'strategy', 'CBUpm', 'program', 'ref_plan', 'gmdm', 'wbs']
 
     fieldsets = (               # Edition form
         (None,  {'fields': (('title', 'type', 'size', 'year', 'cf' ), 

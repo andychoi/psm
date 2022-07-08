@@ -65,7 +65,7 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
     list_editable = ( 'wcal',)
     search_fields = ('id', 'name', 'email', 'auto_id', 'CBU__name', 'user__id', 'user__username') #, 'manager__name') -> dump... why? circular??
     ordering = ('CBU__id', 'dept', 'team', 'name', )
-    readonly_fields = ('created_at', 'created_by', 'updated_on', 'updated_by', 'auto_id', 'manager', 'department')
+    readonly_fields = ('created_at', 'created_by', 'updated_on', 'updated_by', 'auto_id', 'manager', 'department', 'job')
     autocomplete_fields = ( 'user', 'team', 'CBU' )
     fieldsets = (  # Edition form
          (None, {'fields': (('user', 'name',), ('email',) , ('CBU',), ('usertype', 'is_psmadm', ), 

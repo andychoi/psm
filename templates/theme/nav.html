@@ -28,7 +28,7 @@
         </li> -->
 
         <div class="m-3">
-            <button onclick="updateData()" class="btn btn-primary" type="submit">Load with filter</button>
+            <button onclick="updateData()" class="btn btn-primary" type="submit">Global filter</button>
             {% for filterItem in filterItems %}
             <li>
                 <label  class="form-group label" for='sel_{{ filterItem.qId }}'>{{ filterItem.text }}</label>        

@@ -138,20 +138,17 @@ class ProjectRequestForm(forms.ModelForm):
         }
 
     # https://stackoverflow.com/questions/41613079/how-to-give-the-information-about-request-user-to-clean-method
-    # def __init__(self, request=None, *args, **kwargs):
-    #     self.user = request.user
-    #     super().__init__(*args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        # Voila, now you can access request anywhere in your form methods by using self.request!
+        super(ProjectRequestForm, self).__init__(*args, **kwargs)
         
     # validation logic here in admin form -> check version field access
-    def clean_version(self):
-        super().clean()
-
-        #TODO how to get requestor???
-        # ver = self.cleaned_data.get("version")
-        # if ver == Versions.V20.value and not self.user.has_perm('access_projectrequest_v20') or \
-        #     ver == Versions.V21.value and not self.user.has_perm('access_projectrequest_v21'):
-        #     # messages.add_message(self.request, messages.ERROR, f"You don't have permission to change on version {ver}" )
-        #     raise ValidationError(_('No access to this version'), code='invalid')
+    def clean(self):
+        ver = self.cleaned_data.get("version")
+        if ver == Versions.V20.value and not self.request.user.has_perm('access_projectrequest_v20') or \
+            ver == Versions.V21.value and not self.request.user.has_perm('access_projectrequest_v21'):
+            raise ValidationError(f'No permission to change version  {ver}. Please request manager to handle it', code='invalid')
 
 # ----------------------------------------------------------------------------------------------------------------
 @admin.register(ProjectRequest)
@@ -227,8 +224,22 @@ class ProjectRequestAdmin(ImportExportMixin, DjangoObjectActions, admin.ModelAdm
             form.base_fields['quali'    ].widget.attrs['style'] = 'width: 25em;'
             form.base_fields['quant'    ].widget.attrs['style'] = 'width: 25em;'
             form.base_fields['resource' ].widget.attrs['style'] = 'width: 35em;'
-        return form
 
+
+            # TIP https://stackoverflow.com/questions/2683689/django-access-request-object-from-admins-form-clean
+            class AdminFormWithRequest(form):
+                def __new__(cls, *args, **kwargs):
+                    kwargs['request'] = request
+                    return form(*args, **kwargs)            
+        return AdminFormWithRequest
+
+    #Tip - to make clean work on changelist
+    def get_changelist_form(self, request, **kwargs):
+        class AdminFormWithRequest(ProjectRequestForm):
+            def __new__(cls, *args, **kwargs):
+                kwargs['request'] = request
+                return ProjectRequestForm(*args, **kwargs)            
+        return AdminFormWithRequest    
 
     # TODO - permission override
     def has_change_permission(self, request, obj=None):

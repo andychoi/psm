@@ -137,7 +137,7 @@ dt {
    font-style:italic;
    color:#87a6bc
 }
-.psm-md2 .ol {
+.psm-md2 ol {
    list-style-position: inside;
    list-style-type: decimal;
 }

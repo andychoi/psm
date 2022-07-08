@@ -82,8 +82,8 @@
                 <div class="dropdown-divider"></div>
                 <li><a class="dropdown-item" href="{% url 'project_dashboard' %}"><i class="pe-2 bi bi-speedometer"></i> Project Portfolio Dashboard </a></li>
                 {% if user.profile.is_psmadm or user.is_superuser %}
-                    <li><a class="dropdown-item" href="{% url 'data_analytic' %}"><i class="pe-2 bi bi-speedometer"></i> Data analytics - pilot </a></li>
                 {% endif %}
+                <li><a class="dropdown-item" href="{% url 'data_analytic' %}"><i class="pe-2 bi bi-speedometer"></i> (Analytics test) </a></li>
                 <div class="dropdown-divider"></div>
                 <li><a class="dropdown-item" href="{% url 'project_chart_1' %}"><i class="pe-2 bi bi-bar-chart-steps"></i>Gantt chart (type1)</a></li>
                 <li><a class="dropdown-item" href="{% url 'project_chart_2' %}"><i class="pe-2 bi bi-bar-chart-steps"></i>Gantt chart (type2)</a></li>

@@ -42,7 +42,7 @@ def _update_org():
             obj, created = Div.objects.update_or_create(name = org['dept_name'], defaults = {'em_count':org['emp_count'], 'cc':cc['cc'], 'is_active':True, 'head': None })
             new_upd_div.append(obj.id)
 
-    # add 'virtual' dept if report to is div                
+    # add 'virtual' dept for team if report to is div level                
     for m in mgr_list:
         manager = Employee.objects.get(emp_id=m['manager_id'])
         try:
@@ -125,6 +125,7 @@ def _get_team_dept(e):
         except:
             mgr, team, dept = None, None, None
 
+        # update team head, team's dept
         if team and not team.head:
             Team.objects.filter(id=team.id).update(head = Profile.objects.get(auto_id__exact=e.manager_id))
         if team and not team.dept:
@@ -140,11 +141,11 @@ def _get_team_dept(e):
             while mgr.l == 2:
                 mgr = Employee.objects.get(emp_id__exact=mgr.manager_id)
 
-        # dept head
+        # updatedept head
         if dept and not dept.head:
             Dept.objects.filter(id=dept.id).update(head=Profile.objects.get(auto_id__exact=mgr.emp_id))
 
-        # get next level - div
+        # get next level - div, if level 1, then just use it
         if mgr and mgr.l == 1:
             pass
         else:
@@ -155,11 +156,11 @@ def _get_team_dept(e):
         except:
             div = None            
 
-        # dept's div
+        # update dept's div
         if dept and not dept.div:
             Dept.objects.filter(id=dept.id).update(div=div)
 
-        # div head
+        # update div head
         if div and not div.head:
             try:
                 Div.objects.filter(id=div.id).update(head=Profile.objects.get(auto_id__exact=mgr.emp_id))

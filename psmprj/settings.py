@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'reviews',                  # reviews
     'data',                     # analytics (pilot)
     'resources',                # resource management (name resource is reserved by notebook)
-
+    'sap',
+    
     # 'guardian',               # object level permission management; django default is class level 
 
     # 'river',                  # simple workflow; not yet compatible with django 4.x

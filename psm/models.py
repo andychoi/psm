@@ -13,7 +13,8 @@ from django.db.models import Max
 
 from common.models import Status, STATUS, PrjType, PRJTYPE, State, STATES, Phase, PHASE, Priority, PRIORITIES, Action3, ACTION3, PrjSize, PRJSIZE
 from common.models import CBU, Div, Dept, Team, GMDM
-from common.models import WBS, VERSIONS, Versions
+from common.models import VERSIONS, Versions
+from sap.models import WBS
 from users.models import Profile, ProfileCBU
 
 from psmprj.utils.mail import send_mail_async as send_mail, split_combined_addresses

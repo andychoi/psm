@@ -11,7 +11,8 @@ from pyrfc import Connection
 from .sap import sap_qry
 
 from users.models import Profile
-from .models import CBU, Div, Dept, Team, Employee, WBS, GMDM
+from common.models import CBU, Div, Dept, Team
+from sap.models import Employee, WBS
 
 # ------------------------------------------------------------------------------------------------------------
 import logging

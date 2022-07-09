@@ -1,0 +1,68 @@
+{% extends "theme/root.html" %}
+
+{% block head_script %}
+<link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.css">
+{% endblock %}
+
+
+{% block content %}
+<div class="container-fluid mt-1">
+
+<form action="/sap/opex-summary" method="post">
+  <label for="year">Enter name: </label>
+  <input id="year" type="text" name="name_field" value="year to run">
+  <input type="submit" value="OK">
+</form>         
+
+<div class="row">
+
+  <div id="toolbar" >
+      <h5>Report</h5>
+  </div>
+
+{% if items %}
+
+      <table data-toggle="table" data-pagination="true" data-page-size="25" data-page-list="[10, 25, 50, 100, all]"
+      data-search="true" data-filter-control="true" data-show-search-clear-button="false" data-show-refresh="false"
+      data-toolbar="#toolbar" data-show-toggle="true" data-show-columns="true"
+      id="table" class="col table table-striped table-bordered table-sm small">
+      <thead class="table-primary">
+      <tr>
+          <th data-sortable="true" scope="col">CBU</th>
+          <th data-sortable="true" scope="col" class="text-center">Health</th>
+      </tr>
+      </thead>
+      <tbody>
+        {% for report in report_list %}
+          <tr>
+            <td>{ item }</td> 
+            <td class="text-center">
+              <div class="progress">
+                  <div class="progress-bar" role="progressbar" style="width: 50%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{ item.progress }%</div>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody></table>
+    <!-- </div> -->
+
+    {% include "includes/pagination.html" %}
+
+
+
+{% else %}
+  <p>No data found!!! :(</p>
+{% endif %}
+
+</div>
+{% endblock content %}
+
+
+
+{% block script_body %}
+<script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>    
+<script src="https://unpkg.com/bootstrap-table@1.20.2/dist/bootstrap-table.min.js"></script>
+<!--script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+  integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
+</script-->
+{% endblock %}

@@ -5,10 +5,11 @@ from django_admin_listfilter_dropdown.filters import RelatedDropdownFilter, Drop
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from import_export.admin import ImportExportMixin
+from django.utils.html import mark_safe
 
 # Register your models here.
 from .models import WBS, Employee
-
+from psm.models import Project
 
 
 from django_object_actions import DjangoObjectActions
@@ -16,7 +17,7 @@ from django_object_actions import DjangoObjectActions
 
 @admin.register(WBS)
 class WBSAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
-    list_display = ('id', 'wbs', 'name', 'is_sub', 'cbu', 'status', 'formatted_budget')
+    list_display = ('id', 'wbs', 'name', 'is_sub', 'cbu', 'status', 'formatted_budget', 'project')
     list_display_links = ('wbs', 'name')
     search_fields = ('id', 'wbs', 'name')
 
@@ -27,6 +28,9 @@ class WBSAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
          (None, {'fields': (('wbs', 'name', 'cbu') , ('status', 'budget'))}),
         (_('More...'), {'fields': (('created_at', 'updated_on'), ), 'classes': ('collapse',)}),
     )
+
+    def project(self, obj):
+        return mark_safe(f"<a href='{reverse('admin:psm_project_changelist')}?wbs={obj.id}'>{Project.objects.filter(wbs=obj).count()}</a>")
 
     def get_fieldsets(self, request, obj=None):
         fieldsets = super().get_fieldsets(request, obj)

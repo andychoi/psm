@@ -51,6 +51,7 @@ urlpatterns = [
     path('', include('reports.urls')),
     path('', include('psm.urls')),
     path('', include('data.urls')),
+    path('', include('sap.urls')),
     # path('', include('resource.urls')),   # not yet complete
     
     # home index 

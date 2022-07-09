@@ -8,7 +8,7 @@ from django.db.models import Count, F, Q
 import pytz
 from pyrfc import Connection
 
-from .sap import sap_qry
+from .sap import sap_qry, get_sap_emp_data
 
 from users.models import Profile
 from common.models import CBU, Div, Dept, Team
@@ -181,27 +181,28 @@ def _update_emp():
         return
 
     timezone = pytz.timezone(settings.TIME_ZONE)
-    data = {}
-    table = 'ZSUSRMT0010'
-    fields = ['USER_ID', 'CREATE_DATE', 'TERMINATE_DATE', 'USER_NAME', 'EMAIL', 'COSTCENTER', 'DEPT_CODE', 'DEPT_NAME', 'CHARGE_JOB', 'POS_LEVEL', 'SUPERVISORID', 'DUTY_CODE' ]
-    where  = []    # "USER_ID = 'xxx'"    # "TERMINATE_DATE = '00000000'" ] -> terminated -> delete from current emp table  
-    maxrows = 10000
-    # starting row to return
-    fromrow = 0
 
-    with Connection(**settings.SAP_CONN_WBS) as conn:
-        # query SAP
-        results, headers = sap_qry(conn, table, fields, where, maxrows, fromrow)
+    results = get_sap_emp_data()
+    # table = 'ZSUSRMT0010'
+    # fields = ['USER_ID', 'CREATE_DATE', 'TERMINATE_DATE', 'USER_NAME', 'EMAIL', 'COSTCENTER', 'DEPT_CODE', 'DEPT_NAME', 'CHARGE_JOB', 'POS_LEVEL', 'SUPERVISORID', 'DUTY_CODE' ]
+    # where  = []    # "USER_ID = 'xxx'"    # "TERMINATE_DATE = '00000000'" ] -> terminated -> delete from current emp table  
+    # maxrows = 10000
+    # # starting row to return
+    # fromrow = 0
 
-    # get latest per emp_id, create_date, sort first / better to select latest... 
-    sorted_results = sorted( results, key=lambda x:( x[0], x[1] ) )
+    # with Connection(**settings.SAP_CONN) as conn:
+    #     # query SAP
+    #     results, headers = sap_qry(conn, table, fields, where, maxrows, fromrow)
 
-    # remove all left/right spaces
-    for r in sorted_results:
-        r[:] = [info.strip() for info in r]
+    # # get latest per emp_id, create_date, sort first / better to select latest... 
+    # sorted_results = sorted( results, key=lambda x:( x[0], x[1] ) )
+
+    # # remove all left/right spaces
+    # for r in sorted_results:
+    #     r[:] = [info.strip() for info in r]
 
     new_emp, upd_emp = [], []
-    for item in sorted_results:
+    for item in results:
         if item[1][:1] == '0' or item[9] == '' or item[5] == '':  # invalid record, skip
             continue
 
@@ -261,7 +262,9 @@ def _update_wbs():
         return ret
         
     data = {}
-    with Connection(**settings.SAP_CONN_WBS) as conn:
+    # sap_connection = settings.SAP_CONFIG['servers']['IDE']
+    # with Connection(**sap_connection) as conn:
+    with Connection(**settings.SAP_CONN) as conn:
         try:
             result = conn.call('ZPS_PROJECT_LIST', ET_TAB=[])
             for item in result['ET_TAB']:
@@ -315,7 +318,7 @@ def _update_wbs():
     # def import_func_deprecated(modeladmin, request, queryset):
         
     #     data = {}
-    #     with Connection(**settings.SAP_CONN_WBS) as conn:
+    #     with Connection(**settings.SAP_CONN) as conn:
     #         try:
     #             # abap_structure = {'RFCINT4': 345}
     #             # abap_table = [abap_structure]

@@ -42,3 +42,6 @@ class Employee(models.Model):
 
     def __str__(self):
         return f"{self.emp_id} { '(terminated)' if self.terminated else ''}" 
+
+# class SAP(models.Model):
+#     pass

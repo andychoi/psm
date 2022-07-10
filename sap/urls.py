@@ -10,5 +10,6 @@ from django.contrib.auth.decorators import login_required
 urlpatterns = [
 
 	path('sap/opex-summary/', login_required(views.opex_summary.as_view()), 	name='sap_opex_summary'),
+	path('sap/opex-items/', login_required(views.opex_items), 	name='sap_opex_items'),
 
 ]

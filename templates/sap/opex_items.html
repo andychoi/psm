@@ -13,11 +13,49 @@
 {% block content %}
 <div class="container-fluid mt-1">
 
-<form action="/sap/opex-summary" method="post">
-  <label for="year">Enter name: </label>
-  <input id="year" type="text" name="name_field" value="year to run">
-  <input type="submit" value="OK">
-</form>         
+  <div class="row">
+
+    <div class="collapse show float-end" id="collapseFilter">
+
+    <form class="row row-cols-lg-auto g-3 align-items-center form-control-sm" action="{% url 'sap_opex_items' %}" method="post">{% csrf_token %}
+      
+
+      <!-- <div class="col-3">    
+        <label for="year">Year: </label>
+        <input id="year" type="text" name="name_field" value="{% now 'Y' %}" class="form-control">
+      </div> -->
+
+      {% for filterItem in filterItems %}
+      <div class="col-auto">
+        <label for='sel_{{ filterItem.qId }}'>{{ filterItem.text }}</label>        
+          <select class="form-control form-select"  id='sel_{{ filterItem.qId }}' >
+              <!-- onchange="updateData()" -->
+              <!-- <option value=''>ALL</option> -->
+              {% for pItem in filterItem.items %}<option value={{ pItem.id }}>{{ pItem.name }}</option>
+              {% endfor %}
+          </select>
+
+      </div>
+      {% endfor %}
+
+ 
+      <div class="col-auto">
+        <label for="cc">Cost Center: </label>
+          <select id="cc" name="Cost Center" class="form-control">
+            <option value="" selected>None</option>
+          {% for k, v in cclist %}
+            <option value="{{ k }}">{{ v }}</option>
+          {% endfor %}  
+          </select>
+      </div>
+
+      <button onclick="updateData()" class="btn btn-primary" type="submit">Submit</button>
+      <!-- <input type="submit" value="OK"> -->
+
+    </form> 
+    
+    </div>  
+  </div>
 
 <div class="row">
 
@@ -35,21 +73,29 @@
       <thead class="table-primary">
       <tr>
         <th data-sortable="true" scope="col">CC</th>
+        <th data-sortable="true" scope="col">CC-Name</th>
+        <th data-sortable="true" scope="col">Responsible</th>
         <th data-sortable="true" scope="col">ORDER</th>
           <th data-sortable="true" scope="col">Description</th>
-          <th data-sortable="true" scope="col">Year</th>
+          <th data-sortable="true" scope="col">Lineitem text</th>
           {% for i in months %}
             <th data-sortable="true" scope="col" class="text-end">{{ forloop.counter }}</th>
           {% endfor %}
+          <th data-sortable="true" scope="col">Total</th>
+          <th data-sortable="true" scope="col">Progress</th>
+          <th data-sortable="true" scope="col">Budget</th>
+
       </tr>
       </thead>
       <tbody>
         {% for i in items %}
           <tr>        
-            <td>{{ i.AKSTL }}</td> 
+            <td>{{ i.KOSTV }}</td> 
+            <td>{{ i.CCTEXT }}</td> 
+            <td>{{ i.VERAK }}</td> 
             <td>{{ i.AUFNR }}</td> 
             <td>{{ i.KTEXT }}</td> 
-            <td>{{ i.GJAHR }}</td> 
+            <td>{{ i.SGTXT }}</td> 
             <td class="text-end">{{ i.WTG001 | floatformat:"0" | intcomma }}</td> 
             <td class="text-end">{{ i.WTG002 | floatformat:"0" | intcomma }}</td> 
             <td class="text-end">{{ i.WTG003 | floatformat:"0" | intcomma }}</td> 
@@ -63,9 +109,13 @@
             <td class="text-end">{{ i.WTG011 | floatformat:"0" | intcomma }}</td> 
             <td class="text-end">{{ i.WTG012 | floatformat:"0" | intcomma }}</td> 
 
-              <!-- <div class="progress"> -->
-                  <!-- <div class="progress-bar" role="progressbar" style="width: 50%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{ item.progress }%</div> -->
-              <!-- </div> -->
+            <td class="text-end">{{ i.wtgsum | floatformat:"0" | intcomma }}</td> 
+            <td>
+              <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: 50%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{ item.progress }%</div>
+              </div>
+            </td>
+            <td class="text-end"> {{ i.tslsum | floatformat:"0" | intcomma }}</td>
           </tr>
         {% endfor %}
         </tbody></table>

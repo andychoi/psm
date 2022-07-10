@@ -54,7 +54,7 @@ def get_sap_emp_data():
 
     table = 'ZSUSRMT0010'
     fields = ['USER_ID', 'CREATE_DATE', 'TERMINATE_DATE', 'USER_NAME', 'EMAIL', 'COSTCENTER', 'DEPT_CODE', 'DEPT_NAME', 'CHARGE_JOB', 'POS_LEVEL', 'SUPERVISORID', 'DUTY_CODE' ]
-    where  = []    # "USER_ID = 'xxx'"    # "TERMINATE_DATE = '00000000'" ] -> terminated -> delete from current emp table  
+    where  = [] # "USER_ID like 'HIS2%'", " and TERMINATE_DATE = '00000000'" ]      # -> terminated -> delete from current emp table  
     maxrows = 10000
     # starting row to return
     fromrow = 0
@@ -73,25 +73,37 @@ def get_sap_emp_data():
     return sorted_results
 
 # ABAP debug: Put external break point into the RFC fm and enter the Tcode SRDEBUG
+# ABAP rfc issue: https://stackoverflow.com/questions/53155267/old-abap-code-still-active-for-pyrfc-even-after-tr-was-imported-why
 def get_opex_summary(Where = ''):
 
     sap_connection = settings.SAP_CONFIG['servers']['IDE']
 
     # the WHERE part of the query is called "options"
-    Where = {} # 'AND GJAHR EQ 2022' }
+    Where = []  #" AND  COSP~GJAHR EQ '2022'", ]
     options = [{'TEXT': x} for x in Where] # again, notice the format
     tables = []
     with Connection(**sap_connection) as conn:
         try:
-            result = conn.call('ZPS_ANNUAL_ORDER', ET_TAB=[]) #, OPTIONS=options)
+            tables = conn.call('ZPS_ANNUAL_ORDER', OPTIONS=options)
         except Exception as e:
             pass
+    return tables['ET_TAB'] if tables else None
 
-    # for item in tables['ET_TAB']:
-        # if item['ZZLARGE'] == 'S':
-        # tObj = {}
-        #     tObj['PSPID'] = item['PSPID']
-            # data[ tObj['PSPID'] ] = tObj
+def get_opex_items(Where = ''):
+
+    sap_connection = settings.SAP_CONFIG['servers']['IDE']
+
+    # the WHERE part of the query is called "options"
+    Where = []  #" AND  COSP~GJAHR EQ '2022'", ]
+    options = [{'TEXT': x} for x in Where] # again, notice the format
+    tables = []
+    with Connection(**sap_connection) as conn:
+        try:
+            tables = conn.call('ZPS_ANNUAL_ORDER_BY_LINEITEM', OPTIONS=options)
+        except Exception as e:
+            pass
+    return tables['ET_TAB'] if tables else None
+
 
 
 def rfc_func_desc(dict_sap_con, func_name):

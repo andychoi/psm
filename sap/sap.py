@@ -81,10 +81,11 @@ def get_opex_summary(Where = ''):
     # the WHERE part of the query is called "options"
     Where = []  #" AND  COSP~GJAHR EQ '2022'", ]
     options = [{'TEXT': x} for x in Where] # again, notice the format
+
     tables = []
     with Connection(**sap_connection) as conn:
         try:
-            tables = conn.call('ZPS_ANNUAL_ORDER', OPTIONS=options)
+            tables = conn.call('ZPS_ANNUAL_ORDER', I_WRTTP='04', I_GJAHR='2021', OPTIONS=options)
         except Exception as e:
             pass
     return tables['ET_TAB'] if tables else None

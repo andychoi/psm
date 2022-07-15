@@ -144,7 +144,7 @@ class GMDMResource(resources.ModelResource):
         model = GMDM
         fields = ( 'id', 'code', 'CBU', 'CBU_name', 'CBUteam', 'name', 'critical', 'outline', 
             'platform', 'os', 'db', 'lang', 'ui', 'apptype', 'no_screen', 'no_if', 'no_table', 'usertype', 'no_user',
-            'operator', 'sme', 'assignment', 'assignee', 'manager', 'hod'
+            'operator', 'sme', 'assignment', 'assignee', 'manager', 'hod', 'is_bot',
             'grouping', 'dept', 'dept_name', 'team', 'team_name', 
             'level1', 'level2', 'status', 'initial', 'latest', 'decommission', 'remark',  
         )

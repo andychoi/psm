@@ -231,12 +231,12 @@ class GMDM(models.Model):
         ('Desktop S/W',  "Desktop S/W"),
     )
 
-    CRITICAL = (
-        ('1-Very High',   "Very high"),
-        ('2-High',        "High"),
-        ('3-Medium',      "Medium"),
-        ('4-Low',         "Low"),
-        ('9-TBD',         "TBD"),
+    SEVERITY = (
+        ('1 - Critical',    "Critical"),
+        ('2 - High',        "High"),
+        ('3 - Medium',      "Medium"),
+        ('4 - Low',         "Low"),
+        ('Not defined',     "Not defined"),
     )
 
     NO_USER = (
@@ -295,7 +295,7 @@ class GMDM(models.Model):
     no_if     = models.CharField(_("no of interface"),  max_length=20, choices=NO_CUSTOM, blank=True, null=True)
     no_table  = models.CharField(_("no of tables"),     max_length=20, choices=NO_CUSTOM, blank=True, null=True)
 
-    usertype = models.CharField(_("User type"), max_length=100, choices=USERTYPE, blank=True, null=True)
+    usertype = models.CharField(_("User type"), max_length=100, blank=True, null=True)   #choices=USERTYPE, 
     no_user = models.CharField(_("no of users"), max_length=20, choices=NO_USER, blank=True, null=True)
     apptype = models.CharField(_("App type"), max_length=100, choices=APPTYPE, blank=True, null=True)
     operator = models.CharField(_("Operator"), max_length=100, blank=True, null=True)
@@ -312,11 +312,12 @@ class GMDM(models.Model):
     assignee = models.CharField(_("Assignee"), max_length=100, blank=True, null=True)
     manager = models.CharField(_("Manager"), max_length=50, blank=True, null=True)
     hod     = models.CharField(_("HOD"), max_length=50, blank=True, null=True)
+    is_bot = models.BooleanField(_("Is BOT"), default=False)
 
-    critical = models.CharField(_("Criticality"), max_length=50, choices=CRITICAL, default='4-Low', null=True)
-    dr = models.BooleanField(_("DR ready"), default=False)
-    level1 = models.CharField(_("Level 1"), max_length=50, choices=GMDM1, blank=True, null=True)
-    level2 = models.CharField(_("Level 2"), max_length=50, choices=GMDM2, blank=True, null=True)
+    severity = models.CharField(_("Severity"), max_length=50, choices=SEVERITY, default='4 - Low', null=True)
+    # dr = models.BooleanField(_("DR ready"), default=False) 
+    level1 = models.CharField(_("Level 1"), max_length=50, blank=True, null=True)  #choices=GMDM1, 
+    level2 = models.CharField(_("Level 2"), max_length=50, blank=True, null=True)  #choices=GMDM2, 
     CBU = models.ForeignKey('common.CBU', null=True, on_delete=models.SET_NULL)
     CBUteam  = models.CharField(_("CBU team"), max_length=100, blank=True, null=True)
 

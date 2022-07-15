@@ -144,9 +144,9 @@ class GMDMResource(resources.ModelResource):
         model = GMDM
         fields = ( 'id', 'code', 'CBU', 'CBU_name', 'CBUteam', 'name', 'critical', 'outline', 
             'platform', 'os', 'db', 'lang', 'ui', 'apptype', 'no_screen', 'no_if', 'no_table', 'usertype', 'no_user',
-            'operator', 'sme', 'assignment', 'assignee', 
+            'operator', 'sme', 'assignment', 'assignee', 'manager', 'hod'
             'grouping', 'dept', 'dept_name', 'team', 'team_name', 
-            'level1', 'level2', 'initial', 'latest', 'decommission', 'remark',  
+            'level1', 'level2', 'status', 'initial', 'latest', 'decommission', 'remark',  
         )
        
 @admin.register(GMDM)
@@ -181,7 +181,7 @@ class GMDMAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
                     ('outline','remark' ), 
                     ('platform', 'os', 'db', 'lang', 'ui','apptype'),
                     ('no_screen', 'no_if', 'no_table', 'usertype', 'no_user', ), 
-                    ('operator', 'sme', 'assignment', 'assignee'),
+                    ('operator', 'sme', 'assignment', 'assignee', 'manager', 'hod'),
                     ('dept', 'team', 'CBUteam'),
                     ('grouping', 'level1', 'level2'),
                     ('status', 'initial', 'latest', 'decommission'),

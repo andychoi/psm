@@ -172,7 +172,7 @@ class GMDM(models.Model):
         ('Sales',             "Sales"),
         ('Administration',    "Administration"),
         ('ERP',               "ERP"),
-        ('IT',                "IT"),
+        ('Information Technology',                "Information Technology"),
         ('Service',           "Service"),
         ('Quality',           "Quality"),
         ('#N/A',              '#Unknown'),
@@ -310,6 +310,8 @@ class GMDM(models.Model):
     sme = models.CharField(_("SME"), max_length=100, blank=True, null=True)
     assignment = models.CharField(_("Assignment Group"), max_length=100, blank=True, null=True)
     assignee = models.CharField(_("Assignee"), max_length=100, blank=True, null=True)
+    manager = models.CharField(_("Manager"), max_length=50, blank=True, null=True)
+    hod     = models.CharField(_("HOD"), max_length=50, blank=True, null=True)
 
     critical = models.CharField(_("Criticality"), max_length=50, choices=CRITICAL, default='4-Low', null=True)
     dr = models.BooleanField(_("DR ready"), default=False)

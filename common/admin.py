@@ -184,7 +184,7 @@ class GMDMAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
                     ('operator', 'sme', 'assignment', 'assignee'),
                     ('dept', 'team', 'CBUteam'),
                     ('grouping', 'level1', 'level2'),
-                    ('initial', 'latest', 'decommission'),
+                    ('status', 'initial', 'latest', 'decommission'),
                     ]
     fieldsets = (               # Edition form
         (None,  {'fields': gmdm_fields 

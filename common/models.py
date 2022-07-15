@@ -262,6 +262,17 @@ class GMDM(models.Model):
         ('> 2000', "> 2000"),
     )
 
+    GMDM_STATUS = (
+        ('New', 'New'),
+        ('Operational', 'Operational'),
+        ('Ready', 'Ready'),
+        ('Request Retire', 'Request Retire'),
+        ('Retired', 'Retired'),
+        ('Under Evaluation', 'Under Evaluation'),
+    )
+
+
+
     class Meta:
         verbose_name = _("GMDM")
         verbose_name_plural = _("GMDM")
@@ -272,6 +283,7 @@ class GMDM(models.Model):
 
     code  = models.CharField(max_length=10, blank=False, null=False)
     name  = models.CharField(max_length=100, blank=False, null=False)
+    status = models.CharField(_("Status"), max_length=25, choices=GMDM_STATUS, blank=True, null=True)
 
     outline = models.TextField(_("Description"), max_length=1000, blank=True, null=True)
     platform = models.CharField(_("Platform"), max_length=150, blank=True, null=True)

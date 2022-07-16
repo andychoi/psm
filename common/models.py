@@ -312,7 +312,7 @@ class GMDM(models.Model):
     assignee = models.CharField(_("Assignee"), max_length=100, blank=True, null=True)
     manager = models.CharField(_("Manager"), max_length=50, blank=True, null=True)
     hod     = models.CharField(_("HOD"), max_length=50, blank=True, null=True)
-    is_bot = models.BooleanField(_("Is BOT"), default=False)
+    is_bot = models.CharField(_("Is BOT"), max_length=10, blank=True, default="FALSE")
 
     severity = models.CharField(_("Severity"), max_length=50, choices=SEVERITY, default='4 - Low', null=True)
     # dr = models.BooleanField(_("DR ready"), default=False) 

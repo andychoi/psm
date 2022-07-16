@@ -156,7 +156,7 @@ class GMDMAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
         model = GMDM
         import_id_fields = ('id',)    
 
-    list_display = ('code', 'name', 'CBU','hod', 'manager', 'sme', 'assignee', 'assignment',  'grouping')
+    list_display = ('code', 'name', 'CBU','hod', 'manager', 'sme', 'assignee', 'assignment', 'is_bot', 'grouping')
     list_display_links = ('code', 'name')
     # list_editable = ('sme', 'assignee',  )
     readonly_fields = ('created_at', 'updated_on', 'created_by', 'updated_by', )
@@ -181,7 +181,7 @@ class GMDMAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
                     ('outline','remark' ), 
                     ('platform', 'os', 'db', 'lang', 'ui','apptype'),
                     ('no_screen', 'no_if', 'no_table', 'usertype', 'no_user', ), 
-                    ('operator', 'sme', 'assignment', 'assignee', 'manager', 'hod'),
+                    ('operator', 'is_bot', 'sme', 'assignment', 'assignee', 'manager', 'hod'),
                     ('dept', 'team', 'CBUteam'),
                     ('grouping', 'level1', 'level2'),
                     ('status', 'initial', 'latest', 'decommission'),

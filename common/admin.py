@@ -157,7 +157,7 @@ class GMDMAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
         import_id_fields = ('id',)    
 
     list_display = ('code', 'name', 'CBU','hod', 'manager', 'sme', 'assignee', 'assignment',  'grouping')
-    list_display_links = ('id', 'code', 'name')
+    list_display_links = ('code', 'name')
     # list_editable = ('sme', 'assignee',  )
     readonly_fields = ('created_at', 'updated_on', 'created_by', 'updated_by', )
     search_fields = ('id', 'code', 'name')

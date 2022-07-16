@@ -166,6 +166,7 @@ class GMDMAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
     search_fields = ('id', 'code', 'name', 'outline', 'sme', 'assignee', 'assignment', 'grouping', 'ui')
     list_filter = (
         ('CBU',           RelatedDropdownFilter),
+        ('is_bot',            DropdownFilter),
         ('operator',            DropdownFilter),
         # ('owner1__name',        DropdownFilter),   
         # ('owner2__name',        DropdownFilter),

@@ -142,7 +142,7 @@ class GMDMResource(resources.ModelResource):
     # owner1_name   = fields.Field(attribute='owner1',widget=ForeignKeyWidget(model=Profile, field='name'), )
     class Meta:
         model = GMDM
-        fields = ( 'id', 'code', 'CBU', 'CBU_name', 'CBUteam', 'name', 'critical', 'outline', 
+        fields = ( 'id', 'code', 'CBU', 'CBU_name', 'CBUteam', 'name', 'severity', 'outline', 
             'platform', 'os', 'db', 'lang', 'ui', 'apptype', 'no_screen', 'no_if', 'no_table', 'usertype', 'no_user',
             'operator', 'sme', 'assignment', 'assignee', 'manager', 'hod', 'is_bot',
             'grouping', 'dept', 'dept_name', 'team', 'team_name', 
@@ -156,7 +156,7 @@ class GMDMAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
         model = GMDM
         import_id_fields = ('id',)    
 
-    list_display = ('id', 'code', 'name', 'CBU','dept', 'sme', 'assignee', 'assignment', 'is_active', 'grouping')
+    list_display = ('code', 'name', 'CBU','hod', 'manager', 'sme', 'assignee', 'assignment',  'grouping')
     list_display_links = ('id', 'code', 'name')
     # list_editable = ('sme', 'assignee',  )
     readonly_fields = ('created_at', 'updated_on', 'created_by', 'updated_by', )
@@ -171,13 +171,13 @@ class GMDMAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
         # ('owner2__name',        DropdownFilter),
         ('dept',          RelatedDropdownFilter),
         ('team',          RelatedDropdownFilter),
-        ('critical',            DropdownFilter),
+        ('severity',            DropdownFilter),
         ('apptype',             DropdownFilter),
         ('grouping',            DropdownFilter),
     )
     autocomplete_fields = ['team',  ]
 
-    gmdm_fields = [ ('code', 'name', 'CBU', 'critical',  ),
+    gmdm_fields = [ ('code', 'name', 'CBU', 'severity',  ),
                     ('outline','remark' ), 
                     ('platform', 'os', 'db', 'lang', 'ui','apptype'),
                     ('no_screen', 'no_if', 'no_table', 'usertype', 'no_user', ), 
@@ -208,7 +208,7 @@ class GMDMAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
         #permission based field read only....
         if not request.user.has_perm('admin_gmdm'):
             form.base_fields['code'].disabled = True 
-            form.base_fields['critical'].disabled = True 
+            form.base_fields['severity'].disabled = True 
 
         return form
 

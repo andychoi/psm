@@ -281,7 +281,7 @@ class GMDM(models.Model):
         ]
 
 
-    code  = models.CharField(max_length=10, blank=False, null=False)
+    code  = models.CharField(max_length=10, blank=False, unique=True, null=False)
     name  = models.CharField(max_length=100, blank=False, null=False)
     status = models.CharField(_("Status"), max_length=25, choices=GMDM_STATUS, blank=True, null=True)
 

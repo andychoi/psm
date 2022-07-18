@@ -165,21 +165,21 @@ class GMDMAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
     ordering = ('dept', 'team', 'code', )
     search_fields = ('id', 'code', 'name', 'outline', 'sme', 'assignee', 'manager', 'assignment', 'grouping', 'ui')
     list_filter = (
-        ('CBU',           RelatedDropdownFilter),
-        ('is_bot',            DropdownFilter),
-        ('operator',            DropdownFilter),
-        ('hod',            DropdownFilter),
-        ('manager',            DropdownFilter),
-        ('sme',            DropdownFilter),
-        ('assignee',            DropdownFilter),
-        ('assignment',            DropdownFilter),
+        ('CBU',             RelatedDropdownFilter),
+        ('is_bot',          DropdownFilter),
+        ('operator',        DropdownFilter),
+        ('hod',             DropdownFilter),
+        ('manager',         DropdownFilter),
+        ('sme',             DropdownFilter),
+        ('assignee',        DropdownFilter),
+        ('assignment',      DropdownFilter),
         # ('owner1__name',        DropdownFilter),   
         # ('owner2__name',        DropdownFilter),
-        ('dept',          RelatedDropdownFilter),
-        ('team',          RelatedDropdownFilter),
-        ('severity',            DropdownFilter),
-        ('apptype',             DropdownFilter),
-        ('grouping',            DropdownFilter),
+        ('dept',            RelatedDropdownFilter),
+        ('team',            RelatedDropdownFilter),
+        ('severity',        DropdownFilter),
+        ('apptype',         DropdownFilter),
+        ('grouping',        DropdownFilter),
     )
     autocomplete_fields = ['team',  ]
 

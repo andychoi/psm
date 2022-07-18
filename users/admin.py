@@ -195,25 +195,27 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
             obj.save(update_fields=['user'])    # duplicate update....
             messages.add_message(request, messages.INFO, obj.name + 'is linked with user using email')
 
-    @admin.action(description='Migration - create User, link user with email', permissions=['change'])
+    @admin.action(description='Migration user from auto_id', permissions=['change'])
     def sync_user_master(self, request, queryset):
         # email is required for django user creation
         for obj in queryset:
-            if obj.user:
+            if obj.user or not obj.auto_id:     # if created already or auto_id is blank, skip
                 continue
+
             if obj.email is None or obj.email.strip() == "":
                 messages.add_message(request, messages.WARNING, obj.name + ' has no valid email address in profile')
                 continue
-            if Profile.objects.filter(email = obj.email).count() > 1:  #if multiple profiles with same email, pass
+            if Profile.objects.filter(auto_id = obj.auto_id).count() > 1:  #if multiple profiles with same auto_id, pass
+                messages.add_message(request, messages.WARNING, obj.name + f' - multiple account exist with auto_id {obj.auto_id}')
                 continue
 
             found = None
             try:
-                found = User.objects.get(email=obj.email)
+                found = User.objects.get(username = obj.auto_id)
             except User.DoesNotExist:
                 pass    # create user 
             except User.MultipleObjectsReturned:
-                messages.add_message(request, messages.WARNING, obj.name + ' has multiple User with email in profile')
+                messages.add_message(request, messages.WARNING, obj.name + f' has multiple User with auto_id {obj.auto_id} in profile')
                 continue
 
             if found:

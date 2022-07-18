@@ -196,7 +196,7 @@ def start():
     scheduler.add_job(database_backup, 'interval', days=1, id='database_backup', jobstore='default', replace_existing=True,)
     # scheduler.add_job(database_refresh_sandbox, 'interval', days=365, start_date='2022-06-30', end_date='2022-06-30', id='database_refresh_sandbox', jobstore='default', replace_existing=True,)
 
-    scheduler.add_job(sap_import, 'interval', days=1, id='sap_import', jobstore='default', replace_existing=True,)
+    scheduler.add_job(sap_import, 'interval', days=1, start_date='2022-06-30', end_date='2099-06-30', id='sap_import', jobstore='default', replace_existing=True,)
     scheduler.add_job(project_creator_from_pm, 'interval', days=365, start_date='2022-06-30', end_date='2022-06-30', id='project_creator_from_pm', jobstore='default', replace_existing=True,)
 
     register_events(scheduler)

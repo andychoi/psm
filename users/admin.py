@@ -180,7 +180,7 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
     def create_user(self, request, obj):
         try:
             User.objects.get( username=obj.auto_id if obj.auto_id else obj.email )
-        except User.DoesNotExist:
+        except: # User.DoesNotExist:
             new_user = User.objects.create_user( username=obj.auto_id if obj.auto_id else obj.email, email=obj.email )
             if new_user:
                 obj.user = new_user
@@ -190,7 +190,7 @@ class ProfileAdmin(ImportExportMixin, admin.ModelAdmin):
     def link_user(self, request, obj, link):
         try:
             Profile.objects.get(user=link)
-        except User.DoesNotExist:  #check if found user is linked to other profile
+        except:  #User.DoesNotExist:  #check if found user is linked to other profile
             obj.user = link                  
             obj.save(update_fields=['user'])    # duplicate update....
             messages.add_message(request, messages.INFO, obj.name + 'is linked with user using email')

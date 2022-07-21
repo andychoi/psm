@@ -97,34 +97,49 @@
                     <td class="text-center">{% if p.a_launch %}     <i class="text-success bi-check-square-fill"> {% else %} <i class="text-success bi-dash-square-dotted"> </i> {% endif %}</td>
     
                     <td class="text-center">
-                        {%   if p.status_o|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
-                        {% elif p.status_o|slice:'0:1' == '2' %}<i class="text-warning bi-exclamation-circle"></i>
-                        {% elif p.status_o|slice:'0:1' == '3' %}<i class="text-danger  bi-exclamation-circle-fill"></i>
-                        {% elif p.status_o|slice:'0:1' == '9' %}<i class="text-primary bi-circle-fill"></i>
-                        {% else %}<i class="text-secondary  bi-dash-circle-dotted"></i>
-                        {% endif %}</td>
-                        <td class="text-center">
-                        {%   if p.status_t|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
-                        {% elif p.status_t|slice:'0:1' == '2' %}<i class="text-warning bi-exclamation-circle"></i>
-                        {% elif p.status_t|slice:'0:1' == '3' %}<i class="text-danger  bi-exclamation-circle-fill"></i>
-                        {% elif p.status_t|slice:'0:1' == '9' %}<i class="text-primary bi-circle-fill"></i>
-                        {% else %}<i class="text-secondary  bi-dash-circle-dotted"></i>
-                        {% endif %}</td>
+                        <div>
+                            <span style="display: none;">{{ p.status_o|slice:'0:1' }}</span>
+                            {%   if p.status_o|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
+                            {% elif p.status_o|slice:'0:1' == '2' %}<i class="text-warning bi-exclamation-circle"></i>
+                            {% elif p.status_o|slice:'0:1' == '3' %}<i class="text-danger  bi-exclamation-circle-fill"></i>
+                            {% elif p.status_o|slice:'0:1' == '9' %}<i class="text-primary bi-circle-fill"></i>
+                            {% else %}<i class="text-secondary  bi-dash-circle-dotted"></i>
+                            {% endif %}
+                        </div>
+                    </td>
                     <td class="text-center">
-                        {%   if p.status_s|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
-                        {% elif p.status_s|slice:'0:1' == '2' %}<i class="text-warning bi-exclamation-circle"></i>
-                        {% elif p.status_s|slice:'0:1' == '3' %}<i class="text-danger  bi-exclamation-circle-fill"></i>
-                        {% elif p.status_s|slice:'0:1' == '9' %}<i class="text-primary bi-circle-fill"></i>
-                        {% else %}<i class="text-secondary  bi-dash-circle-dotted"></i>
-                        {% endif %}</td>
+                        <div>
+                            <span style="display: none;">{{ p.status_t|slice:'0:1' }}</span>
+                            {%   if p.status_t|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
+                            {% elif p.status_t|slice:'0:1' == '2' %}<i class="text-warning bi-exclamation-circle"></i>
+                            {% elif p.status_t|slice:'0:1' == '3' %}<i class="text-danger  bi-exclamation-circle-fill"></i>
+                            {% elif p.status_t|slice:'0:1' == '9' %}<i class="text-primary bi-circle-fill"></i>
+                            {% else %}<i class="text-secondary  bi-dash-circle-dotted"></i>
+                            {% endif %}
+                        </div>
+                    </td>
                     <td class="text-center">
-                        {%   if p.status_b|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
-                        {% elif p.status_b|slice:'0:1' == '2' %}<i class="text-warning bi-exclamation-circle"></i>
-                        {% elif p.status_b|slice:'0:1' == '3' %}<i class="text-danger  bi-exclamation-circle-fill"></i>
-                        {% elif p.status_b|slice:'0:1' == '9' %}<i class="text-primary bi-circle-fill"></i>
-                        {% else %}<i class="text-secondary  bi-dash-circle-dotted"></i>
-                        {% endif %}</td>
-
+                        <div>
+                            <span style="display: none;">{{ p.status_s|slice:'0:1' }}</span>
+                            {%   if p.status_s|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
+                            {% elif p.status_s|slice:'0:1' == '2' %}<i class="text-warning bi-exclamation-circle"></i>
+                            {% elif p.status_s|slice:'0:1' == '3' %}<i class="text-danger  bi-exclamation-circle-fill"></i>
+                            {% elif p.status_s|slice:'0:1' == '9' %}<i class="text-primary bi-circle-fill"></i>
+                            {% else %}<i class="text-secondary  bi-dash-circle-dotted"></i>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <div>
+                            <span style="display: none;">{{ p.status_b|slice:'0:1' }}</span>
+                            {%   if p.status_b|slice:'0:1' == '1' %}<i class="text-success bi-check-circle-fill"></i>
+                            {% elif p.status_b|slice:'0:1' == '2' %}<i class="text-warning bi-exclamation-circle"></i>
+                            {% elif p.status_b|slice:'0:1' == '3' %}<i class="text-danger  bi-exclamation-circle-fill"></i>
+                            {% elif p.status_b|slice:'0:1' == '9' %}<i class="text-primary bi-circle-fill"></i>
+                            {% else %}<i class="text-secondary  bi-dash-circle-dotted"></i>
+                            {% endif %}
+                        </div>
+                    </td>
                     <td class="text-begin">{{ p.pm_memo }}</td>
                     <td class="text-begin">{{ p.dept.head }}</td>
     

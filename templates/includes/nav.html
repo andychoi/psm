@@ -14,8 +14,11 @@
         <img src="{% static 'img/PSM-logos_white_resized.png' %}" alt="PSM" height="32" loading="lazy">
       </a>
 
-  
+    {% if user.is_authenticated %}
       {% include "includes/nav-left.html" %}
+    {% else %}
+      Please login to use PSM (<a href="{% url 'login' %}">LOGIN</a>)
+    {% endif %}
 
       <ul class="nav navbar-nav ms-auto ">
 
@@ -30,9 +33,11 @@
             </form>
           </li>
 
+
           {% include "includes/nav-right.html" %}
 
       </ul> <!--right side-->
+
 
     </div>
   </div>

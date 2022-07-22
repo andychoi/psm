@@ -7,12 +7,14 @@
         {
             "name": "Python: Django",
             "type": "python",
-            "request": "launch",
+            "request": "launch",    
+            "python": "${workspaceFolder}/.venv/bin/python",
             "program": "${workspaceFolder}/manage.py",
             "args": [
                 "runserver",
                 "127.0.0.1:8000",
             ],
+            "console": "integratedTerminal",
             "django": true,
             "justMyCode": true
         }

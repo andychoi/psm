@@ -13,7 +13,7 @@ class TagAdmin(admin.ModelAdmin):
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'tags_', 'author', 'status', 'featured', 'private', )
+    list_display = ('id', 'title', 'tags_', 'author', 'status', 'featured', 'private', 'category' )
     list_display_links = ('id', 'title')
     list_filter = ('featured', 'private', 'author', 'date_posted')  #'category', 
     list_editable = ( 'status', 'featured', 'private')

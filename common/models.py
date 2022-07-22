@@ -304,8 +304,10 @@ class GMDM(models.Model):
     latest  = models.DateField(_("Lasted upgrade"), null=True, blank=True )
     decommission  = models.DateField(_("Decommision"), null=True, blank=True )
 
-    dept = models.ForeignKey('common.Dept', on_delete=models.SET_NULL, null=True, blank=True)
-    team = models.ForeignKey('common.Team', on_delete=models.SET_NULL, null=True, blank=True)
+    dept = models.CharField(_("Dept"), max_length=100, blank=True, null=True)
+    team = models.CharField(_("Team"), max_length=100, blank=True, null=True)
+    # dept = models.ForeignKey('common.Dept', on_delete=models.SET_NULL, null=True, blank=True)
+    # team = models.ForeignKey('common.Team', on_delete=models.SET_NULL, null=True, blank=True)
     # owner1 = models.ForeignKey('users.Profile', related_name='app_primary',   on_delete=models.SET_NULL, null=True, blank=True)
     sme = models.CharField(_("SME"), max_length=100, blank=True, null=True)
     assignment = models.CharField(_("Assignment Group"), max_length=100, blank=True, null=True)
@@ -314,7 +316,7 @@ class GMDM(models.Model):
     hod     = models.CharField(_("HOD"), max_length=50, blank=True, null=True)
     is_bot = models.CharField(_("Is BOT"), max_length=10, blank=True, default="FALSE")
 
-    severity = models.CharField(_("Severity"), max_length=50, choices=SEVERITY, default='4 - Low', null=True)
+    severity = models.CharField(_("Severity"), max_length=50, choices=SEVERITY, blank=True, null=True)
     # dr = models.BooleanField(_("DR ready"), default=False) 
     level1 = models.CharField(_("Level 1"), max_length=50, blank=True, null=True)  #choices=GMDM1, 
     level2 = models.CharField(_("Level 2"), max_length=50, blank=True, null=True)  #choices=GMDM2, 

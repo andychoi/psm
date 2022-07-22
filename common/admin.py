@@ -181,12 +181,12 @@ class GMDMAdmin(DjangoObjectActions, ImportExportMixin, admin.ModelAdmin):
         ('apptype',         DropdownFilter),
         ('grouping',        DropdownFilter),
     )
-    autocomplete_fields = ['team',  ]
+    autocomplete_fields = [  ]
 
     gmdm_fields = [ ('code', 'name', 'CBU', 'severity',  ),
                     ('outline','remark' ), 
-                    ('platform', 'os', 'db', 'lang', 'ui','apptype'),
-                    ('no_screen', 'no_if', 'no_table', 'usertype', 'no_user', ), 
+                    ('platform', 'os', 'db', 'lang', 'ui',),
+                    ('apptype', 'no_screen', 'no_if', 'no_table', 'usertype', 'no_user', ), 
                     ('operator', 'is_bot', 'sme', 'assignment', 'assignee', 'manager', 'hod'),
                     ('dept', 'team', 'CBUteam'),
                     ('grouping', 'level1', 'level2'),
